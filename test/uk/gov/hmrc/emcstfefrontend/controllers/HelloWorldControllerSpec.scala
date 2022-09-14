@@ -1,37 +1,63 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ */
+
 package uk.gov.hmrc.emcstfefrontend.controllers
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.Application
 import play.api.http.Status
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.inject.guice.GuiceApplicationBuilder
+import uk.gov.hmrc.emcstfefrontend.mocks.services.MockHelloWorldService
+import uk.gov.hmrc.emcstfefrontend.models.response.HelloWorldResponse
+import uk.gov.hmrc.emcstfefrontend.testHelpers.UnitSpec
+import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, HelloWorldPage}
+import uk.gov.hmrc.http.HeaderCarrier
 
-class HelloWorldControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
-  override def fakeApplication(): Application =
-    new GuiceApplicationBuilder()
-      .configure(
-        "metrics.jvm"     -> false,
-        "metrics.enabled" -> false
-      )
-      .build()
+import scala.concurrent.{ExecutionContext, Future}
 
-  private val fakeRequest = FakeRequest("GET", "/")
+class HelloWorldControllerSpec extends UnitSpec with MockHelloWorldService {
 
-  private val controller = app.injector.instanceOf[HelloWorldController]
+  trait Test {
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+    implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+
+    val controller: HelloWorldController = new HelloWorldController(
+      app.injector.instanceOf[MessagesControllerComponents],
+      mockService,
+      app.injector.instanceOf[HelloWorldPage],
+      app.injector.instanceOf[ErrorTemplate],
+      ec
+    )
+  }
 
   "GET /" should {
-    "return 200" in {
-      val result = controller.helloWorld(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
+    "return 200" when {
+      "service returns a Right" in new Test {
 
-    "return HTML" in {
-      val result = controller.helloWorld(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result)     shouldBe Some("utf-8")
+        MockService.getMessage().returns(Future.successful(Right(HelloWorldResponse("test message"))))
+
+        val result = controller.helloWorld()(fakeRequest)
+
+        status(result) shouldBe Status.OK
+        contentAsString(result) should include("emcs-tfe-frontend")
+        contentAsString(result) should include("test message")
+      }
+    }
+    "return 500" when {
+      "service returns a Left" in new Test {
+
+        MockService.getMessage().returns(Future.successful(Left("error message")))
+
+        val result = controller.helloWorld()(fakeRequest)
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        contentAsString(result) should include("Something went wrong!")
+        contentAsString(result) should include("Oh no!")
+        contentAsString(result) should include("error message")
+      }
     }
   }
 }
