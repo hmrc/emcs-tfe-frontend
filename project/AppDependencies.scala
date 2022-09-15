@@ -13,7 +13,8 @@ object AppDependencies {
   val test = Seq(
     "uk.gov.hmrc" %% "bootstrap-test-play-28" % "7.1.0" % "test, it",
     "org.scalamock" %% "scalamock" % "5.2.0" % "test, it",
-    "org.jsoup" % "jsoup" % "1.13.1" % Test,
-    "com.vladsch.flexmark" % "flexmark-all" % "0.36.8" % "test, it"
+    "org.jsoup" % "jsoup" % "1.15.3" % Test,
+    "com.vladsch.flexmark" % "flexmark-all" % "0.36.8" % "test, it",
+    "com.github.tomakehurst" % "wiremock-jre8" % "2.33.2" % "it"
   )
 }

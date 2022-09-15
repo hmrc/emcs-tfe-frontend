@@ -3,7 +3,7 @@
  *
  */
 
-package uk.gov.hmrc.emcstfefrontend.testHelpers
+package uk.gov.hmrc.emcstfefrontend.support
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.EitherValues

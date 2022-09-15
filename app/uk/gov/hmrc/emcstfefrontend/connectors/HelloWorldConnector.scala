@@ -16,24 +16,23 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class HelloWorldConnector @Inject()(http: HttpClient,
-                                    config: AppConfig) extends RawResponseReads {
+                                    config: AppConfig) extends BaseConnector {
 
-  lazy val logger: Logger = Logger(this.getClass)
+  override lazy val logger: Logger = Logger(this.getClass)
 
-  lazy val baseUrl = config.referenceDataBaseUrl
+  lazy val baseUrl: String = config.referenceDataBaseUrl
 
   def helloWorldUrl(): String = s"$baseUrl/hello-world"
 
   def getMessage()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[String, HelloWorldResponse]] = {
     http.GET[HttpResponse](helloWorldUrl()).map {
       response => response.status match {
-        case OK => response.json.validate[HelloWorldResponse].fold(
-          invalid => {
-            logger.warn(s"Bad JSON response from reference-data: ${invalid}")
+        case OK => response.validateJson[HelloWorldResponse] match {
+          case Some(valid) => Right(valid)
+          case None =>
+            logger.warn(s"Bad JSON response from reference-data")
             Left("JSON validation error")
-          },
-          valid => Right(valid)
-        )
+        }
         case status =>
           logger.warn(s"Unexpected status from reference-data: $status")
           Left("Unexpected downstream response status")

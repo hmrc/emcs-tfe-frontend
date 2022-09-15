@@ -11,7 +11,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.emcstfefrontend.mocks.services.MockHelloWorldService
 import uk.gov.hmrc.emcstfefrontend.models.response.HelloWorldResponse
-import uk.gov.hmrc.emcstfefrontend.testHelpers.UnitSpec
+import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, HelloWorldPage}
 import uk.gov.hmrc.http.HeaderCarrier
 
