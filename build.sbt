@@ -21,6 +21,10 @@ lazy val microservice = Project(appName, file("."))
     )
     // ***************
   )
+  .settings(
+    scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
+    scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s"
+  )
   .settings(publishingSettings: _*)
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
