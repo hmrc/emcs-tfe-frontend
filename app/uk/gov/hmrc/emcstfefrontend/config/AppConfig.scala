@@ -21,9 +21,9 @@ trait AppConfig {
 @Singleton
 class AppConfigImpl @Inject()(val servicesConfig: ServicesConfig, val config: Configuration) extends AppConfig {
 
-  private lazy val referenceDataService: String = servicesConfig.baseUrl("reference-data")
-  lazy val referenceDataBaseUrl: String = s"$referenceDataService/emcs-tfe-reference-data"
+  private def referenceDataService: String = servicesConfig.baseUrl("reference-data")
+  def referenceDataBaseUrl: String = s"$referenceDataService/emcs-tfe-reference-data"
 
-  lazy val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
+  def welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
 }
