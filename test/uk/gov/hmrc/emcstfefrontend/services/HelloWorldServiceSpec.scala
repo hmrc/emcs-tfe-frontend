@@ -7,7 +7,7 @@ package uk.gov.hmrc.emcstfefrontend.services
 
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockHelloWorldConnector
 import uk.gov.hmrc.emcstfefrontend.models.response.HelloWorldResponse
-import uk.gov.hmrc.emcstfefrontend.testHelpers.UnitSpec
+import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}

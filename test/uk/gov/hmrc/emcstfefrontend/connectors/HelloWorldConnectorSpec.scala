@@ -10,7 +10,7 @@ import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockHttpClient
 import uk.gov.hmrc.emcstfefrontend.models.response.HelloWorldResponse
-import uk.gov.hmrc.emcstfefrontend.testHelpers.UnitSpec
+import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
