@@ -5,41 +5,53 @@
 
 package uk.gov.hmrc.emcstfefrontend.services
 
-import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockHelloWorldConnector
-import uk.gov.hmrc.emcstfefrontend.models.response.HelloWorldResponse
+import uk.gov.hmrc.emcstfefrontend.mocks.connectors.{MockEmcsTfeConnector, MockReferenceDataConnector}
+import uk.gov.hmrc.emcstfefrontend.models.response.{EmcsTfeResponse, ReferenceDataResponse}
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HelloWorldServiceSpec extends UnitSpec with MockHelloWorldConnector {
+class HelloWorldServiceSpec extends UnitSpec with MockReferenceDataConnector with MockEmcsTfeConnector {
 
   trait Test {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
     val service: HelloWorldService = new HelloWorldService(
-      mockConnector
+      mockReferenceDataConnector,
+      mockEmcsTfeConnector
     )
   }
 
   "getMessage" should {
     "return Right" when {
       "connector returns a Right" in new Test {
-        val result: Either[String, HelloWorldResponse] = Right(HelloWorldResponse("test message"))
+        val referenceDataConnectorResponse: ReferenceDataResponse = ReferenceDataResponse("test message")
+        val emcsTfeConnectorResponse: EmcsTfeResponse = EmcsTfeResponse("test message")
 
-        MockConnector.getMessage().returns(Future.successful(result))
+        MockReferenceDataConnector.getMessage().returns(Future.successful(Right(referenceDataConnectorResponse)))
+        MockEmcsTfeConnector.getMessage().returns(Future.successful(Right(emcsTfeConnectorResponse)))
 
-        await(service.getMessage()) shouldBe result
+        await(service.getMessage().value) shouldBe Right((referenceDataConnectorResponse, emcsTfeConnectorResponse))
       }
     }
     "return Left" when {
-      "connector returns a Left" in new Test {
-        val result: Either[String, HelloWorldResponse] = Left("error message")
+      "reference data connector returns a Left" in new Test {
+        val referenceDataConnectorResponse: Either[String, ReferenceDataResponse] = Left("error message")
 
-        MockConnector.getMessage().returns(Future.successful(result))
+        MockReferenceDataConnector.getMessage().returns(Future.successful(referenceDataConnectorResponse))
 
-        await(service.getMessage()) shouldBe result
+        await(service.getMessage().value) shouldBe referenceDataConnectorResponse
+      }
+      "emcs tfe connector returns a Left" in new Test {
+        val referenceDataConnectorResponse: Either[String, ReferenceDataResponse] = Right(ReferenceDataResponse("test message"))
+        val emcsTfeConnectorResponse: Either[String, EmcsTfeResponse] = Left("error message")
+
+        MockReferenceDataConnector.getMessage().returns(Future.successful(referenceDataConnectorResponse))
+        MockEmcsTfeConnector.getMessage().returns(Future.successful(emcsTfeConnectorResponse))
+
+        await(service.getMessage().value) shouldBe emcsTfeConnectorResponse
       }
     }
   }

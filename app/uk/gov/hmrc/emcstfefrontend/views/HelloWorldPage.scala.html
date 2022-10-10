@@ -3,17 +3,28 @@
  *
  *@
 
-@import uk.gov.hmrc.emcstfefrontend.models.response.HelloWorldResponse
+@import uk.gov.hmrc.emcstfefrontend.models.response.EmcsTfeResponse
+@import uk.gov.hmrc.emcstfefrontend.models.response.ReferenceDataResponse
 
-@this(layout: Layout)
+@this(
+        layout: Layout
+)
 
 @(
-        helloWorldResponse: HelloWorldResponse
+        referenceDataResponse: ReferenceDataResponse,
+        emcsTfeResponse: EmcsTfeResponse
 )(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some("EMCS Homepage")) {
     <h1 class="govuk-heading-xl">emcs-tfe-frontend</h1>
-    <p class="govuk-body">@{helloWorldResponse.message}</p>
+    <h2 class="govuk-heading-l">Reference Data response</h2>
+    <p class="govuk-body">@{
+        referenceDataResponse.message
+    }</p>
+    <h2 class="govuk-heading-l">EMCS TFE response</h2>
+    <p class="govuk-body">@{
+        emcsTfeResponse.message
+    }</p>
 }
 
 @{

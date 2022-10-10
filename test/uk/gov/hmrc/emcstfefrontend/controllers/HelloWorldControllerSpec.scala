@@ -5,12 +5,13 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers
 
+import cats.data.EitherT
 import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.emcstfefrontend.mocks.services.MockHelloWorldService
-import uk.gov.hmrc.emcstfefrontend.models.response.HelloWorldResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.{EmcsTfeResponse, ReferenceDataResponse}
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, HelloWorldPage}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -37,19 +38,20 @@ class HelloWorldControllerSpec extends UnitSpec with MockHelloWorldService {
     "return 200" when {
       "service returns a Right" in new Test {
 
-        MockService.getMessage().returns(Future.successful(Right(HelloWorldResponse("test message"))))
+        MockService.getMessage().returns(EitherT.fromEither[Future](Right((ReferenceDataResponse("test message 1"), EmcsTfeResponse("test message 2")))))
 
         val result = controller.helloWorld()(fakeRequest)
 
         status(result) shouldBe Status.OK
         contentAsString(result) should include("emcs-tfe-frontend")
-        contentAsString(result) should include("test message")
+        contentAsString(result) should include("test message 1")
+        contentAsString(result) should include("test message 2")
       }
     }
     "return 500" when {
       "service returns a Left" in new Test {
 
-        MockService.getMessage().returns(Future.successful(Left("error message")))
+        MockService.getMessage().returns(EitherT.fromEither[Future](Left("error message")))
 
         val result = controller.helloWorld()(fakeRequest)
 
