@@ -23,11 +23,11 @@ class HelloWorldController @Inject()(
   extends FrontendController(mcc) {
 
   def helloWorld(): Action[AnyContent] = Action.async { implicit request =>
-    service.getMessage map {
-      case Left(value) => InternalServerError(errorPage("Something went wrong!", "Oh no!", value))
-      case Right(value) => Ok(helloWorldPage(value))
+    val response = service.getMessage map {
+      case (referenceDataResponse, emcsTfeResponse) => Ok(helloWorldPage(referenceDataResponse, emcsTfeResponse))
     }
 
+    response.leftMap(value => InternalServerError(errorPage("Something went wrong!", "Oh no!", value))).merge
   }
 
 }

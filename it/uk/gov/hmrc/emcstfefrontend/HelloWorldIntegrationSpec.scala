@@ -9,7 +9,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
-import uk.gov.hmrc.emcstfefrontend.stubs.ReferenceDataStub
+import uk.gov.hmrc.emcstfefrontend.stubs.DownstreamStub
 import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
 
 import scala.xml.Elem
@@ -21,6 +21,7 @@ class HelloWorldIntegrationSpec extends IntegrationBaseSpec {
 
     def uri: String = "/"
     def referenceDataUri: String = s"/emcs-tfe-reference-data/hello-world"
+    def emcsTfeUri: String = s"/emcs-tfe/hello-world"
 
     def request(): WSRequest = {
       setupStubs()
@@ -34,18 +35,27 @@ class HelloWorldIntegrationSpec extends IntegrationBaseSpec {
         val referenceDataResponseBody: JsValue = Json.parse(
           s"""
              |{
-             |   "message": "test message"
+             |   "message": "test message 1"
+             |}
+             |""".stripMargin
+        )
+        val emcsTfeResponseBody: JsValue = Json.parse(
+          s"""
+             |{
+             |   "message": "test message 2"
              |}
              |""".stripMargin
         )
         override def setupStubs(): StubMapping = {
-          ReferenceDataStub.onSuccess(ReferenceDataStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
         }
 
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.OK
         response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
-        response.body should include("test message")
+        response.body should include("test message 1")
+        response.body should include("test message 2")
       }
     }
     "return an error page" when {
@@ -59,7 +69,7 @@ class HelloWorldIntegrationSpec extends IntegrationBaseSpec {
         )
 
         override def setupStubs(): StubMapping = {
-          ReferenceDataStub.onSuccess(ReferenceDataStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
         }
 
         val response: WSResponse = await(request().get())
@@ -71,7 +81,7 @@ class HelloWorldIntegrationSpec extends IntegrationBaseSpec {
         val referenceDataResponseBody: Elem = <message>test message</message>
 
         override def setupStubs(): StubMapping = {
-          ReferenceDataStub.onSuccess(ReferenceDataStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
         }
 
         val response: WSResponse = await(request().get())
@@ -89,7 +99,7 @@ class HelloWorldIntegrationSpec extends IntegrationBaseSpec {
         )
 
         override def setupStubs(): StubMapping = {
-          ReferenceDataStub.onSuccess(ReferenceDataStub.GET, referenceDataUri, Status.INTERNAL_SERVER_ERROR, referenceDataResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.INTERNAL_SERVER_ERROR, referenceDataResponseBody)
         }
 
         val response: WSResponse = await(request().get())

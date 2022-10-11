@@ -11,7 +11,7 @@ import uk.gov.hmrc.emcstfefrontend.support.WireMockMethods
 
 import scala.xml.Elem
 
-object ReferenceDataStub extends WireMockMethods {
+object DownstreamStub extends WireMockMethods {
 
   def onSuccess(method: HTTPMethod, uri: String, status: Int, body: JsValue): StubMapping = {
     when(method = method, uri = uri)

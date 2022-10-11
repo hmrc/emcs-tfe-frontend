@@ -5,14 +5,18 @@
 
 package uk.gov.hmrc.emcstfefrontend.services
 
-import uk.gov.hmrc.emcstfefrontend.connectors.HelloWorldConnector
-import uk.gov.hmrc.emcstfefrontend.models.response.HelloWorldResponse
+import cats.data.EitherT
+import cats.implicits._
+import uk.gov.hmrc.emcstfefrontend.connectors.{EmcsTfeConnector, ReferenceDataConnector}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class HelloWorldService @Inject()(connector: HelloWorldConnector) {
-  def getMessage()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[String, HelloWorldResponse]] = connector.getMessage()
+class HelloWorldService @Inject()(referenceDataConnector: ReferenceDataConnector, emcsTfeConnector: EmcsTfeConnector) {
+  def getMessage()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): HelloWorldResponse = for {
+    referenceDataResponse <- EitherT(referenceDataConnector.getMessage())
+    emcsTfeResponse <- EitherT(emcsTfeConnector.getMessage())
+  } yield (referenceDataResponse, emcsTfeResponse)
 }

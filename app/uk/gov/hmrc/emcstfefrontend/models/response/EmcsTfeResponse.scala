@@ -7,8 +7,8 @@ package uk.gov.hmrc.emcstfefrontend.models.response
 
 import play.api.libs.json.{Json, OFormat}
 
-case class HelloWorldResponse(message: String)
+case class EmcsTfeResponse(message: String)
 
-object HelloWorldResponse {
-  implicit val format: OFormat[HelloWorldResponse] = Json.format
+object EmcsTfeResponse {
+  implicit val format: OFormat[EmcsTfeResponse] = Json.format
 }
