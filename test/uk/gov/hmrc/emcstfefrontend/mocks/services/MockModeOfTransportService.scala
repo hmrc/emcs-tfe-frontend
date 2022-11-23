@@ -22,10 +22,5 @@ trait MockModeOfTransportService extends MockFactory {
       (mockService.getMessage()(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
     }
-    def postMessage(): CallHandler2[HeaderCarrier, ExecutionContext, EitherT[Future, String, ReferenceDataResponse]] = {
-      (mockService.getMessage()(_: HeaderCarrier, _: ExecutionContext))
-        .expects(*, *)
-      }
-    }
-
+  }
 }
