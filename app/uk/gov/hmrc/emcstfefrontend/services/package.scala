@@ -12,4 +12,5 @@ import scala.concurrent.Future
 
 package object services {
   type HelloWorldResponse = EitherT[Future, String, (ReferenceDataResponse, EmcsTfeResponse)]
+  type ModeOfTransportResponse = EitherT[Future, String, (ReferenceDataResponse)]
 }
