@@ -24,6 +24,7 @@ class ModeOfTransportControllerSpec extends UnitSpec with MockModeOfTransportSer
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+    implicit val postRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("POST", "/")
 
     val controller: ModeOfTransportController = new ModeOfTransportController(
       app.injector.instanceOf[MessagesControllerComponents],
@@ -54,6 +55,16 @@ class ModeOfTransportControllerSpec extends UnitSpec with MockModeOfTransportSer
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
 
+      }
+    }
+    "POST /" should {
+      "return 303" when {
+        "service returns a Right" in new Test {
+
+          val result = controller.onSubmit()(postRequest)
+
+          status(result) shouldBe Status.SEE_OTHER
+        }
       }
     }
   }
