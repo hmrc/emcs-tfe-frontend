@@ -7,3 +7,6 @@
 @(alternativeText: Option[String] = None)(implicit messages: Messages)
 
 <button class="govuk-button govuk-button--secondary" type="submit" id="continue-button">@alternativeText.getOrElse(messages("base.saveMovement"))</button>
+@{
+//$COVERAGE-OFF$
+}
