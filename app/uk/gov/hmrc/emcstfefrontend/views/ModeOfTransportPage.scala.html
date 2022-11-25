@@ -15,8 +15,8 @@
 
 @(referenceDataResponse: ReferenceDataResponse)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("EMCS Homepage")) {
-    <h1 class="govuk-heading-xl">How will this movement be transported?</h1>
+@layout(pageTitle = Some(messages("transportMode.heading"))) {
+    <h1 class="govuk-heading-xl">@messages("transportMode.heading")</h1>
     <h2 class="govuk-heading-l">Reference Data response</h2>
     <p class="govuk-body">@{
         referenceDataResponse.message
