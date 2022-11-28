@@ -10,7 +10,7 @@ import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportResponse, Mod
 
 object ModeOfTransportListFixture {
 
-  val validOtherDataReferenceJson: JsValue = Json.parse(
+  val validModeOfTransportJson: JsValue = Json.parse(
     """
       |{
       |   "typeName":"TransportMode",
