@@ -13,21 +13,21 @@
 
   import play.api.libs.json.{JsSuccess, Json}
   import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportResponseList
-  import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.{validOtherDataReferenceListJson, validOtherDataReferenceListModel}
+  import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.{validModeOfTransportListJson, validModeOfTransportResponseListModel}
   import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 
   class ModeOfTransportResponseListSpec extends UnitSpec {
 
-    "OtherDataReferenceSpecList" should {
+    "ModeOfTransportResponseList" should {
       "read from json" when {
         "the json is complete" in {
-          Json.fromJson[ModeOfTransportResponseList](validOtherDataReferenceListJson) shouldBe JsSuccess(validOtherDataReferenceListModel)
+          Json.fromJson[ModeOfTransportResponseList](validModeOfTransportListJson) shouldBe JsSuccess(validModeOfTransportResponseListModel)
         }
       }
       "write to json" when {
         "the model is complete" in {
-          Json.toJson(validOtherDataReferenceListModel) shouldBe validOtherDataReferenceListJson
+          Json.toJson(validModeOfTransportResponseListModel) shouldBe validModeOfTransportListJson
         }
       }
     }

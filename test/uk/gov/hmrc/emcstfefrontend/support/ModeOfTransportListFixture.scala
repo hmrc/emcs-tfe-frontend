@@ -19,15 +19,15 @@ object ModeOfTransportListFixture {
       |}
 			|""".stripMargin)
 
-  val validOtherDataReferenceModel1: ModeOfTransportResponse =
+  val validModeOfTransportResponseModel1: ModeOfTransportResponse =
     ModeOfTransportResponse(typeName = "TransportMode", code = "0", description = "Other")
 
 
-  val validOtherDataReferenceModel2: ModeOfTransportResponse =
+  val validModeOfTransportResponseModel2: ModeOfTransportResponse =
     ModeOfTransportResponse(typeName = "TransportMode", code = "5", description = "Postal consignment")
 
 
-  val validOtherDataReferenceListJson: JsValue = Json.parse(
+  val validModeOfTransportListJson: JsValue = Json.parse(
     """
       | {
       |   "transportList":
@@ -46,8 +46,8 @@ object ModeOfTransportListFixture {
       | }
 			|""".stripMargin)
 
-  val validOtherDataReferenceListModel: ModeOfTransportResponseList = ModeOfTransportResponseList(
-    List(validOtherDataReferenceModel1,validOtherDataReferenceModel2)
+  val validModeOfTransportResponseListModel: ModeOfTransportResponseList = ModeOfTransportResponseList(
+    List(validModeOfTransportResponseModel1,validModeOfTransportResponseModel2)
   )
 
 }
