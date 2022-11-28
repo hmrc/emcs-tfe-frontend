@@ -6,7 +6,7 @@
 package uk.gov.hmrc.emcstfefrontend.support
 
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportResponse, ModeOfTransportResponseList}
+import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportResponse, ModeOfTransportResponseList}
 
 object ModeOfTransportListFixture {
 
@@ -19,8 +19,19 @@ object ModeOfTransportListFixture {
       |}
 			|""".stripMargin)
 
+  val modeOfTransportErrorJson: JsValue = Json.parse(
+    """
+      |{
+      |   "status":404,
+      |   "reason":"error"
+      |}
+			|""".stripMargin)
+
   val validModeOfTransportResponseModel1: ModeOfTransportResponse =
     ModeOfTransportResponse(typeName = "TransportMode", code = "0", description = "Other")
+
+  val modeOfTransportError: ModeOfTransportErrorResponse =
+    ModeOfTransportErrorResponse(status = 404, reason = "error")
 
 
   val validModeOfTransportResponseModel2: ModeOfTransportResponse =

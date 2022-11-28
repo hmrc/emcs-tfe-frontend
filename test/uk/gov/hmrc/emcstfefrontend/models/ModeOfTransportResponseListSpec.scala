@@ -12,8 +12,8 @@
 
 
   import play.api.libs.json.{JsSuccess, Json}
-  import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportResponseList
-  import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.{validModeOfTransportListJson, validModeOfTransportResponseListModel}
+  import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportResponseList}
+  import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.{modeOfTransportError, modeOfTransportErrorJson, validModeOfTransportListJson, validModeOfTransportResponseListModel}
   import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 
@@ -28,6 +28,13 @@
       "write to json" when {
         "the model is complete" in {
           Json.toJson(validModeOfTransportResponseListModel) shouldBe validModeOfTransportListJson
+        }
+      }
+    }
+    "ModeOfTransportResponseError" should {
+      "read from json" when {
+        "the json is complete" in {
+          Json.fromJson[ModeOfTransportErrorResponse](modeOfTransportErrorJson) shouldBe JsSuccess(modeOfTransportError)
         }
       }
     }
