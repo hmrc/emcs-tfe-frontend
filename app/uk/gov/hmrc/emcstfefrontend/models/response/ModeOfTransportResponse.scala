@@ -5,10 +5,10 @@
 
 package uk.gov.hmrc.emcstfefrontend.models.response
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Json, OFormat}
 
 case class ModeOfTransportResponse(typeName: String, code: String, description: String)
 
 object ModeOfTransportResponse {
-  implicit val format: Format[ModeOfTransportResponse] = Json.format[ModeOfTransportResponse]
+  implicit val format: OFormat[ModeOfTransportResponse] = Json.format
 }
