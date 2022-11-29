@@ -12,7 +12,7 @@
 
 
   import play.api.libs.json.{JsSuccess, Json}
-  import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportResponseList}
+  import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel}
   import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.{modeOfTransportError, modeOfTransportErrorJson, validModeOfTransportListJson, validModeOfTransportResponseListModel}
   import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
@@ -22,7 +22,7 @@
     "ModeOfTransportResponseList" should {
       "read from json" when {
         "the json is complete" in {
-          Json.fromJson[ModeOfTransportResponseList](validModeOfTransportListJson) shouldBe JsSuccess(validModeOfTransportResponseListModel)
+          Json.fromJson[ModeOfTransportListModel](validModeOfTransportListJson) shouldBe JsSuccess(validModeOfTransportResponseListModel)
         }
       }
       "write to json" when {
