@@ -9,7 +9,7 @@ import play.api.libs.json.{Json, OFormat}
 
 sealed trait ModeOfTransportListResponseModel
 
-case class ModeOfTransportListModel(transportList: List[ModeOfTransportModel]) extends ModeOfTransportListResponseModel
+case class ModeOfTransportListModel(otherRefdata: List[ModeOfTransportModel]) extends ModeOfTransportListResponseModel
 
 object ModeOfTransportListModel {
   implicit val format: OFormat[ModeOfTransportListModel] = Json.format

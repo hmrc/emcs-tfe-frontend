@@ -5,8 +5,10 @@
 
 package uk.gov.hmrc.emcstfefrontend.services
 
+import play.api.http.Status.INTERNAL_SERVER_ERROR
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.{MockEmcsTfeConnector, MockReferenceDataConnector}
-import uk.gov.hmrc.emcstfefrontend.models.response.ReferenceDataResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ReferenceDataResponse}
+import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.validModeOfTransportResponseListModel
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -23,23 +25,23 @@ class ModeOfTransportServiceSpec extends UnitSpec with MockReferenceDataConnecto
     )
   }
 
-  "getMessage" should {
-    "return Right" when {
-      "connector returns a Right" in new Test {
+  "getOtherDataReferenceList" should {
+    "return a successful other reference data list" when {
+      "connector returns a success" in new Test {
         val referenceDataConnectorResponse: ReferenceDataResponse = ReferenceDataResponse("test message")
 
-        MockReferenceDataConnector.getMessage().returns(Future.successful(Right(referenceDataConnectorResponse)))
+        MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(validModeOfTransportResponseListModel))
 
-        await(service.getMessage().value) shouldBe Right((referenceDataConnectorResponse))
+        await(service.getOtherDataReferenceList(hc, ec)) shouldBe validModeOfTransportResponseListModel
       }
     }
-    "return Left" when {
-      "reference data connector returns a Left" in new Test {
+    "return a un - successful other reference data list" when {
+      "reference data connector returns a failure" in new Test {
         val referenceDataConnectorResponse: Either[String, ReferenceDataResponse] = Left("error message")
 
-        MockReferenceDataConnector.getMessage().returns(Future.successful(referenceDataConnectorResponse))
+        MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(ModeOfTransportErrorResponse(INTERNAL_SERVER_ERROR, "issue encountered")))
 
-        await(service.getMessage().value) shouldBe referenceDataConnectorResponse
+        await(service.getOtherDataReferenceList(hc, ec)) shouldBe ModeOfTransportErrorResponse(INTERNAL_SERVER_ERROR, "issue encountered")
       }
     }
   }

@@ -7,6 +7,7 @@ package uk.gov.hmrc.emcstfefrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel}
 import uk.gov.hmrc.emcstfefrontend.services.ModeOfTransportService
 import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, ModeOfTransportPage}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -23,11 +24,12 @@ class ModeOfTransportController @Inject()(
   extends FrontendController(mcc) {
 
   def modeOfTransport(): Action[AnyContent] = Action.async { implicit request =>
-    val response = service.getMessage map {
-      case (referenceDataResponse) => Ok(modeOfTransportPage(referenceDataResponse))
-    }
 
-    response.leftMap(value => InternalServerError(errorPage("Something went wrong!", "Oh no!", value))).merge
+    service.getOtherDataReferenceList map {
+      case referenceDataResponse: ModeOfTransportListModel =>
+        Ok(modeOfTransportPage(referenceDataResponse.otherRefdata.map(value => (value.code,  value.description)).toSeq))
+      case error: ModeOfTransportErrorResponse  => InternalServerError(errorPage("Something went wrong!", "Oh no!", error.reason))
+    }
   }
 
   def onSubmit: Action[AnyContent] = Action {

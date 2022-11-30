@@ -3,7 +3,7 @@
  *
  *@
 
-@import uk.gov.hmrc.emcstfefrontend.models.response.ReferenceDataResponse
+@import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportListModel
 @import uk.gov.hmrc.emcstfefrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.govukfrontend.views.html.components._
@@ -13,57 +13,17 @@
         continueButton: ContinueButton,
         saveAndReturnButton: SaveAndReturnButton,
         govukRadios : GovukRadios,
+        inputRadios: input_radios
 )
 
-@(referenceDataResponse: ReferenceDataResponse)(implicit request: Request[_], messages: Messages)
+@(referenceDataResponse: Seq[(String, String)])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some(messages("transportMode.heading"))) {
 
-@govukRadios(Radios(
-    fieldset = Some(Fieldset(
-        legend = Some(Legend(
-            content = Text(messages("transportMode.heading")),
-            classes = "govuk-fieldset__legend--l",
-            isPageHeading = true
-        ))
-    )),
-    idPrefix = Some("mode-of-transport"),
-    name = "mode-of-transport",
-    items = Seq(
-        RadioItem(
-            content = Text("Sea transport - HARDCODED"),
-            value = Some("seaTransport")
-        ),
-        RadioItem(
-            content = Text("Rail transport - HARDCODED"),
-            value = Some("railTransport")
-        ),
-        RadioItem(
-            content = Text("Road transport - HARDCODED"),
-            value = Some("roadTransport")
-        ),
-        RadioItem(
-            content = Text("Air transport - HARDCODED"),
-            value = Some("airTransport")
-        ),
-        RadioItem(
-            content = Text("Postal consignment - HARDCODED"),
-            value = Some("postalConsignment")
-        ),
-        RadioItem(
-            content = Text("Fixed transport installations - HARDCODED"),
-            value = Some("fixedTransport")
-        ),
-        RadioItem(
-            content = Text("Inland waterway transport - HARDCODED"),
-            value = Some("inlandWaterway")
-        ),
-        RadioItem(
-            content = Text("Other - HARDCODED"),
-            value = Some("other")
-        )
-    )
-))
+@inputRadios(
+legend = messages("transportMode.heading"),
+items = referenceDataResponse
+)
 
 @continueButton("base.saveAndContinue",Some(uk.gov.hmrc.emcstfefrontend.controllers.routes.ModeOfTransportController.onSubmit.url))
 @saveAndReturnButton()
