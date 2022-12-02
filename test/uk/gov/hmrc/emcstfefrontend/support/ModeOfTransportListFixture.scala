@@ -41,7 +41,7 @@ object ModeOfTransportListFixture {
   val validModeOfTransportListJson: JsValue = Json.parse(
     """
       | {
-      |   "transportList":
+      |   "otherRefdata":
       |     [
       |       {
       |          "typeName":"TransportMode",
