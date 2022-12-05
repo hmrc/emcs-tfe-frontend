@@ -7,17 +7,20 @@ package uk.gov.hmrc.emcstfefrontend.models.response
 
 import play.api.libs.json.{Json, OFormat}
 
+
 sealed trait ModeOfTransportListResponseModel
 
 case class ModeOfTransportListModel(otherRefdata: List[ModeOfTransportModel]) extends ModeOfTransportListResponseModel {
 
-  private def dropAndAppendOtherOption(transportOptions: Seq[(String,String)]): Seq[(String, String)] = {
-    val otherOption = Seq(transportOptions(0))
-    transportOptions.drop(1) ++ otherOption
+  private def moveOtherToBack(transportOptions: Seq[ModeOfTransportModel]): Seq[ModeOfTransportModel] = {
+    transportOptions.span(_.code == "0") match {
+      case (before, item::after) => item::after ++ before
+      case _ => transportOptions
+    }
   }
 
-  val orderedOptions: Seq[(String, String)] =
-    dropAndAppendOtherOption(otherRefdata.map(value => (value.code,  value.description)).sortBy(_._1))
+  val orderedOptions: Seq[ModeOfTransportModel] =
+    moveOtherToBack(otherRefdata.sortBy(_.code))
 }
 
 object ModeOfTransportListModel {

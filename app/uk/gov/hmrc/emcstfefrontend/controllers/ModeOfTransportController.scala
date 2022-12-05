@@ -27,7 +27,7 @@ class ModeOfTransportController @Inject()(
 
     service.getOtherDataReferenceList map {
       case referenceDataResponse: ModeOfTransportListModel =>
-        Ok(modeOfTransportPage(referenceDataResponse.orderedOptions))
+        Ok(modeOfTransportPage(referenceDataResponse.orderedOptions.map(data => (data.code, data.description))))
       case error: ModeOfTransportErrorResponse  => InternalServerError(errorPage("Something went wrong!", "Oh no!", error.reason))
     }
   }

@@ -36,9 +36,9 @@
             )
 
             testMode.orderedOptions.size shouldBe 3
-            testMode.orderedOptions.head._2 shouldBe "Test option"
-            testMode.orderedOptions(1)._2 shouldBe "Postal consignment"
-            testMode.orderedOptions.last._2 shouldBe "Other"
+            testMode.orderedOptions.head.description shouldBe "Test option"
+            testMode.orderedOptions(1).description shouldBe "Postal consignment"
+            testMode.orderedOptions.last.description shouldBe "Other"
           }
         }
 

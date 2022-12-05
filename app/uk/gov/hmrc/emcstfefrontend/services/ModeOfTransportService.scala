@@ -21,11 +21,10 @@ class ModeOfTransportService @Inject()(referenceDataConnector: ReferenceDataConn
   def getOtherDataReferenceList(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[ModeOfTransportListResponseModel] = {
     referenceDataConnector.getOtherReferenceDataList().map {
       case success: ModeOfTransportListModel =>
-        logger.debug(s"[ModeOfTransportService][getOtherDataReferenceList] - Retrieved Other Data Reference List:\n\n$success")
         success
       case error: ModeOfTransportErrorResponse =>
         logger.error(s"[ModeOfTransportService][getOtherDataReferenceList] - Retrieved Other Data Reference List:\n\n$error")
-        ModeOfTransportErrorResponse(error.status, error.reason)
+        error
     }
   }
 }
