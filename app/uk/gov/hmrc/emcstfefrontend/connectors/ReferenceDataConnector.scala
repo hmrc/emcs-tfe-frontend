@@ -8,7 +8,7 @@ package uk.gov.hmrc.emcstfefrontend.connectors
 import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.emcstfefrontend.config.AppConfig
-import uk.gov.hmrc.emcstfefrontend.models.response.ReferenceDataResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportListResponseModel, ReferenceDataResponse}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
 import javax.inject.{Inject, Singleton}
@@ -23,6 +23,7 @@ class ReferenceDataConnector @Inject()(http: HttpClient,
   lazy val baseUrl: String = config.referenceDataBaseUrl
 
   def referenceDataUrl(): String = s"$baseUrl/hello-world"
+  def getOtherReferenceDataListUrl(): String = s"$baseUrl/other-reference-data-list"
 
   def getMessage()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[String, ReferenceDataResponse]] = {
     http.GET[HttpResponse](referenceDataUrl()).map {
@@ -40,4 +41,19 @@ class ReferenceDataConnector @Inject()(http: HttpClient,
     }
   }
 
+  def getOtherReferenceDataList()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[ModeOfTransportListResponseModel] = {
+    http.GET[HttpResponse](getOtherReferenceDataListUrl()).map {
+      response => response.status match {
+        case OK => response.validateJson[ModeOfTransportListModel] match {
+          case Some(valid) => valid
+          case None =>
+            logger.warn(s"[getOtherReferenceDataList] Bad JSON response from reference-data")
+            ModeOfTransportErrorResponse(INTERNAL_SERVER_ERROR, "JSON validation error")
+        }
+        case status =>
+          logger.warn(s"[getOtherReferenceDataList] Unexpected status from reference-data: $status")
+          ModeOfTransportErrorResponse(status, "Unexpected downstream response status")
+      }
+    }
+  }
 }

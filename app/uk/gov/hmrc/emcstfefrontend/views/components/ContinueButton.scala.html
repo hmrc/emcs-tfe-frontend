@@ -1,0 +1,23 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.Aliases.{Button, Text}
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukButton
+
+@this(govukButton: GovukButton)
+
+@(msg: String, href: Option[String])(implicit messages: Messages)
+
+@govukButton(
+     Button(
+     attributes = Map("id" -> "continue"),
+     content = Text(messages(msg)),
+     href = href,
+     preventDoubleClick = true
+))
+
+@{
+//$COVERAGE-OFF$
+}

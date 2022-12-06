@@ -1,0 +1,35 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ *@
+
+@import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportListModel
+@import uk.gov.hmrc.emcstfefrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(
+        layout: Layout,
+        continueButton: ContinueButton,
+        saveAndReturnButton: SaveAndReturnButton,
+        govukRadios : GovukRadios,
+        inputRadios: input_radios
+)
+
+@(referenceDataResponse: Seq[(String, String)])(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some(messages("transportMode.heading"))) {
+
+@inputRadios(
+legend = messages("transportMode.heading"),
+items = referenceDataResponse
+)
+
+@continueButton("base.saveAndContinue",Some(uk.gov.hmrc.emcstfefrontend.controllers.routes.ModeOfTransportController.onSubmit.url))
+@saveAndReturnButton()
+
+}
+
+@{
+    //$COVERAGE-OFF$
+}

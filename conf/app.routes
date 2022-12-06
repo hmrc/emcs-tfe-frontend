@@ -2,4 +2,6 @@
 
 ->         /hmrc-frontend           hmrcfrontend.Routes
 GET        /                        uk.gov.hmrc.emcstfefrontend.controllers.HelloWorldController.helloWorld
+GET        /mode-of-transport       uk.gov.hmrc.emcstfefrontend.controllers.ModeOfTransportController.modeOfTransport
+POST       /mode-of-transport       uk.gov.hmrc.emcstfefrontend.controllers.ModeOfTransportController.onSubmit
 GET        /assets/*file            controllers.Assets.versioned(path = "/public", file: Asset)

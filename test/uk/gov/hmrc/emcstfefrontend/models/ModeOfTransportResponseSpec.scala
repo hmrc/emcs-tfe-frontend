@@ -11,7 +11,7 @@
   package uk.gov.hmrc.emcstfefrontend.models
 
 import play.api.libs.json.{JsSuccess, Json}
-import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportModel
 import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.{validModeOfTransportJson, validModeOfTransportResponseModel1}
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
@@ -21,7 +21,7 @@ import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
     "ModeOfTransportResponse" should {
       "read from json" when {
         "the json is complete" in {
-          Json.fromJson[ModeOfTransportResponse](validModeOfTransportJson) shouldBe JsSuccess(validModeOfTransportResponseModel1)
+          Json.fromJson[ModeOfTransportModel](validModeOfTransportJson) shouldBe JsSuccess(validModeOfTransportResponseModel1)
         }
       }
       "write to json" when {
