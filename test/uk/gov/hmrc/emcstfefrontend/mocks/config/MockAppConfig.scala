@@ -16,6 +16,7 @@ trait MockAppConfig extends MockFactory {
     // MTD ID Lookup Config
     def referenceDataBaseUrl: CallHandler[String] = (mockAppConfig.referenceDataBaseUrl _: () => String).expects()
     def emcsTfeBaseUrl: CallHandler[String] = (mockAppConfig.emcsTfeBaseUrl _: () => String).expects()
+    def getReferenceDataStubFeatureSwitch: CallHandler[Boolean] = (mockAppConfig.getReferenceDataStubFeatureSwitch _: () => Boolean).expects()
   }
 
 }

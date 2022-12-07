@@ -6,25 +6,30 @@
 package uk.gov.hmrc.emcstfefrontend.services
 
 import play.api.Logger
+import uk.gov.hmrc.emcstfefrontend.config.AppConfig
 
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.emcstfefrontend.connectors.ReferenceDataConnector
-import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportListResponseModel}
+import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportListResponseModel, ModeOfTransportModel}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ModeOfTransportService @Inject()(referenceDataConnector: ReferenceDataConnector) {
+class ModeOfTransportService @Inject()(referenceDataConnector: ReferenceDataConnector, config: AppConfig) {
   lazy val logger: Logger = Logger(this.getClass)
 
   def getOtherDataReferenceList(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[ModeOfTransportListResponseModel] = {
-    referenceDataConnector.getOtherReferenceDataList().map {
-      case success: ModeOfTransportListModel =>
-        success
-      case error: ModeOfTransportErrorResponse =>
-        logger.error(s"[ModeOfTransportService][getOtherDataReferenceList] - Retrieved Other Data Reference List:\n\n$error")
-        error
+    if (config.getReferenceDataStubFeatureSwitch()) {
+      referenceDataConnector.getOtherReferenceDataList().map {
+        case success: ModeOfTransportListModel =>
+          success
+        case error: ModeOfTransportErrorResponse =>
+          logger.error(s"[ModeOfTransportService][getOtherDataReferenceList] - Retrieved Other Data Reference List:\n\n$error")
+          error
+      }
+    } else {
+      Future.successful(ModeOfTransportListModel(List(ModeOfTransportModel("TRANSPORTMODE", "999", "hard coded response" ))))
     }
   }
 }
