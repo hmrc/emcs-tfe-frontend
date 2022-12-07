@@ -17,6 +17,7 @@ trait AppConfig {
   def emcsTfeBaseUrl: String
 
   def welshLanguageSupportEnabled: Boolean
+  def getReferenceDataStubFeatureSwitch(): Boolean
 }
 
 @Singleton
@@ -30,4 +31,5 @@ class AppConfigImpl @Inject()(val servicesConfig: ServicesConfig, val config: Co
 
   def welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
+  def getReferenceDataStubFeatureSwitch(): Boolean = servicesConfig.getBoolean("feature-switch.enable-reference-data-stub-source")
 }
