@@ -5,14 +5,13 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers
 
-import cats.data.EitherT
 import play.api.http.Status
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
-import uk.gov.hmrc.emcstfefrontend.mocks.services.MockModeOfTransportService
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ReferenceDataResponse}
+import uk.gov.hmrc.emcstfefrontend.mocks.services.MockModeOfTransportService
+import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportErrorResponse
 import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.validModeOfTransportResponseListModel
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, ModeOfTransportPage}

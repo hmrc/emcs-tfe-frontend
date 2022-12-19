@@ -5,13 +5,13 @@
 
 package uk.gov.hmrc.emcstfefrontend.connectors
 
+import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.emcstfefrontend.config.AppConfig
 import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportListResponseModel, ReferenceDataResponse}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

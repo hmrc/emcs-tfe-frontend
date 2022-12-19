@@ -6,7 +6,7 @@
 package uk.gov.hmrc.emcstfefrontend.support
 
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportModel, ModeOfTransportListModel}
+import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportModel}
 
 object ModeOfTransportListFixture {
 

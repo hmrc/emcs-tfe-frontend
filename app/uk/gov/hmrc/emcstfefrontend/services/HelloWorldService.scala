@@ -7,10 +7,10 @@ package uk.gov.hmrc.emcstfefrontend.services
 
 import cats.data.EitherT
 import cats.implicits._
+import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.emcstfefrontend.connectors.{EmcsTfeConnector, ReferenceDataConnector}
 import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton

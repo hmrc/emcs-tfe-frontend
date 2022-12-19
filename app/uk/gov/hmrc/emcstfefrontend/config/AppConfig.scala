@@ -6,7 +6,6 @@
 package uk.gov.hmrc.emcstfefrontend.config
 
 import com.google.inject.ImplementedBy
-
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig

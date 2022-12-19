@@ -13,7 +13,7 @@
 
   import play.api.libs.json.{JsSuccess, Json}
   import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportModel}
-  import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.{modeOfTransportError, modeOfTransportErrorJson, validModeOfTransportListJson, validModeOfTransportResponseListModel, validModeOfTransportResponseModel1, validModeOfTransportResponseModel2}
+  import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture._
   import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 
