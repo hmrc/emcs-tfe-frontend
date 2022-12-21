@@ -9,16 +9,19 @@
 
 @()
 
-
 @govukSummaryList(SummaryList(
-rows = Seq(
-SummaryListRow(
-key = Key(
-content = Text("Test Key")
-),
-value = Value(
-content = Text("Test Value")
-)
-)
-)
-))
+    rows = Seq(
+     SummaryListRow(
+      key = Key(
+       content = Text("Test Key")
+      ),
+      value = Value(
+       content = Text("Test Value")
+      )
+     )
+    )
+ ))
+
+@{
+//$COVERAGE-OFF$
+}
