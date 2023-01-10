@@ -1,0 +1,26 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ *@
+
+@import uk.gov.hmrc.emcstfefrontend.views.html.components._
+
+@this(
+        layout: Layout,
+        summaryList : summary_list
+)
+
+@(
+
+)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some("Movement details")) {
+    <span class="govuk-caption-l">Administrative reference code</span>
+    <h1 class="govuk-heading-xl">XXX</h1>
+    <h2 class="govuk-heading-l">Summary</h2>
+@summaryList()
+}
+
+@{
+    //$COVERAGE-OFF$
+}

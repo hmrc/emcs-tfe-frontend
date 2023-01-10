@@ -1,14 +1,13 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  */
 
 package uk.gov.hmrc.emcstfefrontend.services
 
+import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import uk.gov.hmrc.emcstfefrontend.config.AppConfig
-
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.emcstfefrontend.connectors.ReferenceDataConnector
 import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportListResponseModel, ModeOfTransportModel}
 import uk.gov.hmrc.http.HeaderCarrier

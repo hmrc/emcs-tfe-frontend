@@ -1,0 +1,27 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(govukSummaryList : GovukSummaryList)
+
+@()
+
+@govukSummaryList(SummaryList(
+    rows = Seq(
+     SummaryListRow(
+      key = Key(
+       content = Text("Test Key")
+      ),
+      value = Value(
+       content = Text("Test Value")
+      )
+     )
+    )
+ ))
+
+@{
+//$COVERAGE-OFF$
+}
