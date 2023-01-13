@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.emcstfefrontend.models.response
 
-import play.api.libs.json.{Json, OWrites}
-
 trait ErrorResponse {
   val message: String
 }

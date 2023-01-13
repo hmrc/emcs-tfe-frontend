@@ -17,8 +17,9 @@
 package uk.gov.hmrc.emcstfefrontend.models.response
 
 import play.api.libs.json.{Json, OFormat}
+
 import java.time.LocalDate
-import java.time.format.{DateTimeFormatter, FormatStyle}
+import java.time.format.DateTimeFormatter
 
 
 case class GetMovementResponse(
@@ -30,7 +31,7 @@ case class GetMovementResponse(
                                 numberOfItems: Int
                               ) {
   def formattedDateOfDispatch: String = {
-    val f = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+    val f = DateTimeFormatter.ofPattern("dd MMMM yyyy")
     f.format(dateOfDispatch)
   }
 }
