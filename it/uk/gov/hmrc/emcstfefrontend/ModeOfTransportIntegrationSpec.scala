@@ -22,11 +22,11 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import uk.gov.hmrc.emcstfefrontend.stubs.DownstreamStub
 import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
-import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.validModeOfTransportListJson
+import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 
 import scala.xml.Elem
 
-class ModeOfTransportControllerIntegrationSpec extends IntegrationBaseSpec {
+class ModeOfTransportIntegrationSpec extends IntegrationBaseSpec with ModeOfTransportListFixture {
 
 
   private trait Test {

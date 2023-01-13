@@ -22,6 +22,7 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.emcstfefrontend.mocks.services.MockHelloWorldService
+import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse.UnexpectedDownstreamResponseError
 import uk.gov.hmrc.emcstfefrontend.models.response.{EmcsTfeResponse, ReferenceDataResponse}
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, HelloWorldPage}
@@ -62,14 +63,14 @@ class HelloWorldControllerSpec extends UnitSpec with MockHelloWorldService {
     "return 500" when {
       "service returns a Left" in new Test {
 
-        MockService.getMessage().returns(EitherT.fromEither[Future](Left("error message")))
+        MockService.getMessage().returns(EitherT.fromEither[Future](Left(UnexpectedDownstreamResponseError)))
 
         val result = controller.helloWorld()(fakeRequest)
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
         contentAsString(result) should include("Something went wrong!")
         contentAsString(result) should include("Oh no!")
-        contentAsString(result) should include("error message")
+        contentAsString(result) should include("Unexpected downstream response status")
       }
     }
   }

@@ -20,16 +20,17 @@ import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockHttpClient
+import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse.{JsonValidationError, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.emcstfefrontend.models.response.{EmcsTfeResponse, ModeOfTransportErrorResponse, ReferenceDataResponse}
-import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.{validModeOfTransportListJson, validModeOfTransportResponseListModel}
+import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReferenceDataConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames with MockAppConfig with MockHttpClient {
+class ReferenceDataConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames with ModeOfTransportListFixture {
 
-  trait Test {
+  trait Test extends MockAppConfig with MockHttpClient {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
@@ -59,14 +60,14 @@ class ReferenceDataConnectorSpec extends UnitSpec with Status with MimeTypes wit
 
         MockHttpClient.get(s"$baseUrl/hello-world").returns(Future.successful(response))
 
-        await(connector.getMessage()) shouldBe Left("JSON validation error")
+        await(connector.getMessage()) shouldBe Left(JsonValidationError)
       }
       "downstream call is unsuccessful" in new Test {
         val response = HttpResponse(status = Status.INTERNAL_SERVER_ERROR, json = Json.toJson(ReferenceDataResponse("test message")), headers = Map.empty)
 
         MockHttpClient.get(s"$baseUrl/hello-world").returns(Future.successful(response))
 
-        await(connector.getMessage()) shouldBe Left("Unexpected downstream response status")
+        await(connector.getMessage()) shouldBe Left(UnexpectedDownstreamResponseError)
       }
     }
   }

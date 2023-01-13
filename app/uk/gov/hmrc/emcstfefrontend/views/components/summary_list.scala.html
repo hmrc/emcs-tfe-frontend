@@ -16,23 +16,36 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(govukSummaryList : GovukSummaryList)
+@this(govukSummaryList: GovukSummaryList)
 
-@()
+@(
+        list: Seq[(String, String)]
+)
 
 @govukSummaryList(SummaryList(
-    rows = Seq(
-     SummaryListRow(
-      key = Key(
-       content = Text("Test Key")
-      ),
-      value = Value(
-       content = Text("Test Value")
-      )
-     )
-    )
- ))
+    //    rows = Seq(
+    //     SummaryListRow(
+    //      key = Key(
+    //       content = Text("Test Key")
+    //      ),
+    //      value = Value(
+    //       content = Text("Test Value")
+    //      )
+    //     )
+    //    )
+    rows = list.map {
+        case (key, value) =>
+            SummaryListRow(
+                key = Key(
+                    content = Text(key)
+                ),
+                value = Value(
+                    content = Text(value)
+                )
+            )
+    }
+))
 
 @{
-//$COVERAGE-OFF$
+    //$COVERAGE-OFF$
 }

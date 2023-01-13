@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.support
+package uk.gov.hmrc.emcstfefrontend.fixtures
 
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportModel}
 
-object ModeOfTransportListFixture {
+trait ModeOfTransportListFixture {
 
   val validModeOfTransportJson: JsValue = Json.parse(
     """

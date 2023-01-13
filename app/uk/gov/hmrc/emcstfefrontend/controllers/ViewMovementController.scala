@@ -16,23 +16,29 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
+import uk.gov.hmrc.emcstfefrontend.connectors.EmcsTfeConnector
+import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, ViewMovementPage}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class ViewMovementController @Inject()(
                                       mcc: MessagesControllerComponents,
+                                      connector: EmcsTfeConnector,
                                       viewMovementPage: ViewMovementPage,
+                                      errorPage: ErrorTemplate,
                                       implicit val executionContext: ExecutionContext)
   extends FrontendController(mcc) {
 
-  def viewMovement(): Action[AnyContent] = Action.async {
+  def viewMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] = Action.async {
     implicit request => {
-      Future.successful(Ok(viewMovementPage()))
+      connector.getMovement(exciseRegistrationNumber = exciseRegistrationNumber, arc = arc).map {
+        case Left(value) => InternalServerError(errorPage("Something went wrong!", "Oh no!", value.message))
+        case Right(value) => Ok(viewMovementPage(arc, value))
+      }
     }
   }
 }

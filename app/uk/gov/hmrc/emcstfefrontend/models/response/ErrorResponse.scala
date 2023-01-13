@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend
+package uk.gov.hmrc.emcstfefrontend.models.response
 
-import cats.data.EitherT
-import uk.gov.hmrc.emcstfefrontend.models.response.{EmcsTfeResponse, ReferenceDataResponse}
+import play.api.libs.json.{Json, OWrites}
 
-import scala.concurrent.Future
+trait ErrorResponse {
+  val message: String
+}
 
-package object services {
-  type HelloWorldResponse = EitherT[Future, String, (ReferenceDataResponse, EmcsTfeResponse)]
+object ErrorResponse {
+
+  object UnexpectedDownstreamResponseError extends ErrorResponse {
+    val message = "Unexpected downstream response status"
+  }
+
+  object JsonValidationError extends ErrorResponse {
+    val message = "JSON validation error"
+  }
+
 }

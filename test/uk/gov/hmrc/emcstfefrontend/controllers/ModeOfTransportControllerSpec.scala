@@ -23,16 +23,16 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.emcstfefrontend.mocks.services.MockModeOfTransportService
 import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportErrorResponse
-import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.validModeOfTransportResponseListModel
+import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, ModeOfTransportPage}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ModeOfTransportControllerSpec extends UnitSpec with MockModeOfTransportService {
+class ModeOfTransportControllerSpec extends UnitSpec with ModeOfTransportListFixture {
 
-  trait Test {
+  trait Test extends MockModeOfTransportService {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")

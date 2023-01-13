@@ -38,7 +38,7 @@ class HelloWorldController @Inject()(
       case (referenceDataResponse, emcsTfeResponse) => Ok(helloWorldPage(referenceDataResponse, emcsTfeResponse))
     }
 
-    response.leftMap(value => InternalServerError(errorPage("Something went wrong!", "Oh no!", value))).merge
+    response.leftMap(value => InternalServerError(errorPage("Something went wrong!", "Oh no!", value.message))).merge
   }
 
 }

@@ -20,15 +20,15 @@ import play.api.http.Status.INTERNAL_SERVER_ERROR
 import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.{MockEmcsTfeConnector, MockReferenceDataConnector}
 import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportModel}
-import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.validModeOfTransportResponseListModel
+import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ModeOfTransportServiceSpec extends UnitSpec with MockReferenceDataConnector with MockEmcsTfeConnector with MockAppConfig {
+class ModeOfTransportServiceSpec extends UnitSpec with ModeOfTransportListFixture {
 
-  trait Test {
+  trait Test extends MockReferenceDataConnector with MockEmcsTfeConnector with MockAppConfig {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 

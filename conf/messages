@@ -4,4 +4,15 @@ service.text = This is your new service
 base.saveAndContinue = Save and continue
 base.saveMovement    = Save and return to movement
 
+common.arc = Administrative reference code
+
 transportMode.heading   =   How will this movement be transported?
+
+viewMovement.title = Movement details
+viewMovement.heading = Summary
+viewMovement.lrn = Local Reference Number (LRN)
+viewMovement.eadStatus = e-AD status
+viewMovement.consignor = Consignor
+viewMovement.dateOfDispatch = Date of dispatch
+viewMovement.journeyTime = Journey time
+viewMovement.numberOfItems = Number of items
