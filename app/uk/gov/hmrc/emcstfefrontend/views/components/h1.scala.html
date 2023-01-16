@@ -13,29 +13,11 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *@
-@import uk.gov.hmrc.govukfrontend.views.html.components._
+@this()
 
-@this(govukRadios: GovukRadios)
+@(msg: String, classes: String = "govuk-heading-xl", id: Option[String] = None)
 
-@(legend: String, items: Seq[(String, String)])
-
-@govukRadios(Radios(
-    fieldset = Some(Fieldset(
-        legend = Some(Legend(
-            content = Text(legend),
-            classes = "govuk-fieldset__legend--l",
-            isPageHeading = true
-        ))
-    )),
-    idPrefix = Some("mode-of-transport"),
-    name = "mode-of-transport",
-    items = items map { case (value: String, label: String) =>
-        RadioItem(
-            content = Text(label),
-            value = Some(value)
-        )
-    })
-)
+<h1 @id.map(value => s"id=$value") class="@classes">@msg</h1>
 
 @{
     //$COVERAGE-OFF$

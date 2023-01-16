@@ -36,8 +36,8 @@ class ModeOfTransportPageViewSpec extends UnitSpec {
 
   "The ModeOfTransportPage view" should {
 
-    val heading =  "How will this movement be transported?"
-    val testData = Seq(("1", "test selection"),("0", "Other"))
+    val heading = "How will this movement be transported?"
+    val testData = Seq(("1", "test selection"), ("0", "Other"))
     lazy val page: Html = modeOfTransportPage(testData)(FakeRequest(), implicitly)
     lazy val document: Document = Jsoup.parse(contentAsString(page))
 

@@ -23,16 +23,6 @@
 )
 
 @govukSummaryList(SummaryList(
-    //    rows = Seq(
-    //     SummaryListRow(
-    //      key = Key(
-    //       content = Text("Test Key")
-    //      ),
-    //      value = Value(
-    //       content = Text("Test Value")
-    //      )
-    //     )
-    //    )
     rows = list.map {
         case (key, value) =>
             SummaryListRow(
