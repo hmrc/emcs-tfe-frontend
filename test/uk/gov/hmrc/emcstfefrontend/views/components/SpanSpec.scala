@@ -18,7 +18,6 @@ package uk.gov.hmrc.emcstfefrontend.views.components
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.BeforeAndAfterAll
 import play.twirl.api.Html
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.components.span

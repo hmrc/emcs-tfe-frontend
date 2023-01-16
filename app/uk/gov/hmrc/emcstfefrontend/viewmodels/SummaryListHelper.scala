@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.emcstfefrontend.viewmodels.SummaryListHelper
+package uk.gov.hmrc.emcstfefrontend.viewmodels
 
-@this(
-        govukSummaryList: GovukSummaryList,
-        helper: SummaryListHelper
-)
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 
-@(
-        list: Seq[(String, String)]
-)
-
-@govukSummaryList(helper.render(list))
-
-@{
-    //$COVERAGE-OFF$
+class SummaryListHelper {
+  def render(list: Seq[(String, String)]): SummaryList = SummaryList(
+    list.map {
+      case (key, value) => SummaryListRow(
+        key = Key(
+          content = Text(key)
+        ),
+        value = Value(
+          content = Text(value)
+        )
+      )
+    }
+  )
 }
