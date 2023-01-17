@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response
+package uk.gov.hmrc.emcstfefrontend.utils
 
-sealed trait ErrorResponse {
-  val message: String
-}
+import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
-case object UnexpectedDownstreamResponseError extends ErrorResponse {
-  val message = "Unexpected downstream response status"
-}
+import java.time.LocalDate
 
-case object JsonValidationError extends ErrorResponse {
-  val message = "JSON validation error"
+class DateUtilsSpec extends UnitSpec {
+
+  trait Test extends DateUtils
+
+  "formatDateForUIOutput" should {
+    "format the date in the correct format" in new Test {
+      val unformattedDate: LocalDate = LocalDate.parse("2010-03-04")
+
+      unformattedDate.formatDateForUIOutput() shouldBe "04 March 2010"
+    }
+  }
 }

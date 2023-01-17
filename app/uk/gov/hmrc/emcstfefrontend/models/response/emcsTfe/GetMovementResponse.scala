@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response
+package uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe
 
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.emcstfefrontend.utils.DateUtils
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 
 case class GetMovementResponse(
@@ -29,11 +29,8 @@ case class GetMovementResponse(
                                 dateOfDispatch: LocalDate,
                                 journeyTime: String,
                                 numberOfItems: Int
-                              ) {
-  def formattedDateOfDispatch: String = {
-    val f = DateTimeFormatter.ofPattern("dd MMMM yyyy")
-    f.format(dateOfDispatch)
-  }
+                              ) extends DateUtils {
+  def formattedDateOfDispatch: String = dateOfDispatch.formatDateForUIOutput()
 }
 
 object GetMovementResponse {

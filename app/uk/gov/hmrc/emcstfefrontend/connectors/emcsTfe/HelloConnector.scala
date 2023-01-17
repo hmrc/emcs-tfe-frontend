@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.mocks.services
+package uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe
 
-import org.scalamock.handlers.CallHandler2
-import org.scalamock.scalatest.MockFactory
+import play.api.libs.json.Reads
+import uk.gov.hmrc.emcstfefrontend.config.AppConfig
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.EmcsTfeResponse
-import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.ReferenceDataResponse
-import uk.gov.hmrc.emcstfefrontend.services.HelloWorldService
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockHelloWorldService extends MockFactory {
-  lazy val mockService: HelloWorldService = mock[HelloWorldService]
+@Singleton
+class HelloConnector @Inject()(val http: HttpClient,
+                               config: AppConfig) extends EmcsTfeHttpParser[EmcsTfeResponse] {
 
-  object MockService {
-    def getMessage(): CallHandler2[HeaderCarrier, ExecutionContext, Future[(ReferenceDataResponse, EmcsTfeResponse)]] = {
-      (mockService.getMessage()(_: HeaderCarrier, _: ExecutionContext))
-        .expects(*, *)
-    }
+  override implicit val reads: Reads[EmcsTfeResponse] = EmcsTfeResponse.format
+
+  lazy val baseUrl: String = config.emcsTfeBaseUrl
+
+  def hello()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[EmcsTfeResponse] = {
+    def helloUrl(): String = s"$baseUrl/hello-world"
+
+    get(helloUrl())
   }
 }

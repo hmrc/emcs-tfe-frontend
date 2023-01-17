@@ -22,7 +22,7 @@
 package uk.gov.hmrc.emcstfefrontend.models
 
 import play.api.libs.json.{JsSuccess, JsValue, Json}
-import uk.gov.hmrc.emcstfefrontend.models.response.GetMovementResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 import java.time.LocalDate

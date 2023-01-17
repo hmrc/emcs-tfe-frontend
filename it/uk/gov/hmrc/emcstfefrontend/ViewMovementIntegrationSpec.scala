@@ -78,7 +78,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTranspo
 
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
-        response.body should include("Something went wrong!")
+        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
 
       "downstream call returns something other than JSON" in new Test {
@@ -91,7 +91,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTranspo
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
         response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
-        response.body should include("Something went wrong!")
+        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
       "downstream call returns a non-200 HTTP response" in new Test {
         val emcsTfeResponseBody: JsValue = Json.parse(
@@ -108,7 +108,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTranspo
 
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
-        response.body should include("Something went wrong!")
+        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
     }
   }

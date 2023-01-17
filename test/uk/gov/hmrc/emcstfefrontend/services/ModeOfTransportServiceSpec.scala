@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.emcstfefrontend.services
 
-import play.api.http.Status.INTERNAL_SERVER_ERROR
+import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.{MockEmcsTfeConnector, MockReferenceDataConnector}
-import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportModel}
-import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
+import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.{ModeOfTransportListModel, ModeOfTransportModel}
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -33,7 +32,7 @@ class ModeOfTransportServiceSpec extends UnitSpec with ModeOfTransportListFixtur
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
     val service: ModeOfTransportService = new ModeOfTransportService(
-      mockReferenceDataConnector,
+      mockGetOtherReferenceDataListConnector,
       mockAppConfig
     )
   }
@@ -47,14 +46,6 @@ class ModeOfTransportServiceSpec extends UnitSpec with ModeOfTransportListFixtur
           MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(validModeOfTransportResponseListModel))
 
           await(service.getOtherDataReferenceList(hc, ec)) shouldBe validModeOfTransportResponseListModel
-        }
-      }
-      "return a un - successful other reference data list" when {
-        "reference data connector returns a failure" in new Test {
-          MockedAppConfig.getReferenceDataStubFeatureSwitch.returns(true)
-          MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(ModeOfTransportErrorResponse(INTERNAL_SERVER_ERROR, "issue encountered")))
-
-          await(service.getOtherDataReferenceList(hc, ec)) shouldBe ModeOfTransportErrorResponse(INTERNAL_SERVER_ERROR, "issue encountered")
         }
       }
     }

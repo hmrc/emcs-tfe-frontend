@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response
+package uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe
 
-sealed trait ErrorResponse {
-  val message: String
-}
+import play.api.libs.json.{Json, OFormat}
 
-case object UnexpectedDownstreamResponseError extends ErrorResponse {
-  val message = "Unexpected downstream response status"
-}
+case class EmcsTfeResponse(message: String)
 
-case object JsonValidationError extends ErrorResponse {
-  val message = "JSON validation error"
+object EmcsTfeResponse {
+  implicit val format: OFormat[EmcsTfeResponse] = Json.format
 }

@@ -18,23 +18,24 @@ package uk.gov.hmrc.emcstfefrontend.mocks.connectors
 
 import org.scalamock.handlers.CallHandler2
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.emcstfefrontend.connectors.ReferenceDataConnector
-import uk.gov.hmrc.emcstfefrontend.models.response.{ErrorResponse, ModeOfTransportListResponseModel, ReferenceDataResponse}
+import uk.gov.hmrc.emcstfefrontend.connectors.referenceData.{GetOtherReferenceDataListConnector, HelloConnector}
+import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.{ModeOfTransportListModel, ReferenceDataResponse}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait MockReferenceDataConnector extends MockFactory {
-  lazy val mockReferenceDataConnector: ReferenceDataConnector = mock[ReferenceDataConnector]
+  lazy val mockReferenceDataHelloConnector: HelloConnector = mock[HelloConnector]
+  lazy val mockGetOtherReferenceDataListConnector: GetOtherReferenceDataListConnector = mock[GetOtherReferenceDataListConnector]
 
   object MockReferenceDataConnector {
-    def getMessage(): CallHandler2[HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, ReferenceDataResponse]]] = {
-      (mockReferenceDataConnector.getMessage()(_: HeaderCarrier, _: ExecutionContext))
+    def hello(): CallHandler2[HeaderCarrier, ExecutionContext, Future[ReferenceDataResponse]] = {
+      (mockReferenceDataHelloConnector.hello()(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
     }
 
-    def getOtherReferenceDataList(): CallHandler2[HeaderCarrier, ExecutionContext, Future[ModeOfTransportListResponseModel]] = {
-      (mockReferenceDataConnector.getOtherReferenceDataList()(_: HeaderCarrier, _: ExecutionContext))
+    def getOtherReferenceDataList(): CallHandler2[HeaderCarrier, ExecutionContext, Future[ModeOfTransportListModel]] = {
+      (mockGetOtherReferenceDataListConnector.getOtherReferenceDataList()(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
     }
   }

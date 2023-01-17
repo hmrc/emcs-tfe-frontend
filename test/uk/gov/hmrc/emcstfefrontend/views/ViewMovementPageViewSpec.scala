@@ -27,7 +27,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.contentAsString
 import play.twirl.api.Html
-import uk.gov.hmrc.emcstfefrontend.models.response.GetMovementResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 

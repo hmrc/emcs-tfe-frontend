@@ -21,10 +21,9 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
-import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse.UnexpectedDownstreamResponseError
-import uk.gov.hmrc.emcstfefrontend.models.response.GetMovementResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
-import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, ViewMovementPage}
+import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate
@@ -39,9 +38,8 @@ class ViewMovementControllerSpec extends UnitSpec {
 
     val controller: ViewMovementController = new ViewMovementController(
       app.injector.instanceOf[MessagesControllerComponents],
-      mockEmcsTfeConnector,
+      mockGetMovementConnector,
       app.injector.instanceOf[ViewMovementPage],
-      app.injector.instanceOf[ErrorTemplate],
       ec
     )
   }
@@ -56,26 +54,11 @@ class ViewMovementControllerSpec extends UnitSpec {
 
         MockEmcsTfeConnector
           .getMovement()
-          .returns(Future.successful(Right(model)))
+          .returns(Future.successful(model))
 
         val result: Future[Result] = controller.viewMovement(ern, arc)(fakeRequest)
 
         status(result) shouldBe Status.OK
-      }
-    }
-    "connector call is unsuccessful" should {
-      "return 500" in new Test {
-
-        val ern = "ERN"
-        val arc = "ARC"
-
-        MockEmcsTfeConnector
-          .getMovement()
-          .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
-
-        val result: Future[Result] = controller.viewMovement(ern, arc)(fakeRequest)
-
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
     }
   }

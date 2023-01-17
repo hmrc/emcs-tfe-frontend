@@ -23,8 +23,8 @@
 
 
   import play.api.libs.json.{JsSuccess, Json}
-  import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportModel}
   import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
+  import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.{ModeOfTransportListModel, ModeOfTransportModel}
   import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 
@@ -61,14 +61,5 @@
         }
       }
 
-    }
-    "ModeOfTransportResponseError" should {
-      "read from json" when {
-
-        "the json is complete" in {
-          Json.fromJson[ModeOfTransportErrorResponse](modeOfTransportErrorJson) shouldBe JsSuccess(modeOfTransportError)
-        }
-
-      }
     }
   }

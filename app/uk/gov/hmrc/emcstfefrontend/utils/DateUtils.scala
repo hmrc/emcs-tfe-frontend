@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response
+package uk.gov.hmrc.emcstfefrontend.utils
 
-sealed trait ErrorResponse {
-  val message: String
-}
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-case object UnexpectedDownstreamResponseError extends ErrorResponse {
-  val message = "Unexpected downstream response status"
-}
-
-case object JsonValidationError extends ErrorResponse {
-  val message = "JSON validation error"
+trait DateUtils {
+  implicit class LocaDateExtensions(date: LocalDate) {
+    def formatDateForUIOutput(): String = {
+      val f = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+      f.format(date)
+    }
+  }
 }

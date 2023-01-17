@@ -86,7 +86,7 @@ class HelloWorldIntegrationSpec extends IntegrationBaseSpec {
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
         response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
-        response.body should include("JSON validation error")
+        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
       "downstream call returns something other than JSON" in new Test {
         val referenceDataResponseBody: Elem = <message>test message</message>
@@ -98,7 +98,7 @@ class HelloWorldIntegrationSpec extends IntegrationBaseSpec {
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
         response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
-        response.body should include("JSON validation error")
+        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
       "downstream call returns a non-200 HTTP response" in new Test {
         val referenceDataResponseBody: JsValue = Json.parse(
@@ -116,7 +116,7 @@ class HelloWorldIntegrationSpec extends IntegrationBaseSpec {
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
         response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
-        response.body should include("Unexpected downstream response status")
+        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
     }
   }

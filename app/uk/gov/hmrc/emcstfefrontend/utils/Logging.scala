@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response
+package uk.gov.hmrc.emcstfefrontend.utils
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.Logger
 
-case class ModeOfTransportModel(typeName: String, code: String, description: String)
-
-object ModeOfTransportModel {
-  implicit val format: OFormat[ModeOfTransportModel] = Json.format
+trait Logging {
+  lazy val logger: Logger = Logger(this.getClass)
 }

@@ -17,13 +17,11 @@
 package uk.gov.hmrc.emcstfefrontend.controllers
 
 import play.api.http.Status
-import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.emcstfefrontend.mocks.services.MockModeOfTransportService
-import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportErrorResponse
 import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
+import uk.gov.hmrc.emcstfefrontend.mocks.services.MockModeOfTransportService
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, ModeOfTransportPage}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -47,7 +45,7 @@ class ModeOfTransportControllerSpec extends UnitSpec with ModeOfTransportListFix
     )
   }
 
-  "GET /" should {
+  "GET /mode-of-transport" should {
     "return 200" when {
       "service returns a success full model" in new Test {
 
@@ -58,25 +56,14 @@ class ModeOfTransportControllerSpec extends UnitSpec with ModeOfTransportListFix
         status(result) shouldBe Status.OK
       }
     }
-    "return 500" when {
-      "service returns a un-succesful model" in new Test {
+  }
+  "POST /mode-of-transport" should {
+    "return 303" when {
+      "service returns a Right" in new Test {
 
-        MockService.getOtherDataReferenceList().returns(Future.successful(ModeOfTransportErrorResponse(INTERNAL_SERVER_ERROR, "issue encountered")))
+        val result = controller.onSubmit()(postRequest)
 
-        val result = controller.modeOfTransport()(fakeRequest)
-
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-
-      }
-    }
-    "POST /" should {
-      "return 303" when {
-        "service returns a Right" in new Test {
-
-          val result = controller.onSubmit()(postRequest)
-
-          status(result) shouldBe Status.SEE_OTHER
-        }
+        status(result) shouldBe Status.SEE_OTHER
       }
     }
   }
