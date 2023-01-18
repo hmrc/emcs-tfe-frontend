@@ -33,7 +33,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTranspo
     def setupStubs(): StubMapping
 
     def uri: String = "/consignment/my-ern/my-arc"
-    def emcsTfeUri: String = s"/emcs-tfe/get-movement/my-ern/my-arc"
+    def emcsTfeUri: String = s"/emcs-tfe/movement/my-ern/my-arc"
 
     def request(): WSRequest = {
       setupStubs()
