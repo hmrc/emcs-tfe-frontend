@@ -18,6 +18,7 @@ package uk.gov.hmrc.emcstfefrontend.connectors.referenceData
 
 import play.api.libs.json.Reads
 import uk.gov.hmrc.emcstfefrontend.config.AppConfig
+import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse
 import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.ModeOfTransportListModel
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -32,7 +33,7 @@ class GetOtherReferenceDataListConnector @Inject()(val http: HttpClient,
 
   override implicit val reads: Reads[ModeOfTransportListModel] = ModeOfTransportListModel.format
 
-  def getOtherReferenceDataList()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[ModeOfTransportListModel] = {
+  def getOtherReferenceDataList()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, ModeOfTransportListModel]] = {
     def getOtherReferenceDataListUrl(): String = s"$baseUrl/other-reference-data-list"
 
     get(getOtherReferenceDataListUrl())

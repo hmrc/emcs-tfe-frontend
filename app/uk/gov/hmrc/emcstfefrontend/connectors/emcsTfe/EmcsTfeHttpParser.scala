@@ -18,30 +18,30 @@ package uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe
 
 import play.api.http.Status.OK
 import uk.gov.hmrc.emcstfefrontend.connectors.BaseConnectorUtils
-import uk.gov.hmrc.emcstfefrontend.models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
+import uk.gov.hmrc.emcstfefrontend.models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
-
   def http: HttpClient
 
-  implicit object EmcsTfeReads extends HttpReads[A] {
-    override def read(method: String, url: String, response: HttpResponse): A = {
+  implicit object EmcsTfeReads extends HttpReads[Either[ErrorResponse, A]] {
+    override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, A] = {
       response.status match {
         case OK => response.validateJson match {
-          case Some(valid) => valid
+          case Some(valid) => Right(valid)
           case None =>
             logger.warn(s"[EmcsTfeHttpParser][read] Bad JSON response from emcs-tfe")
-            throw new Exception(s"[EmcsTfeHttpParser][read] ${JsonValidationError.message}")
+            Left(JsonValidationError)
         }
         case status =>
           logger.warn(s"[EmcsTfeHttpParser][read] Unexpected status from emcs-tfe: $status")
-          throw new Exception(s"[EmcsTfeHttpParser][read] ${UnexpectedDownstreamResponseError.message}")
+          Left(UnexpectedDownstreamResponseError)
       }
     }
   }
 
-  def get(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] = http.GET[A](url)(EmcsTfeReads, hc, ec)
+  def get(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
+    http.GET[Either[ErrorResponse, A]](url)(EmcsTfeReads, hc, ec)
 }

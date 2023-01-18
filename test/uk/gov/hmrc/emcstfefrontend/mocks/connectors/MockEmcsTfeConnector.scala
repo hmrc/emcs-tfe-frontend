@@ -19,6 +19,7 @@ package uk.gov.hmrc.emcstfefrontend.mocks.connectors
 import org.scalamock.handlers.{CallHandler2, CallHandler4}
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.{GetMovementConnector, HelloConnector}
+import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{EmcsTfeResponse, GetMovementResponse}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -29,11 +30,11 @@ trait MockEmcsTfeConnector extends MockFactory {
   lazy val mockGetMovementConnector: GetMovementConnector = mock[GetMovementConnector]
 
   object MockEmcsTfeConnector {
-    def hello(): CallHandler2[HeaderCarrier, ExecutionContext, Future[EmcsTfeResponse]] = {
+    def hello(): CallHandler2[HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, EmcsTfeResponse]]] = {
       (mockEmcsHelloConnector.hello()(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
     }
-    def getMovement(): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[GetMovementResponse]] = {
+    def getMovement(): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementResponse]]] = {
       (mockGetMovementConnector.getMovement(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *, *, *)
     }

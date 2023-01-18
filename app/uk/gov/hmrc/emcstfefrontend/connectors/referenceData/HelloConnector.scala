@@ -18,6 +18,7 @@ package uk.gov.hmrc.emcstfefrontend.connectors.referenceData
 
 import play.api.libs.json.Reads
 import uk.gov.hmrc.emcstfefrontend.config.AppConfig
+import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse
 import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.ReferenceDataResponse
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -32,7 +33,7 @@ class HelloConnector @Inject()(val http: HttpClient,
 
   override implicit val reads: Reads[ReferenceDataResponse] = ReferenceDataResponse.format
 
-  def hello()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[ReferenceDataResponse] = {
+  def hello()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, ReferenceDataResponse]] = {
     def referenceDataUrl(): String = s"$baseUrl/hello-world"
 
     get(referenceDataUrl())

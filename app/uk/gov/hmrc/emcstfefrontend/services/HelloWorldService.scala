@@ -16,8 +16,10 @@
 
 package uk.gov.hmrc.emcstfefrontend.services
 
+import cats.data.EitherT
 import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.{HelloConnector => HelloEmcsConnector}
 import uk.gov.hmrc.emcstfefrontend.connectors.referenceData.{HelloConnector => HelloReferenceDataConnector}
+import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.EmcsTfeResponse
 import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.ReferenceDataResponse
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,8 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class HelloWorldService @Inject()(helloReferenceDataConnector: HelloReferenceDataConnector, helloEmcsConnector: HelloEmcsConnector) {
-  def getMessage()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[(ReferenceDataResponse, EmcsTfeResponse)] = for {
-    referenceDataResponse <- helloReferenceDataConnector.hello()
-    emcsTfeResponse <- helloEmcsConnector.hello()
+  def getMessage()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): EitherT[Future, ErrorResponse, (ReferenceDataResponse, EmcsTfeResponse)] = for {
+    referenceDataResponse <- EitherT(helloReferenceDataConnector.hello())
+    emcsTfeResponse <- EitherT(helloEmcsConnector.hello())
   } yield (referenceDataResponse, emcsTfeResponse)
 }

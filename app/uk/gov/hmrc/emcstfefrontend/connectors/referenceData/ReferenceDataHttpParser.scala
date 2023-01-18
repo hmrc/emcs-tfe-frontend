@@ -18,7 +18,7 @@ package uk.gov.hmrc.emcstfefrontend.connectors.referenceData
 
 import play.api.http.Status.OK
 import uk.gov.hmrc.emcstfefrontend.connectors.BaseConnectorUtils
-import uk.gov.hmrc.emcstfefrontend.models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
+import uk.gov.hmrc.emcstfefrontend.models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -27,21 +27,21 @@ trait ReferenceDataHttpParser[A] extends BaseConnectorUtils[A] {
 
   def http: HttpClient
 
-  implicit object ReferenceDataReads extends HttpReads[A] {
-    override def read(method: String, url: String, response: HttpResponse): A = {
+  implicit object ReferenceDataReads extends HttpReads[Either[ErrorResponse, A]] {
+    override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, A] = {
       response.status match {
         case OK => response.validateJson match {
-          case Some(valid) => valid
+          case Some(valid) => Right(valid)
           case None =>
             logger.warn(s"[ReferenceDataHttpParser][read] Bad JSON response from reference-data")
-            throw new Exception(s"[ReferenceDataHttpParser][read] ${JsonValidationError.message}")
+            Left(JsonValidationError)
         }
         case status =>
           logger.warn(s"[ReferenceDataHttpParser][read] Unexpected status from reference-data: $status")
-          throw new Exception(s"[ReferenceDataHttpParser][read] ${UnexpectedDownstreamResponseError.message}")
+          Left(UnexpectedDownstreamResponseError)
       }
     }
   }
 
-  def get(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] = http.GET[A](url)(ReferenceDataReads, hc, ec)
+  def get(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] = http.GET[Either[ErrorResponse, A]](url)(ReferenceDataReads, hc, ec)
 }

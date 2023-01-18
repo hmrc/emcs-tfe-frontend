@@ -20,10 +20,12 @@ import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 import uk.gov.hmrc.emcstfefrontend.mocks.services.MockModeOfTransportService
+import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
-import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, ModeOfTransportPage}
+import uk.gov.hmrc.emcstfefrontend.views.html.ModeOfTransportPage
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,7 +42,7 @@ class ModeOfTransportControllerSpec extends UnitSpec with ModeOfTransportListFix
       app.injector.instanceOf[MessagesControllerComponents],
       mockService,
       app.injector.instanceOf[ModeOfTransportPage],
-      app.injector.instanceOf[ErrorTemplate],
+      app.injector.instanceOf[ErrorHandler],
       ec
     )
   }
@@ -49,11 +51,22 @@ class ModeOfTransportControllerSpec extends UnitSpec with ModeOfTransportListFix
     "return 200" when {
       "service returns a success full model" in new Test {
 
-        MockService.getOtherDataReferenceList().returns(Future.successful(validModeOfTransportResponseListModel))
+        MockService.getOtherDataReferenceList().returns(Future.successful(Right(validModeOfTransportResponseListModel)))
 
         val result = controller.modeOfTransport()(fakeRequest)
 
         status(result) shouldBe Status.OK
+      }
+    }
+    "return 500" when {
+      "service returns a un-succesful model" in new Test {
+
+        MockService.getOtherDataReferenceList().returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+        val result = controller.modeOfTransport()(fakeRequest)
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+
       }
     }
   }

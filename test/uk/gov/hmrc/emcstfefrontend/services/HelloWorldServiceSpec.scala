@@ -17,6 +17,7 @@
 package uk.gov.hmrc.emcstfefrontend.services
 
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.{MockEmcsTfeConnector, MockReferenceDataConnector}
+import uk.gov.hmrc.emcstfefrontend.models.response.{ErrorResponse, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.EmcsTfeResponse
 import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.ReferenceDataResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
@@ -37,15 +38,33 @@ class HelloWorldServiceSpec extends UnitSpec with MockReferenceDataConnector wit
   }
 
   "getMessage" should {
-    "return connector data" when {
+    "return Right" when {
       "connectors return a successful response" in new Test {
         val referenceDataConnectorResponse: ReferenceDataResponse = ReferenceDataResponse("test message")
         val emcsTfeConnectorResponse: EmcsTfeResponse = EmcsTfeResponse("test message")
 
+        MockReferenceDataConnector.hello().returns(Future.successful(Right(referenceDataConnectorResponse)))
+        MockEmcsTfeConnector.hello().returns(Future.successful(Right(emcsTfeConnectorResponse)))
+
+        await(service.getMessage().value) shouldBe Right((referenceDataConnectorResponse, emcsTfeConnectorResponse))
+      }
+    }
+    "return Left" when {
+      "reference data connector returns a Left" in new Test {
+        val referenceDataConnectorResponse: Either[ErrorResponse, ReferenceDataResponse] = Left(UnexpectedDownstreamResponseError)
+
+        MockReferenceDataConnector.hello().returns(Future.successful(referenceDataConnectorResponse))
+
+        await(service.getMessage().value) shouldBe referenceDataConnectorResponse
+      }
+      "emcs tfe connector returns a Left" in new Test {
+        val referenceDataConnectorResponse: Either[ErrorResponse, ReferenceDataResponse] = Right(ReferenceDataResponse("test message"))
+        val emcsTfeConnectorResponse: Either[ErrorResponse, EmcsTfeResponse] = Left(UnexpectedDownstreamResponseError)
+
         MockReferenceDataConnector.hello().returns(Future.successful(referenceDataConnectorResponse))
         MockEmcsTfeConnector.hello().returns(Future.successful(emcsTfeConnectorResponse))
 
-        await(service.getMessage()) shouldBe (referenceDataConnectorResponse, emcsTfeConnectorResponse)
+        await(service.getMessage().value) shouldBe emcsTfeConnectorResponse
       }
     }
   }

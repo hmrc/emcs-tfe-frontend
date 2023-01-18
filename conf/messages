@@ -3,7 +3,7 @@ service.text = This is your new service
 
 errorPage.title = Sorry, we’re experiencing technical difficulties
 errorPage.heading = Sorry, we’re experiencing technical difficulties
-errorPage.body = Please try again in a few minutes.
+errorPage.message = Please try again in a few minutes.
 
 base.saveAndContinue = Save and continue
 base.saveMovement    = Save and return to movement

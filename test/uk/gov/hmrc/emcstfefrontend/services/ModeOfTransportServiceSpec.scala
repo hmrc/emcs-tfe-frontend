@@ -19,6 +19,7 @@ package uk.gov.hmrc.emcstfefrontend.services
 import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.{MockEmcsTfeConnector, MockReferenceDataConnector}
+import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
 import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.{ModeOfTransportListModel, ModeOfTransportModel}
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
@@ -43,9 +44,17 @@ class ModeOfTransportServiceSpec extends UnitSpec with ModeOfTransportListFixtur
         "connector returns a success" in new Test {
 
           MockedAppConfig.getReferenceDataStubFeatureSwitch.returns(true)
-          MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(validModeOfTransportResponseListModel))
+          MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(Right(validModeOfTransportResponseListModel)))
 
-          await(service.getOtherDataReferenceList(hc, ec)) shouldBe validModeOfTransportResponseListModel
+          await(service.getOtherDataReferenceList(hc, ec)) shouldBe Right(validModeOfTransportResponseListModel)
+        }
+      }
+      "return an unsuccessful other reference data list" when {
+        "reference data connector returns a failure" in new Test {
+          MockedAppConfig.getReferenceDataStubFeatureSwitch.returns(true)
+          MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+          await(service.getOtherDataReferenceList(hc, ec)) shouldBe Left(UnexpectedDownstreamResponseError)
         }
       }
     }
@@ -53,7 +62,7 @@ class ModeOfTransportServiceSpec extends UnitSpec with ModeOfTransportListFixtur
       "return a successful other reference data list" when {
         "connector returns a success" in new Test {
           MockedAppConfig.getReferenceDataStubFeatureSwitch.returns(false)
-          await(service.getOtherDataReferenceList(hc, ec)) shouldBe ModeOfTransportListModel(List(ModeOfTransportModel("TRANSPORTMODE", "999", "hard coded response" )))
+          await(service.getOtherDataReferenceList(hc, ec)) shouldBe Right(ModeOfTransportListModel(List(ModeOfTransportModel("TRANSPORTMODE", "999", "hard coded response" ))))
         }
       }
     }

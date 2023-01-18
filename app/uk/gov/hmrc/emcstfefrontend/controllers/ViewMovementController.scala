@@ -17,6 +17,7 @@
 package uk.gov.hmrc.emcstfefrontend.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.GetMovementConnector
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -29,13 +30,15 @@ class ViewMovementController @Inject()(
                                         mcc: MessagesControllerComponents,
                                         connector: GetMovementConnector,
                                         viewMovementPage: ViewMovementPage,
+                                        errorHandler: ErrorHandler,
                                         implicit val executionContext: ExecutionContext)
   extends FrontendController(mcc) {
 
   def viewMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] = Action.async {
     implicit request => {
       connector.getMovement(exciseRegistrationNumber = exciseRegistrationNumber, arc = arc).map {
-        response => Ok(viewMovementPage(arc, response))
+        case Right(response) => Ok(viewMovementPage(arc, response))
+        case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
       }
     }
   }
