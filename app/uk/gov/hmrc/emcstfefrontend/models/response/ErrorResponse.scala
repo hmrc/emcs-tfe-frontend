@@ -16,10 +16,14 @@
 
 package uk.gov.hmrc.emcstfefrontend.models.response
 
-import play.api.libs.json.{Json, OFormat}
+sealed trait ErrorResponse {
+  val message: String
+}
 
-case class EmcsTfeResponse(message: String)
+case object UnexpectedDownstreamResponseError extends ErrorResponse {
+  val message = "Unexpected downstream response status"
+}
 
-object EmcsTfeResponse {
-  implicit val format: OFormat[EmcsTfeResponse] = Json.format
+case object JsonValidationError extends ErrorResponse {
+  val message = "JSON validation error"
 }

@@ -16,30 +16,25 @@
 
 package uk.gov.hmrc.emcstfefrontend.services
 
-import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import uk.gov.hmrc.emcstfefrontend.config.AppConfig
-import uk.gov.hmrc.emcstfefrontend.connectors.ReferenceDataConnector
-import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportListResponseModel, ModeOfTransportModel}
+import uk.gov.hmrc.emcstfefrontend.connectors.referenceData.GetOtherReferenceDataListConnector
+import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.{ModeOfTransportListModel, ModeOfTransportModel}
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ModeOfTransportService @Inject()(referenceDataConnector: ReferenceDataConnector, config: AppConfig) {
+class ModeOfTransportService @Inject()(connector: GetOtherReferenceDataListConnector, config: AppConfig) {
   lazy val logger: Logger = Logger(this.getClass)
 
-  def getOtherDataReferenceList(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[ModeOfTransportListResponseModel] = {
+  def getOtherDataReferenceList(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, ModeOfTransportListModel]] = {
     if (config.getReferenceDataStubFeatureSwitch()) {
-      referenceDataConnector.getOtherReferenceDataList().map {
-        case success: ModeOfTransportListModel =>
-          success
-        case error: ModeOfTransportErrorResponse =>
-          logger.error(s"[ModeOfTransportService][getOtherDataReferenceList] - Retrieved Other Data Reference List:\n\n$error")
-          error
-      }
+      connector.getOtherReferenceDataList()
     } else {
-      Future.successful(ModeOfTransportListModel(List(ModeOfTransportModel("TRANSPORTMODE", "999", "hard coded response" ))))
+      Future.successful(Right(ModeOfTransportListModel(List(ModeOfTransportModel("TRANSPORTMODE", "999", "hard coded response" )))))
     }
   }
 }

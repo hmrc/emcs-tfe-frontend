@@ -14,16 +14,16 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportListModel
 @import uk.gov.hmrc.emcstfefrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
 
 @this(
         layout: Layout,
         continueButton: ContinueButton,
         saveAndReturnButton: SaveAndReturnButton,
-        govukRadios : GovukRadios,
+        govukRadios: GovukRadios,
         inputRadios: input_radios
 )
 
@@ -31,13 +31,13 @@
 
 @layout(pageTitle = Some(messages("transportMode.heading"))) {
 
-@inputRadios(
-legend = messages("transportMode.heading"),
-items = referenceDataResponse
-)
+    @inputRadios(
+        legend = messages("transportMode.heading"),
+        items = referenceDataResponse
+    )
 
-@continueButton("base.saveAndContinue",Some(uk.gov.hmrc.emcstfefrontend.controllers.routes.ModeOfTransportController.onSubmit.url))
-@saveAndReturnButton()
+    @continueButton("base.saveAndContinue", Some(uk.gov.hmrc.emcstfefrontend.controllers.routes.ModeOfTransportController.onSubmit.url))
+    @saveAndReturnButton()
 
 }
 

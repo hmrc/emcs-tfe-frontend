@@ -17,22 +17,22 @@
 package uk.gov.hmrc.emcstfefrontend.controllers
 
 import play.api.http.Status
-import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
+import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 import uk.gov.hmrc.emcstfefrontend.mocks.services.MockModeOfTransportService
-import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportErrorResponse
-import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.validModeOfTransportResponseListModel
+import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
-import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, ModeOfTransportPage}
+import uk.gov.hmrc.emcstfefrontend.views.html.ModeOfTransportPage
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ModeOfTransportControllerSpec extends UnitSpec with MockModeOfTransportService {
+class ModeOfTransportControllerSpec extends UnitSpec with ModeOfTransportListFixture {
 
-  trait Test {
+  trait Test extends MockModeOfTransportService {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
@@ -42,16 +42,16 @@ class ModeOfTransportControllerSpec extends UnitSpec with MockModeOfTransportSer
       app.injector.instanceOf[MessagesControllerComponents],
       mockService,
       app.injector.instanceOf[ModeOfTransportPage],
-      app.injector.instanceOf[ErrorTemplate],
+      app.injector.instanceOf[ErrorHandler],
       ec
     )
   }
 
-  "GET /" should {
+  "GET /mode-of-transport" should {
     "return 200" when {
       "service returns a success full model" in new Test {
 
-        MockService.getOtherDataReferenceList().returns(Future.successful(validModeOfTransportResponseListModel))
+        MockService.getOtherDataReferenceList().returns(Future.successful(Right(validModeOfTransportResponseListModel)))
 
         val result = controller.modeOfTransport()(fakeRequest)
 
@@ -61,7 +61,7 @@ class ModeOfTransportControllerSpec extends UnitSpec with MockModeOfTransportSer
     "return 500" when {
       "service returns a un-succesful model" in new Test {
 
-        MockService.getOtherDataReferenceList().returns(Future.successful(ModeOfTransportErrorResponse(INTERNAL_SERVER_ERROR, "issue encountered")))
+        MockService.getOtherDataReferenceList().returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
         val result = controller.modeOfTransport()(fakeRequest)
 
@@ -69,14 +69,14 @@ class ModeOfTransportControllerSpec extends UnitSpec with MockModeOfTransportSer
 
       }
     }
-    "POST /" should {
-      "return 303" when {
-        "service returns a Right" in new Test {
+  }
+  "POST /mode-of-transport" should {
+    "return 303" when {
+      "service returns a Right" in new Test {
 
-          val result = controller.onSubmit()(postRequest)
+        val result = controller.onSubmit()(postRequest)
 
-          status(result) shouldBe Status.SEE_OTHER
-        }
+        status(result) shouldBe Status.SEE_OTHER
       }
     }
   }

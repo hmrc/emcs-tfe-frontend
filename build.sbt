@@ -13,9 +13,9 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
-    majorVersion                     := 0,
-    scalaVersion                     := "2.12.15",
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
+    majorVersion := 0,
+    scalaVersion := "2.12.15",
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     pipelineStages in Assets := Seq(gzip),
     // ***************
     // Use the silencer plugin to suppress warnings
@@ -45,3 +45,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
   .settings(PlayKeys.playDefaultPort := 8310)
+  .settings(TwirlKeys.templateImports ++= Seq(
+    "play.twirl.api.HtmlFormat",
+    "uk.gov.hmrc.govukfrontend.views.html.components._",
+    "uk.gov.hmrc.hmrcfrontend.views.html.{components => hmrcComponents}",
+    "controllers.routes._"
+  ))

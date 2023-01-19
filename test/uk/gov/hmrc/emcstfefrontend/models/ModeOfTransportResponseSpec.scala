@@ -22,12 +22,12 @@
   package uk.gov.hmrc.emcstfefrontend.models
 
 import play.api.libs.json.{JsSuccess, Json}
-import uk.gov.hmrc.emcstfefrontend.models.response.ModeOfTransportModel
-import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.{validModeOfTransportJson, validModeOfTransportResponseModel1}
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
+import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
+  import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.ModeOfTransportModel
+  import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 
-  class ModeOfTransportResponseSpec extends UnitSpec {
+  class ModeOfTransportResponseSpec extends UnitSpec with ModeOfTransportListFixture {
 
     "ModeOfTransportResponse" should {
       "read from json" when {

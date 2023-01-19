@@ -15,21 +15,35 @@
  *@
 
 @import uk.gov.hmrc.emcstfefrontend.views.html.components._
+@import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
+@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
 
 @this(
         layout: Layout,
-        summaryList : summary_list
+        summaryList: summary_list,
+        span: span,
+        h1: h1,
+        h2: h2
 )
-
 @(
-
+        arc: String,
+        getMovementResponse: GetMovementResponse
 )(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("Movement details")) {
-    <span class="govuk-caption-l">Administrative reference code</span>
-    <h1 class="govuk-heading-xl">XXX</h1>
-    <h2 class="govuk-heading-l">Summary</h2>
-@summaryList()
+@layout(pageTitle = Some(messages("viewMovement.title")), fullWidthContent = true) {
+    @span(messages("common.arc"))
+    @h1(arc)
+    @h2(messages("viewMovement.heading"))
+    @summaryList(
+        Seq(
+            (messages("viewMovement.lrn"), getMovementResponse.localReferenceNumber),
+            (messages("viewMovement.eadStatus"), getMovementResponse.eadStatus),
+            (messages("viewMovement.consignor"), getMovementResponse.consignorName),
+            (messages("viewMovement.dateOfDispatch"), getMovementResponse.formattedDateOfDispatch),
+            (messages("viewMovement.journeyTime"), getMovementResponse.journeyTime),
+            (messages("viewMovement.numberOfItems"), getMovementResponse.numberOfItems.toString)
+        )
+    )
 }
 
 @{

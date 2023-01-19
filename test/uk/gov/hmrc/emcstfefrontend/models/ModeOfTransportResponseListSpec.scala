@@ -23,12 +23,12 @@
 
 
   import play.api.libs.json.{JsSuccess, Json}
-  import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportModel}
-  import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture._
+  import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
+  import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.{ModeOfTransportListModel, ModeOfTransportModel}
   import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 
-  class ModeOfTransportResponseListSpec extends UnitSpec {
+  class ModeOfTransportResponseListSpec extends UnitSpec with ModeOfTransportListFixture {
 
     "ModeOfTransportResponseList" should {
       "read from json" when {
@@ -61,14 +61,5 @@
         }
       }
 
-    }
-    "ModeOfTransportResponseError" should {
-      "read from json" when {
-
-        "the json is complete" in {
-          Json.fromJson[ModeOfTransportErrorResponse](modeOfTransportErrorJson) shouldBe JsSuccess(modeOfTransportError)
-        }
-
-      }
     }
   }

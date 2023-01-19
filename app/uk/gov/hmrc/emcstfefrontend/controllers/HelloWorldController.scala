@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.services.HelloWorldService
-import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, HelloWorldPage}
+import uk.gov.hmrc.emcstfefrontend.views.html.HelloWorldPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -29,7 +30,7 @@ class HelloWorldController @Inject()(
                                       mcc: MessagesControllerComponents,
                                       service: HelloWorldService,
                                       helloWorldPage: HelloWorldPage,
-                                      errorPage: ErrorTemplate,
+                                      errorHandler: ErrorHandler,
                                       implicit val executionContext: ExecutionContext)
   extends FrontendController(mcc) {
 
@@ -38,7 +39,7 @@ class HelloWorldController @Inject()(
       case (referenceDataResponse, emcsTfeResponse) => Ok(helloWorldPage(referenceDataResponse, emcsTfeResponse))
     }
 
-    response.leftMap(value => InternalServerError(errorPage("Something went wrong!", "Oh no!", value))).merge
+    response.leftMap(value => InternalServerError(errorHandler.standardErrorTemplate())).merge
   }
 
 }

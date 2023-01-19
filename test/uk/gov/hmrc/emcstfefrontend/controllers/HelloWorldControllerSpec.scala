@@ -21,10 +21,13 @@ import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.mocks.services.MockHelloWorldService
-import uk.gov.hmrc.emcstfefrontend.models.response.{EmcsTfeResponse, ReferenceDataResponse}
+import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.EmcsTfeResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.ReferenceDataResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
-import uk.gov.hmrc.emcstfefrontend.views.html.{ErrorTemplate, HelloWorldPage}
+import uk.gov.hmrc.emcstfefrontend.views.html.HelloWorldPage
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,7 +43,7 @@ class HelloWorldControllerSpec extends UnitSpec with MockHelloWorldService {
       app.injector.instanceOf[MessagesControllerComponents],
       mockService,
       app.injector.instanceOf[HelloWorldPage],
-      app.injector.instanceOf[ErrorTemplate],
+      app.injector.instanceOf[ErrorHandler],
       ec
     )
   }
@@ -62,14 +65,13 @@ class HelloWorldControllerSpec extends UnitSpec with MockHelloWorldService {
     "return 500" when {
       "service returns a Left" in new Test {
 
-        MockService.getMessage().returns(EitherT.fromEither[Future](Left("error message")))
+        MockService.getMessage().returns(EitherT.fromEither[Future](Left(UnexpectedDownstreamResponseError)))
 
         val result = controller.helloWorld()(fakeRequest)
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-        contentAsString(result) should include("Something went wrong!")
-        contentAsString(result) should include("Oh no!")
-        contentAsString(result) should include("error message")
+        contentAsString(result) should include("Sorry, we’re experiencing technical difficulties")
+        contentAsString(result) should include("Please try again in a few minutes.")
       }
     }
   }

@@ -16,24 +16,24 @@
 
 package uk.gov.hmrc.emcstfefrontend.services
 
-import play.api.http.Status.INTERNAL_SERVER_ERROR
+import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.{MockEmcsTfeConnector, MockReferenceDataConnector}
-import uk.gov.hmrc.emcstfefrontend.models.response.{ModeOfTransportErrorResponse, ModeOfTransportListModel, ModeOfTransportModel}
-import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.validModeOfTransportResponseListModel
+import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
+import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.{ModeOfTransportListModel, ModeOfTransportModel}
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ModeOfTransportServiceSpec extends UnitSpec with MockReferenceDataConnector with MockEmcsTfeConnector with MockAppConfig {
+class ModeOfTransportServiceSpec extends UnitSpec with ModeOfTransportListFixture {
 
-  trait Test {
+  trait Test extends MockReferenceDataConnector with MockEmcsTfeConnector with MockAppConfig {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
     val service: ModeOfTransportService = new ModeOfTransportService(
-      mockReferenceDataConnector,
+      mockGetOtherReferenceDataListConnector,
       mockAppConfig
     )
   }
@@ -44,17 +44,17 @@ class ModeOfTransportServiceSpec extends UnitSpec with MockReferenceDataConnecto
         "connector returns a success" in new Test {
 
           MockedAppConfig.getReferenceDataStubFeatureSwitch.returns(true)
-          MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(validModeOfTransportResponseListModel))
+          MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(Right(validModeOfTransportResponseListModel)))
 
-          await(service.getOtherDataReferenceList(hc, ec)) shouldBe validModeOfTransportResponseListModel
+          await(service.getOtherDataReferenceList(hc, ec)) shouldBe Right(validModeOfTransportResponseListModel)
         }
       }
-      "return a un - successful other reference data list" when {
+      "return an unsuccessful other reference data list" when {
         "reference data connector returns a failure" in new Test {
           MockedAppConfig.getReferenceDataStubFeatureSwitch.returns(true)
-          MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(ModeOfTransportErrorResponse(INTERNAL_SERVER_ERROR, "issue encountered")))
+          MockReferenceDataConnector.getOtherReferenceDataList().returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-          await(service.getOtherDataReferenceList(hc, ec)) shouldBe ModeOfTransportErrorResponse(INTERNAL_SERVER_ERROR, "issue encountered")
+          await(service.getOtherDataReferenceList(hc, ec)) shouldBe Left(UnexpectedDownstreamResponseError)
         }
       }
     }
@@ -62,7 +62,7 @@ class ModeOfTransportServiceSpec extends UnitSpec with MockReferenceDataConnecto
       "return a successful other reference data list" when {
         "connector returns a success" in new Test {
           MockedAppConfig.getReferenceDataStubFeatureSwitch.returns(false)
-          await(service.getOtherDataReferenceList(hc, ec)) shouldBe ModeOfTransportListModel(List(ModeOfTransportModel("TRANSPORTMODE", "999", "hard coded response" )))
+          await(service.getOtherDataReferenceList(hc, ec)) shouldBe Right(ModeOfTransportListModel(List(ModeOfTransportModel("TRANSPORTMODE", "999", "hard coded response" ))))
         }
       }
     }

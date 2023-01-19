@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend
+package uk.gov.hmrc.emcstfefrontend.utils
 
-import cats.data.EitherT
-import uk.gov.hmrc.emcstfefrontend.models.response.{EmcsTfeResponse, ReferenceDataResponse}
+import play.api.Logger
 
-import scala.concurrent.Future
-
-package object services {
-  type HelloWorldResponse = EitherT[Future, String, (ReferenceDataResponse, EmcsTfeResponse)]
+trait Logging {
+  lazy val logger: Logger = Logger(this.getClass)
 }

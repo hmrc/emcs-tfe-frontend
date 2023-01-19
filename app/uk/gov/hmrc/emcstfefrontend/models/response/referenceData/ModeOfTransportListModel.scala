@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response
+package uk.gov.hmrc.emcstfefrontend.models.response.referenceData
 
 import play.api.libs.json.{Json, OFormat}
 
 
-sealed trait ModeOfTransportListResponseModel
-
-case class ModeOfTransportListModel(otherRefdata: List[ModeOfTransportModel]) extends ModeOfTransportListResponseModel {
+case class ModeOfTransportListModel(otherRefdata: List[ModeOfTransportModel]) {
 
   private def moveOtherToBack(transportOptions: Seq[ModeOfTransportModel]): Seq[ModeOfTransportModel] = {
     transportOptions.span(_.code == "0") match {
@@ -36,10 +34,4 @@ case class ModeOfTransportListModel(otherRefdata: List[ModeOfTransportModel]) ex
 
 object ModeOfTransportListModel {
   implicit val format: OFormat[ModeOfTransportListModel] = Json.format
-}
-
-case class ModeOfTransportErrorResponse(status: Int, reason: String) extends ModeOfTransportListResponseModel
-
-object ModeOfTransportErrorResponse {
-  implicit val format: OFormat[ModeOfTransportErrorResponse] = Json.format
 }

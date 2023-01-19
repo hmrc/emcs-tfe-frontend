@@ -20,32 +20,62 @@ import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
+import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
+import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 import uk.gov.hmrc.http.HeaderCarrier
 
+import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewMovementControllerSpec extends UnitSpec {
 
-  trait Test {
+  trait Test extends MockEmcsTfeConnector {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
 
     val controller: ViewMovementController = new ViewMovementController(
       app.injector.instanceOf[MessagesControllerComponents],
+      mockGetMovementConnector,
       app.injector.instanceOf[ViewMovementPage],
+      app.injector.instanceOf[ErrorHandler],
       ec
     )
   }
 
-  "GET /" should {
-    "return 200" in new Test {
+  "GET /consignment/:exciseRegistrationNumber/:arc" should {
+    "return 200" when {
+      "connector call is successful" in new Test {
+        val ern = "ERN"
+        val arc = "ARC"
+        val model: GetMovementResponse = GetMovementResponse("", "", "", LocalDate.parse("2008-11-20"), "", 0)
 
-      val result: Future[Result] = controller.viewMovement()(fakeRequest)
+        MockEmcsTfeConnector
+          .getMovement()
+          .returns(Future.successful(Right(model)))
 
-      status(result) shouldBe Status.OK
+        val result: Future[Result] = controller.viewMovement(ern, arc)(fakeRequest)
+
+        status(result) shouldBe Status.OK
+      }
+    }
+    "return 500" when {
+      "connector call is unsuccessful" in new Test {
+        val ern = "ERN"
+        val arc = "ARC"
+
+        MockEmcsTfeConnector
+          .getMovement()
+          .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+        val result: Future[Result] = controller.viewMovement(ern, arc)(fakeRequest)
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      }
     }
   }
 }

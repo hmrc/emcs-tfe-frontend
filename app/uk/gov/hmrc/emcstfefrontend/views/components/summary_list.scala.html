@@ -15,24 +15,19 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.emcstfefrontend.viewmodels.SummaryListHelper
 
-@this(govukSummaryList : GovukSummaryList)
+@this(
+        govukSummaryList: GovukSummaryList,
+        helper: SummaryListHelper
+)
 
-@()
+@(
+        list: Seq[(String, String)]
+)
 
-@govukSummaryList(SummaryList(
-    rows = Seq(
-     SummaryListRow(
-      key = Key(
-       content = Text("Test Key")
-      ),
-      value = Value(
-       content = Text("Test Value")
-      )
-     )
-    )
- ))
+@govukSummaryList(helper.render(list))
 
 @{
-//$COVERAGE-OFF$
+    //$COVERAGE-OFF$
 }

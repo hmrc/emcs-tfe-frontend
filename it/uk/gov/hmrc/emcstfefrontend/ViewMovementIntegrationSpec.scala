@@ -20,20 +20,20 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
+import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 import uk.gov.hmrc.emcstfefrontend.stubs.DownstreamStub
 import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
-import uk.gov.hmrc.emcstfefrontend.support.ModeOfTransportListFixture.validModeOfTransportListJson
 
 import scala.xml.Elem
 
-class ModeOfTransportControllerIntegrationSpec extends IntegrationBaseSpec {
+class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTransportListFixture {
 
 
   private trait Test {
     def setupStubs(): StubMapping
 
-    def uri: String = "/mode-of-transport"
-    def referenceDataUri: String = s"/emcs-tfe-reference-data/other-reference-data-list"
+    def uri: String = "/consignment/my-ern/my-arc"
+    def emcsTfeUri: String = s"/emcs-tfe/movement/my-ern/my-arc"
 
     def request(): WSRequest = {
       setupStubs()
@@ -45,18 +45,26 @@ class ModeOfTransportControllerIntegrationSpec extends IntegrationBaseSpec {
     "return a success page" when {
       "all downstream calls are successful" in new Test {
         override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, validModeOfTransportListJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, Json.parse(
+            """{
+              |  "localReferenceNumber": "MyLrn",
+              |  "eadStatus": "MyEadStatus",
+              |  "consignorName": "MyConsignor",
+              |  "dateOfDispatch": "2010-03-04",
+              |  "journeyTime": "MyJourneyTime",
+              |  "numberOfItems": 0
+              |}""".stripMargin))
         }
 
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.OK
-        response.body should include("Other")
-        response.body should include("Postal consignment")
+        response.body should include("Administrative reference code")
+        response.body should include("my-arc")
       }
     }
     "return an error page" when {
       "downstream call returns unexpected JSON" in new Test {
-        val referenceDataResponseBody: JsValue = Json.parse(
+        val emcsTfeResponseBody: JsValue = Json.parse(
           s"""
              |{
              |   "field": "test message"
@@ -65,28 +73,28 @@ class ModeOfTransportControllerIntegrationSpec extends IntegrationBaseSpec {
         )
 
         override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
         }
 
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
-        response.body should include("Something went wrong!")
+        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
 
       "downstream call returns something other than JSON" in new Test {
-        val referenceDataResponseBody: Elem = <message>test message</message>
+        val emcsTfeResponseBody: Elem = <message>test message</message>
 
         override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
         }
 
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
         response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
-        response.body should include("Something went wrong!")
+        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
       "downstream call returns a non-200 HTTP response" in new Test {
-        val referenceDataResponseBody: JsValue = Json.parse(
+        val emcsTfeResponseBody: JsValue = Json.parse(
           s"""
              |{
              |   "message": "test message"
@@ -95,12 +103,12 @@ class ModeOfTransportControllerIntegrationSpec extends IntegrationBaseSpec {
         )
 
         override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.INTERNAL_SERVER_ERROR, referenceDataResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.INTERNAL_SERVER_ERROR, emcsTfeResponseBody)
         }
 
         val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
-        response.body should include("Something went wrong!")
+        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
     }
   }

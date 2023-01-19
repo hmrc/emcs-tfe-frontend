@@ -22,15 +22,17 @@ import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 
 import scala.util.{Success, Try}
 
-trait BaseConnector {
+trait BaseConnectorUtils[T] {
 
   lazy val logger: Logger = Logger(this.getClass)
+
+  implicit val reads: Reads[T]
 
   implicit val httpReads: HttpReads[HttpResponse] = (method: String, url: String, response: HttpResponse) => response
 
   implicit class KnownJsonResponse(response: HttpResponse) {
 
-    def validateJson[T](implicit reads: Reads[T]): Option[T] = {
+    def validateJson(implicit reads: Reads[T]): Option[T] = {
       Try(response.json) match {
         case Success(json: JsValue) => parseResult(json)
         case _ =>
@@ -39,7 +41,7 @@ trait BaseConnector {
       }
     }
 
-    private def parseResult[T](json: JsValue)(implicit reads: Reads[T]): Option[T] = json.validate[T] match {
+    private def parseResult(json: JsValue)(implicit reads: Reads[T]): Option[T] = json.validate[T] match {
 
       case JsSuccess(value, _) => Some(value)
       case JsError(error) =>

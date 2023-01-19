@@ -15,19 +15,23 @@
  *@
 
 @import uk.gov.hmrc.emcstfefrontend.config.AppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLayout
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
+@import uk.gov.hmrc.emcstfefrontend.views.html.templates.{FullWidthMainContentTemplate => FullWidthMainContent}
 @import views.html.helper.CSPNonce
 
 @this(
         appConfig: AppConfig,
-        hmrcLayout: HmrcLayout
+        hmrcLayout: HmrcLayout,
+        defaultMainContent: TwoThirdsMainContent,
+        fullWidthMainContent: FullWidthMainContent
 )
-@(pageTitle: Option[String] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: Option[String] = None, fullWidthContent: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @hmrcLayout(
     pageTitle = pageTitle,
     nonce = CSPNonce.get,
-    isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled
+    isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled,
+    mainContentLayout = if(fullWidthContent) Some(fullWidthMainContent(_)) else Some(defaultMainContent(_))
 )(contentBlock)
 
 @{
