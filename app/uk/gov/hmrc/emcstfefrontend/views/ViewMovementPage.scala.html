@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.emcstfefrontend.views.html.components._
 @import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
+@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
 
 @this(
         layout: Layout,
@@ -29,7 +30,7 @@
         getMovementResponse: GetMovementResponse
 )(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some(messages("viewMovement.title"))) {
+@layout(pageTitle = Some(messages("viewMovement.title")), fullWidthContent = true) {
     @span(messages("common.arc"))
     @h1(arc)
     @h2(messages("viewMovement.heading"))
