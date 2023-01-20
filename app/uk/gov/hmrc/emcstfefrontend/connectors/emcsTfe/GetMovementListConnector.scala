@@ -18,6 +18,7 @@ package uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe
 
 import play.api.libs.json.Reads
 import uk.gov.hmrc.emcstfefrontend.config.AppConfig
+import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListResponse
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -32,7 +33,7 @@ class GetMovementListConnector @Inject()(val http: HttpClient,
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
   def getMovementList(exciseRegistrationNumber: String)
-                     (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[GetMovementListResponse] =
+                     (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, GetMovementListResponse]] =
     get(s"$baseUrl/movements/$exciseRegistrationNumber")
 
 }

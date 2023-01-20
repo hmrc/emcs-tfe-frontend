@@ -22,9 +22,11 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
+import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.EN
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
+import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementListPage
 import uk.gov.hmrc.http.HeaderCarrier
@@ -40,11 +42,13 @@ class ViewMovementListControllerSpec extends UnitSpec with MovementListFixtures 
     implicit val messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
 
     val view = app.injector.instanceOf[ViewMovementListPage]
+    val errorHandler = app.injector.instanceOf[ErrorHandler]
 
     val controller: ViewMovementListController = new ViewMovementListController(
       app.injector.instanceOf[MessagesControllerComponents],
       mockGetMovementListConnector,
       view,
+      errorHandler,
       ec
     )
   }
@@ -57,12 +61,27 @@ class ViewMovementListControllerSpec extends UnitSpec with MovementListFixtures 
 
         MockEmcsTfeConnector
           .getMovementList(ern)
-          .returns(Future.successful(getMovementListResponse))
+          .returns(Future.successful(Right(getMovementListResponse)))
 
         val result: Future[Result] = controller.viewMovementList(ern)(fakeRequest)
 
         status(result) shouldBe Status.OK
         Html(contentAsString(result)) shouldBe view(ern, getMovementListResponse)
+      }
+    }
+
+    "connector call is unsuccessful" should {
+
+      "return 500" in new Test {
+
+        MockEmcsTfeConnector
+          .getMovementList(ern)
+          .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+        val result: Future[Result] = controller.viewMovementList(ern)(fakeRequest)
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate
       }
     }
   }

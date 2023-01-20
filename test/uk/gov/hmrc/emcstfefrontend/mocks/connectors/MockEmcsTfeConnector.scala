@@ -40,7 +40,7 @@ trait MockEmcsTfeConnector extends MockFactory {
         .expects(*, *, *, *)
     }
 
-    def getMovementList(ern: String): CallHandler3[String, HeaderCarrier, ExecutionContext, Future[GetMovementListResponse]] =
+    def getMovementList(ern: String): CallHandler3[String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementListResponse]]] =
       (mockGetMovementListConnector.getMovementList(_: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(ern, *, *)
   }

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.emcstfefrontend.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.GetMovementListConnector
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementListPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -28,11 +29,13 @@ import scala.concurrent.ExecutionContext
 class ViewMovementListController @Inject()(mcc: MessagesControllerComponents,
                                            connector: GetMovementListConnector,
                                            viewMovementListPage: ViewMovementListPage,
+                                           errorHandler: ErrorHandler,
                                            implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
 
   def viewMovementList(exciseRegistrationNumber: String): Action[AnyContent] = Action.async { implicit request =>
-    connector.getMovementList(exciseRegistrationNumber).map { movementList =>
-      Ok(viewMovementListPage(exciseRegistrationNumber, movementList))
+    connector.getMovementList(exciseRegistrationNumber).map {
+      case Right(movementList) => Ok(viewMovementListPage(exciseRegistrationNumber, movementList))
+      case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
     }
   }
 }

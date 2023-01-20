@@ -16,8 +16,8 @@
 
 @import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListResponse
 @import uk.gov.hmrc.emcstfefrontend.viewmodels.MovementsListTableHelper
-@import uk.gov.hmrc.emcstfefrontend.views.html.Layout
 @import uk.gov.hmrc.emcstfefrontend.views.html.components._
+@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
 
 @this(
         layout: Layout,
@@ -25,6 +25,7 @@
         h1: h1,
         helper: MovementsListTableHelper
 )
+
 @(ern: String, getMovementListResponse: GetMovementListResponse)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some(messages("viewMovementList.title"))) {
