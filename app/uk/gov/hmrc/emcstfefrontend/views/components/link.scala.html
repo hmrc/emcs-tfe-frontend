@@ -23,12 +23,14 @@
         isExternal: Boolean = false,
         button: Boolean = false,
         classes: String = "govuk-link",
-        hiddenContent: Option[String] = None,
-        midParagraph: Boolean = false,
-        endOfParagraph: Boolean = false
+        hiddenContent: Option[String] = None
 )(implicit messages: Messages)
 
 <a href="@link" class="@classes"@id.map(x => s" id=$x")@if(isExternal){target="_blank" rel="noopener noreferrer"}@if(button){role="button" data-module="govuk-button"}>
     @messages(messageKey)@if(isExternal)(" " + messages("base.opensInNewTab"))@hiddenContent.map{content=>
         <span class="govuk-visually-hidden"> @content</span>
-    }</a>@if(midParagraph){. }else if(endOfParagraph){.}
+    }</a>
+
+@{
+ //$COVERAGE-OFF$
+}

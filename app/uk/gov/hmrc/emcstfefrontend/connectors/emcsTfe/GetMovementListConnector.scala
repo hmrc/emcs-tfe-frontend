@@ -18,7 +18,7 @@ package uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe
 
 import play.api.libs.json.Reads
 import uk.gov.hmrc.emcstfefrontend.config.AppConfig
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{GetMovementListResponse, GetMovementResponse}
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListResponse
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}

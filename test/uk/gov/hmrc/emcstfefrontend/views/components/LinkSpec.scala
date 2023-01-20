@@ -35,8 +35,6 @@ class LinkSpec extends UnitSpec {
     val button: Boolean = false
     val classes: String = "govuk-link"
     val hiddenContent: Option[String] = None
-    val midParagraph: Boolean = false
-    val endOfParagraph: Boolean = false
 
     lazy val link: link = app.injector.instanceOf[link]
     lazy val messagesApi = app.injector.instanceOf[MessagesApi]
@@ -50,9 +48,7 @@ class LinkSpec extends UnitSpec {
       isExternal,
       button,
       classes,
-      hiddenContent,
-      midParagraph,
-      endOfParagraph
+      hiddenContent
     )
 
     lazy val document: Document = Jsoup.parse(html.toString)
@@ -118,26 +114,6 @@ class LinkSpec extends UnitSpec {
 
             span.hasClass("govuk-visually-hidden") shouldBe true
             span.text() shouldBe hiddenContent.get
-          }
-        }
-
-        "is mid sentence" must {
-
-          "output a full stop with a space at the end" in new TestFixture {
-
-            override val midParagraph: Boolean = true
-
-            html.toString().takeRight(2) shouldBe ". "
-          }
-        }
-
-        "is end of sentence" must {
-
-          "output a full stop with no space at the end" in new TestFixture {
-
-            override val endOfParagraph: Boolean = true
-
-            html.toString().takeRight(1) shouldBe "."
           }
         }
       }
