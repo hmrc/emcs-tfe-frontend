@@ -30,7 +30,7 @@ case class GetMovementListItem(arc: String,
                                destinationId: String,
                                consignorLanguageCode: String) {
 
-  def viewMovementUrl(ern: String): Call = routes.ViewMovementController.viewMovement(ern, arc)
+  def viewMovementUrl(ern: String): Call = routes.ViewMovementController.viewMovement(ern, s"$arc-$sequenceNumber")
 }
 
 object GetMovementListItem {
