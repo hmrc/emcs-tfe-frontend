@@ -18,7 +18,9 @@ package uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe
 
 import play.api.libs.json.{Json, Reads}
 
-case class GetMovementListResponse(movements: Seq[GetMovementListItem])
+case class GetMovementListResponse(movements: Seq[GetMovementListItem]) {
+  val count = movements.length
+}
 
 object GetMovementListResponse {
 

@@ -19,16 +19,22 @@ package uk.gov.hmrc.emcstfefrontend.fixtures.messages
 object ViewMovementListMessages {
 
   sealed trait ViewMessages { _: i18n =>
+    val title: String
+    val heading: Int => String
     val tableArc: String
     val tableConsignerName: String
   }
 
   object English extends ViewMessages with EN {
+    override val title: String = "Movements in"
+    override val heading = (count: Int) => s"Movements in ($count)"
     override val tableArc: String = "ARC"
     override val tableConsignerName: String = "Consignor"
   }
 
   object Welsh extends ViewMessages with CY {
+    override val title: String = "Movements in"
+    override val heading = (count: Int) => s"Movements in ($count)"
     override val tableArc: String = "ARC"
     override val tableConsignerName: String = "Consignor"
   }
