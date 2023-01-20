@@ -7,6 +7,7 @@ errorPage.message = Please try again in a few minutes.
 
 base.saveAndContinue = Save and continue
 base.saveMovement    = Save and return to movement
+base.opensInNewTab   = (opens in new tab)
 
 common.arc = Administrative reference code
 
@@ -20,3 +21,6 @@ viewMovement.consignor = Consignor
 viewMovement.dateOfDispatch = Date of dispatch
 viewMovement.journeyTime = Journey time
 viewMovement.numberOfItems = Number of items
+
+viewMovementList.table.arc = ARC
+viewMovementList.table.consignorName = Consignor
