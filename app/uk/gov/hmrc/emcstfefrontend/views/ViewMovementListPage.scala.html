@@ -23,6 +23,7 @@
         layout: Layout,
         table: table,
         h1: h1,
+        span: span,
         helper: MovementsListTableHelper
 )
 
@@ -30,7 +31,13 @@
 
 @layout(pageTitle = Some(messages("viewMovementList.title"))) {
 
-    @h1(messages("viewMovementList.heading", getMovementListResponse.count))
+    @h1 {
+        @messages("viewMovementList.heading")
+        @span(
+         content = s"(${getMovementListResponse.count})",
+         classes = "govuk-heading-xl govuk-!-display-inline govuk-!-font-weight-regular"
+        )
+    }
 
     @table(helper.constructTable(ern, getMovementListResponse.movements))
 }

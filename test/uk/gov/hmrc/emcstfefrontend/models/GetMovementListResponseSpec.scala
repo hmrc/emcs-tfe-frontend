@@ -21,12 +21,10 @@
 
 package uk.gov.hmrc.emcstfefrontend.models
 
-import play.api.libs.json.{JsSuccess, JsValue, Json}
+import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{GetMovementListResponse, GetMovementResponse}
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
-
-import java.time.LocalDate
 
 
 class GetMovementListResponseSpec extends UnitSpec with MovementListFixtures {

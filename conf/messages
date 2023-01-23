@@ -23,6 +23,6 @@ viewMovement.journeyTime = Journey time
 viewMovement.numberOfItems = Number of items
 
 viewMovementList.title = Movements in
-viewMovementList.heading = Movements in ({0})
+viewMovementList.heading = Movements in
 viewMovementList.table.arc = ARC
 viewMovementList.table.consignorName = Consignor

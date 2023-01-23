@@ -31,7 +31,7 @@ class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementL
 
   private trait Test {
 
-    val uri: String = "/consignments/" + ern
+    val uri: String = "/movements-in/" + ern
     val emcsTfeUri: String = s"/emcs-tfe/movements/" + ern
 
     def setupStubs(): StubMapping

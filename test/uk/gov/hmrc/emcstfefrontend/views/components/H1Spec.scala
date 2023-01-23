@@ -29,7 +29,7 @@ class H1Spec extends UnitSpec {
 
 
     lazy val h1: h1 = app.injector.instanceOf[h1]
-    lazy val html: Html = h1("some content", id = id)
+    lazy val html: Html = h1(Html("some content"), id = id)
     lazy val document: Document = Jsoup.parse(html.toString)
   }
 

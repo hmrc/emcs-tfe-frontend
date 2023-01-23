@@ -36,7 +36,8 @@ class MovementsListTableHelper @Inject()(link: link) {
       TableRow(
         content = HtmlContent(link(
           link = movement.viewMovementUrl(ern).url,
-          messageKey = movement.arc
+          messageKey = movement.arc,
+          classes = "govuk-!-font-weight-bold"
         ))
       ),
       TableRow(
