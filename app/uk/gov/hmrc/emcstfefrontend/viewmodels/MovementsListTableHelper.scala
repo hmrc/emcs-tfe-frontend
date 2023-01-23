@@ -36,8 +36,7 @@ class MovementsListTableHelper @Inject()(link: link) {
       TableRow(
         content = HtmlContent(link(
           link = movement.viewMovementUrl(ern).url,
-          messageKey = movement.arc,
-          classes = "govuk-!-font-weight-bold"
+          messageKey = movement.arc
         ))
       ),
       TableRow(
@@ -48,6 +47,7 @@ class MovementsListTableHelper @Inject()(link: link) {
 
   def constructTable(ern: String, movements: Seq[GetMovementListItem])(implicit messages: Messages): Table =
     Table(
+      firstCellIsHeader = true,
       rows = dataRows(ern, movements)(messages),
       head = headerRow
     )

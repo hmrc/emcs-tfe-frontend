@@ -60,8 +60,7 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures {
                 TableRow(
                   content = HtmlContent(link(
                     link = movement1.viewMovementUrl(ern).url,
-                    messageKey = movement1.arc,
-                    classes = "govuk-!-font-weight-bold"
+                    messageKey = movement1.arc
                   ))
                 ),
                 TableRow(
@@ -72,8 +71,7 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures {
                 TableRow(
                   content = HtmlContent(link(
                     link = movement2.viewMovementUrl(ern).url,
-                    messageKey = movement2.arc,
-                    classes = "govuk-!-font-weight-bold"
+                    messageKey = movement2.arc
                   ))
                 ),
                 TableRow(
@@ -89,13 +87,13 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures {
           "construct the expected data rows" in {
 
             helper.constructTable(ern, movements) shouldBe Table(
+              firstCellIsHeader = true,
               rows = Seq(
                 Seq(
                   TableRow(
                     content = HtmlContent(link(
                       link = movement1.viewMovementUrl(ern).url,
-                      messageKey = movement1.arc,
-                      classes = "govuk-!-font-weight-bold"
+                      messageKey = movement1.arc
                     ))
                   ),
                   TableRow(
@@ -106,8 +104,7 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures {
                   TableRow(
                     content = HtmlContent(link(
                       link = movement2.viewMovementUrl(ern).url,
-                      messageKey = movement2.arc,
-                      classes = "govuk-!-font-weight-bold"
+                      messageKey = movement2.arc
                     ))
                   ),
                   TableRow(
