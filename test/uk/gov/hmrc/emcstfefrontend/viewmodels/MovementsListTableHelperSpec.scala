@@ -47,8 +47,7 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures wi
 
             helper.headerRow shouldBe Some(Seq(
               HeadCell(Text(viewMessages.tableArc)),
-              HeadCell(Text(viewMessages.tableDateOfDisptach)),
-              HeadCell(Text(viewMessages.tableStatus))
+              HeadCell(Text(viewMessages.tableConsignor))
             ))
           }
         }
@@ -66,10 +65,7 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures wi
                   ))
                 ),
                 TableRow(
-                  content = Text(movement1.dateOfDispatch.formatDateForUIOutput())
-                ),
-                TableRow(
-                  content = Text(movement1.movementStatus)
+                  content = Text(movement1.otherTraderID)
                 )
               ),
               Seq(
@@ -80,10 +76,7 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures wi
                   ))
                 ),
                 TableRow(
-                  content = Text(movement1.dateOfDispatch.formatDateForUIOutput())
-                ),
-                TableRow(
-                  content = Text(movement1.movementStatus)
+                  content = Text(movement1.otherTraderID)
                 )
               )
             )
@@ -105,10 +98,7 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures wi
                     ))
                   ),
                   TableRow(
-                    content = Text(movement1.dateOfDispatch.formatDateForUIOutput())
-                  ),
-                  TableRow(
-                    content = Text(movement1.movementStatus)
+                    content = Text(movement1.otherTraderID)
                   )
                 ),
                 Seq(
@@ -119,17 +109,13 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures wi
                     ))
                   ),
                   TableRow(
-                    content = Text(movement1.dateOfDispatch.formatDateForUIOutput())
-                  ),
-                  TableRow(
-                    content = Text(movement1.movementStatus)
+                    content = Text(movement1.otherTraderID)
                   )
                 )
               ),
               head = Some(Seq(
                 HeadCell(Text(viewMessages.tableArc)),
-                HeadCell(Text(viewMessages.tableDateOfDisptach)),
-                HeadCell(Text(viewMessages.tableStatus))
+                HeadCell(Text(viewMessages.tableConsignor))
               ))
             )
           }

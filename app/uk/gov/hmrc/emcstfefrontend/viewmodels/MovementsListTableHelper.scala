@@ -29,8 +29,7 @@ class MovementsListTableHelper @Inject()(link: link) extends DateUtils {
 
   private[viewmodels] def headerRow(implicit messages: Messages): Option[Seq[HeadCell]] = Some(Seq(
     HeadCell(Text(messages("viewMovementList.table.arc"))),
-    HeadCell(Text(messages("viewMovementList.table.dateOfDispatch"))),
-    HeadCell(Text(messages("viewMovementList.table.status")))
+    HeadCell(Text(messages("viewMovementList.table.consignor")))
   ))
 
   private[viewmodels] def dataRows(ern: String, movements: Seq[GetMovementListItem])(implicit messages: Messages): Seq[Seq[TableRow]] = movements.map { movement =>
@@ -42,10 +41,7 @@ class MovementsListTableHelper @Inject()(link: link) extends DateUtils {
         ))
       ),
       TableRow(
-        content = Text(movement.dateOfDispatch.formatDateForUIOutput())
-      ),
-      TableRow(
-        content = Text(movement.movementStatus)
+        content = Text(movement.otherTraderID)
       )
     )
   }

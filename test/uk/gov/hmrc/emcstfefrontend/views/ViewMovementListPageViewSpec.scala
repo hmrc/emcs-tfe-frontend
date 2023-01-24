@@ -60,8 +60,7 @@ class ViewMovementListPageViewSpec extends UnitSpec with MovementListFixtures {
 
         "have a table rendered for the movements, rendered by the helper" in new TestFixture {
           document.select("table thead tr th:nth-of-type(1)").text() shouldBe viewMessages.tableArc
-          document.select("table thead tr th:nth-of-type(2)").text() shouldBe viewMessages.tableDateOfDisptach
-          document.select("table thead tr th:nth-of-type(3)").text() shouldBe viewMessages.tableStatus
+          document.select("table thead tr th:nth-of-type(2)").text() shouldBe viewMessages.tableConsignor
         }
       }
     }
