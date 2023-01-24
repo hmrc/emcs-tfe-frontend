@@ -14,19 +14,13 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.emcstfefrontend.views.html.components._
-@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(
-        layout: Layout,
-        h1: h1,
-        p: p,
-)
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
-@layout(pageTitle = Some(messages(pageTitle))) {
-    @h1(Html(messages(heading)))
-    @p(messages(message))
-}
+@this(govukTable: GovukTable)
+
+@(table: Table)
+
+@govukTable(table)
 
 @{
     //$COVERAGE-OFF$

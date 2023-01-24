@@ -14,18 +14,32 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListResponse
+@import uk.gov.hmrc.emcstfefrontend.viewmodels.MovementsListTableHelper
 @import uk.gov.hmrc.emcstfefrontend.views.html.components._
 @import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
 
 @this(
         layout: Layout,
+        table: table,
         h1: h1,
-        p: p,
+        span: span,
+        helper: MovementsListTableHelper
 )
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
-@layout(pageTitle = Some(messages(pageTitle))) {
-    @h1(Html(messages(heading)))
-    @p(messages(message))
+
+@(ern: String, getMovementListResponse: GetMovementListResponse)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some(messages("viewMovementList.title"))) {
+
+    @h1 {
+        @messages("viewMovementList.heading")
+        @span(
+         content = s"(${getMovementListResponse.count})",
+         classes = "govuk-heading-xl govuk-!-display-inline govuk-!-font-weight-regular"
+        )
+    }
+
+    @table(helper.constructTable(ern, getMovementListResponse.movements))
 }
 
 @{

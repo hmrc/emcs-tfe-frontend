@@ -20,7 +20,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 trait DateUtils {
-  implicit class LocaDateExtensions(date: LocalDate) {
+  implicit class LocalDateExtensions(date: LocalDate) {
     def formatDateForUIOutput(): String = {
       val f = DateTimeFormatter.ofPattern("dd MMMM yyyy")
       f.format(date)
