@@ -16,18 +16,11 @@
 
 package uk.gov.hmrc.emcstfefrontend.utils
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalDateTime}
 
 trait DateUtils {
   implicit class LocalDateExtensions(date: LocalDate) {
-    def formatDateForUIOutput(): String = {
-      val f = DateTimeFormatter.ofPattern("dd MMMM yyyy")
-      f.format(date)
-    }
-  }
-
-  implicit class InstantExtensions(date: LocalDateTime) {
     def formatDateForUIOutput(): String = {
       val f = DateTimeFormatter.ofPattern("dd MMMM yyyy")
       f.format(date)
