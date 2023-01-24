@@ -19,34 +19,34 @@ package uk.gov.hmrc.emcstfefrontend.fixtures
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
 
-import java.time.Instant
+import java.time.{Instant, LocalDateTime}
 
 trait MovementListFixtures extends BaseFixtures {
 
   lazy val movement1 = GetMovementListItem(
     arc = "18GB00000000000232361",
-    dateOfDispatch = Instant.parse("2009-01-26T14:11:00.943Z"),
+    dateOfDispatch = LocalDateTime.parse("2009-01-26T14:11:00"),
     movementStatus = "Accepted",
     otherTraderID = "ABCD1234"
   )
 
   lazy val movement1Json = Json.obj(
     "arc" -> "18GB00000000000232361",
-    "dateOfDispatch" -> Instant.parse("2009-01-26T14:11:00.943Z"),
+    "dateOfDispatch" -> LocalDateTime.parse("2009-01-26T14:11:00"),
     "movementStatus" -> "Accepted",
     "otherTraderID" -> "ABCD1234"
   )
 
   lazy val movement2 = GetMovementListItem(
     arc = "GBTR000000EMCS1000040",
-    dateOfDispatch = Instant.parse("2009-01-26T14:12:00.943Z"),
+    dateOfDispatch = LocalDateTime.parse("2009-01-26T14:12:00"),
     movementStatus = "Accepted",
     otherTraderID = "ABCD1234"
   )
 
   lazy val movement2Json = Json.obj(
     "arc" -> "GBTR000000EMCS1000040",
-    "dateOfDispatch" -> "2009-01-26T14:12:00.943Z",
+    "dateOfDispatch" -> "2009-01-26T14:12:00",
     "movementStatus" -> "Accepted",
     "otherTraderID" -> "ABCD1234"
   )

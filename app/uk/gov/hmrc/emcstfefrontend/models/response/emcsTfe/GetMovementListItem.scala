@@ -20,10 +20,10 @@ import play.api.libs.json.{Json, Reads}
 import play.api.mvc.Call
 import uk.gov.hmrc.emcstfefrontend.controllers.routes
 
-import java.time.Instant
+import java.time.LocalDateTime
 
 case class GetMovementListItem(arc: String,
-                               dateOfDispatch: Instant,
+                               dateOfDispatch: LocalDateTime,
                                movementStatus: String,
                                otherTraderID: String) {
 
