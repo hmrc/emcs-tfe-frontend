@@ -18,17 +18,19 @@ package uk.gov.hmrc.emcstfefrontend.viewmodels
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListItem
+import uk.gov.hmrc.emcstfefrontend.utils.DateUtils
 import uk.gov.hmrc.emcstfefrontend.views.html.components._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{HeadCell, Table, TableRow}
 
 import javax.inject.Inject
 
-class MovementsListTableHelper @Inject()(link: link) {
+class MovementsListTableHelper @Inject()(link: link) extends DateUtils {
 
   private[viewmodels] def headerRow(implicit messages: Messages): Option[Seq[HeadCell]] = Some(Seq(
     HeadCell(Text(messages("viewMovementList.table.arc"))),
-    HeadCell(Text(messages("viewMovementList.table.consignorName")))
+    HeadCell(Text(messages("viewMovementList.table.dateOfDispatch"))),
+    HeadCell(Text(messages("viewMovementList.table.status")))
   ))
 
   private[viewmodels] def dataRows(ern: String, movements: Seq[GetMovementListItem])(implicit messages: Messages): Seq[Seq[TableRow]] = movements.map { movement =>
@@ -40,7 +42,10 @@ class MovementsListTableHelper @Inject()(link: link) {
         ))
       ),
       TableRow(
-        content = Text(movement.consignorName)
+        content = Text(movement.dateOfDispatch.formatDateForUIOutput())
+      ),
+      TableRow(
+        content = Text(movement.movementStatus)
       )
     )
   }

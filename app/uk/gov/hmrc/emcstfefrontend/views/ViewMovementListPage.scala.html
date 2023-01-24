@@ -29,7 +29,7 @@
 
 @(ern: String, getMovementListResponse: GetMovementListResponse)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some(messages("viewMovementList.title"))) {
+@layout(pageTitle = Some(messages("viewMovementList.title")), fullWidthContent = true) {
 
     @h1 {
         @messages("viewMovementList.heading")

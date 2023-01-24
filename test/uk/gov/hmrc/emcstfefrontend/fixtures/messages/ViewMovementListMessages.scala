@@ -22,20 +22,23 @@ object ViewMovementListMessages {
     val title: String
     val heading: Int => String
     val tableArc: String
-    val tableConsignerName: String
+    val tableDateOfDisptach: String
+    val tableStatus: String
   }
 
   object English extends ViewMessages with EN {
     override val title: String = "Movements in"
     override val heading = (count: Int) => s"Movements in ($count)"
     override val tableArc: String = "ARC"
-    override val tableConsignerName: String = "Consignor"
+    override val tableDateOfDisptach: String = "Date of Dispatch"
+    override val tableStatus: String = "Status"
   }
 
   object Welsh extends ViewMessages with CY {
     override val title: String = "Movements in"
     override val heading = (count: Int) => s"Movements in ($count)"
     override val tableArc: String = "ARC"
-    override val tableConsignerName: String = "Consignor"
+    override val tableDateOfDisptach: String = "Date of Dispatch"
+    override val tableStatus: String = "Status"
   }
 }

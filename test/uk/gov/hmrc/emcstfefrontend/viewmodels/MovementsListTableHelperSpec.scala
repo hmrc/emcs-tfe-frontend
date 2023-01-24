@@ -20,12 +20,13 @@ import play.api.i18n.MessagesApi
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ViewMovementListMessages
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
+import uk.gov.hmrc.emcstfefrontend.utils.DateUtils
 import uk.gov.hmrc.emcstfefrontend.views.html.components.link
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{HeadCell, Table, TableRow}
 
-class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures {
+class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures with DateUtils {
 
   lazy val messagesApi = app.injector.instanceOf[MessagesApi]
   lazy val link = app.injector.instanceOf[link]
@@ -46,7 +47,8 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures {
 
             helper.headerRow shouldBe Some(Seq(
               HeadCell(Text(viewMessages.tableArc)),
-              HeadCell(Text(viewMessages.tableConsignerName))
+              HeadCell(Text(viewMessages.tableDateOfDisptach)),
+              HeadCell(Text(viewMessages.tableStatus))
             ))
           }
         }
@@ -64,7 +66,10 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures {
                   ))
                 ),
                 TableRow(
-                  content = Text(movement1.consignorName)
+                  content = Text(movement1.dateOfDispatch.formatDateForUIOutput())
+                ),
+                TableRow(
+                  content = Text(movement1.movementStatus)
                 )
               ),
               Seq(
@@ -75,7 +80,10 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures {
                   ))
                 ),
                 TableRow(
-                  content = Text(movement2.consignorName)
+                  content = Text(movement1.dateOfDispatch.formatDateForUIOutput())
+                ),
+                TableRow(
+                  content = Text(movement1.movementStatus)
                 )
               )
             )
@@ -97,7 +105,10 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures {
                     ))
                   ),
                   TableRow(
-                    content = Text(movement1.consignorName)
+                    content = Text(movement1.dateOfDispatch.formatDateForUIOutput())
+                  ),
+                  TableRow(
+                    content = Text(movement1.movementStatus)
                   )
                 ),
                 Seq(
@@ -108,13 +119,17 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures {
                     ))
                   ),
                   TableRow(
-                    content = Text(movement2.consignorName)
+                    content = Text(movement1.dateOfDispatch.formatDateForUIOutput())
+                  ),
+                  TableRow(
+                    content = Text(movement1.movementStatus)
                   )
                 )
               ),
               head = Some(Seq(
                 HeadCell(Text(viewMessages.tableArc)),
-                HeadCell(Text(viewMessages.tableConsignerName))
+                HeadCell(Text(viewMessages.tableDateOfDisptach)),
+                HeadCell(Text(viewMessages.tableStatus))
               ))
             )
           }

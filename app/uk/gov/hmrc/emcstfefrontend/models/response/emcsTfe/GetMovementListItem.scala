@@ -23,12 +23,9 @@ import uk.gov.hmrc.emcstfefrontend.controllers.routes
 import java.time.Instant
 
 case class GetMovementListItem(arc: String,
-                               sequenceNumber: Int,
-                               consignorName: String,
                                dateOfDispatch: Instant,
                                movementStatus: String,
-                               destinationId: String,
-                               consignorLanguageCode: String) {
+                               otherTraderID: String) {
 
   def viewMovementUrl(ern: String): Call = routes.ViewMovementController.viewMovement(ern, arc)
 }

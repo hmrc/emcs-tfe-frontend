@@ -25,51 +25,40 @@ trait MovementListFixtures extends BaseFixtures {
 
   lazy val movement1 = GetMovementListItem(
     arc = "18GB00000000000232361",
-    sequenceNumber = 1,
-    consignorName = "Mr Consignor 801",
     dateOfDispatch = Instant.parse("2009-01-26T14:11:00.943Z"),
     movementStatus = "Accepted",
-    destinationId = "ABC1234567832",
-    consignorLanguageCode = "en"
+    otherTraderID = "ABCD1234"
   )
 
   lazy val movement1Json = Json.obj(
     "arc" -> "18GB00000000000232361",
-    "sequenceNumber" -> 1,
-    "consignorName" -> "Mr Consignor 801",
     "dateOfDispatch" -> Instant.parse("2009-01-26T14:11:00.943Z"),
     "movementStatus" -> "Accepted",
-    "destinationId" -> "ABC1234567832",
-    "consignorLanguageCode" -> "en"
+    "otherTraderID" -> "ABCD1234"
   )
 
   lazy val movement2 = GetMovementListItem(
     arc = "GBTR000000EMCS1000040",
-    sequenceNumber = 1,
-    consignorName = "Mr Consignor 801",
     dateOfDispatch = Instant.parse("2009-01-26T14:12:00.943Z"),
     movementStatus = "Accepted",
-    destinationId = "ABC1234567831",
-    consignorLanguageCode = "en"
+    otherTraderID = "ABCD1234"
   )
 
   lazy val movement2Json = Json.obj(
     "arc" -> "GBTR000000EMCS1000040",
-    "sequenceNumber" -> 1,
-    "consignorName" -> "Mr Consignor 801",
     "dateOfDispatch" -> "2009-01-26T14:12:00.943Z",
     "movementStatus" -> "Accepted",
-    "destinationId" -> "ABC1234567831",
-    "consignorLanguageCode" -> "en"
+    "otherTraderID" -> "ABCD1234"
   )
 
-  lazy val getMovementListResponse: GetMovementListResponse = GetMovementListResponse(Seq(movement1, movement2))
+  lazy val getMovementListResponse: GetMovementListResponse = GetMovementListResponse(Seq(movement1, movement2), 2)
 
   lazy val getMovementListJson: JsValue = Json.obj(
     "movements" -> Json.arr(
       movement1Json,
       movement2Json
-    )
+    ),
+    "count" -> 2
   )
 
 }

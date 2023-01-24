@@ -16,14 +16,21 @@
 
 package uk.gov.hmrc.emcstfefrontend.utils
 
-import java.time.LocalDate
+import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
 import java.time.format.DateTimeFormatter
 
 trait DateUtils {
-  implicit class LocaDateExtensions(date: LocalDate) {
+  implicit class LocalDateExtensions(date: LocalDate) {
     def formatDateForUIOutput(): String = {
       val f = DateTimeFormatter.ofPattern("dd MMMM yyyy")
       f.format(date)
+    }
+  }
+
+  implicit class InstantExtensions(date: Instant) {
+    def formatDateForUIOutput(): String = {
+      val f = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+      f.format(LocalDateTime.ofInstant(date, ZoneId.of("UTC")))
     }
   }
 }
