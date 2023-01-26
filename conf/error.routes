@@ -1,0 +1,3 @@
+# microservice specific routes
+
+GET         /unauthorised               uk.gov.hmrc.emcstfefrontend.controllers.errors.UnauthorisedController.unauthorised()

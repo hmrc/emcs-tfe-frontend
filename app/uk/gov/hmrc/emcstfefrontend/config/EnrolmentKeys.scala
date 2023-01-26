@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.fixtures
+package uk.gov.hmrc.emcstfefrontend.config
 
-trait BaseFixtures {
+object EnrolmentKeys {
 
-  val ern = "SomeErn"
-  val testCredId = "cred1234567891"
-  val testInternalId = "int1234567891"
+  val EMCS_ENROLMENT = "HMRC_EMCS_ORG"
+  val ERN = "ExciseNumber"
+  val ACTIVATED = "activated"
+  val INACTIVE = "inactive"
 
 }

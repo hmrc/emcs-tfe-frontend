@@ -26,3 +26,7 @@ viewMovementList.title = Movements in
 viewMovementList.heading = Movements in
 viewMovementList.table.arc = ARC
 viewMovementList.table.consignor = Consignor
+
+errors.unauthorised.title = Unauthorised
+errors.unauthorised.heading = Unauthorised
+errors.unauthorised.message = You are not authorised to access this service

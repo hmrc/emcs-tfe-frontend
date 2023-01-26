@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.fixtures
+package uk.gov.hmrc.emcstfefrontend.models.auth
 
-trait BaseFixtures {
+import play.api.mvc.{Request, WrappedRequest}
 
-  val ern = "SomeErn"
-  val testCredId = "cred1234567891"
-  val testInternalId = "int1234567891"
-
-}
+case class UserRequest[A](request: Request[A],
+                          ern: String,
+                          internalId: String,
+                          credId: String) extends WrappedRequest[A](request)

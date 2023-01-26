@@ -19,7 +19,7 @@ package uk.gov.hmrc.emcstfefrontend.fixtures
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
 
-import java.time.{Instant, LocalDateTime}
+import java.time.LocalDateTime
 
 trait MovementListFixtures extends BaseFixtures {
 
