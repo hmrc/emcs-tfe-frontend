@@ -18,7 +18,7 @@ package uk.gov.hmrc.emcstfefrontend.support
 
 import play.api.Application
 import play.api.libs.crypto.CookieSigner
-import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, PlainText, SymmetricCryptoFactory}
+import uk.gov.hmrc.crypto.{PlainText, SymmetricCryptoFactory}
 import uk.gov.hmrc.http.SessionKeys
 
 import java.net.URLEncoder

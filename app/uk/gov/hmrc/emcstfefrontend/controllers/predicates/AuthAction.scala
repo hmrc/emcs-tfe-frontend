@@ -96,10 +96,10 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
             Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
         }
       case Some(enrolment) if !enrolment.isActivated =>
-        logger.debug(s"[checkOrganisationEpayeEnrolment] ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found but not activated")
+        logger.debug(s"[checkOrganisationEMCSEnrolment] ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found but not activated")
         Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
       case _ =>
-        logger.debug(s"[checkOrganisationEpayeEnrolment] No ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found")
+        logger.debug(s"[checkOrganisationEMCSEnrolment] No ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found")
         Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
     }
 }
