@@ -17,12 +17,12 @@
 package uk.gov.hmrc.emcstfefrontend
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status
+import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
-import uk.gov.hmrc.emcstfefrontend.stubs.DownstreamStub
-import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
 import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
+import uk.gov.hmrc.emcstfefrontend.stubs.{AuthStub, DownstreamStub}
+import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
 
 import scala.xml.Elem
 
@@ -41,66 +41,86 @@ class ModeOfTransportIntegrationSpec extends IntegrationBaseSpec with ModeOfTran
     }
   }
 
-  "Calling the mode of transport page" should {
-    "return a success page" when {
-      "all downstream calls are successful" in new Test {
+  "Calling the mode of transport page" when {
+
+    "user is unauthorised" must {
+      "redirect to the Unauthorised controller" in new Test {
+
         override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, validModeOfTransportListJson)
+          AuthStub.unauthorised()
         }
 
         val response: WSResponse = await(request().get())
-        response.status shouldBe Status.OK
-        response.body should include("Other")
-        response.body should include("Postal consignment")
+        response.status shouldBe Status.SEE_OTHER
+        response.header(HeaderNames.LOCATION) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
       }
     }
-    "return an error page" when {
-      "downstream call returns unexpected JSON" in new Test {
-        val referenceDataResponseBody: JsValue = Json.parse(
-          s"""
-             |{
-             |   "field": "test message"
-             |}
-             |""".stripMargin
-        )
 
-        override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
+    "user is authorised" when {
+      "return a success page" when {
+        "all downstream calls are successful" in new Test {
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, validModeOfTransportListJson)
+          }
+
+          val response: WSResponse = await(request().get())
+          response.status shouldBe Status.OK
+          response.body should include("Other")
+          response.body should include("Postal consignment")
         }
-
-        val response: WSResponse = await(request().get())
-        response.status shouldBe Status.INTERNAL_SERVER_ERROR
-        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
+      "return an error page" when {
+        "downstream call returns unexpected JSON" in new Test {
+          val referenceDataResponseBody: JsValue = Json.parse(
+            s"""
+               |{
+               |   "field": "test message"
+               |}
+               |""".stripMargin
+          )
 
-      "downstream call returns something other than JSON" in new Test {
-        val referenceDataResponseBody: Elem = <message>test message</message>
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
+          }
 
-        override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
+          val response: WSResponse = await(request().get())
+          response.status shouldBe Status.INTERNAL_SERVER_ERROR
+          response.body should include("Sorry, we’re experiencing technical difficulties")
         }
 
-        val response: WSResponse = await(request().get())
-        response.status shouldBe Status.INTERNAL_SERVER_ERROR
-        response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
-        response.body should include("Sorry, we’re experiencing technical difficulties")
-      }
-      "downstream call returns a non-200 HTTP response" in new Test {
-        val referenceDataResponseBody: JsValue = Json.parse(
-          s"""
-             |{
-             |   "message": "test message"
-             |}
-             |""".stripMargin
-        )
+        "downstream call returns something other than JSON" in new Test {
+          val referenceDataResponseBody: Elem = <message>test message</message>
 
-        override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.INTERNAL_SERVER_ERROR, referenceDataResponseBody)
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.OK, referenceDataResponseBody)
+          }
+
+          val response: WSResponse = await(request().get())
+          response.status shouldBe Status.INTERNAL_SERVER_ERROR
+          response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
+          response.body should include("Sorry, we’re experiencing technical difficulties")
         }
+        "downstream call returns a non-200 HTTP response" in new Test {
+          val referenceDataResponseBody: JsValue = Json.parse(
+            s"""
+               |{
+               |   "message": "test message"
+               |}
+               |""".stripMargin
+          )
 
-        val response: WSResponse = await(request().get())
-        response.status shouldBe Status.INTERNAL_SERVER_ERROR
-        response.body should include("Sorry, we’re experiencing technical difficulties")
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataUri, Status.INTERNAL_SERVER_ERROR, referenceDataResponseBody)
+          }
+
+          val response: WSResponse = await(request().get())
+          response.status shouldBe Status.INTERNAL_SERVER_ERROR
+          response.body should include("Sorry, we’re experiencing technical difficulties")
+        }
       }
     }
   }

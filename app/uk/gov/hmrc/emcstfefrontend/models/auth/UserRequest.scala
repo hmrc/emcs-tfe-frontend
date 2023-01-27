@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.emcstfefrontend.models.auth
 
-import play.api.mvc.{Request, WrappedRequest}
+import play.api.i18n.MessagesApi
+import play.api.mvc.{MessagesRequestHeader, PreferredMessagesProvider, Request, WrappedRequest}
 
 case class UserRequest[A](request: Request[A],
                           ern: String,
                           internalId: String,
-                          credId: String) extends WrappedRequest[A](request)
+                          credId: String)(implicit val messagesApi: MessagesApi) extends WrappedRequest[A](request) with PreferredMessagesProvider with MessagesRequestHeader

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.emcstfefrontend.controllers.predicates
 
 import com.google.inject.Inject
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -37,6 +38,7 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
   lazy val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
   lazy val appConfig = app.injector.instanceOf[AppConfig]
   implicit lazy val ec = app.injector.instanceOf[ExecutionContext]
+  implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
 
   type AuthRetrieval = ~[~[~[Option[AffinityGroup], Enrolments], Option[String]], Option[Credentials]]
 
@@ -45,7 +47,7 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
   trait Harness {
 
     val authConnector: AuthConnector
-    lazy val authAction = new AuthenticatedUserAction(authConnector, appConfig, bodyParsers)
+    lazy val authAction = new AuthActionImpl(authConnector, appConfig, bodyParsers)
     def onPageLoad(): Action[AnyContent] = authAction { _ => Results.Ok }
 
     lazy val result = onPageLoad()(fakeRequest)

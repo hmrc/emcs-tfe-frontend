@@ -18,7 +18,7 @@ package uk.gov.hmrc.emcstfefrontend.config
 
 object EnrolmentKeys {
 
-  val EMCS_ENROLMENT = "HMRC_EMCS_ORG"
+  val EMCS_ENROLMENT = "HMRC-EMCS-ORG"
   val ERN = "ExciseNumber"
   val ACTIVATED = "activated"
   val INACTIVE = "inactive"

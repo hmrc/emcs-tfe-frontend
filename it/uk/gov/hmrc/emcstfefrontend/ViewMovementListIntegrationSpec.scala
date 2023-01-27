@@ -17,12 +17,12 @@
 package uk.gov.hmrc.emcstfefrontend
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status
+import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ViewMovementListMessages
-import uk.gov.hmrc.emcstfefrontend.stubs.DownstreamStub
+import uk.gov.hmrc.emcstfefrontend.stubs.{AuthStub, DownstreamStub}
 import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
 
 import scala.xml.Elem
@@ -42,78 +42,98 @@ class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementL
     }
   }
 
-  "Calling the View Movements Lists page" should {
+  "Calling the View Movements Lists page" when {
 
-    "return a success page" when {
-
-      "all downstream calls are successful" in new Test {
+    "user is unauthorised" must {
+      "redirect to the Unauthorised controller" in new Test {
 
         override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, getMovementListJson)
+          AuthStub.unauthorised()
         }
 
         val response: WSResponse = await(request().get())
-
-        response.status shouldBe Status.OK
-        response.body should include(ViewMovementListMessages.English.title)
+        response.status shouldBe Status.SEE_OTHER
+        response.header(HeaderNames.LOCATION) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
       }
     }
 
-    "return an error page" when {
+    "user is authorised" when {
 
-      "downstream call returns unexpected JSON" in new Test {
+      "return a success page" when {
 
-        val emcsTfeResponseBody: JsValue = Json.parse(
-          s"""
-             |{
-             |   "field": "test message"
-             |}
-             |""".stripMargin
-        )
+        "all downstream calls are successful" in new Test {
 
-        override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, getMovementListJson)
+          }
+
+          val response: WSResponse = await(request().get())
+
+          response.status shouldBe Status.OK
+          response.body should include(ViewMovementListMessages.English.title)
         }
-
-        val response: WSResponse = await(request().get())
-
-        response.status shouldBe Status.INTERNAL_SERVER_ERROR
-        response.body should include("Sorry, we’re experiencing technical difficulties")
       }
 
-      "downstream call returns something other than JSON" in new Test {
+      "return an error page" when {
 
-        val emcsTfeResponseBody: Elem = <message>test message</message>
+        "downstream call returns unexpected JSON" in new Test {
 
-        override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
+          val emcsTfeResponseBody: JsValue = Json.parse(
+            s"""
+               |{
+               |   "field": "test message"
+               |}
+               |""".stripMargin
+          )
+
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
+          }
+
+          val response: WSResponse = await(request().get())
+
+          response.status shouldBe Status.INTERNAL_SERVER_ERROR
+          response.body should include("Sorry, we’re experiencing technical difficulties")
         }
 
-        val response: WSResponse = await(request().get())
+        "downstream call returns something other than JSON" in new Test {
 
-        response.status shouldBe Status.INTERNAL_SERVER_ERROR
-        response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
-        response.body should include("Sorry, we’re experiencing technical difficulties")
-      }
+          val emcsTfeResponseBody: Elem = <message>test message</message>
 
-      "downstream call returns a non-200 HTTP response" in new Test {
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
+          }
 
-        val emcsTfeResponseBody: JsValue = Json.parse(
-          s"""
-             |{
-             |   "message": "test message"
-             |}
-             |""".stripMargin
-        )
+          val response: WSResponse = await(request().get())
 
-        override def setupStubs(): StubMapping = {
-          DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.INTERNAL_SERVER_ERROR, emcsTfeResponseBody)
+          response.status shouldBe Status.INTERNAL_SERVER_ERROR
+          response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
+          response.body should include("Sorry, we’re experiencing technical difficulties")
         }
 
-        val response: WSResponse = await(request().get())
+        "downstream call returns a non-200 HTTP response" in new Test {
 
-        response.status shouldBe Status.INTERNAL_SERVER_ERROR
-        response.body should include("Sorry, we’re experiencing technical difficulties")
+          val emcsTfeResponseBody: JsValue = Json.parse(
+            s"""
+               |{
+               |   "message": "test message"
+               |}
+               |""".stripMargin
+          )
+
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.INTERNAL_SERVER_ERROR, emcsTfeResponseBody)
+          }
+
+          val response: WSResponse = await(request().get())
+
+          response.status shouldBe Status.INTERNAL_SERVER_ERROR
+          response.body should include("Sorry, we’re experiencing technical difficulties")
+        }
       }
     }
   }

@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.emcstfefrontend.connectors
 
-import play.api.Logger
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Reads}
+import uk.gov.hmrc.emcstfefrontend.utils.Logging
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 
 import scala.util.{Success, Try}
 
-trait BaseConnectorUtils[T] {
-
-  lazy val logger: Logger = Logger(this.getClass)
+trait BaseConnectorUtils[T] extends Logging {
 
   implicit val reads: Reads[T]
 
@@ -36,7 +34,7 @@ trait BaseConnectorUtils[T] {
       Try(response.json) match {
         case Success(json: JsValue) => parseResult(json)
         case _ =>
-          logger.warn("[KnownJsonResponse][validateJson] No JSON was returned")
+          logger.warn("[validateJson] No JSON was returned")
           None
       }
     }
@@ -45,7 +43,7 @@ trait BaseConnectorUtils[T] {
 
       case JsSuccess(value, _) => Some(value)
       case JsError(error) =>
-        logger.warn(s"[KnownJsonResponse][validateJson] Unable to parse JSON: $error")
+        logger.warn(s"[validateJson] Unable to parse JSON: $error")
         None
     }
   }

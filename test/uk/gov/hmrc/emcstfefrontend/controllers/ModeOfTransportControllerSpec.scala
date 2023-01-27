@@ -21,6 +21,7 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.FakeAuthAction
 import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
 import uk.gov.hmrc.emcstfefrontend.mocks.services.MockModeOfTransportService
 import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
@@ -30,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ModeOfTransportControllerSpec extends UnitSpec with ModeOfTransportListFixture {
+class ModeOfTransportControllerSpec extends UnitSpec with ModeOfTransportListFixture with FakeAuthAction {
 
   trait Test extends MockModeOfTransportService {
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -39,11 +40,11 @@ class ModeOfTransportControllerSpec extends UnitSpec with ModeOfTransportListFix
     implicit val postRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("POST", "/")
 
     val controller: ModeOfTransportController = new ModeOfTransportController(
-      app.injector.instanceOf[MessagesControllerComponents],
-      mockService,
-      app.injector.instanceOf[ModeOfTransportPage],
-      app.injector.instanceOf[ErrorHandler],
-      ec
+      mcc = app.injector.instanceOf[MessagesControllerComponents],
+      service = mockService,
+      modeOfTransportPage = app.injector.instanceOf[ModeOfTransportPage],
+      errorHandler = app.injector.instanceOf[ErrorHandler],
+      authAction = FakeSuccessAuthAction
     )
   }
 

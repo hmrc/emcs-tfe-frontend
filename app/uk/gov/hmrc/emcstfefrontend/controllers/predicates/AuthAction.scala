@@ -17,6 +17,7 @@
 package uk.gov.hmrc.emcstfefrontend.controllers.predicates
 
 import com.google.inject.Inject
+import play.api.i18n.MessagesApi
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
@@ -30,14 +31,16 @@ import uk.gov.hmrc.emcstfefrontend.utils.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
+import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AuthAction extends ActionBuilder[UserRequest, AnyContent] with ActionFunction[Request, UserRequest]
 
-class AuthenticatedUserAction @Inject()(override val authConnector: AuthConnector,
-                                        config: AppConfig,
-                                        val parser: BodyParsers.Default
-                                       )(implicit val executionContext: ExecutionContext) extends AuthAction with AuthorisedFunctions with Logging {
+@Singleton
+class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
+                               config: AppConfig,
+                               val parser: BodyParsers.Default
+                              )(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi) extends AuthAction with AuthorisedFunctions with Logging {
 
   override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
 
@@ -54,26 +57,26 @@ class AuthenticatedUserAction @Inject()(override val authConnector: AuthConnecto
         checkOrganisationEMCSEnrolment(enrolments, internalId, credentials.providerId)(block)
 
       case Some(Organisation) ~ _ ~ None ~ _ =>
-        logger.warn("[AuthenticatedIdentifierAction][invokeBlock] InternalId could not be retrieved from Auth")
+        logger.warn("[invokeBlock] InternalId could not be retrieved from Auth")
         Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
 
       case Some(Organisation) ~ _ ~ _ ~ None =>
-        logger.warn("[AuthenticatedIdentifierAction][invokeBlock] Credentials could not be retrieved from Auth")
+        logger.warn("[invokeBlock] Credentials could not be retrieved from Auth")
         Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
 
       case Some(affinityGroup) ~ _ ~ _ ~ _ =>
-        logger.warn(s"[AuthenticatedIdentifierAction][invokeBlock] User has incompatible AffinityGroup of '$affinityGroup'")
+        logger.warn(s"[invokeBlock] User has incompatible AffinityGroup of '$affinityGroup'")
         Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
 
       case _ =>
-        logger.warn(s"[AuthenticatedIdentifierAction][invokeBlock] User has no AffinityGroup")
+        logger.warn(s"[invokeBlock] User has no AffinityGroup")
         Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
 
     } recover {
       case _: NoActiveSession =>
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
       case x: AuthorisationException =>
-        logger.debug(s"[AuthenticatedIdentifierAction][invokeBlock] Authorisation Exception ${x.reason}")
+        logger.debug(s"[invokeBlock] Authorisation Exception ${x.reason}")
         Redirect(controllers.errors.routes.UnauthorisedController.unauthorised())
     }
   }
@@ -89,14 +92,14 @@ class AuthenticatedUserAction @Inject()(override val authConnector: AuthConnecto
           case Some(ern) =>
             block(UserRequest(request, ern, internalId, credId))
           case None =>
-            logger.error(s"[AuthenticatedIdentifierAction][checkOrganisationEMCSEnrolment] Could not find ${EnrolmentKeys.ERN} from the ${EnrolmentKeys.EMCS_ENROLMENT} enrolment")
+            logger.error(s"[checkOrganisationEMCSEnrolment] Could not find ${EnrolmentKeys.ERN} from the ${EnrolmentKeys.EMCS_ENROLMENT} enrolment")
             Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
         }
       case Some(enrolment) if !enrolment.isActivated =>
-        logger.debug(s"[AuthenticatedIdentifierAction][checkOrganisationEpayeEnrolment] ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found but not activated")
+        logger.debug(s"[checkOrganisationEpayeEnrolment] ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found but not activated")
         Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
       case _ =>
-        logger.debug(s"[AuthenticatedIdentifierAction][checkOrganisationEpayeEnrolment] No ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found")
+        logger.debug(s"[checkOrganisationEpayeEnrolment] No ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found")
         Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
     }
 }
