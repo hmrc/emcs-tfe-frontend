@@ -19,7 +19,7 @@ package uk.gov.hmrc.emcstfefrontend.fixtures
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.emcstfefrontend.models.response.referenceData.{ModeOfTransportListModel, ModeOfTransportModel}
 
-trait ModeOfTransportListFixture {
+trait ModeOfTransportListFixture extends BaseFixtures {
 
   val validModeOfTransportJson: JsValue = Json.parse(
     """

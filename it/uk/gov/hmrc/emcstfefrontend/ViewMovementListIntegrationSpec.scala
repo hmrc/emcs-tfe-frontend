@@ -57,7 +57,19 @@ class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementL
       }
     }
 
-    "user is authorised" when {
+    "user is authorised" should {
+
+      "return unauthorised" when {
+        "ERN from the URL does not match the ERN of the logged in User" in new Test {
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised("wrongErn")
+          }
+
+          val response: WSResponse = await(request().get())
+          response.status shouldBe Status.SEE_OTHER
+          response.header(HeaderNames.LOCATION) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+        }
+      }
 
       "return a success page" when {
 

@@ -51,8 +51,7 @@ class ViewMovementControllerSpec extends UnitSpec with FakeAuthAction {
   "GET /consignment/:exciseRegistrationNumber/:arc" should {
     "return 200" when {
       "connector call is successful" in new Test {
-        val ern = "ERN"
-        val arc = "ARC"
+
         val model: GetMovementResponse = GetMovementResponse("", "", "", LocalDate.parse("2008-11-20"), "", 0)
 
         MockEmcsTfeConnector
@@ -66,8 +65,6 @@ class ViewMovementControllerSpec extends UnitSpec with FakeAuthAction {
     }
     "return 500" when {
       "connector call is unsuccessful" in new Test {
-        val ern = "ERN"
-        val arc = "ARC"
 
         MockEmcsTfeConnector
           .getMovement()

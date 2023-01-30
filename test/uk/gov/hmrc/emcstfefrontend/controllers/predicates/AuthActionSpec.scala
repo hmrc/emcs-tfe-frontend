@@ -28,6 +28,7 @@ import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
 import uk.gov.hmrc.emcstfefrontend.config.{AppConfig, EnrolmentKeys}
 import uk.gov.hmrc.emcstfefrontend.controllers
 import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
+import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -61,119 +62,140 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
 
   "AuthAction" when {
 
-    "User is not logged in" must {
+    "calling .checkErnMatchesRequest" when {
 
-      "redirect to the sign-in URL with the ContinueURL set" in new Harness {
-
-        override val authConnector = new FakeFailingAuthConnector(new BearerTokenExpired)
-
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("http://localhost:9949/auth-login-stub/gg-sign-in?continue=http%3A%2F%2Flocalhost%3A8310%2Femcs-tfe")
-      }
-    }
-
-    "An unexpected Authorisation exception is returned from the Auth library" must {
-
-      "redirect to unauthorised" in new Harness {
-
-        override val authConnector = new FakeFailingAuthConnector(new InsufficientConfidenceLevel)
-
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
-      }
-    }
-
-    "User is logged in" when {
-
-      "Affinity Group of user does not exist" must {
+      "ERN of the URL does NOT match the ERN from the credential" must {
 
         "redirect to unauthorised" in new Harness {
 
           override val authConnector = new FakeSuccessAuthConnector(authResponse(affinityGroup = None))
 
-          status(result) shouldBe SEE_OTHER
+          lazy val checkResult = authAction.checkErnMatchesRequest(ern)(Future.successful(Results.Ok))(UserRequest(
+            fakeRequest,
+            "invalidERN",
+            testInternalId,
+            testCredId
+          ))
+
+          status(checkResult) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
         }
       }
 
-      "Affinity Group of user is not Organisation" must {
+      "ERN of the URL matches the ERN from the credential" must {
+
+        "execute the block (returning OK)" in new Harness {
+
+          override val authConnector = new FakeSuccessAuthConnector(authResponse(affinityGroup = None))
+
+          lazy val checkResult = authAction.checkErnMatchesRequest(ern)(Future.successful(Results.Ok))(UserRequest(
+            fakeRequest,
+            ern,
+            testInternalId,
+            testCredId
+          ))
+
+          status(checkResult) shouldBe OK
+        }
+      }
+    }
+
+    "calling .invokeBlock" when {
+
+      "User is not logged in" must {
+
+        "redirect to the sign-in URL with the ContinueURL set" in new Harness {
+
+          override val authConnector = new FakeFailingAuthConnector(new BearerTokenExpired)
+
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("http://localhost:9949/auth-login-stub/gg-sign-in?continue=http%3A%2F%2Flocalhost%3A8310%2Femcs-tfe")
+        }
+      }
+
+      "An unexpected Authorisation exception is returned from the Auth library" must {
 
         "redirect to unauthorised" in new Harness {
 
-          override val authConnector = new FakeSuccessAuthConnector(authResponse(affinityGroup = Some(Agent)))
+          override val authConnector = new FakeFailingAuthConnector(new InsufficientConfidenceLevel)
 
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
         }
       }
 
-      "Affinity Group of user is Organisation" when {
+      "User is logged in" when {
 
-        "internalId is not retrieved from Auth" must {
+        "Affinity Group of user does not exist" must {
 
           "redirect to unauthorised" in new Harness {
 
-            override val authConnector = new FakeSuccessAuthConnector(authResponse(internalId = None))
+            override val authConnector = new FakeSuccessAuthConnector(authResponse(affinityGroup = None))
 
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
           }
         }
 
-        "internalId is retrieved from Auth" when {
+        "Affinity Group of user is not Organisation" must {
 
-          "credential is not retrieved from Auth" must {
+          "redirect to unauthorised" in new Harness {
+
+            override val authConnector = new FakeSuccessAuthConnector(authResponse(affinityGroup = Some(Agent)))
+
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+          }
+        }
+
+        "Affinity Group of user is Organisation" when {
+
+          "internalId is not retrieved from Auth" must {
 
             "redirect to unauthorised" in new Harness {
 
-              override val authConnector = new FakeSuccessAuthConnector(authResponse(credId = None))
+              override val authConnector = new FakeSuccessAuthConnector(authResponse(internalId = None))
 
               status(result) shouldBe SEE_OTHER
               redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
             }
           }
 
-          "credential is retrieved from Auth" when {
+          "internalId is retrieved from Auth" when {
 
-            s"Enrolments is missing the ${EnrolmentKeys.EMCS_ENROLMENT}" must {
+            "credential is not retrieved from Auth" must {
 
               "redirect to unauthorised" in new Harness {
 
-                override val authConnector = new FakeSuccessAuthConnector(authResponse())
+                override val authConnector = new FakeSuccessAuthConnector(authResponse(credId = None))
 
                 status(result) shouldBe SEE_OTHER
                 redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
               }
             }
 
-            s"Enrolments exists for ${EnrolmentKeys.EMCS_ENROLMENT} but is NOT activated" must {
+            "credential is retrieved from Auth" when {
 
-              "redirect to unauthorised" in new Harness {
+              s"Enrolments is missing the ${EnrolmentKeys.EMCS_ENROLMENT}" must {
 
-                override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
-                  Enrolment(
-                    key = EnrolmentKeys.EMCS_ENROLMENT,
-                    identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, ern)),
-                    state = EnrolmentKeys.INACTIVE
-                  )
-                ))))
+                "redirect to unauthorised" in new Harness {
 
-                status(result) shouldBe SEE_OTHER
-                redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+                  override val authConnector = new FakeSuccessAuthConnector(authResponse())
+
+                  status(result) shouldBe SEE_OTHER
+                  redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+                }
               }
-            }
 
-            s"Enrolments exists for ${EnrolmentKeys.EMCS_ENROLMENT} AND is activated" when {
-
-              s"the ${EnrolmentKeys.ERN} identifier is missing (should be impossible)" must {
+              s"Enrolments exists for ${EnrolmentKeys.EMCS_ENROLMENT} but is NOT activated" must {
 
                 "redirect to unauthorised" in new Harness {
 
                   override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
                     Enrolment(
                       key = EnrolmentKeys.EMCS_ENROLMENT,
-                      identifiers = Seq(),
-                      state = EnrolmentKeys.ACTIVATED
+                      identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, ern)),
+                      state = EnrolmentKeys.INACTIVE
                     )
                   ))))
 
@@ -182,19 +204,39 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
                 }
               }
 
-              s"the ${EnrolmentKeys.ERN} identifier is present" must {
+              s"Enrolments exists for ${EnrolmentKeys.EMCS_ENROLMENT} AND is activated" when {
 
-                "allow the User through, returning a 200 (OK)" in new Harness {
+                s"the ${EnrolmentKeys.ERN} identifier is missing (should be impossible)" must {
 
-                  override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
-                    Enrolment(
-                      key = EnrolmentKeys.EMCS_ENROLMENT,
-                      identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, ern)),
-                      state = EnrolmentKeys.ACTIVATED
-                    )
-                  ))))
+                  "redirect to unauthorised" in new Harness {
 
-                  status(result) shouldBe OK
+                    override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
+                      Enrolment(
+                        key = EnrolmentKeys.EMCS_ENROLMENT,
+                        identifiers = Seq(),
+                        state = EnrolmentKeys.ACTIVATED
+                      )
+                    ))))
+
+                    status(result) shouldBe SEE_OTHER
+                    redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+                  }
+                }
+
+                s"the ${EnrolmentKeys.ERN} identifier is present" must {
+
+                  "allow the User through, returning a 200 (OK)" in new Harness {
+
+                    override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
+                      Enrolment(
+                        key = EnrolmentKeys.EMCS_ENROLMENT,
+                        identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, ern)),
+                        state = EnrolmentKeys.ACTIVATED
+                      )
+                    ))))
+
+                    status(result) shouldBe OK
+                  }
                 }
               }
             }

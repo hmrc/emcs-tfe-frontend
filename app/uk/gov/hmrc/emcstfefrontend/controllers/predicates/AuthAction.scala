@@ -34,13 +34,19 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AuthAction extends ActionBuilder[UserRequest, AnyContent] with ActionFunction[Request, UserRequest]
+trait AuthAction extends ActionBuilder[UserRequest, AnyContent] with ActionFunction[Request, UserRequest] with Logging {
+  def checkErnMatchesRequest[A](ern: String)(block: => Future[Result])(implicit request: UserRequest[A]): Future[Result] =
+    if (ern == request.ern) block else {
+      logger.warn(s"User with ern: '${request.ern}' attempted to access ern: '$ern' which they are not authorised to view")
+      Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
+    }
+}
 
 @Singleton
 class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
                                config: AppConfig,
                                val parser: BodyParsers.Default
-                              )(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi) extends AuthAction with AuthorisedFunctions with Logging {
+                              )(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi) extends AuthAction with AuthorisedFunctions {
 
   override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
 

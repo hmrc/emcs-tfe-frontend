@@ -35,9 +35,11 @@ class ViewMovementListController @Inject()(mcc: MessagesControllerComponents,
                                           )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
 
   def viewMovementList(exciseRegistrationNumber: String): Action[AnyContent] = authAction.async { implicit request =>
-    connector.getMovementList(exciseRegistrationNumber).map {
-      case Right(movementList) => Ok(viewMovementListPage(exciseRegistrationNumber, movementList))
-      case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
+    authAction.checkErnMatchesRequest(exciseRegistrationNumber) {
+      connector.getMovementList(exciseRegistrationNumber).map {
+        case Right(movementList) => Ok(viewMovementListPage(exciseRegistrationNumber, movementList))
+        case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
+      }
     }
   }
 }

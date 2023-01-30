@@ -34,9 +34,9 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        authAction: AuthAction
                                       )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
 
-  def viewMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] = authAction.async {
-    implicit request => {
-      connector.getMovement(exciseRegistrationNumber = exciseRegistrationNumber, arc = arc).map {
+  def viewMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] = authAction.async { implicit request =>
+    authAction.checkErnMatchesRequest(exciseRegistrationNumber) {
+      connector.getMovement(exciseRegistrationNumber, arc).map {
         case Right(response) => Ok(viewMovementPage(arc, response))
         case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
       }

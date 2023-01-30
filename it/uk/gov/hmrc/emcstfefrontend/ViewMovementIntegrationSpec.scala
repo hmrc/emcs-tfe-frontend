@@ -32,8 +32,8 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTranspo
   private trait Test {
     def setupStubs(): StubMapping
 
-    def uri: String = "/consignment/my-ern/my-arc"
-    def emcsTfeUri: String = s"/emcs-tfe/movement/my-ern/my-arc"
+    def uri: String = s"/consignment/$ern/$arc"
+    def emcsTfeUri: String = s"/emcs-tfe/movement/$ern/$arc"
 
     def request(): WSRequest = {
       setupStubs()
@@ -56,7 +56,20 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTranspo
       }
     }
 
-    "user is authorised" when {
+    "user is authorised" should {
+
+      "return unauthorised" when {
+        "ERN from the URL does not match the ERN of the logged in User" in new Test {
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised("wrongErn")
+          }
+
+          val response: WSResponse = await(request().get())
+          response.status shouldBe Status.SEE_OTHER
+          response.header(HeaderNames.LOCATION) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+        }
+      }
+
       "return a success page" when {
         "all downstream calls are successful" in new Test {
           override def setupStubs(): StubMapping = {
@@ -75,7 +88,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTranspo
           val response: WSResponse = await(request().get())
           response.status shouldBe Status.OK
           response.body should include("Administrative reference code")
-          response.body should include("my-arc")
+          response.body should include(arc)
         }
       }
       "return an error page" when {
