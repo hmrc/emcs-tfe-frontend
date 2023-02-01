@@ -23,6 +23,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.FakeAuthAction
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.EN
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
@@ -33,7 +34,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ViewMovementListControllerSpec extends UnitSpec with MovementListFixtures {
+class ViewMovementListControllerSpec extends UnitSpec with MovementListFixtures with FakeAuthAction {
 
   trait Test extends MockEmcsTfeConnector {
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -49,7 +50,7 @@ class ViewMovementListControllerSpec extends UnitSpec with MovementListFixtures 
       mockGetMovementListConnector,
       view,
       errorHandler,
-      ec
+      FakeSuccessAuthAction
     )
   }
 

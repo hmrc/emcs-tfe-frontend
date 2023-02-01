@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.fixtures
+package uk.gov.hmrc.emcstfefrontend.models.auth
 
-trait BaseFixtures {
+import play.api.i18n.MessagesApi
+import play.api.mvc.{MessagesRequestHeader, PreferredMessagesProvider, Request, WrappedRequest}
 
-  val ern = "ERN"
-  val arc = "ARC"
-  val testCredId = "cred1234567891"
-  val testInternalId = "int1234567891"
-
-}
+case class UserRequest[A](request: Request[A],
+                          ern: String,
+                          internalId: String,
+                          credId: String)(implicit val messagesApi: MessagesApi) extends WrappedRequest[A](request) with PreferredMessagesProvider with MessagesRequestHeader

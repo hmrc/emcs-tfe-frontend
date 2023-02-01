@@ -21,6 +21,7 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.FakeAuthAction
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
 import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
@@ -31,7 +32,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
-class ViewMovementControllerSpec extends UnitSpec {
+class ViewMovementControllerSpec extends UnitSpec with FakeAuthAction {
 
   trait Test extends MockEmcsTfeConnector {
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -43,15 +44,14 @@ class ViewMovementControllerSpec extends UnitSpec {
       mockGetMovementConnector,
       app.injector.instanceOf[ViewMovementPage],
       app.injector.instanceOf[ErrorHandler],
-      ec
+      FakeSuccessAuthAction
     )
   }
 
   "GET /consignment/:exciseRegistrationNumber/:arc" should {
     "return 200" when {
       "connector call is successful" in new Test {
-        val ern = "ERN"
-        val arc = "ARC"
+
         val model: GetMovementResponse = GetMovementResponse("", "", "", LocalDate.parse("2008-11-20"), "", 0)
 
         MockEmcsTfeConnector
@@ -65,8 +65,6 @@ class ViewMovementControllerSpec extends UnitSpec {
     }
     "return 500" when {
       "connector call is unsuccessful" in new Test {
-        val ern = "ERN"
-        val arc = "ARC"
 
         MockEmcsTfeConnector
           .getMovement()

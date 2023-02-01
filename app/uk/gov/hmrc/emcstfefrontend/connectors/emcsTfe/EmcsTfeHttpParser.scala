@@ -32,11 +32,11 @@ trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
         case OK => response.validateJson match {
           case Some(valid) => Right(valid)
           case None =>
-            logger.warn(s"[EmcsTfeHttpParser][read] Bad JSON response from emcs-tfe")
+            logger.warn(s"[read] Bad JSON response from emcs-tfe")
             Left(JsonValidationError)
         }
         case status =>
-          logger.warn(s"[EmcsTfeHttpParser][read] Unexpected status from emcs-tfe: $status")
+          logger.warn(s"[read] Unexpected status from emcs-tfe: $status")
           Left(UnexpectedDownstreamResponseError)
       }
     }

@@ -33,11 +33,11 @@ trait ReferenceDataHttpParser[A] extends BaseConnectorUtils[A] {
         case OK => response.validateJson match {
           case Some(valid) => Right(valid)
           case None =>
-            logger.warn(s"[ReferenceDataHttpParser][read] Bad JSON response from reference-data")
+            logger.warn(s"[read] Bad JSON response from reference-data")
             Left(JsonValidationError)
         }
         case status =>
-          logger.warn(s"[ReferenceDataHttpParser][read] Unexpected status from reference-data: $status")
+          logger.warn(s"[read] Unexpected status from reference-data: $status")
           Left(UnexpectedDownstreamResponseError)
       }
     }

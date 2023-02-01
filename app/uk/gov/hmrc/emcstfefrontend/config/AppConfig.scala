@@ -28,6 +28,9 @@ trait AppConfig {
 
   def welshLanguageSupportEnabled: Boolean
   def getReferenceDataStubFeatureSwitch(): Boolean
+
+  def loginUrl: String
+  def loginContinueUrl: String
 }
 
 @Singleton
@@ -42,4 +45,8 @@ class AppConfigImpl @Inject()(val servicesConfig: ServicesConfig, val config: Co
   def welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
   def getReferenceDataStubFeatureSwitch(): Boolean = servicesConfig.getBoolean("feature-switch.enable-reference-data-stub-source")
+
+  def loginUrl: String = servicesConfig.getString("urls.login")
+
+  def loginContinueUrl: String = servicesConfig.getString("urls.loginContinue")
 }

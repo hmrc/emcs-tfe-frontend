@@ -19,6 +19,7 @@ package uk.gov.hmrc.emcstfefrontend.controllers
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.GetMovementConnector
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.AuthAction
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -26,17 +27,16 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ViewMovementController @Inject()(
-                                        mcc: MessagesControllerComponents,
-                                        connector: GetMovementConnector,
-                                        viewMovementPage: ViewMovementPage,
-                                        errorHandler: ErrorHandler,
-                                        implicit val executionContext: ExecutionContext)
-  extends FrontendController(mcc) {
+class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
+                                       connector: GetMovementConnector,
+                                       viewMovementPage: ViewMovementPage,
+                                       errorHandler: ErrorHandler,
+                                       authAction: AuthAction
+                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
 
-  def viewMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] = Action.async {
-    implicit request => {
-      connector.getMovement(exciseRegistrationNumber = exciseRegistrationNumber, arc = arc).map {
+  def viewMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] = authAction.async { implicit request =>
+    authAction.checkErnMatchesRequest(exciseRegistrationNumber) {
+      connector.getMovement(exciseRegistrationNumber, arc).map {
         case Right(response) => Ok(viewMovementPage(arc, response))
         case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
       }
