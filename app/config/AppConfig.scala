@@ -17,9 +17,12 @@
 package config
 
 import com.google.inject.ImplementedBy
+
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
+import scala.concurrent.duration.Duration
 
 @ImplementedBy(classOf[AppConfigImpl])
 trait AppConfig {
@@ -31,6 +34,8 @@ trait AppConfig {
 
   def loginUrl: String
   def loginContinueUrl: String
+
+  def reportAReceiptJourneyTtl: Duration
 }
 
 @Singleton
@@ -49,4 +54,6 @@ class AppConfigImpl @Inject()(val servicesConfig: ServicesConfig, val config: Co
   def loginUrl: String = servicesConfig.getString("urls.login")
 
   def loginContinueUrl: String = servicesConfig.getString("urls.loginContinue")
+
+  def reportAReceiptJourneyTtl: Duration = Duration.apply(servicesConfig.getString("mongodb.ttls.reportAReceiptJourney"))
 }
