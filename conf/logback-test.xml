@@ -49,8 +49,7 @@
     <logger name="play.core.netty" level="OFF"/>
 
 
-    <logger name="application" level="INFO"/>
-    <logger name="uk.gov.hmrc.emcstfefrontend" level="DEBUG"/>
+    <logger name="application" level="DEBUG"/>
 
     <logger name="connector" level="ERROR">
         <appender-ref ref="STDOUT"/>
