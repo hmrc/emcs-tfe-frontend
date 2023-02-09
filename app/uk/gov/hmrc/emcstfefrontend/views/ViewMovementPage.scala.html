@@ -17,15 +17,19 @@
 @import uk.gov.hmrc.emcstfefrontend.views.html.components._
 @import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 @import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
+@import uk.gov.hmrc.emcstfefrontend.config.AppConfig
 
 @this(
         layout: Layout,
         summaryList: summary_list,
         span: span,
         h1: h1,
-        h2: h2
+        h2: h2,
+        link: link,
+        appConfig: AppConfig
 )
 @(
+        ern: String,
         arc: String,
         getMovementResponse: GetMovementResponse
 )(implicit request: Request[_], messages: Messages)
@@ -44,6 +48,7 @@
             (messages("viewMovement.numberOfItems"), getMovementResponse.numberOfItems.toString)
         )
     )
+    @link(appConfig.emcsTfeReportAReceiptUrl(ern, arc), "viewMovement.reportAReceipt")
 }
 
 @{

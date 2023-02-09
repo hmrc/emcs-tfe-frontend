@@ -40,8 +40,9 @@ class ViewMovementPageViewSpec extends UnitSpec {
   "The ModeOfTransportPage view" should {
 
     val testData = GetMovementResponse("MyLrn", "MyEadStatus", "MyConsignor", LocalDate.parse("2010-03-04"), "MyJourneyTime", 0)
+    val ern = "ern12345"
     val arc = "12345"
-    lazy val html: Html = page(arc, testData)(FakeRequest(), implicitly)
+    lazy val html: Html = page(ern, arc, testData)(FakeRequest(), implicitly)
     lazy val document: Document = Jsoup.parse(contentAsString(html))
 
     s"have the correct h1" in {
@@ -61,6 +62,12 @@ class ViewMovementPageViewSpec extends UnitSpec {
       document.select(".govuk-summary-list__row:nth-child(5) .govuk-summary-list__value").text shouldBe "MyJourneyTime"
       document.select(".govuk-summary-list__row:nth-child(6) .govuk-summary-list__key").text shouldBe "Number of items"
       document.select(".govuk-summary-list__row:nth-child(6) .govuk-summary-list__value").text shouldBe "0"
+    }
+
+    "have a link to the report a receipt flow for the Movement" in {
+      val link = document.select("#main-content > div > div > a")
+      link.text shouldBe "Submit report of receipt"
+      link.attr("href") shouldBe s"http://localhost:8313/emcs-tfe-report-a-receipt/$ern/$arc"
     }
   }
 }

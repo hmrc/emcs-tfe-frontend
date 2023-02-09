@@ -31,6 +31,8 @@ trait AppConfig {
 
   def loginUrl: String
   def loginContinueUrl: String
+
+  def emcsTfeReportAReceiptUrl(ern: String, arc: String): String
 }
 
 @Singleton
@@ -49,4 +51,7 @@ class AppConfigImpl @Inject()(val servicesConfig: ServicesConfig, val config: Co
   def loginUrl: String = servicesConfig.getString("urls.login")
 
   def loginContinueUrl: String = servicesConfig.getString("urls.loginContinue")
+
+  def emcsTfeReportAReceiptUrl(ern: String, arc: String): String =
+    servicesConfig.getString("urls.emcsTfeReportAReceipt") + s"/$ern/$arc"
 }
