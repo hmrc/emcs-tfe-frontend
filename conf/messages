@@ -21,6 +21,7 @@ viewMovement.consignor = Consignor
 viewMovement.dateOfDispatch = Date of dispatch
 viewMovement.journeyTime = Journey time
 viewMovement.numberOfItems = Number of items
+viewMovement.reportAReceipt = Submit report of receipt
 
 viewMovementList.title = Movements in
 viewMovementList.heading = Movements in

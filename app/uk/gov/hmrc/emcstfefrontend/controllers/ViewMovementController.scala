@@ -37,7 +37,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
   def viewMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] = authAction.async { implicit request =>
     authAction.checkErnMatchesRequest(exciseRegistrationNumber) {
       connector.getMovement(exciseRegistrationNumber, arc).map {
-        case Right(response) => Ok(viewMovementPage(arc, response))
+        case Right(response) => Ok(viewMovementPage(exciseRegistrationNumber, arc, response))
         case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
       }
     }
