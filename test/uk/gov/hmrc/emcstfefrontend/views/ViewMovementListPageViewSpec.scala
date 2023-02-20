@@ -38,7 +38,7 @@ class ViewMovementListPageViewSpec extends UnitSpec with MovementListFixtures {
     val helper: MovementsListTableHelper = app.injector.instanceOf[MovementsListTableHelper]
     val table: table = app.injector.instanceOf[table]
 
-    lazy val html: Html = page(ern, getMovementListResponse)
+    lazy val html: Html = page(testErn, getMovementListResponse)
     lazy val document: Document = Jsoup.parse(html.toString)
   }
 

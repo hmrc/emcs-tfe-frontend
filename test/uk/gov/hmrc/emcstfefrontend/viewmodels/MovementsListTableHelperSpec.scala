@@ -56,11 +56,11 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures wi
 
           "construct the expected data rows" in {
 
-            helper.dataRows(ern, movements) shouldBe Seq(
+            helper.dataRows(testErn, movements) shouldBe Seq(
               Seq(
                 TableRow(
                   content = HtmlContent(link(
-                    link = movement1.viewMovementUrl(ern).url,
+                    link = movement1.viewMovementUrl(testErn).url,
                     messageKey = movement1.arc
                   ))
                 ),
@@ -71,7 +71,7 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures wi
               Seq(
                 TableRow(
                   content = HtmlContent(link(
-                    link = movement2.viewMovementUrl(ern).url,
+                    link = movement2.viewMovementUrl(testErn).url,
                     messageKey = movement2.arc
                   ))
                 ),
@@ -87,13 +87,13 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures wi
 
           "construct the expected data rows" in {
 
-            helper.constructTable(ern, movements) shouldBe Table(
+            helper.constructTable(testErn, movements) shouldBe Table(
               firstCellIsHeader = true,
               rows = Seq(
                 Seq(
                   TableRow(
                     content = HtmlContent(link(
-                      link = movement1.viewMovementUrl(ern).url,
+                      link = movement1.viewMovementUrl(testErn).url,
                       messageKey = movement1.arc
                     ))
                   ),
@@ -104,7 +104,7 @@ class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures wi
                 Seq(
                   TableRow(
                     content = HtmlContent(link(
-                      link = movement2.viewMovementUrl(ern).url,
+                      link = movement2.viewMovementUrl(testErn).url,
                       messageKey = movement2.arc
                     ))
                   ),

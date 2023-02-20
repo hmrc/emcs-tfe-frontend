@@ -27,18 +27,23 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
-                                       connector: GetMovementConnector,
-                                       viewMovementPage: ViewMovementPage,
-                                       errorHandler: ErrorHandler,
-                                       authAction: AuthAction
+class IndexController @Inject()(mcc: MessagesControllerComponents,
+                                connector: GetMovementConnector,
+                                viewMovementPage: ViewMovementPage,
+                                errorHandler: ErrorHandler,
+                                authAction: AuthAction
                                       )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
 
-  def viewMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
-    authAction(exciseRegistrationNumber).async { implicit request =>
-      connector.getMovement(exciseRegistrationNumber, arc).map {
-        case Right(response) => Ok(viewMovementPage(exciseRegistrationNumber, arc, response))
-        case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
-      }
-    }
+  def exciseNumber(): Action[AnyContent] = Action {
+    NotImplemented
+  }
+
+//  def exiseNumber(): Action[AnyContent] = authAction.async { implicit request =>
+//    authAction.checkErnMatchesRequest(exciseRegistrationNumber) {
+//      connector.getMovement(exciseRegistrationNumber, arc).map {
+//        case Right(response) => Ok(viewMovementPage(exciseRegistrationNumber, arc, response))
+//        case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
+//      }
+//    }
+//  }
 }

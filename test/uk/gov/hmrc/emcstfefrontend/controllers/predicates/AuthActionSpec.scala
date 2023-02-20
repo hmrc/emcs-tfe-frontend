@@ -28,7 +28,6 @@ import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
 import uk.gov.hmrc.emcstfefrontend.config.{AppConfig, EnrolmentKeys}
 import uk.gov.hmrc.emcstfefrontend.controllers
 import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
-import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -49,7 +48,7 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
 
     val authConnector: AuthConnector
     lazy val authAction = new AuthActionImpl(authConnector, appConfig, bodyParsers)
-    def onPageLoad(): Action[AnyContent] = authAction { _ => Results.Ok }
+    def onPageLoad(): Action[AnyContent] = authAction(testErn) { _ => Results.Ok }
 
     lazy val result = onPageLoad()(fakeRequest)
   }
@@ -61,44 +60,6 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
     new ~(new ~(new ~(affinityGroup, enrolments), internalId), credId)
 
   "AuthAction" when {
-
-    "calling .checkErnMatchesRequest" when {
-
-      "ERN of the URL does NOT match the ERN from the credential" must {
-
-        "redirect to unauthorised" in new Harness {
-
-          override val authConnector = new FakeSuccessAuthConnector(authResponse(affinityGroup = None))
-
-          lazy val checkResult = authAction.checkErnMatchesRequest(ern)(Future.successful(Results.Ok))(UserRequest(
-            fakeRequest,
-            "invalidERN",
-            testInternalId,
-            testCredId
-          ))
-
-          status(checkResult) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
-        }
-      }
-
-      "ERN of the URL matches the ERN from the credential" must {
-
-        "execute the block (returning OK)" in new Harness {
-
-          override val authConnector = new FakeSuccessAuthConnector(authResponse(affinityGroup = None))
-
-          lazy val checkResult = authAction.checkErnMatchesRequest(ern)(Future.successful(Results.Ok))(UserRequest(
-            fakeRequest,
-            ern,
-            testInternalId,
-            testCredId
-          ))
-
-          status(checkResult) shouldBe OK
-        }
-      }
-    }
 
     "calling .invokeBlock" when {
 
@@ -194,7 +155,7 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
                   override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
                     Enrolment(
                       key = EnrolmentKeys.EMCS_ENROLMENT,
-                      identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, ern)),
+                      identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testErn)),
                       state = EnrolmentKeys.INACTIVE
                     )
                   ))))
@@ -225,17 +186,37 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
 
                 s"the ${EnrolmentKeys.ERN} identifier is present" must {
 
-                  "allow the User through, returning a 200 (OK)" in new Harness {
+                  s"the ${EnrolmentKeys.ERN} identifier matches the ERN from the URL" must {
 
-                    override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
-                      Enrolment(
-                        key = EnrolmentKeys.EMCS_ENROLMENT,
-                        identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, ern)),
-                        state = EnrolmentKeys.ACTIVATED
-                      )
-                    ))))
+                    "allow the User through, returning a 200 (OK)" in new Harness {
 
-                    status(result) shouldBe OK
+                      override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
+                        Enrolment(
+                          key = EnrolmentKeys.EMCS_ENROLMENT,
+                          identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testErn)),
+                          state = EnrolmentKeys.ACTIVATED
+                        )
+                      ))))
+
+                      status(result) shouldBe OK
+                    }
+                  }
+
+                  s"the ${EnrolmentKeys.ERN} identifier DOES NOT match the ERN from the URL" must {
+
+                    "Redirect to unauthorised" in new Harness {
+
+                      override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
+                        Enrolment(
+                          key = EnrolmentKeys.EMCS_ENROLMENT,
+                          identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, "otherErn")),
+                          state = EnrolmentKeys.ACTIVATED
+                        )
+                      ))))
+
+                      status(result) shouldBe SEE_OTHER
+                      redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+                    }
                   }
                 }
               }

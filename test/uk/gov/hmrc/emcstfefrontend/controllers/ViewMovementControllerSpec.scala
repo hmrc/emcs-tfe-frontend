@@ -58,7 +58,7 @@ class ViewMovementControllerSpec extends UnitSpec with FakeAuthAction {
           .getMovement()
           .returns(Future.successful(Right(model)))
 
-        val result: Future[Result] = controller.viewMovement(ern, arc)(fakeRequest)
+        val result: Future[Result] = controller.viewMovement(testErn, testArc)(fakeRequest)
 
         status(result) shouldBe Status.OK
       }
@@ -70,7 +70,7 @@ class ViewMovementControllerSpec extends UnitSpec with FakeAuthAction {
           .getMovement()
           .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-        val result: Future[Result] = controller.viewMovement(ern, arc)(fakeRequest)
+        val result: Future[Result] = controller.viewMovement(testErn, testArc)(fakeRequest)
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }

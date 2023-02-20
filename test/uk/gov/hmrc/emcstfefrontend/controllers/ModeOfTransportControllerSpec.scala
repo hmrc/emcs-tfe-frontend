@@ -43,8 +43,7 @@ class ModeOfTransportControllerSpec extends UnitSpec with ModeOfTransportListFix
       mcc = app.injector.instanceOf[MessagesControllerComponents],
       service = mockService,
       modeOfTransportPage = app.injector.instanceOf[ModeOfTransportPage],
-      errorHandler = app.injector.instanceOf[ErrorHandler],
-      authAction = FakeSuccessAuthAction
+      errorHandler = app.injector.instanceOf[ErrorHandler]
     )
   }
 

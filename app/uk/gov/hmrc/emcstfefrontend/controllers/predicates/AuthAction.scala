@@ -34,60 +34,64 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AuthAction extends ActionBuilder[UserRequest, AnyContent] with ActionFunction[Request, UserRequest] with Logging {
-  def checkErnMatchesRequest[A](ern: String)(block: => Future[Result])(implicit request: UserRequest[A]): Future[Result] =
-    if (ern == request.ern) block else {
-      logger.warn(s"User with ern: '${request.ern}' attempted to access ern: '$ern' which they are not authorised to view")
-      Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
-    }
+trait AuthAction {
+  def apply(ern: String): ActionBuilder[UserRequest, AnyContent] with ActionFunction[Request, UserRequest]
 }
 
 @Singleton
 class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
                                config: AppConfig,
-                               val parser: BodyParsers.Default
-                              )(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi) extends AuthAction with AuthorisedFunctions {
+                               val bodyParser: BodyParsers.Default
+                              )(implicit val ec: ExecutionContext, val messagesApi: MessagesApi) extends AuthAction with AuthorisedFunctions with Logging {
 
-  override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
+  def apply(ern: String): ActionBuilder[UserRequest, AnyContent] with ActionFunction[Request, UserRequest] =
+    new ActionBuilder[UserRequest, AnyContent] with ActionFunction[Request, UserRequest] {
 
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(
-      session = request.session,
-      request = request
-    )
+      override val parser = bodyParser
+      override val executionContext = ec
 
-    implicit val req = request
+      override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
 
-    authorised().retrieve(Retrievals.affinityGroup and Retrievals.allEnrolments and Retrievals.internalId and Retrievals.credentials) {
+        implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(
+          session = request.session,
+          request = request
+        )
 
-      case Some(Organisation) ~ enrolments ~ Some(internalId) ~ Some(credentials) =>
-        checkOrganisationEMCSEnrolment(enrolments, internalId, credentials.providerId)(block)
+        implicit val req = request
 
-      case Some(Organisation) ~ _ ~ None ~ _ =>
-        logger.warn("[invokeBlock] InternalId could not be retrieved from Auth")
-        Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
+        authorised().retrieve(Retrievals.affinityGroup and Retrievals.allEnrolments and Retrievals.internalId and Retrievals.credentials) {
 
-      case Some(Organisation) ~ _ ~ _ ~ None =>
-        logger.warn("[invokeBlock] Credentials could not be retrieved from Auth")
-        Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
+          case Some(Organisation) ~ enrolments ~ Some(internalId) ~ Some(credentials) =>
+            checkOrganisationEMCSEnrolment(ern, enrolments, internalId, credentials.providerId)(block)
 
-      case Some(affinityGroup) ~ _ ~ _ ~ _ =>
-        logger.warn(s"[invokeBlock] User has incompatible AffinityGroup of '$affinityGroup'")
-        Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
+          case Some(Organisation) ~ _ ~ None ~ _ =>
+            logger.warn("[invokeBlock] InternalId could not be retrieved from Auth")
+            Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
 
-      case _ =>
-        logger.warn(s"[invokeBlock] User has no AffinityGroup")
-        Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
+          case Some(Organisation) ~ _ ~ _ ~ None =>
+            logger.warn("[invokeBlock] Credentials could not be retrieved from Auth")
+            Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
 
-    } recover {
-      case _: NoActiveSession =>
-        Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
-      case x: AuthorisationException =>
-        logger.debug(s"[invokeBlock] Authorisation Exception ${x.reason}")
-        Redirect(controllers.errors.routes.UnauthorisedController.unauthorised())
+          case Some(affinityGroup) ~ _ ~ _ ~ _ =>
+            logger.warn(s"[invokeBlock] User has incompatible AffinityGroup of '$affinityGroup'")
+            Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
+
+          case _ =>
+            logger.warn(s"[invokeBlock] User has no AffinityGroup")
+            Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
+
+        } recover {
+          case _: NoActiveSession =>
+            Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
+          case x: AuthorisationException =>
+            logger.debug(s"[invokeBlock] Authorisation Exception ${x.reason}")
+            Redirect(controllers.errors.routes.UnauthorisedController.unauthorised())
+        }
+      }
     }
-  }
 
-  private def checkOrganisationEMCSEnrolment[A](enrolments: Enrolments,
+  private def checkOrganisationEMCSEnrolment[A](ernFromUrl: String,
+                                                enrolments: Enrolments,
                                                 internalId: String,
                                                 credId: String
                                                )(block: UserRequest[A] => Future[Result])
@@ -95,8 +99,11 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
     enrolments.enrolments.find(_.key == EnrolmentKeys.EMCS_ENROLMENT) match {
       case Some(enrolment) if enrolment.isActivated =>
         enrolment.identifiers.find(_.key == EnrolmentKeys.ERN).map(_.value) match {
-          case Some(ern) =>
+          case Some(ern) if ern == ernFromUrl =>
             block(UserRequest(request, ern, internalId, credId))
+          case Some(ern) =>
+            logger.warn(s"User with ern: '$ern' attempted to access ern: '$ernFromUrl' which they are not authorised to view")
+            Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
           case None =>
             logger.error(s"[checkOrganisationEMCSEnrolment] Could not find ${EnrolmentKeys.ERN} from the ${EnrolmentKeys.EMCS_ENROLMENT} enrolment")
             Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
