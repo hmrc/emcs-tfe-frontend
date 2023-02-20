@@ -17,7 +17,7 @@
 package uk.gov.hmrc.emcstfefrontend
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.{HeaderNames, Status}
+import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
