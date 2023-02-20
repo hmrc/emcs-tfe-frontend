@@ -19,13 +19,29 @@
 
 @this(
         layout: Layout,
+        bullets: bullets,
         h1: h1,
         p: p,
+        link: link
 )
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
-@layout(pageTitle = Some(messages(pageTitle))) {
-    @h1()(Html(messages(heading)))
-    @p(messages(message))
+@(exciseNumbers: Set[String])(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = Some(messages("exciseNumbers.title"))) {
+
+    @h1(classes = "govuk-heading-l") {
+        @messages("exciseNumbers.heading")
+    }
+
+    @p(messages("exciseNumbers.p1"))
+
+    @p(messages("exciseNumbers.p2"))
+
+    @bullets(exciseNumbers.map { ern =>
+      link(
+          uk.gov.hmrc.emcstfefrontend.controllers.routes.ViewMovementListController.viewMovementList(ern).url,
+          ern
+      )
+    }.toSeq)
 }
 
 @{

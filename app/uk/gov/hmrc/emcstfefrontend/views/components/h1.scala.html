@@ -16,7 +16,7 @@
 
 @this()
 
-@(msg: Html, classes: String = "govuk-heading-xl", id: Option[String] = None)
+@(classes: String = "govuk-heading-xl", id: Option[String] = None)(msg: Html)
 
 <h1 @id.map(value => s"id=$value") class="@classes">@msg</h1>
 

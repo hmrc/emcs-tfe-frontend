@@ -96,23 +96,20 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
                                                 credId: String
                                                )(block: UserRequest[A] => Future[Result])
                                                (implicit request: Request[A]): Future[Result] =
-    enrolments.enrolments.find(_.key == EnrolmentKeys.EMCS_ENROLMENT) match {
-      case Some(enrolment) if enrolment.isActivated =>
-        enrolment.identifiers.find(_.key == EnrolmentKeys.ERN).map(_.value) match {
-          case Some(ern) if ern == ernFromUrl =>
-            block(UserRequest(request, ern, internalId, credId))
-          case Some(ern) =>
-            logger.warn(s"User with ern: '$ern' attempted to access ern: '$ernFromUrl' which they are not authorised to view")
-            Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
-          case None =>
-            logger.error(s"[checkOrganisationEMCSEnrolment] Could not find ${EnrolmentKeys.ERN} from the ${EnrolmentKeys.EMCS_ENROLMENT} enrolment")
-            Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
-        }
-      case Some(enrolment) if !enrolment.isActivated =>
-        logger.debug(s"[checkOrganisationEMCSEnrolment] ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found but not activated")
-        Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
-      case _ =>
+    enrolments.enrolments.filter(enrolment => enrolment.key == EnrolmentKeys.EMCS_ENROLMENT) match {
+      case emcsEnrolments if emcsEnrolments.isEmpty =>
         logger.debug(s"[checkOrganisationEMCSEnrolment] No ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found")
         Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
+      case emcsEnrolments =>
+        emcsEnrolments.find(_.identifiers.exists(ident => ident.key == EnrolmentKeys.ERN && ident.value == ernFromUrl)) match {
+          case Some(enrolment) if enrolment.isActivated =>
+            block(UserRequest(request, ernFromUrl, internalId, credId))
+          case Some(_) =>
+            logger.debug(s"[checkOrganisationEMCSEnrolment] ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found but not activated")
+            Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
+          case None =>
+            logger.warn(s"User attempted to access ern: '$ernFromUrl' which they are not authorised to view")
+            Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
+        }
     }
 }

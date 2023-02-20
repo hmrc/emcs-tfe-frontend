@@ -36,7 +36,7 @@
 
 @layout(pageTitle = Some(messages("viewMovement.title")), fullWidthContent = true) {
     @span(messages("common.arc"))
-    @h1(Html(arc))
+    @h1()(Html(arc))
     @h2(messages("viewMovement.heading"))
     @summaryList(
         Seq(

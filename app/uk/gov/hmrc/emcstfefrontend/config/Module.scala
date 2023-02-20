@@ -17,12 +17,13 @@
 package uk.gov.hmrc.emcstfefrontend.config
 
 import com.google.inject.AbstractModule
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{AuthAction, AuthActionImpl}
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{AuthAction, AuthActionImpl, SelectExciseNumberAuthAction, SelectExciseNumberAuthActionImpl}
 
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
     bind(classOf[AppConfig]).asEagerSingleton()
     bind(classOf[AuthAction]).to(classOf[AuthActionImpl])
+    bind(classOf[SelectExciseNumberAuthAction]).to(classOf[SelectExciseNumberAuthActionImpl])
   }
 }
