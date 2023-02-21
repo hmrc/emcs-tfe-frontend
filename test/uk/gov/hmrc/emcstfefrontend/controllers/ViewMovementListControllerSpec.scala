@@ -61,13 +61,13 @@ class ViewMovementListControllerSpec extends UnitSpec with MovementListFixtures 
       "return 200" in new Test {
 
         MockEmcsTfeConnector
-          .getMovementList(ern)
+          .getMovementList(testErn)
           .returns(Future.successful(Right(getMovementListResponse)))
 
-        val result: Future[Result] = controller.viewMovementList(ern)(fakeRequest)
+        val result: Future[Result] = controller.viewMovementList(testErn)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(ern, getMovementListResponse)
+        Html(contentAsString(result)) shouldBe view(testErn, getMovementListResponse)
       }
     }
 
@@ -76,10 +76,10 @@ class ViewMovementListControllerSpec extends UnitSpec with MovementListFixtures 
       "return 500" in new Test {
 
         MockEmcsTfeConnector
-          .getMovementList(ern)
+          .getMovementList(testErn)
           .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-        val result: Future[Result] = controller.viewMovementList(ern)(fakeRequest)
+        val result: Future[Result] = controller.viewMovementList(testErn)(fakeRequest)
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
         Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate

@@ -19,31 +19,27 @@ package uk.gov.hmrc.emcstfefrontend.controllers.predicates
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import play.api.test.StubBodyParserFactory
+import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
-import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
+import uk.gov.hmrc.emcstfefrontend.models.auth.ExciseEnrolmentsRequest
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait FakeAuthAction extends StubBodyParserFactory with BaseFixtures { _: UnitSpec =>
+trait FakeSelectExciseNumbersAuthAction extends StubBodyParserFactory with BaseFixtures { _: UnitSpec =>
 
   implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val ec = app.injector.instanceOf[ExecutionContext]
 
-  object FakeSuccessAuthAction extends AuthAction {
+  class FakeSuccessSelectExciseNumbersAuthAction(enrolments: Set[Enrolment]) extends SelectExciseNumberAuthAction {
 
-    override def apply(ern: String): ActionBuilder[UserRequest, AnyContent] with ActionFunction[Request, UserRequest] =
+    override def invokeBlock[A](request: Request[A], block: ExciseEnrolmentsRequest[A] => Future[Result]): Future[Result] =
+      block(ExciseEnrolmentsRequest(request, enrolments, testInternalId, testCredId))
 
-      new ActionBuilder[UserRequest, AnyContent] with ActionFunction[Request, UserRequest] {
+    override def parser: BodyParser[AnyContent] =
+      stubBodyParser()
 
-        override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] =
-          block(UserRequest(request, ern, testInternalId, testCredId))
-
-        override def parser: BodyParser[AnyContent] =
-          stubBodyParser()
-
-        override protected def executionContext: ExecutionContext =
-          scala.concurrent.ExecutionContext.Implicits.global
-      }
+    override protected def executionContext: ExecutionContext =
+      scala.concurrent.ExecutionContext.Implicits.global
   }
 }

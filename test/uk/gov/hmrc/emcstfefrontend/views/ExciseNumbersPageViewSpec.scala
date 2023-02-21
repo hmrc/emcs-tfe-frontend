@@ -22,29 +22,26 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
-import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ViewMovementListMessages.{English, Welsh}
+import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ExciseNumbersMessages
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
-import uk.gov.hmrc.emcstfefrontend.viewmodels.MovementsListTableHelper
-import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementListPage
-import uk.gov.hmrc.emcstfefrontend.views.html.components.table
+import uk.gov.hmrc.emcstfefrontend.views.html.ExciseNumbersPage
+import uk.gov.hmrc.emcstfefrontend.views.html.components.link
 
-class ViewMovementListPageViewSpec extends UnitSpec with MovementListFixtures {
+class ExciseNumbersPageViewSpec extends UnitSpec with MovementListFixtures {
+
+  implicit val fakeRequest = FakeRequest("GET", "/excise-numbers")
+
+  lazy val page: ExciseNumbersPage = app.injector.instanceOf[ExciseNumbersPage]
+  lazy val link: link = app.injector.instanceOf[link]
 
   abstract class TestFixture(implicit messages: Messages) {
-
-    implicit val fakeRequest = FakeRequest("GET", "/movements")
-
-    val page: ViewMovementListPage = app.injector.instanceOf[ViewMovementListPage]
-    val helper: MovementsListTableHelper = app.injector.instanceOf[MovementsListTableHelper]
-    val table: table = app.injector.instanceOf[table]
-
-    lazy val html: Html = page(testErn, getMovementListResponse)
+    lazy val html: Html = page(Set("ern1", "ern2", "ern3"))
     lazy val document: Document = Jsoup.parse(html.toString)
   }
 
-  "The ViewMovementListPage view" when {
+  "The ExciseNumbersPage view" when {
 
-    Seq(English, Welsh) foreach { viewMessages =>
+    Seq(ExciseNumbersMessages.English, ExciseNumbersMessages.Welsh) foreach { viewMessages =>
 
       implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(viewMessages.lang))
 
@@ -55,12 +52,15 @@ class ViewMovementListPageViewSpec extends UnitSpec with MovementListFixtures {
         }
 
         s"have the correct h1" in new TestFixture {
-          document.select("h1").text() shouldBe viewMessages.heading(getMovementListResponse.count)
+          document.select("h1").text() shouldBe viewMessages.heading
         }
 
-        "have a table rendered for the movements, rendered by the helper" in new TestFixture {
-          document.select("table thead tr th:nth-of-type(1)").text() shouldBe viewMessages.tableArc
-          document.select("table thead tr th:nth-of-type(2)").text() shouldBe viewMessages.tableConsignor
+        "have the correct p1" in new TestFixture {
+          document.select("p:nth-of-type(1)").text() shouldBe viewMessages.p1
+        }
+
+        "have the correct p2" in new TestFixture {
+          document.select("p:nth-of-type(2)").text() shouldBe viewMessages.p2
         }
       }
     }

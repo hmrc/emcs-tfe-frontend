@@ -30,7 +30,7 @@ import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 import scala.concurrent.ExecutionContext
 
-class AuthActionSpec extends UnitSpec with BaseFixtures {
+class SelectExciseNumberAuthActionSpec extends UnitSpec with BaseFixtures {
 
   lazy val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
   lazy val appConfig = app.injector.instanceOf[AppConfig]
@@ -44,8 +44,8 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
   trait Harness {
 
     val authConnector: AuthConnector
-    lazy val authAction = new AuthActionImpl(authConnector, appConfig, bodyParsers)
-    def onPageLoad(): Action[AnyContent] = authAction(testErn) { _ => Results.Ok }
+    lazy val authAction = new SelectExciseNumberAuthActionImpl(authConnector, bodyParsers, appConfig)
+    def onPageLoad(): Action[AnyContent] = authAction { _ => Results.Ok }
 
     lazy val result = onPageLoad()(fakeRequest)
   }
@@ -56,7 +56,7 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
                    credId: Option[Credentials] = Some(Credentials(testCredId, "gg"))): AuthRetrieval =
     new ~(new ~(new ~(affinityGroup, enrolments), internalId), credId)
 
-  "AuthAction" when {
+  "SelectExciseNumberAuthAction" when {
 
     "calling .invokeBlock" when {
 
@@ -162,59 +162,19 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
                 }
               }
 
-              s"Enrolments exists for ${EnrolmentKeys.EMCS_ENROLMENT} AND is activated" when {
+              s"Enrolments exists for ${EnrolmentKeys.EMCS_ENROLMENT} AND is activated" must {
 
-                s"the ${EnrolmentKeys.ERN} identifier is missing (should be impossible)" must {
+                "allow the User through, returning a 200 (OK)" in new Harness {
 
-                  "redirect to unauthorised" in new Harness {
+                  override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
+                    Enrolment(
+                      key = EnrolmentKeys.EMCS_ENROLMENT,
+                      identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testErn)),
+                      state = EnrolmentKeys.ACTIVATED
+                    )
+                  ))))
 
-                    override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
-                      Enrolment(
-                        key = EnrolmentKeys.EMCS_ENROLMENT,
-                        identifiers = Seq(),
-                        state = EnrolmentKeys.ACTIVATED
-                      )
-                    ))))
-
-                    status(result) shouldBe SEE_OTHER
-                    redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
-                  }
-                }
-
-                s"the ${EnrolmentKeys.ERN} identifier is present" must {
-
-                  s"the ${EnrolmentKeys.ERN} identifier matches the ERN from the URL" must {
-
-                    "allow the User through, returning a 200 (OK)" in new Harness {
-
-                      override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
-                        Enrolment(
-                          key = EnrolmentKeys.EMCS_ENROLMENT,
-                          identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testErn)),
-                          state = EnrolmentKeys.ACTIVATED
-                        )
-                      ))))
-
-                      status(result) shouldBe OK
-                    }
-                  }
-
-                  s"the ${EnrolmentKeys.ERN} identifier DOES NOT match the ERN from the URL" must {
-
-                    "Redirect to unauthorised" in new Harness {
-
-                      override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
-                        Enrolment(
-                          key = EnrolmentKeys.EMCS_ENROLMENT,
-                          identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, "otherErn")),
-                          state = EnrolmentKeys.ACTIVATED
-                        )
-                      ))))
-
-                      status(result) shouldBe SEE_OTHER
-                      redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
-                    }
-                  }
+                  status(result) shouldBe OK
                 }
               }
             }

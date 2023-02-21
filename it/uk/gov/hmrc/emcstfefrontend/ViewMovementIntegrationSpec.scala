@@ -32,8 +32,8 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTranspo
   private trait Test {
     def setupStubs(): StubMapping
 
-    def uri: String = s"/consignment/$ern/$arc"
-    def emcsTfeUri: String = s"/emcs-tfe/movement/$ern/$arc"
+    def uri: String = s"/consignment/$testErn/$testArc"
+    def emcsTfeUri: String = s"/emcs-tfe/movement/$testErn/$testArc"
 
     def request(): WSRequest = {
       setupStubs()
@@ -88,7 +88,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTranspo
           val response: WSResponse = await(request().get())
           response.status shouldBe Status.OK
           response.body should include("Administrative reference code")
-          response.body should include(arc)
+          response.body should include(testArc)
         }
       }
       "return an error page" when {

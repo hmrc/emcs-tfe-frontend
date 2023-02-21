@@ -43,9 +43,9 @@ class GetMovementListConnectorSpec extends UnitSpec with Status with MimeTypes w
 
       "downstream call is successful" in new Test {
 
-        MockHttpClient.get(s"$baseUrl/movements/$ern").returns(Future.successful(getMovementListResponse))
+        MockHttpClient.get(s"$baseUrl/movements/$testErn").returns(Future.successful(getMovementListResponse))
 
-        await(connector.getMovementList(exciseRegistrationNumber = ern)) shouldBe getMovementListResponse
+        await(connector.getMovementList(exciseRegistrationNumber = testErn)) shouldBe getMovementListResponse
       }
     }
   }
