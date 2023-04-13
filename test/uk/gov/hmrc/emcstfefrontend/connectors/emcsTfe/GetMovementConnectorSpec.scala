@@ -47,7 +47,7 @@ class GetMovementConnectorSpec extends UnitSpec with Status with MimeTypes with 
         )
         val response: HttpResponse = HttpResponse(status = Status.OK, json = Json.toJson(model), headers = Map.empty)
 
-        MockHttpClient.get(s"$baseUrl/movement/ern/arc").returns(Future.successful(response))
+        MockHttpClient.get(s"$baseUrl/movement/ern/arc?forceFetchNew=true").returns(Future.successful(response))
 
         await(connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc")) shouldBe response
       }
