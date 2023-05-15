@@ -16,32 +16,34 @@
 
 package uk.gov.hmrc.emcstfefrontend.config
 
-import com.google.inject.ImplementedBy
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
+import play.api.mvc.RequestHeader
+import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-@ImplementedBy(classOf[AppConfigImpl])
-trait AppConfig {
-  def referenceDataBaseUrl: String
-  def emcsTfeBaseUrl: String
-
-  def welshLanguageSupportEnabled: Boolean
-  def getReferenceDataStubFeatureSwitch(): Boolean
-
-  def loginUrl: String
-  def loginContinueUrl: String
-
-  def emcsTfeReportAReceiptUrl(ern: String, arc: String): String
-}
-
 @Singleton
-class AppConfigImpl @Inject()(val servicesConfig: ServicesConfig, val config: Configuration) extends AppConfig {
+class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration) {
+
+  lazy val host: String = config.get[String]("host")
+
+  lazy val deskproName: String = config.get[String]("deskproName")
+
+  private lazy val contactHost = config.get[String]("contact-frontend.host")
+
+  def betaBannerFeedbackUrl(implicit request: RequestHeader): String =
+    s"$contactHost/contact/beta-feedback?service=$deskproName&backUrl=${SafeRedirectUrl(host + request.uri).encodedUrl}"
+
+  private lazy val feedbackFrontendHost: String = config.get[String]("feedback-frontend.host")
+
+  lazy val feedbackFrontendSurveyUrl: String = s"$feedbackFrontendHost/feedback/$deskproName"
 
   private def referenceDataService: String = servicesConfig.baseUrl("reference-data")
+
   def referenceDataBaseUrl: String = s"$referenceDataService/emcs-tfe-reference-data"
 
   private def emcsTfeService: String = servicesConfig.baseUrl("emcs-tfe")
+
   def emcsTfeBaseUrl: String = s"$emcsTfeService/emcs-tfe"
 
   def welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)

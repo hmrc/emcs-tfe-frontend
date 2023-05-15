@@ -28,14 +28,14 @@ object ExciseNumbersMessages {
   object English extends ViewMessages with EN {
     override val title: String = "Select a trader Excise Registration Number to use for EMCS"
     override val heading: String = "Select a trader Excise Registration Number to use for EMCS"
-    override val p1: String = "There are multiple EMCS Excise Registration Number associated with this login."
+    override val p1: String = "There are multiple EMCS Excise Registration Numbers associated with this login."
     override val p2: String = "Select an Excise Registration Number to continue to EMCS."
   }
 
   object Welsh extends ViewMessages with CY {
     override val title: String = "Select a trader Excise Registration Number to use for EMCS"
     override val heading: String = "Select a trader Excise Registration Number to use for EMCS"
-    override val p1: String = "There are multiple EMCS Excise Registration Number associated with this login."
+    override val p1: String = "There are multiple EMCS Excise Registration Numbers associated with this login."
     override val p2: String = "Select an Excise Registration Number to continue to EMCS."
   }
 }

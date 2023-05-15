@@ -15,15 +15,18 @@
  *@
 
 @import uk.gov.hmrc.emcstfefrontend.config.AppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import uk.gov.hmrc.emcstfefrontend.views.html.templates.{FullWidthMainContentTemplate => FullWidthMainContent}
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import views.html.helper.CSPNonce
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
 @this(
         appConfig: AppConfig,
         hmrcLayout: HmrcLayout,
         defaultMainContent: TwoThirdsMainContent,
-        fullWidthMainContent: FullWidthMainContent
+        fullWidthMainContent: FullWidthMainContent,
+        betaBanner: StandardBetaBanner,
+        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 )
 @(pageTitle: Option[String] = None, fullWidthContent: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
@@ -31,7 +34,9 @@
     pageTitle = pageTitle,
     nonce = CSPNonce.get,
     isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled,
-    mainContentLayout = if(fullWidthContent) Some(fullWidthMainContent(_)) else Some(defaultMainContent(_))
+    mainContentLayout = if(fullWidthContent) Some(fullWidthMainContent(_)) else Some(defaultMainContent(_)),
+    phaseBanner = Some(betaBanner(appConfig.betaBannerFeedbackUrl)),
+    signOutUrl = Some(appConfig.feedbackFrontendSurveyUrl)
 )(contentBlock)
 
 @{

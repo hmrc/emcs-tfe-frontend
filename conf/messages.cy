@@ -21,3 +21,8 @@ viewMovementList.table.consignor = Consignor
 errors.unauthorised.title = Unauthorised
 errors.unauthorised.heading = Unauthorised
 errors.unauthorised.message = You are not authorised to access this service
+
+exciseNumbers.title = Select a trader Excise Registration Number to use for EMCS
+exciseNumbers.heading = Select a trader Excise Registration Number to use for EMCS
+exciseNumbers.p1 = There are multiple EMCS Excise Registration Numbers associated with this login.
+exciseNumbers.p2 = Select an Excise Registration Number to continue to EMCS.

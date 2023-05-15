@@ -22,7 +22,6 @@ import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{AuthAction, AuthActio
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
-    bind(classOf[AppConfig]).asEagerSingleton()
     bind(classOf[AuthAction]).to(classOf[AuthActionImpl])
     bind(classOf[SelectExciseNumberAuthAction]).to(classOf[SelectExciseNumberAuthActionImpl])
   }
