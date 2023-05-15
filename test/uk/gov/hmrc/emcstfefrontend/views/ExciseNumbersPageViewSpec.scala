@@ -56,11 +56,11 @@ class ExciseNumbersPageViewSpec extends UnitSpec with MovementListFixtures {
         }
 
         "have the correct p1" in new TestFixture {
-          document.select("p:nth-of-type(1)").text() shouldBe viewMessages.p1
+          document.select("#multiple-emcs-numbers").text() shouldBe viewMessages.p1
         }
 
         "have the correct p2" in new TestFixture {
-          document.select("p:nth-of-type(2)").text() shouldBe viewMessages.p2
+          document.select("#select-a-number").text() shouldBe viewMessages.p2
         }
       }
     }

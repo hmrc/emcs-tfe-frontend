@@ -32,9 +32,9 @@
         @messages("exciseNumbers.heading")
     }
 
-    @p(messages("exciseNumbers.p1"))
+    @p(messages("exciseNumbers.p1"), id = Some("multiple-emcs-numbers"))
 
-    @p(messages("exciseNumbers.p2"))
+    @p(messages("exciseNumbers.p2"), id = Some("select-a-number"))
 
     @bullets(exciseNumbers.map { ern =>
       link(
