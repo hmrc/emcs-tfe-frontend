@@ -30,8 +30,6 @@
 )
 @(pageTitle: Option[String] = None, fullWidthContent: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
-@hmrcTrackingConsentSnippet()
-
 @hmrcLayout(
     pageTitle = pageTitle,
     nonce = CSPNonce.get,
