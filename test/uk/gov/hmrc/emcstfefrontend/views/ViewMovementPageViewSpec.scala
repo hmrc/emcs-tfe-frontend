@@ -67,7 +67,7 @@ class ViewMovementPageViewSpec extends UnitSpec {
     "have a link to the report a receipt flow for the Movement" in {
       val link = document.select("#main-content > div > div > a")
       link.text shouldBe "Submit report of receipt"
-      link.attr("href") shouldBe s"http://localhost:8313/emcs-tfe-report-a-receipt/$ern/$arc"
+      link.attr("href") shouldBe s"http://localhost:8313/emcs/report-receipt/$ern/$arc"
     }
   }
 }
