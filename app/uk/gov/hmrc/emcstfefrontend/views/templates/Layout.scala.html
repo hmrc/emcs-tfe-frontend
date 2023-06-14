@@ -32,7 +32,6 @@
 
 @hmrcLayout(
     pageTitle = pageTitle,
-    nonce = CSPNonce.get,
     isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled,
     mainContentLayout = if(fullWidthContent) Some(fullWidthMainContent(_)) else Some(defaultMainContent(_)),
     phaseBanner = Some(betaBanner(appConfig.betaBannerFeedbackUrl)),
