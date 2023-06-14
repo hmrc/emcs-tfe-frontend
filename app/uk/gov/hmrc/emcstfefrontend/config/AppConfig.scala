@@ -38,17 +38,11 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   lazy val feedbackFrontendSurveyUrl: String = s"$feedbackFrontendHost/feedback/$deskproName"
 
-  private def referenceDataService: String = servicesConfig.baseUrl("reference-data")
-
-  def referenceDataBaseUrl: String = s"$referenceDataService/emcs-tfe-reference-data"
-
   private def emcsTfeService: String = servicesConfig.baseUrl("emcs-tfe")
 
   def emcsTfeBaseUrl: String = s"$emcsTfeService/emcs-tfe"
 
   def welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
-
-  def getReferenceDataStubFeatureSwitch(): Boolean = servicesConfig.getBoolean("feature-switch.enable-reference-data-stub-source")
 
   def loginUrl: String = servicesConfig.getString("urls.login")
 

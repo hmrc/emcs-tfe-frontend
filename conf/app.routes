@@ -8,9 +8,6 @@ GET         /assets/*file                                      controllers.Asset
 
 GET         /                                                  uk.gov.hmrc.emcstfefrontend.controllers.IndexController.exciseNumber()
 
-GET         /mode-of-transport                                 uk.gov.hmrc.emcstfefrontend.controllers.ModeOfTransportController.modeOfTransport
-POST        /mode-of-transport                                 uk.gov.hmrc.emcstfefrontend.controllers.ModeOfTransportController.onSubmit
-
 GET         /consignment/:exciseRegistrationNumber/:arc        uk.gov.hmrc.emcstfefrontend.controllers.ViewMovementController.viewMovement(exciseRegistrationNumber, arc)
 
 GET         /movements-in/:exciseRegistrationNumber            uk.gov.hmrc.emcstfefrontend.controllers.ViewMovementListController.viewMovementList(exciseRegistrationNumber)

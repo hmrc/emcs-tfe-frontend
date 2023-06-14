@@ -11,8 +11,6 @@ base.opensInNewTab   = (opens in new tab)
 
 common.arc = Administrative reference code
 
-transportMode.heading   =   How will this movement be transported?
-
 viewMovement.title = Movement details
 viewMovement.heading = Summary
 viewMovement.lrn = Local Reference Number (LRN)

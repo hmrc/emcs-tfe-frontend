@@ -20,13 +20,13 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
-import uk.gov.hmrc.emcstfefrontend.fixtures.ModeOfTransportListFixture
+import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
 import uk.gov.hmrc.emcstfefrontend.stubs.{AuthStub, DownstreamStub}
 import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
 
 import scala.xml.Elem
 
-class ViewMovementIntegrationSpec extends IntegrationBaseSpec with ModeOfTransportListFixture {
+class ViewMovementIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
 
 
   private trait Test {
