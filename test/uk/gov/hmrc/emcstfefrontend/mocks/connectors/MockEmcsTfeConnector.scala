@@ -16,25 +16,20 @@
 
 package uk.gov.hmrc.emcstfefrontend.mocks.connectors
 
-import org.scalamock.handlers.{CallHandler2, CallHandler3, CallHandler4}
+import org.scalamock.handlers.{CallHandler3, CallHandler4}
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.{GetMovementConnector, GetMovementListConnector, HelloConnector}
+import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.{GetMovementConnector, GetMovementListConnector}
 import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{EmcsTfeResponse, GetMovementListResponse, GetMovementResponse}
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{GetMovementListResponse, GetMovementResponse}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait MockEmcsTfeConnector extends MockFactory {
-  lazy val mockEmcsHelloConnector: HelloConnector = mock[HelloConnector]
   lazy val mockGetMovementConnector: GetMovementConnector = mock[GetMovementConnector]
   lazy val mockGetMovementListConnector: GetMovementListConnector = mock[GetMovementListConnector]
 
   object MockEmcsTfeConnector {
-    def hello(): CallHandler2[HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, EmcsTfeResponse]]] = {
-      (mockEmcsHelloConnector.hello()(_: HeaderCarrier, _: ExecutionContext))
-        .expects(*, *)
-    }
     def getMovement(): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementResponse]]] = {
       (mockGetMovementConnector.getMovement(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *, *, *)
