@@ -42,7 +42,7 @@
         Seq(
             (messages("viewMovement.lrn"), getMovementResponse.localReferenceNumber),
             (messages("viewMovement.eadStatus"), getMovementResponse.eadStatus),
-            (messages("viewMovement.consignor"), getMovementResponse.consignorName),
+            (messages("viewMovement.consignor"), getMovementResponse.consignorTrader.traderName),
             (messages("viewMovement.dateOfDispatch"), getMovementResponse.formattedDateOfDispatch),
             (messages("viewMovement.journeyTime"), getMovementResponse.journeyTime),
             (messages("viewMovement.numberOfItems"), getMovementResponse.numberOfItems.toString)

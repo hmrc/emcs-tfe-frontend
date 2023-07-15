@@ -20,7 +20,7 @@ import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.Json
 import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockHttpClient
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{AddressModel, ConsignorTraderModel, GetMovementResponse}
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
@@ -43,8 +43,22 @@ class GetMovementConnectorSpec extends UnitSpec with Status with MimeTypes with 
     "return a successful response" when {
       "downstream call is successful" in new Test {
         val model: GetMovementResponse = GetMovementResponse(
-          localReferenceNumber = "EN", eadStatus = "Accepted", consignorName = "Current 801 Consignor", dateOfDispatch = LocalDate.parse("2008-11-20"), journeyTime = "20 days", numberOfItems = 2
+          localReferenceNumber = "EN",
+          eadStatus = "Accepted",
+          consignorTrader = ConsignorTraderModel(
+            traderExciseNumber = "GB12345GTR144",
+            traderName = "Current 801 Consignor",
+            address = AddressModel(
+              streetNumber = None,
+              street = Some("Main101"),
+              postcode = Some("ZZ78"),
+              city = Some("Zeebrugge")
+            )
+          ),dateOfDispatch = LocalDate.parse("2008-11-20"),
+          journeyTime = "20 days",
+          numberOfItems = 2
         )
+
         val response: HttpResponse = HttpResponse(status = Status.OK, json = Json.toJson(model), headers = Map.empty)
 
         MockHttpClient.get(s"$baseUrl/movement/ern/arc?forceFetchNew=true").returns(Future.successful(response))

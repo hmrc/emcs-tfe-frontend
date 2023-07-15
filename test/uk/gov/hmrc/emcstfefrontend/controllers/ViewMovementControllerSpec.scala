@@ -24,7 +24,7 @@ import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.controllers.predicates.FakeAuthAction
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
 import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{AddressModel, ConsignorTraderModel, GetMovementResponse}
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 import uk.gov.hmrc.http.HeaderCarrier
@@ -52,7 +52,23 @@ class ViewMovementControllerSpec extends UnitSpec with FakeAuthAction {
     "return 200" when {
       "connector call is successful" in new Test {
 
-        val model: GetMovementResponse = GetMovementResponse("", "", "", LocalDate.parse("2008-11-20"), "", 0)
+        val model: GetMovementResponse = GetMovementResponse(
+          "",
+          "",
+          consignorTrader = ConsignorTraderModel(
+            traderExciseNumber = "GB12345GTR144",
+            traderName = "MyConsignor",
+            address = AddressModel(
+              streetNumber = None,
+              street = Some("Main101"),
+              postcode = Some("ZZ78"),
+              city = Some("Zeebrugge")
+            )
+          ),
+          LocalDate.parse("2008-11-20"),
+          "",
+          0
+        )
 
         MockEmcsTfeConnector
           .getMovement()

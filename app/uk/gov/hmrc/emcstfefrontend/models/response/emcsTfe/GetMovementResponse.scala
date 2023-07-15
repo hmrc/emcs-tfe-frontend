@@ -25,7 +25,7 @@ import java.time.LocalDate
 case class GetMovementResponse(
                                 localReferenceNumber: String,
                                 eadStatus: String,
-                                consignorName: String,
+                                consignorTrader: ConsignorTraderModel,
                                 dateOfDispatch: LocalDate,
                                 journeyTime: String,
                                 numberOfItems: Int
