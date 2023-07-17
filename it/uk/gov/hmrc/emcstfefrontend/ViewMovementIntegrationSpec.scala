@@ -78,7 +78,15 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with BaseFixtures 
               """{
                 |  "localReferenceNumber": "MyLrn",
                 |  "eadStatus": "MyEadStatus",
-                |  "consignorName": "MyConsignor",
+                |   "consignorTrader" : {
+                |     "traderExciseNumber" : "GB12345GTR144",
+                |     "traderName" : "MyConsignor",
+                |     "address": {
+                |       "street" : "Main101",
+                |       "postcode" : "ZZ78",
+                |       "city" : "Zeebrugge"
+                |     }
+                |   },
                 |  "dateOfDispatch": "2010-03-04",
                 |  "journeyTime": "MyJourneyTime",
                 |  "numberOfItems": 0

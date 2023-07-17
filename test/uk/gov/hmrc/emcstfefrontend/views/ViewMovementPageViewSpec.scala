@@ -27,7 +27,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.contentAsString
 import play.twirl.api.Html
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{AddressModel, ConsignorTraderModel, GetMovementResponse}
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 
@@ -39,7 +39,24 @@ class ViewMovementPageViewSpec extends UnitSpec {
 
   "The ModeOfTransportPage view" should {
 
-    val testData = GetMovementResponse("MyLrn", "MyEadStatus", "MyConsignor", LocalDate.parse("2010-03-04"), "MyJourneyTime", 0)
+    val testData = GetMovementResponse(
+      "MyLrn",
+      "MyEadStatus",
+      consignorTrader = ConsignorTraderModel(
+        traderExciseNumber = "GB12345GTR144",
+        traderName = "MyConsignor",
+        address = AddressModel(
+          streetNumber = None,
+          street = Some("Main101"),
+          postcode = Some("ZZ78"),
+          city = Some("Zeebrugge")
+        )
+      ),
+      LocalDate.parse("2010-03-04"),
+      "MyJourneyTime",
+      0
+    )
+
     val ern = "ern12345"
     val arc = "12345"
     lazy val html: Html = page(ern, arc, testData)(FakeRequest(), implicitly)
