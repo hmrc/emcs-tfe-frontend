@@ -49,5 +49,5 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
   def loginContinueUrl: String = servicesConfig.getString("urls.loginContinue")
 
   def emcsTfeReportAReceiptUrl(ern: String, arc: String): String =
-    servicesConfig.getString("urls.emcsTfeReportAReceipt") + s"/$ern/$arc"
+    servicesConfig.getString("urls.emcsTfeReportAReceipt") + s"/trader/$ern/movement/$arc"
 }
