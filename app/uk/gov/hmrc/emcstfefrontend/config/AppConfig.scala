@@ -50,4 +50,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   def emcsTfeReportAReceiptUrl(ern: String, arc: String): String =
     servicesConfig.getString("urls.emcsTfeReportAReceipt") + s"/trader/$ern/movement/$arc"
+
+  def emcsTfeExplainDelayUrl(ern: String, arc: String): String =
+    servicesConfig.getString("urls.emcsTfeExplainDelay") + s"/trader/$ern/movement/$arc"
 }

@@ -26,7 +26,8 @@
         h1: h1,
         h2: h2,
         link: link,
-        appConfig: AppConfig
+        appConfig: AppConfig,
+        list: spaced_list
 )
 @(
         ern: String,
@@ -48,7 +49,11 @@
             (messages("viewMovement.numberOfItems"), getMovementResponse.numberOfItems.toString)
         )
     )
-    @link(appConfig.emcsTfeReportAReceiptUrl(ern, arc), "viewMovement.reportAReceipt")
+
+    @list(Seq(
+        link(appConfig.emcsTfeReportAReceiptUrl(ern, arc), "viewMovement.reportAReceipt"),
+        link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "viewMovement.explainDelay")
+    ))
 }
 
 @{

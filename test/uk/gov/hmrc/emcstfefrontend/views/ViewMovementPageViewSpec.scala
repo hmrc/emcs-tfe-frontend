@@ -82,9 +82,15 @@ class ViewMovementPageViewSpec extends UnitSpec {
     }
 
     "have a link to the report a receipt flow for the Movement" in {
-      val link = document.select("#main-content > div > div > a")
-      link.text shouldBe "Submit report of receipt"
-      link.attr("href") shouldBe s"http://localhost:8313/emcs/report-receipt/trader/$ern/movement/$arc"
+      val reportReceiptLink = document.select(".govuk-list > li:nth-child(1) > a:nth-child(1)")
+      reportReceiptLink.text shouldBe "Submit report of receipt"
+      reportReceiptLink.attr("href") shouldBe s"http://localhost:8313/emcs/report-receipt/trader/$ern/movement/$arc"
+    }
+
+    "have a link to the explain a delay flow for the Movement" in {
+      val reportReceiptLink = document.select(".govuk-list > li:nth-child(2) > a:nth-child(1)")
+      reportReceiptLink.text shouldBe "Explain a delay"
+      reportReceiptLink.attr("href") shouldBe s"http://localhost:8316/emcs/explain-delay/trader/$ern/movement/$arc"
     }
   }
 }
