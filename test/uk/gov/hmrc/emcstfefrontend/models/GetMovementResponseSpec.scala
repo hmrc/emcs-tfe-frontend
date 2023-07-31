@@ -22,7 +22,8 @@
 package uk.gov.hmrc.emcstfefrontend.models
 
 import play.api.libs.json.{JsSuccess, JsValue, Json}
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{AddressModel, ConsignorTraderModel, GetMovementResponse}
+import uk.gov.hmrc.emcstfefrontend.models.common.{AddressModel, TraderModel}
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 import java.time.LocalDate
@@ -34,7 +35,7 @@ class GetMovementResponseSpec extends UnitSpec {
   val model: GetMovementResponse = GetMovementResponse(
     localReferenceNumber = "MyLrn",
     eadStatus = "MyEadStatus",
-    consignorTrader = ConsignorTraderModel(
+    consignorTrader = TraderModel(
       traderExciseNumber = "GB12345GTR144",
       traderName = "Current 801 Consignor",
       address = AddressModel(

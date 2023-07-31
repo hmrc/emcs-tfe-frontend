@@ -23,8 +23,9 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.controllers.predicates.FakeAuthAction
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
+import uk.gov.hmrc.emcstfefrontend.models.common.{AddressModel, TraderModel}
 import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{AddressModel, ConsignorTraderModel, GetMovementResponse}
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 import uk.gov.hmrc.http.HeaderCarrier
@@ -55,7 +56,7 @@ class ViewMovementControllerSpec extends UnitSpec with FakeAuthAction {
         val model: GetMovementResponse = GetMovementResponse(
           "",
           "",
-          consignorTrader = ConsignorTraderModel(
+          consignorTrader = TraderModel(
             traderExciseNumber = "GB12345GTR144",
             traderName = "MyConsignor",
             address = AddressModel(
