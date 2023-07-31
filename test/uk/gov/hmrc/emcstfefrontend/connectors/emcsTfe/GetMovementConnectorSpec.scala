@@ -20,7 +20,8 @@ import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.Json
 import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockHttpClient
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{AddressModel, ConsignorTraderModel, GetMovementResponse}
+import uk.gov.hmrc.emcstfefrontend.models.common.{AddressModel, TraderModel}
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
@@ -45,7 +46,7 @@ class GetMovementConnectorSpec extends UnitSpec with Status with MimeTypes with 
         val model: GetMovementResponse = GetMovementResponse(
           localReferenceNumber = "EN",
           eadStatus = "Accepted",
-          consignorTrader = ConsignorTraderModel(
+          consignorTrader = TraderModel(
             traderExciseNumber = "GB12345GTR144",
             traderName = "Current 801 Consignor",
             address = AddressModel(

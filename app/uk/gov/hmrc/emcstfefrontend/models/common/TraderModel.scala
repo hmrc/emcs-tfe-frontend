@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe
+package uk.gov.hmrc.emcstfefrontend.models.common
 
 import play.api.libs.json.{Format, Json}
 
-case class AddressModel(streetNumber: Option[String],
-                        street: Option[String],
-                        postcode: Option[String],
-                        city: Option[String])
+case class TraderModel(traderExciseNumber: String,
+                       traderName: String,
+                       address: AddressModel) {
+}
 
-object AddressModel {
-  implicit val fmt: Format[AddressModel] = Json.format
+object TraderModel {
+  implicit val fmt: Format[TraderModel] = Json.format
 }

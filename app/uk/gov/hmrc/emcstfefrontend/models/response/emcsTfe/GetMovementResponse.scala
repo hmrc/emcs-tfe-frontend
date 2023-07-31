@@ -17,6 +17,7 @@
 package uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe
 
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.emcstfefrontend.models.common.TraderModel
 import uk.gov.hmrc.emcstfefrontend.utils.DateUtils
 
 import java.time.LocalDate
@@ -25,7 +26,7 @@ import java.time.LocalDate
 case class GetMovementResponse(
                                 localReferenceNumber: String,
                                 eadStatus: String,
-                                consignorTrader: ConsignorTraderModel,
+                                consignorTrader: TraderModel,
                                 dateOfDispatch: LocalDate,
                                 journeyTime: String,
                                 numberOfItems: Int

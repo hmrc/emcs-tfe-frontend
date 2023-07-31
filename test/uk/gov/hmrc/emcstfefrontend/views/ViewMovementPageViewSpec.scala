@@ -27,7 +27,8 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.contentAsString
 import play.twirl.api.Html
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{AddressModel, ConsignorTraderModel, GetMovementResponse}
+import uk.gov.hmrc.emcstfefrontend.models.common.{AddressModel, TraderModel}
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 
@@ -42,7 +43,7 @@ class ViewMovementPageViewSpec extends UnitSpec {
     val testData = GetMovementResponse(
       "MyLrn",
       "MyEadStatus",
-      consignorTrader = ConsignorTraderModel(
+      consignorTrader = TraderModel(
         traderExciseNumber = "GB12345GTR144",
         traderName = "MyConsignor",
         address = AddressModel(
