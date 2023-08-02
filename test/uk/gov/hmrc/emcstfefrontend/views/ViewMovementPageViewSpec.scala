@@ -93,5 +93,11 @@ class ViewMovementPageViewSpec extends UnitSpec {
       reportReceiptLink.text shouldBe "Explain a delay"
       reportReceiptLink.attr("href") shouldBe s"http://localhost:8316/emcs/explain-delay/trader/$ern/movement/$arc"
     }
+
+    "have a link to the explain shortage or excess for the Movement" in {
+      val reportReceiptLink = document.select(".govuk-list > li:nth-child(3) > a:nth-child(1)")
+      reportReceiptLink.text shouldBe "Explain shortage or excess"
+      reportReceiptLink.attr("href") shouldBe s"http://localhost:8317/emcs/explain-shortage-or-excess/trader/$ern/movement/$arc"
+    }
   }
 }

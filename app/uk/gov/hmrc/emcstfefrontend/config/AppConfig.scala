@@ -53,4 +53,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   def emcsTfeExplainDelayUrl(ern: String, arc: String): String =
     servicesConfig.getString("urls.emcsTfeExplainDelay") + s"/trader/$ern/movement/$arc"
+
+  def emcsTfeExplainShortageOrExcessUrl(ern: String, arc: String): String =
+    servicesConfig.getString("urls.emcsTfeExplainShortageOrExcess") + s"/trader/$ern/movement/$arc"
 }
