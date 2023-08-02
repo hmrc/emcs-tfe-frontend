@@ -13,6 +13,7 @@ viewMovement.journeyTime = Journey time
 viewMovement.numberOfItems = Number of items
 viewMovement.reportAReceipt = Submit report of receipt
 viewMovement.explainDelay = Explain a delay
+viewMovement.explainShortageOrExcess = Explain shortage or excess
 
 viewMovementList.title = Movements in
 viewMovementList.heading = Movements in
