@@ -53,7 +53,9 @@
     @list(Seq(
         link(appConfig.emcsTfeReportAReceiptUrl(ern, arc), "viewMovement.reportAReceipt"),
         link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "viewMovement.explainDelay"),
-        link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "viewMovement.explainShortageOrExcess")
+        link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "viewMovement.explainShortageOrExcess"),
+        link(appConfig.emcsTfeCancelMovementUrl(ern, arc), "viewMovement.cancelMovement"),
+        link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "viewMovement.changeDestination")
     ))
 }
 
