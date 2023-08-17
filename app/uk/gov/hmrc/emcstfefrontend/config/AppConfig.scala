@@ -56,4 +56,10 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   def emcsTfeExplainShortageOrExcessUrl(ern: String, arc: String): String =
     servicesConfig.getString("urls.emcsTfeExplainShortageOrExcess") + s"/trader/$ern/movement/$arc"
+
+  def emcsTfeCancelMovementUrl(ern: String, arc: String): String =
+    servicesConfig.getString("urls.emcsTfeCancelMovement") + s"/trader/$ern/movement/$arc"
+
+  def emcsTfeChangeDestinationUrl(ern: String, arc: String): String =
+    servicesConfig.getString("urls.emcsTfeChangeDestination") + s"/trader/$ern/movement/$arc"
 }
