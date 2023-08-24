@@ -89,27 +89,33 @@ class ViewMovementPageViewSpec extends UnitSpec {
     }
 
     "have a link to the explain a delay flow for the Movement" in {
-      val reportReceiptLink = document.select(".govuk-list > li:nth-child(2) > a:nth-child(1)")
-      reportReceiptLink.text shouldBe "Explain a delay"
-      reportReceiptLink.attr("href") shouldBe s"http://localhost:8316/emcs/explain-delay/trader/$ern/movement/$arc"
+      val explainDelayLink = document.select(".govuk-list > li:nth-child(2) > a:nth-child(1)")
+      explainDelayLink.text shouldBe "Explain a delay"
+      explainDelayLink.attr("href") shouldBe s"http://localhost:8316/emcs/explain-delay/trader/$ern/movement/$arc"
     }
 
     "have a link to the explain shortage or excess for the Movement" in {
-      val reportReceiptLink = document.select(".govuk-list > li:nth-child(3) > a:nth-child(1)")
-      reportReceiptLink.text shouldBe "Explain shortage or excess"
-      reportReceiptLink.attr("href") shouldBe s"http://localhost:8317/emcs/explain-shortage-or-excess/trader/$ern/movement/$arc"
+      val explainShortageExcessLink = document.select(".govuk-list > li:nth-child(3) > a:nth-child(1)")
+      explainShortageExcessLink.text shouldBe "Explain shortage or excess"
+      explainShortageExcessLink.attr("href") shouldBe s"http://localhost:8317/emcs/explain-shortage-or-excess/trader/$ern/movement/$arc"
     }
 
     "have a link to the Cancel Movement" in {
-      val reportReceiptLink = document.select(".govuk-list > li:nth-child(4) > a:nth-child(1)")
-      reportReceiptLink.text shouldBe "Cancel movement"
-      reportReceiptLink.attr("href") shouldBe s"http://localhost:8318/emcs/cancel-movement/trader/$ern/movement/$arc"
+      val cancelMovementLink = document.select(".govuk-list > li:nth-child(4) > a:nth-child(1)")
+      cancelMovementLink.text shouldBe "Cancel movement"
+      cancelMovementLink.attr("href") shouldBe s"http://localhost:8318/emcs/cancel-movement/trader/$ern/movement/$arc"
     }
 
     "have a link to the Change Destination" in {
-      val reportReceiptLink = document.select(".govuk-list > li:nth-child(5) > a:nth-child(1)")
-      reportReceiptLink.text shouldBe "Change destination"
-      reportReceiptLink.attr("href") shouldBe s"http://localhost:8319/emcs/change-destination/trader/$ern/movement/$arc"
+      val changeDestinationLink = document.select(".govuk-list > li:nth-child(5) > a:nth-child(1)")
+      changeDestinationLink.text shouldBe "Change destination"
+      changeDestinationLink.attr("href") shouldBe s"http://localhost:8319/emcs/change-destination/trader/$ern/movement/$arc"
+    }
+
+    "have a link to the Alert or rejection" in {
+      val alertOrRejectionLink = document.select(".govuk-list > li:nth-child(6) > a:nth-child(1)")
+      alertOrRejectionLink.text shouldBe "Alert or rejection"
+      alertOrRejectionLink.attr("href") shouldBe s"http://localhost:8320/emcs/alert-or-rejection/trader/$ern/movement/$arc"
     }
   }
 }
