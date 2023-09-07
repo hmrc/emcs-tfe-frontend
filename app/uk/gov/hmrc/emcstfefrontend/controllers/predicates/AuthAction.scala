@@ -59,20 +59,24 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
 
         implicit val req = request
 
-        authorised().retrieve(Retrievals.affinityGroup and Retrievals.allEnrolments and Retrievals.internalId and Retrievals.credentials) {
+        authorised().retrieve(Retrievals.affinityGroup and Retrievals.allEnrolments and Retrievals.internalId and Retrievals.credentials and Retrievals.name) {
 
-          case Some(Organisation) ~ enrolments ~ Some(internalId) ~ Some(credentials) =>
+          case Some(Organisation) ~ enrolments ~ Some(internalId) ~ Some(credentials) ~ name =>
+            logger.debug(s"Retrieval name: $name")
             checkOrganisationEMCSEnrolment(ern, enrolments, internalId, credentials.providerId)(block)
 
-          case Some(Organisation) ~ _ ~ None ~ _ =>
+          case Some(Organisation) ~ _ ~ None ~ _ ~ name =>
+            logger.debug(s"Retrieval name: $name")
             logger.warn("[invokeBlock] InternalId could not be retrieved from Auth")
             Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
 
-          case Some(Organisation) ~ _ ~ _ ~ None =>
+          case Some(Organisation) ~ _ ~ _ ~ None ~ name =>
+            logger.debug(s"Retrieval name: $name")
             logger.warn("[invokeBlock] Credentials could not be retrieved from Auth")
             Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
 
-          case Some(affinityGroup) ~ _ ~ _ ~ _ =>
+          case Some(affinityGroup) ~ _ ~ _ ~ _ ~ name =>
+            logger.debug(s"Retrieval name: $name")
             logger.warn(s"[invokeBlock] User has incompatible AffinityGroup of '$affinityGroup'")
             Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))
 

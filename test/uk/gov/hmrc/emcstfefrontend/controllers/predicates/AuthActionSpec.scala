@@ -22,7 +22,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Organisation}
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, ~}
 import uk.gov.hmrc.emcstfefrontend.config.{AppConfig, EnrolmentKeys}
 import uk.gov.hmrc.emcstfefrontend.controllers
 import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
@@ -37,7 +37,7 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
   implicit lazy val ec = app.injector.instanceOf[ExecutionContext]
   implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
 
-  type AuthRetrieval = ~[~[~[Option[AffinityGroup], Enrolments], Option[String]], Option[Credentials]]
+  type AuthRetrieval = ~[~[~[~[Option[AffinityGroup], Enrolments], Option[String]], Option[Credentials]], Option[Name]]
 
   implicit val fakeRequest = FakeRequest()
 
@@ -54,7 +54,7 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
                    enrolments: Enrolments = Enrolments(Set.empty),
                    internalId: Option[String] = Some(testInternalId),
                    credId: Option[Credentials] = Some(Credentials(testCredId, "gg"))): AuthRetrieval =
-    new ~(new ~(new ~(affinityGroup, enrolments), internalId), credId)
+    new ~(new ~(new ~(new ~(affinityGroup, enrolments), internalId), credId), Some(Name(Some("name"), None)))
 
   "AuthAction" when {
 
