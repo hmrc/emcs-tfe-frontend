@@ -16,9 +16,9 @@
 
 @this()
 
-@(text: String, classes: String = "govuk-body", id: Option[String] = None)
+@(classes: String = "govuk-body", id: Option[String] = None)(content: Html)
 
-<p @id.map(value => s"id=$value") class="@classes">@text</p>
+<p @id.map(value => s"id=$value") class="@classes">@content</p>
 
 @{
     //$COVERAGE-OFF$

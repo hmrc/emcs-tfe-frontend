@@ -65,4 +65,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   def emcsTfeAlertOrRejectionUrl(ern: String, arc: String): String =
     servicesConfig.getString("urls.emcsTfeAlertRejection") + s"/trader/$ern/movement/$arc"
+
+  def emcsTfeCreateMovementUrl(ern: String): String =
+    servicesConfig.getString("urls.emcsTfeCreateMovement") + s"/trader/$ern"
 }
