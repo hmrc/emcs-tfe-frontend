@@ -25,6 +25,7 @@ viewMovement.explainShortageOrExcess = Explain shortage or excess
 viewMovement.cancelMovement = Cancel movement
 viewMovement.changeDestination = Change destination
 viewMovement.alertOrRejection = Alert or rejection
+viewMovement.createMovement = Create movement
 
 viewMovementList.title = Movements in
 viewMovementList.heading = Movements in

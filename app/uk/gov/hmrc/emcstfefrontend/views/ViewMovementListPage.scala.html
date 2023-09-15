@@ -18,12 +18,16 @@
 @import uk.gov.hmrc.emcstfefrontend.viewmodels.MovementsListTableHelper
 @import uk.gov.hmrc.emcstfefrontend.views.html.components._
 @import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
+@import uk.gov.hmrc.emcstfefrontend.config.AppConfig
 
 @this(
         layout: Layout,
         table: table,
         h1: h1,
         span: span,
+        link: link,
+        p: p,
+        appConfig: AppConfig,
         helper: MovementsListTableHelper
 )
 
@@ -37,6 +41,10 @@
          content = s"(${getMovementListResponse.count})",
          classes = "govuk-heading-xl govuk-!-display-inline govuk-!-font-weight-regular"
         )
+    }
+
+    @p(){
+        @link(appConfig.emcsTfeCreateMovementUrl(ern), "viewMovement.createMovement")
     }
 
     @table(helper.constructTable(ern, getMovementListResponse.movements))

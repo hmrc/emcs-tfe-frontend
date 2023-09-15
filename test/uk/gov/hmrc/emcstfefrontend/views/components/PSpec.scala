@@ -29,7 +29,7 @@ class PSpec extends UnitSpec {
 
 
     lazy val p: p = app.injector.instanceOf[p]
-    lazy val html: Html = p("some content", id = id)
+    lazy val html: Html = p(id = id)(Html("some content"))
     lazy val document: Document = Jsoup.parse(html.toString)
   }
 
