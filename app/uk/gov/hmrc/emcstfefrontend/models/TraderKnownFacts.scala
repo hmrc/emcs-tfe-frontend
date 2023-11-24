@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response
+package uk.gov.hmrc.emcstfefrontend.models
 
-import scala.util.control.NoStackTrace
+import play.api.libs.json.{Json, OFormat}
 
-sealed trait ErrorResponse {
-  val message: String
+case class TraderKnownFacts(traderName: String,
+                            addressLine1: Option[String],
+                            addressLine2: Option[String],
+                            addressLine3: Option[String],
+                            addressLine4: Option[String],
+                            addressLine5: Option[String],
+                            postcode: Option[String])
+
+object TraderKnownFacts {
+  implicit val format: OFormat[TraderKnownFacts] = Json.format[TraderKnownFacts]
 }
-
-case object UnexpectedDownstreamResponseError extends ErrorResponse {
-  val message = "Unexpected downstream response status"
-}
-
-case object JsonValidationError extends ErrorResponse {
-  val message = "JSON validation error"
-}
-
-case class TraderKnownFactsException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
-

@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers
 
+import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.GetMovementConnector
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.AuthAction
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{AuthAction, AuthActionHelper, DataRequiredAction, DataRetrievalAction}
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -28,14 +29,16 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
+                                       override val auth: AuthAction,
+                                       override val getData: DataRetrievalAction,
+                                       override val requireData: DataRequiredAction,
                                        connector: GetMovementConnector,
                                        viewMovementPage: ViewMovementPage,
-                                       errorHandler: ErrorHandler,
-                                       authAction: AuthAction
-                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                       errorHandler: ErrorHandler
+                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def viewMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
-    authAction(exciseRegistrationNumber).async { implicit request =>
+    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       connector.getMovement(exciseRegistrationNumber, arc).map {
         case Right(response) => Ok(viewMovementPage(exciseRegistrationNumber, arc, response))
         case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())

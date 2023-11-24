@@ -31,6 +31,16 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   private lazy val contactHost = config.get[String]("contact-frontend.host")
 
+  private def traderKnownFactsReferenceDataService: String =
+//    if (isEnabled(StubGetTraderKnownFacts)) {
+      servicesConfig.baseUrl("emcs-tfe-reference-data-stub")
+//    }
+//    else {
+//      servicesConfig.baseUrl("emcs-tfe-reference-data")
+//    }
+
+  def traderKnownFactsReferenceDataBaseUrl: String = s"$traderKnownFactsReferenceDataService/emcs-tfe-reference-data"
+
   def betaBannerFeedbackUrl(implicit request: RequestHeader): String =
     s"$contactHost/contact/beta-feedback?service=$deskproName&backUrl=${SafeRedirectUrl(host + request.uri).encodedUrl}"
 

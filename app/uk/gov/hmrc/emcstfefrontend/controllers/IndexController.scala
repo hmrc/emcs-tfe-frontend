@@ -18,7 +18,7 @@ package uk.gov.hmrc.emcstfefrontend.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.emcstfefrontend.config.EnrolmentKeys
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.SelectExciseNumberAuthAction
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{AuthAction, AuthActionHelper, DataRequiredAction, DataRetrievalAction, SelectExciseNumberAuthAction}
 import uk.gov.hmrc.emcstfefrontend.utils.Logging
 import uk.gov.hmrc.emcstfefrontend.views.html.ExciseNumbersPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -28,9 +28,12 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class IndexController @Inject()(mcc: MessagesControllerComponents,
+                                override val auth: AuthAction,
+                                override val getData: DataRetrievalAction,
+                                override val requireData: DataRequiredAction,
                                 view: ExciseNumbersPage,
                                 authAction: SelectExciseNumberAuthAction
-                               )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with Logging {
+                               )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with Logging {
 
   def exciseNumber(): Action[AnyContent] = authAction { implicit request =>
     request.exciseEnrolments.flatMap(_.identifiers.find(_.key == EnrolmentKeys.ERN)) match {
