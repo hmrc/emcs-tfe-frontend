@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.auth
+package uk.gov.hmrc.emcstfefrontend.featureswitch.core.config
 
-import play.api.i18n.MessagesApi
-import play.api.mvc.{MessagesRequestHeader, PreferredMessagesProvider, Request, WrappedRequest}
+import uk.gov.hmrc.emcstfefrontend.featureswitch.core.models.FeatureSwitch
 
-case class UserRequest[A](request: Request[A],
-                          ern: String,
-                          internalId: String,
-                          credId: String,
-                          hasMultipleErns: Boolean)(implicit val messagesApi: MessagesApi) extends WrappedRequest[A](request) with PreferredMessagesProvider with MessagesRequestHeader
+trait FeatureSwitchRegistry {
+
+  def switches: Seq[FeatureSwitch]
+
+  def apply(name: String): FeatureSwitch =
+    get(name) match {
+      case Some(switch) => switch
+      case None => throw new IllegalArgumentException("Invalid feature switch: " + name)
+    }
+
+  def get(name: String): Option[FeatureSwitch] = switches find (_.configName == name)
+
+}

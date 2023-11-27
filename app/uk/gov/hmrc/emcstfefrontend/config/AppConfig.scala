@@ -19,22 +19,28 @@ package uk.gov.hmrc.emcstfefrontend.config
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.mvc.RequestHeader
+import uk.gov.hmrc.emcstfefrontend.featureswitch.core.config._
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
-class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration) {
+class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configuration) extends FeatureSwitching {
 
-  lazy val host: String = config.get[String]("host")
+  override val config: AppConfig = this
 
-  lazy val deskproName: String = config.get[String]("deskproName")
+  lazy val host: String = configuration.get[String]("host")
+  lazy val deskproName: String = configuration.get[String]("deskproName")
 
-  private lazy val contactHost = config.get[String]("contact-frontend.host")
+  private lazy val contactHost = configuration.get[String]("contact-frontend.host")
+
+  def getFeatureSwitchValue(feature: String): Boolean = configuration.get[Boolean](feature)
+
+  def welshLanguageSupportEnabled: Boolean = configuration.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
   def betaBannerFeedbackUrl(implicit request: RequestHeader): String =
     s"$contactHost/contact/beta-feedback?service=$deskproName&backUrl=${SafeRedirectUrl(host + request.uri).encodedUrl}"
 
-  private lazy val feedbackFrontendHost: String = config.get[String]("feedback-frontend.host")
+  private lazy val feedbackFrontendHost: String = configuration.get[String]("feedback-frontend.host")
 
   lazy val feedbackFrontendSurveyUrl: String = s"$feedbackFrontendHost/feedback/$deskproName"
 
@@ -43,8 +49,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
   def emcsTfeBaseUrl: String = s"$emcsTfeService/emcs-tfe"
 
   def referenceDataBaseUrl: String = servicesConfig.baseUrl("emcs-tfe-reference-data") + "/emcs-tfe-reference-data"
-
-  def welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
   def loginUrl: String = servicesConfig.getString("urls.login")
 
@@ -73,4 +77,14 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")
+
+  private def traderKnownFactsReferenceDataService: String =
+    if (isEnabled(StubGetTraderKnownFacts)) {
+      servicesConfig.baseUrl("emcs-tfe-reference-data-stub")
+    }
+    else {
+      servicesConfig.baseUrl("emcs-tfe-reference-data")
+    }
+
+  def traderKnownFactsReferenceDataBaseUrl: String = s"$traderKnownFactsReferenceDataService/emcs-tfe-reference-data"
 }

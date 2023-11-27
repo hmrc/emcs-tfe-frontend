@@ -26,7 +26,7 @@
 )
 @(exciseNumbers: Set[String])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some(messages("exciseNumbers.title"))) {
+@layout(pageTitle = Some(messages("exciseNumbers.title")), maybeShowActiveTrader = None) {
 
     @h1(classes = "govuk-heading-l") {
         @messages("exciseNumbers.heading")

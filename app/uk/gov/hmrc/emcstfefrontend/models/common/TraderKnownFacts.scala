@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.auth
+package uk.gov.hmrc.emcstfefrontend.models.common
 
-import play.api.i18n.MessagesApi
-import play.api.mvc.{MessagesRequestHeader, PreferredMessagesProvider, Request, WrappedRequest}
+import play.api.libs.json.{Json, OFormat}
 
-case class UserRequest[A](request: Request[A],
-                          ern: String,
-                          internalId: String,
-                          credId: String,
-                          hasMultipleErns: Boolean)(implicit val messagesApi: MessagesApi) extends WrappedRequest[A](request) with PreferredMessagesProvider with MessagesRequestHeader
+case class TraderKnownFacts(traderName: String,
+                            addressLine1: Option[String],
+                            addressLine2: Option[String],
+                            addressLine3: Option[String],
+                            addressLine4: Option[String],
+                            addressLine5: Option[String],
+                            postcode: Option[String])
+
+object TraderKnownFacts {
+  implicit val format: OFormat[TraderKnownFacts] = Json.format[TraderKnownFacts]
+}

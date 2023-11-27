@@ -14,10 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.emcstfefrontend.views.html.components._
-@import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
-@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
 @import uk.gov.hmrc.emcstfefrontend.config.AppConfig
+@import uk.gov.hmrc.emcstfefrontend.models.requests.DataRequest
+@import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
+@import uk.gov.hmrc.emcstfefrontend.views.ViewUtils.maybeShowActiveTrader
+@import uk.gov.hmrc.emcstfefrontend.views.html.components._
+@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
 
 @this(
         layout: Layout,
@@ -29,13 +31,14 @@
         appConfig: AppConfig,
         list: spaced_list
 )
+
 @(
         ern: String,
         arc: String,
         getMovementResponse: GetMovementResponse
-)(implicit request: Request[_], messages: Messages)
+)(implicit request: DataRequest[_], messages: Messages)
 
-@layout(pageTitle = Some(messages("viewMovement.title")), fullWidthContent = true) {
+@layout(pageTitle = Some(messages("viewMovement.title")), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true) {
     @span(messages("common.arc"))
     @h1()(Html(arc))
     @h2(messages("viewMovement.heading"))

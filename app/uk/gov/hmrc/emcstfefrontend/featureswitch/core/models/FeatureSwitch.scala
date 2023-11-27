@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.auth
+package uk.gov.hmrc.emcstfefrontend.featureswitch.core.models
 
-import play.api.i18n.MessagesApi
-import play.api.mvc.{MessagesRequestHeader, PreferredMessagesProvider, Request, WrappedRequest}
-
-case class UserRequest[A](request: Request[A],
-                          ern: String,
-                          internalId: String,
-                          credId: String,
-                          hasMultipleErns: Boolean)(implicit val messagesApi: MessagesApi) extends WrappedRequest[A](request) with PreferredMessagesProvider with MessagesRequestHeader
+trait FeatureSwitch {
+  val configName: String
+  val displayName: String
+}

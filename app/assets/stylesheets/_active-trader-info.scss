@@ -1,0 +1,31 @@
+// based on moj-organisation-nav
+
+.active-trader-info {
+  @include govuk-clearfix;
+  margin-top: govuk-spacing(2);
+  margin-bottom: govuk-spacing(3);
+  padding-bottom: govuk-spacing(1);
+  border-bottom: 1px solid $govuk-border-colour;
+}
+
+.active-trader-info__title {
+  @include govuk-font($size: 19, $weight: "bold");
+  @include govuk-media-query($from: tablet) {
+    float: left;
+    width: 75%;
+  }
+}
+
+.active-trader-info__link {
+  @include govuk-link-common;
+  @include govuk-link-style-default;
+  @include govuk-link-print-friendly;
+  @include govuk-media-query($from: tablet) {
+    float: right;
+  };
+  text-underline-offset: 0.1578em;
+}
+
+.active-trader-info__link:hover {
+  text-decoration-thickness: 3px;
+}

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.auth
+package uk.gov.hmrc.emcstfefrontend.models.requests
 
-import play.api.i18n.MessagesApi
-import play.api.mvc.{MessagesRequestHeader, PreferredMessagesProvider, Request, WrappedRequest}
+import play.api.mvc.WrappedRequest
+import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
+import uk.gov.hmrc.emcstfefrontend.models.common.TraderKnownFacts
 
-case class UserRequest[A](request: Request[A],
-                          ern: String,
-                          internalId: String,
-                          credId: String,
-                          hasMultipleErns: Boolean)(implicit val messagesApi: MessagesApi) extends WrappedRequest[A](request) with PreferredMessagesProvider with MessagesRequestHeader
+case class DataRequest[A](request: UserRequest[A],
+                          traderKnownFacts: TraderKnownFacts) extends WrappedRequest[A](request) {
+  val internalId: String = request.internalId
+  val ern: String = request.ern
+}

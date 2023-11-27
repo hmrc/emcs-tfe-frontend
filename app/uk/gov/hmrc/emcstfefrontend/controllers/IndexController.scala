@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers
 
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.emcstfefrontend.config.EnrolmentKeys
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.SelectExciseNumberAuthAction
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{AuthActionHelper, SelectExciseNumberAuthAction}
 import uk.gov.hmrc.emcstfefrontend.utils.Logging
 import uk.gov.hmrc.emcstfefrontend.views.html.ExciseNumbersPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController

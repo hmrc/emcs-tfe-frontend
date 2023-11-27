@@ -103,7 +103,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
       case emcsEnrolments =>
         emcsEnrolments.find(_.identifiers.exists(ident => ident.key == EnrolmentKeys.ERN && ident.value == ernFromUrl)) match {
           case Some(enrolment) if enrolment.isActivated =>
-            block(UserRequest(request, ernFromUrl, internalId, credId))
+            block(UserRequest(request, ernFromUrl, internalId, credId, emcsEnrolments.size > 1))
           case Some(_) =>
             logger.debug(s"[checkOrganisationEMCSEnrolment] ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found but not activated")
             Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))

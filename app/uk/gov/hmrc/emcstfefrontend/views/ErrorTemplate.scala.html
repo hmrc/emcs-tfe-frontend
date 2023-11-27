@@ -23,7 +23,7 @@
         p: p,
 )
 @(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
-@layout(pageTitle = Some(messages(pageTitle))) {
+@layout(pageTitle = Some(messages(pageTitle)), maybeShowActiveTrader = None) {
     @h1()(Html(messages(heading)))
     @p()(Html(messages(message)))
 }

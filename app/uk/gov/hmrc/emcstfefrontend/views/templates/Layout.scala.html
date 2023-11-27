@@ -15,6 +15,8 @@
  *@
 
 @import uk.gov.hmrc.emcstfefrontend.config.AppConfig
+@import uk.gov.hmrc.emcstfefrontend.viewmodels.TraderInfo
+@import uk.gov.hmrc.emcstfefrontend.views.html.components.activeTrader
 @import uk.gov.hmrc.emcstfefrontend.views.html.templates.{FullWidthMainContentTemplate => FullWidthMainContent}
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import views.html.helper.CSPNonce
@@ -26,14 +28,20 @@
         defaultMainContent: TwoThirdsMainContent,
         fullWidthMainContent: FullWidthMainContent,
         betaBanner: StandardBetaBanner,
-        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
+        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
+        activeTrader: activeTrader
 )
-@(pageTitle: Option[String] = None, fullWidthContent: Boolean = false, beforeContentBlock: Option[Html] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: Option[String] = None, maybeShowActiveTrader: Option[TraderInfo], fullWidthContent: Boolean = false, beforeContentBlock: Option[Html] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @applicationCss = {
     <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" @CSPNonce.get.map { n => nonce="@n"}/>
 }
 
+
+@beforeContent = {
+    @beforeContentBlock.getOrElse(())
+    @{ activeTrader(maybeShowActiveTrader, appConfig) }
+}
 
 @hmrcLayout(
     pageTitle = pageTitle,
@@ -42,7 +50,7 @@
     phaseBanner = Some(betaBanner(appConfig.betaBannerFeedbackUrl)),
     signOutUrl = Some(appConfig.feedbackFrontendSurveyUrl),
     additionalHeadBlock = Some(applicationCss),
-    beforeContentBlock = beforeContentBlock
+    beforeContentBlock = Some(beforeContent)
 )(contentBlock)
 
 @{

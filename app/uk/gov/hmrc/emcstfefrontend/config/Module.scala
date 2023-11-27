@@ -17,12 +17,14 @@
 package uk.gov.hmrc.emcstfefrontend.config
 
 import com.google.inject.AbstractModule
-import uk.gov.hmrc.emcstfefrontend.connectors.referenceData.{GetExciseProductCodesConnector, GetExciseProductCodesConnectorImpl, GetMemberStatesConnector, GetMemberStatesConnectorImpl}
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{AuthAction, AuthActionImpl, SelectExciseNumberAuthAction, SelectExciseNumberAuthActionImpl}
+import uk.gov.hmrc.emcstfefrontend.connectors.referenceData._
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates._
 
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
+    bind(classOf[DataRetrievalAction]).to(classOf[DataRetrievalActionImpl]).asEagerSingleton()
+    bind(classOf[DataRequiredAction]).to(classOf[DataRequiredActionImpl]).asEagerSingleton()
     bind(classOf[AuthAction]).to(classOf[AuthActionImpl])
     bind(classOf[SelectExciseNumberAuthAction]).to(classOf[SelectExciseNumberAuthActionImpl])
     bind(classOf[GetExciseProductCodesConnector]).to(classOf[GetExciseProductCodesConnectorImpl]).asEagerSingleton()

@@ -33,3 +33,5 @@ case object JsonValidationError extends ErrorResponse {
 case class ExciseProductCodesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class MemberStatesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class TraderKnownFactsException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
