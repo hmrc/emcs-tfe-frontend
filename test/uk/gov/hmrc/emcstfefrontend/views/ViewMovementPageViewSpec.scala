@@ -24,7 +24,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
 import play.twirl.api.Html
 import uk.gov.hmrc.emcstfefrontend.base.SpecBase
+import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
 import uk.gov.hmrc.emcstfefrontend.models.common.{AddressModel, TraderModel}
+import uk.gov.hmrc.emcstfefrontend.models.requests.DataRequest
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 
@@ -35,6 +37,11 @@ class ViewMovementPageViewSpec extends SpecBase {
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   "The ModeOfTransportPage view" should {
+
+    val dataRequest = DataRequest(
+      UserRequest(FakeRequest("GET", s"/consignment/$testErn/$testArc"), testErn, testInternalId, testCredId, hasMultipleErns = false)(messagesApi),
+      testMinTraderKnownFacts
+    )
 
     val testData = GetMovementResponse(
       "MyLrn",
@@ -54,13 +61,11 @@ class ViewMovementPageViewSpec extends SpecBase {
       0
     )
 
-    val ern = "ern12345"
-    val arc = "12345"
-    lazy val html: Html = page(ern, arc, testData)(FakeRequest(), implicitly)
+    lazy val html: Html = page(testErn, testArc, testData)(dataRequest, implicitly)
     lazy val document: Document = Jsoup.parse(contentAsString(html))
 
     s"have the correct h1" in {
-      document.select("h1").text() shouldBe "12345"
+      document.select("h1").text() shouldBe "ARC"
     }
 
     s"have the correct summary list contents" in {
@@ -81,37 +86,37 @@ class ViewMovementPageViewSpec extends SpecBase {
     "have a link to the report a receipt flow for the Movement" in {
       val reportReceiptLink = document.select(".govuk-list > li:nth-child(1) > a:nth-child(1)")
       reportReceiptLink.text shouldBe "Submit report of receipt"
-      reportReceiptLink.attr("href") shouldBe s"http://localhost:8313/emcs/report-receipt/trader/$ern/movement/$arc"
+      reportReceiptLink.attr("href") shouldBe s"http://localhost:8313/emcs/report-receipt/trader/$testErn/movement/$testArc"
     }
 
     "have a link to the explain a delay flow for the Movement" in {
       val explainDelayLink = document.select(".govuk-list > li:nth-child(2) > a:nth-child(1)")
       explainDelayLink.text shouldBe "Explain a delay"
-      explainDelayLink.attr("href") shouldBe s"http://localhost:8316/emcs/explain-delay/trader/$ern/movement/$arc"
+      explainDelayLink.attr("href") shouldBe s"http://localhost:8316/emcs/explain-delay/trader/$testErn/movement/$testArc"
     }
 
     "have a link to the explain shortage or excess for the Movement" in {
       val explainShortageExcessLink = document.select(".govuk-list > li:nth-child(3) > a:nth-child(1)")
       explainShortageExcessLink.text shouldBe "Explain shortage or excess"
-      explainShortageExcessLink.attr("href") shouldBe s"http://localhost:8317/emcs/explain-shortage-or-excess/trader/$ern/movement/$arc"
+      explainShortageExcessLink.attr("href") shouldBe s"http://localhost:8317/emcs/explain-shortage-or-excess/trader/$testErn/movement/$testArc"
     }
 
     "have a link to the Cancel Movement" in {
       val cancelMovementLink = document.select(".govuk-list > li:nth-child(4) > a:nth-child(1)")
       cancelMovementLink.text shouldBe "Cancel movement"
-      cancelMovementLink.attr("href") shouldBe s"http://localhost:8318/emcs/cancel-movement/trader/$ern/movement/$arc"
+      cancelMovementLink.attr("href") shouldBe s"http://localhost:8318/emcs/cancel-movement/trader/$testErn/movement/$testArc"
     }
 
     "have a link to the Change Destination" in {
       val changeDestinationLink = document.select(".govuk-list > li:nth-child(5) > a:nth-child(1)")
       changeDestinationLink.text shouldBe "Change destination"
-      changeDestinationLink.attr("href") shouldBe s"http://localhost:8319/emcs/change-destination/trader/$ern/movement/$arc"
+      changeDestinationLink.attr("href") shouldBe s"http://localhost:8319/emcs/change-destination/trader/$testErn/movement/$testArc"
     }
 
     "have a link to the Alert or rejection" in {
       val alertOrRejectionLink = document.select(".govuk-list > li:nth-child(6) > a:nth-child(1)")
       alertOrRejectionLink.text shouldBe "Alert or rejection"
-      alertOrRejectionLink.attr("href") shouldBe s"http://localhost:8320/emcs/alert-or-rejection/trader/$ern/movement/$arc"
+      alertOrRejectionLink.attr("href") shouldBe s"http://localhost:8320/emcs/alert-or-rejection/trader/$testErn/movement/$testArc"
     }
   }
 }

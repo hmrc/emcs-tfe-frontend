@@ -25,10 +25,12 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.FakeAuthAction
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{FakeAuthAction, FakeDataRequiredAction, FakeDataRetrievalAction}
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.EN
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
+import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
+import uk.gov.hmrc.emcstfefrontend.models.requests.DataRequest
 import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementListPage
 import uk.gov.hmrc.http.HeaderCarrier
@@ -48,10 +50,12 @@ class ViewMovementListControllerSpec extends SpecBase with MovementListFixtures 
 
     val controller: ViewMovementListController = new ViewMovementListController(
       app.injector.instanceOf[MessagesControllerComponents],
+      FakeSuccessAuthAction,
+      new FakeDataRetrievalAction(Some(testMinTraderKnownFacts)),
+      new FakeDataRequiredAction(testMinTraderKnownFacts),
       mockGetMovementListConnector,
       view,
-      errorHandler,
-      FakeSuccessAuthAction
+      errorHandler
     )
   }
 
@@ -67,8 +71,13 @@ class ViewMovementListControllerSpec extends SpecBase with MovementListFixtures 
 
         val result: Future[Result] = controller.viewMovementList(testErn)(fakeRequest)
 
+        val dataRequest = DataRequest(
+          UserRequest(fakeRequest, testErn, testInternalId, testCredId, hasMultipleErns = false),
+          testMinTraderKnownFacts
+        )
+
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(testErn, getMovementListResponse)
+        Html(contentAsString(result)) shouldBe view(testErn, getMovementListResponse)(dataRequest, messages)
       }
     }
 

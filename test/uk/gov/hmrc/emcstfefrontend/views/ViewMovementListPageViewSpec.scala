@@ -25,6 +25,8 @@ import play.twirl.api.Html
 import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ViewMovementListMessages.{English, Welsh}
+import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
+import uk.gov.hmrc.emcstfefrontend.models.requests.DataRequest
 import uk.gov.hmrc.emcstfefrontend.viewmodels.MovementsListTableHelper
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementListPage
 import uk.gov.hmrc.emcstfefrontend.views.html.components.table
@@ -39,7 +41,14 @@ class ViewMovementListPageViewSpec extends SpecBase with MovementListFixtures {
     val helper: MovementsListTableHelper = app.injector.instanceOf[MovementsListTableHelper]
     val table: table = app.injector.instanceOf[table]
 
-    lazy val html: Html = page(testErn, getMovementListResponse)
+    implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
+
+    val dataRequest = DataRequest(
+      UserRequest(fakeRequest, testErn, testInternalId, testCredId, hasMultipleErns = false),
+      testMinTraderKnownFacts
+    )
+
+    lazy val html: Html = page(testErn, getMovementListResponse)(dataRequest, messages)
     lazy val document: Document = Jsoup.parse(html.toString)
   }
 

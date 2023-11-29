@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.emcstfefrontend.fixtures
 
+import uk.gov.hmrc.emcstfefrontend.models.common.TraderKnownFacts
+
+
 trait BaseFixtures {
 
   val testErn = "GBWKTestErn"
@@ -23,4 +26,13 @@ trait BaseFixtures {
   val testCredId = "cred1234567891"
   val testInternalId = "int1234567891"
 
+  val testMinTraderKnownFacts: TraderKnownFacts = TraderKnownFacts(
+    traderName = "testTraderName",
+    addressLine1 = None,
+    addressLine2 = None,
+    addressLine3 = None,
+    addressLine4 = None,
+    addressLine5 = None,
+    postcode = None
+  )
 }
