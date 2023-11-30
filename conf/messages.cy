@@ -31,3 +31,5 @@ exciseNumbers.title = Select a trader Excise Registration Number to use for EMCS
 exciseNumbers.heading = Select a trader Excise Registration Number to use for EMCS
 exciseNumbers.p1 = There are multiple EMCS Excise Registration Numbers associated with this login.
 exciseNumbers.p2 = Select an Excise Registration Number to continue to EMCS.
+
+activeTrader.link = Change trader type

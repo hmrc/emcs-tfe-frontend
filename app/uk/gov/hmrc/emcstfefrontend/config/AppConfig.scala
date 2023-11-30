@@ -81,8 +81,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   private def traderKnownFactsReferenceDataService: String =
     if (isEnabled(StubGetTraderKnownFacts)) {
       servicesConfig.baseUrl("emcs-tfe-reference-data-stub")
-    }
-    else {
+    } else {
       servicesConfig.baseUrl("emcs-tfe-reference-data")
     }
 

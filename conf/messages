@@ -68,3 +68,5 @@ accountHome.draftMovementsLink = Draft movements
 accountHome.createMovementLink = Create a new movement
 accountHome.prevalidate = Prevalidate
 accountHome.checkLink = Check Europa to find out if a trader can receive excise goods
+
+activeTrader.link = Change trader type
