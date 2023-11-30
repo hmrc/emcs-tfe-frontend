@@ -30,15 +30,16 @@ class GetTraderKnownFactsConnectorSpec extends UnitSpec with BaseFixtures with S
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
-
   lazy val connector = new GetTraderKnownFactsConnector(mockHttpClient, mockAppConfig)
+  val baseUrl = "http://test-BaseUrl"
 
   "check" should {
     "return a successful response" when {
       "downstream call is successful" in {
+        MockedAppConfig.traderKnownFactsReferenceDataBaseUrl.returns(baseUrl)
 
         MockHttpClient.get(
-          url = s"${mockAppConfig.traderKnownFactsReferenceDataBaseUrl}/oracle/trader-known-facts",
+          url = s"${baseUrl}/oracle/trader-known-facts",
           parameters = Seq("exciseRegistrationId" -> testErn)
         ).returns(Future.successful(Right(Some(testMinTraderKnownFacts))))
 
@@ -48,8 +49,10 @@ class GetTraderKnownFactsConnectorSpec extends UnitSpec with BaseFixtures with S
 
     "return an error response" when {
       "downstream call fails" in {
+        MockedAppConfig.traderKnownFactsReferenceDataBaseUrl.returns(baseUrl)
+
         MockHttpClient.get(
-          url = s"${mockAppConfig.traderKnownFactsReferenceDataBaseUrl}/oracle/trader-known-facts",
+          url = s"${baseUrl}/oracle/trader-known-facts",
           parameters = Seq("exciseRegistrationId" -> testErn)
         ).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
