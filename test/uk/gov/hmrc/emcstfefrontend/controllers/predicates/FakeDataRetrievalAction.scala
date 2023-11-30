@@ -36,13 +36,3 @@ class FakeDataRetrievalAction(optTraderKnownFacts: Option[TraderKnownFacts]) ext
         scala.concurrent.ExecutionContext.Implicits.global
     }
 }
-
-
-//class FakeDataRetrievalAction(optTraderKnownFacts: Option[TraderKnownFacts]) extends DataRetrievalAction {
-//
-//  override protected def transform[A](request: UserRequest[A]): Future[OptionalDataRequest[A]] =
-//    Future(OptionalDataRequest(request, optTraderKnownFacts))
-//
-//  override protected implicit val executionContext: ExecutionContext =
-//    scala.concurrent.ExecutionContext.Implicits.global
-//}

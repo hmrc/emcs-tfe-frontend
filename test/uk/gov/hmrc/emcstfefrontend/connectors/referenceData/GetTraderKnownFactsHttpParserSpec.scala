@@ -18,7 +18,6 @@ package uk.gov.hmrc.emcstfefrontend.connectors.referenceData
 
 import play.api.http.Status
 import play.api.libs.json.Json
-//import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
 import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockHttpClient
