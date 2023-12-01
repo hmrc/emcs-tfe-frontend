@@ -72,8 +72,12 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with BaseFixtures 
 
       "return a success page" when {
         "all downstream calls are successful" in new Test {
+
+          val referenceDataKnownFactsURI = "/emcs-tfe-reference-data/oracle/trader-known-facts"
+
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataKnownFactsURI, Map("exciseRegistrationId" -> testErn), Status.OK, testTraderKnownFactsJson)
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, Json.parse(
               """{
                 |  "localReferenceNumber": "MyLrn",

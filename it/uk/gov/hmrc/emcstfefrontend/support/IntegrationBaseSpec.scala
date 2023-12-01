@@ -37,7 +37,9 @@ trait IntegrationBaseSpec extends SessionCookieBaker with UnitSpec with WireMock
     "microservice.services.auth.port" -> WireMockHelper.wireMockPort,
     "microservice.services.emcs-tfe.port" -> WireMockHelper.wireMockPort,
     "microservice.services.emcs-tfe-reference-data.port" -> WireMockHelper.wireMockPort,
-    "auditing.consumer.baseUri.port" -> WireMockHelper.wireMockPort
+    "auditing.consumer.baseUri.port" -> WireMockHelper.wireMockPort,
+    "feature-switch.enable-reference-data-stub-source" -> "true",
+    "features.stub-get-trader-known-facts" -> "false"
   )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()

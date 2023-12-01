@@ -18,7 +18,6 @@ package uk.gov.hmrc.emcstfefrontend.controllers.predicates
 
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
-import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
 import uk.gov.hmrc.emcstfefrontend.models.requests.{DataRequest, OptionalDataRequest}
 
 import javax.inject.Inject

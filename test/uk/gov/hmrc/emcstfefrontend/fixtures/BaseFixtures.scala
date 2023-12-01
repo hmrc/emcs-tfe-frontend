@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.emcstfefrontend.fixtures
 
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.emcstfefrontend.models.common.TraderKnownFacts
 
 
@@ -35,4 +36,6 @@ trait BaseFixtures {
     addressLine5 = None,
     postcode = None
   )
+
+  val testTraderKnownFactsJson: JsValue = Json.parse("""{ "traderName": "Trader" }""")
 }
