@@ -30,8 +30,9 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
     scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s"
   )
+  .settings(inConfig(Test)(testSettings): _*)
   .configs(ItTest)
-  .settings(inConfig(ItTest)(Defaults.itSettings): _*)
+  .settings(inConfig(ItTest)(itSettings): _*)
   .settings(
     ItTest / fork := true,
     ItTest / unmanagedSourceDirectories := Seq((ItTest / baseDirectory).value / "it"),
@@ -50,3 +51,21 @@ lazy val microservice = Project(appName, file("."))
     "uk.gov.hmrc.hmrcfrontend.views.html.{components => hmrcComponents}",
     "controllers.routes._"
   ))
+
+lazy val testSettings: Seq[Def.Setting[_]] = Seq(
+  fork := true,
+  unmanagedSourceDirectories += baseDirectory.value / "test-utils",
+  Test / javaOptions += "-Dlogger.resource=logback-test.xml",
+)
+
+lazy val itSettings = Defaults.itSettings ++ Seq(
+  unmanagedSourceDirectories := Seq(
+    baseDirectory.value / "it",
+    baseDirectory.value / "test-utils"
+  ),
+  unmanagedResourceDirectories := Seq(
+    baseDirectory.value / "it" / "resources"
+  ),
+  parallelExecution := false,
+  fork := true
+)

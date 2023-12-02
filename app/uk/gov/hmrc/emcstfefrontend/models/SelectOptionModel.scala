@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response
+package uk.gov.hmrc.emcstfefrontend.models
 
-import scala.util.control.NoStackTrace
-
-sealed trait ErrorResponse {
-  val message: String
+trait SelectOptionModel {
+  val code: String
+  val displayName: String
 }
-
-case object UnexpectedDownstreamResponseError extends ErrorResponse {
-  val message = "Unexpected downstream response status"
-}
-
-case object JsonValidationError extends ErrorResponse {
-  val message = "JSON validation error"
-}
-
-case class ExciseProductCodesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
