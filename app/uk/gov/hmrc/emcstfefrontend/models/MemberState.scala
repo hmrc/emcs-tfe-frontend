@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response
+package uk.gov.hmrc.emcstfefrontend.models
 
-import scala.util.control.NoStackTrace
+import play.api.libs.json.{Format, Json}
 
-sealed trait ErrorResponse {
-  val message: String
+case class MemberState(countryCode: String, country: String) extends SelectOptionModel {
+  override val code: String = countryCode
+  override val displayName: String = s"$country ($countryCode)"
 }
 
-case object UnexpectedDownstreamResponseError extends ErrorResponse {
-  val message = "Unexpected downstream response status"
+object MemberState {
+  implicit val format: Format[MemberState] = Json.format[MemberState]
 }
-
-case object JsonValidationError extends ErrorResponse {
-  val message = "JSON validation error"
-}
-
-case class ExciseProductCodesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
-
-case class MemberStatesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse

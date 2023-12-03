@@ -24,8 +24,12 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.{Application, Environment, Mode}
 
+import scala.concurrent.ExecutionContext
+
 trait IntegrationBaseSpec extends SessionCookieBaker with UnitSpec with WireMockHelper with GuiceOneServerPerSuite
   with BeforeAndAfterEach with BeforeAndAfterAll {
+
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
@@ -33,8 +37,8 @@ trait IntegrationBaseSpec extends SessionCookieBaker with UnitSpec with WireMock
     "microservice.services.auth.port" -> WireMockHelper.wireMockPort,
     "microservice.services.reference-data.port" -> WireMockHelper.wireMockPort,
     "microservice.services.emcs-tfe.port" -> WireMockHelper.wireMockPort,
-    "auditing.consumer.baseUri.port" -> WireMockHelper.wireMockPort,
-    "feature-switch.enable-reference-data-stub-source" -> "true"
+    "microservice.services.emcs-tfe-reference-data.port" -> WireMockHelper.wireMockPort,
+    "auditing.consumer.baseUri.port" -> WireMockHelper.wireMockPort
   )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()

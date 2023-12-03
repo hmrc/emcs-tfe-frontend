@@ -21,12 +21,13 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.govukfrontend.views.Aliases.SelectItem
 
-class SelectItemHelperSpec extends SpecBase with ExciseProductCodeFixtures {
+class SelectItemHelperSpec extends SpecBase
+  with ExciseProductCodeFixtures {
   implicit lazy val msgs = messages(FakeRequest())
 
   ".constructSelectItems" - {
 
-    "should return a list of select items" in {
+    "should return a list of select items " in {
       val result = SelectItemHelper.constructSelectItems(
         selectOptions = Seq(beerExciseProductCode, wineExciseProductCode),
         defaultTextMessageKey = "default",

@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response
+package fixtures
 
-import scala.util.control.NoStackTrace
+import play.api.libs.json.Json
+import uk.gov.hmrc.emcstfefrontend.models.MemberState
 
-sealed trait ErrorResponse {
-  val message: String
+trait MemberStatesFixtures {
+
+  val memberStateAT = MemberState(
+    countryCode = "AT",
+    country = "Austria"
+  )
+
+  val memberStateBE = MemberState(
+    countryCode = "BE",
+    country = "Belgium"
+  )
+
+  val memberStateJsonBT = Json.obj(
+    "countryCode" -> "AT",
+    "country" -> "Austria"
+  )
+
+  val memberStateJsonBE = Json.obj(
+    "countryCode" -> "BE",
+    "country" -> "Belgium"
+  )
+
+
 }
-
-case object UnexpectedDownstreamResponseError extends ErrorResponse {
-  val message = "Unexpected downstream response status"
-}
-
-case object JsonValidationError extends ErrorResponse {
-  val message = "JSON validation error"
-}
-
-case class ExciseProductCodesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
-
-case class MemberStatesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
