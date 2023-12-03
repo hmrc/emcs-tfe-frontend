@@ -1,0 +1,76 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.emcstfefrontend.views.html.components._
+@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
+@import uk.gov.hmrc.emcstfefrontend.config.AppConfig
+@import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMessageStatisticsResponse
+@import uk.gov.hmrc.emcstfefrontend.models.common.RoleType.RoleType
+
+@this(
+        layout: Layout,
+        summaryList: summary_list,
+        link: link,
+        appConfig: AppConfig,
+        list: spaced_list,
+        navigationBar: navigation_bar
+)
+@(
+        ern: String,
+        roleType: RoleType,
+        businessName: String,
+        messageStatistics: GetMessageStatisticsResponse,
+        europaCheckLink: String,
+        createAMovementLink: String
+)(implicit request: Request[_], messages: Messages)
+
+@roleTypeDescription = {
+@messages(roleType.descriptionKey)
+}
+
+@layout(pageTitle = Some(messages("viewMovement.title")), fullWidthContent = true, beforeContentBlock = Some(navigationBar(ern, messageStatistics))) {
+    <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("base.captionHiddenText") </span>@messages("accountHome.caption")</h2>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-1">@businessName</h1>
+    <p class="govuk-caption-m govuk-!-margin-bottom-1 govuk-!-margin-top-0">@roleTypeDescription</p>
+    <p class="govuk-caption-m govuk-!-margin-0">@messages("accountHome.ern") @ern</p>
+
+    <h2 class="govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1">@messages("accountHome.yourMessages")</h2>
+    <ul class="govuk-list">
+        <li><a id="all-messages-link" class="govuk-link" href="messages">@messages("accountHome.allMessagesLink")</a></li>
+    </ul>
+
+    <h2 class="govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1">@messages("accountHome.yourMovements")</h2>
+    <ul class="govuk-list">
+        <li><a id="all-movements-link" class="govuk-link" href="movements">@messages("accountHome.allMovementsLink")</a></li>
+        <li><a id="undischarged-movements-link" class="govuk-link" href="movements">@messages("accountHome.undischargedMovementsLink")</a></li>
+        <li><a id="draft-movements-link" class="govuk-link" href="drafts">@messages("accountHome.draftMovementsLink")</a></li>
+    </ul>
+
+    @if(roleType.isConsignor) {
+        <p class="govuk-body"><a id="create-movement-link" class="govuk-link" href=@createAMovementLink>@messages("accountHome.createMovementLink")</a></p>
+    }
+
+    @if(roleType.isNorthernIsland) {
+        <h2 class="govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1">@messages("accountHome.prevalidate")</h2>
+        <ul class="govuk-list">
+            <li><a id="check-link" class="govuk-link" href=@europaCheckLink>@messages("accountHome.checkLink")</a></li>
+        </ul>
+    }
+}
+
+@{
+    //$COVERAGE-OFF$
+}
