@@ -5,6 +5,8 @@ errorPage.title = Sorry, we’re experiencing technical difficulties
 errorPage.heading = Sorry, we’re experiencing technical difficulties
 errorPage.message = Please try again in a few minutes.
 
+error.browser.title.prefix = Error:
+
 base.saveAndContinue = Save and continue
 base.saveMovement    = Save and return to movement
 base.opensInNewTab   = (opens in new tab)
@@ -70,3 +72,5 @@ accountHome.prevalidate = Prevalidate
 accountHome.checkLink = Check Europa to find out if a trader can receive excise goods
 
 activeTrader.link = Change trader type
+
+site.govuk = GOV.UK
