@@ -31,9 +31,9 @@ class GetMemberStatesConnectorSpec extends SpecBase with MockHttpClient with Mem
 
   lazy val connector = new GetMemberStatesConnectorImpl(mockHttpClient, appConfig)
 
-  "getMemberStates" - {
+  "getMemberStates" should {
 
-    "should return a successful response" - {
+    "should return a successful response" when {
 
       "when downstream call is successful" in {
 
@@ -49,7 +49,7 @@ class GetMemberStatesConnectorSpec extends SpecBase with MockHttpClient with Mem
       }
     }
 
-    "should return an error response" - {
+    "should return an error response" when {
 
       "when downstream call fails" in {
 

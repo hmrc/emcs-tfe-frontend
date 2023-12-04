@@ -16,26 +16,24 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers.predicates
 
-import play.api.i18n.MessagesApi
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Organisation}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.emcstfefrontend.config.{AppConfig, EnrolmentKeys}
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
+import uk.gov.hmrc.emcstfefrontend.config.EnrolmentKeys
 import uk.gov.hmrc.emcstfefrontend.controllers
 import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 import scala.concurrent.ExecutionContext
 
-class SelectExciseNumberAuthActionSpec extends UnitSpec with BaseFixtures {
+class SelectExciseNumberAuthActionSpec extends SpecBase with BaseFixtures {
 
   lazy val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
-  lazy val appConfig = app.injector.instanceOf[AppConfig]
   implicit lazy val ec = app.injector.instanceOf[ExecutionContext]
-  implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
 
   type AuthRetrieval = ~[~[~[Option[AffinityGroup], Enrolments], Option[String]], Option[Credentials]]
 

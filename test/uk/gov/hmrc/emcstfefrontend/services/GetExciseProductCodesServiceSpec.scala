@@ -32,9 +32,9 @@ class GetExciseProductCodesServiceSpec extends SpecBase with MockGetExciseProduc
 
   lazy val testService = new GetExciseProductCodesService(mockGetExciseProductCodesConnector)
 
-  ".getExciseProductCodes" - {
+  ".getExciseProductCodes" should {
 
-    "should return Seq[ExciseProductCode]" - {
+    "should return Seq[ExciseProductCode]" when {
 
       "when Connector returns success from downstream" in {
 
@@ -51,7 +51,7 @@ class GetExciseProductCodesServiceSpec extends SpecBase with MockGetExciseProduc
       }
     }
 
-    "should throw ExciseProductCodesException" - {
+    "should throw ExciseProductCodesException" when {
 
       "when Connector returns failure from downstream" in {
 

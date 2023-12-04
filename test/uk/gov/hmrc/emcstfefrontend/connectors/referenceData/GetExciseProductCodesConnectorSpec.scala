@@ -32,9 +32,9 @@ class GetExciseProductCodesConnectorSpec extends SpecBase with MockHttpClient wi
   lazy val connector = new GetExciseProductCodesConnectorImpl(mockHttpClient, appConfig)
 
 
-  "getExciseProductCodes" - {
+  "getExciseProductCodes" should {
 
-    "should return a successful response" - {
+    "should return a successful response" when {
 
       "when downstream call is successful" in {
 
@@ -50,7 +50,7 @@ class GetExciseProductCodesConnectorSpec extends SpecBase with MockHttpClient wi
       }
     }
 
-    "should return an error response" - {
+    "should return an error response" when {
 
       "when downstream call fails" in {
 

@@ -21,13 +21,14 @@
 
 package uk.gov.hmrc.emcstfefrontend.models
 
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.libs.json.{JsSuccess, Json}
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListResponse
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 
-class GetMovementListResponseSpec extends UnitSpec with MovementListFixtures {
+class GetMovementListResponseSpec extends SpecBase with MovementListFixtures {
 
   "GetMovementListResponse" should {
 

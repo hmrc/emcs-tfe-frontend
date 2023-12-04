@@ -18,17 +18,18 @@ package uk.gov.hmrc.emcstfefrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatest.matchers.should.Matchers.convertToStringShouldWrapper
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ViewMovementListMessages.{English, Welsh}
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.viewmodels.MovementsListTableHelper
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementListPage
 import uk.gov.hmrc.emcstfefrontend.views.html.components.table
 
-class ViewMovementListPageViewSpec extends UnitSpec with MovementListFixtures {
+class ViewMovementListPageViewSpec extends SpecBase with MovementListFixtures {
 
   abstract class TestFixture(implicit messages: Messages) {
 

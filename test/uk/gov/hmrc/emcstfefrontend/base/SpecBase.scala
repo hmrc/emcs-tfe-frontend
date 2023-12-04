@@ -18,18 +18,18 @@ package uk.gov.hmrc.emcstfefrontend.base
 
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{MessagesControllerComponents, Request}
 import uk.gov.hmrc.emcstfefrontend.config.{AppConfig, ErrorHandler}
 import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
 
-trait SpecBase extends AnyFreeSpec with Matchers with OptionValues with ScalaFutures with BaseFixtures with GuiceOneAppPerSuite {
+trait SpecBase extends AnyWordSpecLike with Matchers with OptionValues with ScalaFutures with BaseFixtures with GuiceOneAppPerSuite {
 
   lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
-  lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy val messagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   lazy val errorHandler: ErrorHandler = app.injector.instanceOf[ErrorHandler]
 

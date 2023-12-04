@@ -25,9 +25,9 @@ class SelectItemHelperSpec extends SpecBase
   with MemberStatesFixtures {
   implicit lazy val msgs = messages(FakeRequest())
 
-  ".constructSelectItems" - {
+  ".constructSelectItems" should {
 
-    "should return a list of select items " in {
+    "should return a list of select items" in {
       val result = SelectItemHelper.constructSelectItems(
         selectOptions = Seq(memberStateAT, memberStateBE),
         defaultTextMessageKey = "default",

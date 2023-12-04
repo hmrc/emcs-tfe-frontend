@@ -16,16 +16,18 @@
 
 package uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe
 
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.http.{HeaderNames, MimeTypes, Status}
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockHttpClient
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetMovementListConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames with MockAppConfig with MockHttpClient with MovementListFixtures {
+class GetMovementListConnectorSpec extends SpecBase with Status with MimeTypes with HeaderNames with MockAppConfig with MockHttpClient with MovementListFixtures {
 
   trait Test {
     implicit val hc: HeaderCarrier = HeaderCarrier()

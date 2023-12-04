@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers
 
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.http.Status
 import play.api.i18n.MessagesApi
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
@@ -23,17 +24,17 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.config.EnrolmentKeys
 import uk.gov.hmrc.emcstfefrontend.controllers.predicates.FakeSelectExciseNumbersAuthAction
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.EN
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.ExciseNumbersPage
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IndexControllerSpec extends UnitSpec with FakeSelectExciseNumbersAuthAction {
+class IndexControllerSpec extends SpecBase with FakeSelectExciseNumbersAuthAction {
 
   val oneEnrolment = Set(
     Enrolment(

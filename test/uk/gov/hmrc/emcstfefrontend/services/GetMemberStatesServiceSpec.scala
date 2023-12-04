@@ -32,9 +32,9 @@ class GetMemberStatesServiceSpec extends SpecBase with MockGetMemberStatesConnec
 
   lazy val testService = new GetMemberStatesService(mockGetMemberStatesConnector)
 
-  ".getMemberStates" - {
+  ".getMemberStates" should {
 
-    "should return Seq[MemberState]" - {
+    "should return Seq[MemberState]" when {
 
       "when Connector returns success from downstream" in {
 
@@ -51,7 +51,7 @@ class GetMemberStatesServiceSpec extends SpecBase with MockGetMemberStatesConnec
       }
     }
 
-    "should throw MemberStatesException" - {
+    "should throw MemberStatesException" when {
 
       "when Connector returns failure from downstream" in {
 

@@ -16,25 +16,21 @@
 
 package uk.gov.hmrc.emcstfefrontend.views
 
-/*
- * Copyright 2022 HM Revenue & Customs
- *
- */
-
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatest.matchers.should.Matchers.convertToStringShouldWrapper
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.contentAsString
+import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
 import play.twirl.api.Html
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.models.common.{AddressModel, TraderModel}
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementPage
 
 import java.time.LocalDate
 
-class ViewMovementPageViewSpec extends UnitSpec {
+class ViewMovementPageViewSpec extends SpecBase {
   val page: ViewMovementPage = app.injector.instanceOf[ViewMovementPage]
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

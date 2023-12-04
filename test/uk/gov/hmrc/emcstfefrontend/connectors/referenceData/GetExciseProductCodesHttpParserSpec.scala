@@ -29,9 +29,9 @@ class GetExciseProductCodesHttpParserSpec extends SpecBase
 
   override def http: HttpClient = mockHttpClient
 
-  "GetExciseProductCodesReads" - {
+  "GetExciseProductCodesReads" should {
 
-    "should return a Seq of Excise Product Codes" - {
+    "should return a Seq of Excise Product Codes" when {
 
       s"when an OK (${Status.OK}) response is retrieved" in {
 
@@ -51,7 +51,7 @@ class GetExciseProductCodesHttpParserSpec extends SpecBase
       }
     }
 
-    "should return a JsonValidationError" - {
+    "should return a JsonValidationError" when {
 
       s"when invalid json response is retrieved" in {
 
@@ -68,7 +68,7 @@ class GetExciseProductCodesHttpParserSpec extends SpecBase
       }
     }
 
-    "should return UnexpectedDownstreamError" - {
+    "should return UnexpectedDownstreamError" when {
 
       s"when status is anything else" in {
 

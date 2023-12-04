@@ -21,15 +21,16 @@
 
 package uk.gov.hmrc.emcstfefrontend.models
 
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.libs.json.{JsSuccess, JsValue, Json}
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.models.common.{AddressModel, TraderModel}
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 import java.time.LocalDate
 
 
-class GetMovementResponseSpec extends UnitSpec {
+class GetMovementResponseSpec extends SpecBase {
 
 
   val model: GetMovementResponse = GetMovementResponse(
