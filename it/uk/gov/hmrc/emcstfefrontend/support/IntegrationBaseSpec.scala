@@ -35,7 +35,6 @@ trait IntegrationBaseSpec extends SessionCookieBaker with UnitSpec with WireMock
 
   def servicesConfig: Map[String, _] = Map(
     "microservice.services.auth.port" -> WireMockHelper.wireMockPort,
-    "microservice.services.reference-data.port" -> WireMockHelper.wireMockPort,
     "microservice.services.emcs-tfe.port" -> WireMockHelper.wireMockPort,
     "microservice.services.emcs-tfe-reference-data.port" -> WireMockHelper.wireMockPort,
     "auditing.consumer.baseUri.port" -> WireMockHelper.wireMockPort
