@@ -67,7 +67,7 @@ class AuthActionSpec extends UnitSpec with BaseFixtures {
           override val authConnector = new FakeFailingAuthConnector(new BearerTokenExpired)
 
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("http://localhost:9949/auth-login-stub/gg-sign-in?continue=http%3A%2F%2Flocalhost%3A8310%2Femcs-tfe")
+          redirectLocation(result) shouldBe Some("http://localhost:9949/auth-login-stub/gg-sign-in?continue=http%3A%2F%2Flocalhost%3A8310%2Femcs%2Faccount")
         }
       }
 

@@ -53,7 +53,7 @@ trait IntegrationBaseSpec extends SessionCookieBaker with UnitSpec with WireMock
   }
 
   def buildRequest(path: String, additionalCookieData: Map[String, String] = Map()): WSRequest = client
-    .url(s"http://localhost:$port/emcs-tfe$path")
+    .url(s"http://localhost:$port/emcs/account$path")
     .withHttpHeaders(HeaderNames.COOKIE -> bakeSessionCookie(additionalCookieData))
     .withFollowRedirects(false)
 
