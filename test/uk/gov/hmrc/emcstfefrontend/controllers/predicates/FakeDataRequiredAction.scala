@@ -22,8 +22,7 @@ import uk.gov.hmrc.emcstfefrontend.models.requests.{DataRequest, OptionalDataReq
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRequiredAction (traderKnownFacts: TraderKnownFacts)
-                             (implicit executionContext: ExecutionContext) extends DataRequiredAction {
+class FakeDataRequiredAction (traderKnownFacts: TraderKnownFacts) extends DataRequiredAction {
   override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
     Future.successful(Right(DataRequest(request.request, traderKnownFacts)))
 

@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.emcstfefrontend.config
 
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.emcstfefrontend.featureswitch.core.config.{FeatureSwitching, ReturnToLegacy, StubGetTraderKnownFacts}
 import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec

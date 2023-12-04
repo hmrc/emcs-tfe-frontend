@@ -36,7 +36,7 @@ class DataRequiredActionSpec
 
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val fakeRequest: FakeRequest[_] = FakeRequest("GET", "/")
+  val fakeRequest: FakeRequest[_] = FakeRequest("GET", s"/movements-in/$testErn")
   val fakeUserRequest: UserRequest[_] = UserRequest(fakeRequest, testErn, testInternalId, testCredId, hasMultipleErns = true)(messagesApi)
 
   object Harness extends DataRequiredActionImpl {
