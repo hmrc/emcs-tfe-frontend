@@ -16,38 +16,38 @@
 
 package uk.gov.hmrc.emcstfefrontend.viewmodels.helpers
 
-import fixtures.ExciseProductCodeFixtures
+import fixtures.MemberStatesFixtures
 import play.api.test.FakeRequest
 import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.govukfrontend.views.Aliases.SelectItem
 
 class SelectItemHelperSpec extends SpecBase
-  with ExciseProductCodeFixtures {
+  with MemberStatesFixtures {
   implicit lazy val msgs = messages(FakeRequest())
 
   ".constructSelectItems" - {
 
     "should return a list of select items " in {
       val result = SelectItemHelper.constructSelectItems(
-        selectOptions = Seq(beerExciseProductCode, wineExciseProductCode),
+        selectOptions = Seq(memberStateAT, memberStateBE),
         defaultTextMessageKey = "default",
         existingAnswer = None)
       result mustBe Seq(
         SelectItem(selected = true, disabled = true, text = "default"),
-        SelectItem(value = Some("B000"), text = "B000", selected = false),
-        SelectItem(value = Some("W200"), text = "W200", selected = false)
+        SelectItem(value = Some("AT"), text = "Austria (AT)", selected = false),
+        SelectItem(value = Some("BE"), text = "Belgium (BE)", selected = false)
       )
     }
 
     "should return a list of select items (pre-selected when there is an existing answer)" in {
       val result = SelectItemHelper.constructSelectItems(
-        selectOptions = Seq(beerExciseProductCode, wineExciseProductCode),
+        selectOptions = Seq(memberStateAT, memberStateBE),
         defaultTextMessageKey = "default",
-        existingAnswer = Some("W200"))
+        existingAnswer = Some("BE"))
       result mustBe Seq(
         SelectItem(selected = false, disabled = true, text = "default"),
-        SelectItem(value = Some("B000"), text = "B000", selected = false),
-        SelectItem(value = Some("W200"), text = "W200", selected = true)
+        SelectItem(value = Some("AT"), text = "Austria (AT)", selected = false),
+        SelectItem(value = Some("BE"), text = "Belgium (BE)", selected = true)
       )
     }
 
