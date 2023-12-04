@@ -22,7 +22,7 @@ case class ExciseProductCode(code: String,
                              description: String,
                              category: String,
                              categoryDescription: String) extends SelectOptionModel {
-  val displayName = s"$code"
+  val displayName = code
 }
 
 object ExciseProductCode {
