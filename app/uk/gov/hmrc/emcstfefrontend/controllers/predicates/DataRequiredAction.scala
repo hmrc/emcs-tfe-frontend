@@ -30,7 +30,7 @@ class DataRequiredActionImpl @Inject()(implicit val executionContext: ExecutionC
     request.traderKnownFacts match {
       case Some(traderKnownFacts) =>
         Future.successful(Right(DataRequest(request.request, traderKnownFacts)))
-      case None => Future.successful(Left(Redirect("")))
+      case None => Future.successful(Left(Redirect(""))) // TODO: Where should this redirect to?
     }
   }
 }
