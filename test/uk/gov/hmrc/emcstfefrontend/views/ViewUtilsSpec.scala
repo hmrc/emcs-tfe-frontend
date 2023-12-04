@@ -28,10 +28,11 @@ import uk.gov.hmrc.emcstfefrontend.models.requests.DataRequest
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.viewmodels.TraderInfo
 
-class ViewUtilsSpec extends UnitSpec with BaseFixtures{
+class ViewUtilsSpec extends UnitSpec with BaseFixtures {
+
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-//  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
-def messagesApi(app: Application): MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  def messagesApi(app: Application): MessagesApi = app.injector.instanceOf[MessagesApi]
   def messages(app: Application): Messages = messagesApi(app).preferred(FakeRequest())
 
   def createDataRequest(hasMultipleErns: Boolean): DataRequest[_] =
@@ -70,10 +71,10 @@ def messagesApi(app: Application): MessagesApi = app.injector.instanceOf[Message
       ViewUtils.title(userForm, "TITLE") mustBe " TITLE - Excise Movement and Control System - GOV.UK"
     }
 
-     "with form errors" in {
-       val formError = FormError("testKey", "testMessage")
-       ViewUtils.title(userForm.withError(formError), "TITLE") mustBe "Error: TITLE - Excise Movement and Control System - GOV.UK"
-     }
+    "with form errors" in {
+      val formError = FormError("testKey", "testMessage")
+      ViewUtils.title(userForm.withError(formError), "TITLE") mustBe "Error: TITLE - Excise Movement and Control System - GOV.UK"
+    }
   }
 
   ".titleNoForm" in {
