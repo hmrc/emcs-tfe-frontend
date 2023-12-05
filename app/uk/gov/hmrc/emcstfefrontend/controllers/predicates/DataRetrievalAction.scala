@@ -18,7 +18,7 @@ package uk.gov.hmrc.emcstfefrontend.controllers.predicates
 
 import play.api.mvc.ActionTransformer
 import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
-import uk.gov.hmrc.emcstfefrontend.models.requests.OptionalDataRequest
+import uk.gov.hmrc.emcstfefrontend.models.requests.DataRequest
 import uk.gov.hmrc.emcstfefrontend.services.GetTraderKnownFactsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
@@ -29,23 +29,23 @@ import scala.concurrent.{ExecutionContext, Future}
 class DataRetrievalActionImpl @Inject()(getTraderKnownFactsService: GetTraderKnownFactsService)
                                        (implicit val ec: ExecutionContext) extends DataRetrievalAction {
 
-  def apply(): ActionTransformer[UserRequest, OptionalDataRequest] = new ActionTransformer[UserRequest, OptionalDataRequest] {
+  def apply(): ActionTransformer[UserRequest, DataRequest] = new ActionTransformer[UserRequest, DataRequest] {
 
     override val executionContext = ec
 
-    override protected def transform[A](request: UserRequest[A]): Future[OptionalDataRequest[A]] = {
+    override protected def transform[A](request: UserRequest[A]): Future[DataRequest[A]] = {
 
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
       for {
         traderKnownFacts <- getTraderKnownFactsService.getTraderKnownFacts(request.ern)
       } yield {
-        OptionalDataRequest(request, traderKnownFacts)
+        DataRequest(request, traderKnownFacts)
       }
     }
   }
 }
 
 trait DataRetrievalAction {
-  def apply(): ActionTransformer[UserRequest, OptionalDataRequest]
+  def apply(): ActionTransformer[UserRequest, DataRequest]
 }

@@ -27,13 +27,12 @@ trait AuthActionHelper {
 
   val auth: AuthAction
   val getData: DataRetrievalAction
-  val requireData: DataRequiredAction
 
   private def authorised(ern: String): ActionBuilder[UserRequest, AnyContent] =
     auth(ern)
 
   private def authorisedWithData(ern: String): ActionBuilder[DataRequest, AnyContent] =
-    authorised(ern) andThen getData() andThen requireData
+    authorised(ern) andThen getData()
 
   def authorisedDataRequestAsync(ern: String)(block: DataRequest[_] => Future[Result]): Action[AnyContent] =
     authorisedWithData(ern).async(block)

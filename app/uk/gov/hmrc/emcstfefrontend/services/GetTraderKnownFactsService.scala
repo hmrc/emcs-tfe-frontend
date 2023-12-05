@@ -29,10 +29,10 @@ class GetTraderKnownFactsService @Inject()(connector: GetTraderKnownFactsConnect
                                            (implicit ec: ExecutionContext) {
 
 
-  def getTraderKnownFacts(ern: String)(implicit hc: HeaderCarrier): Future[Option[TraderKnownFacts]] = {
+  def getTraderKnownFacts(ern: String)(implicit hc: HeaderCarrier): Future[TraderKnownFacts] = {
     connector.getTraderKnownFacts(ern).map {
-      case Left(_) => throw TraderKnownFactsException(s"No known facts found for trader $ern")
-      case Right(value) => value
+      case Right(Some(traderKnownFacts)) => traderKnownFacts
+      case _ => throw TraderKnownFactsException(s"No known facts found for trader $ern")
     }
   }
 

@@ -25,7 +25,7 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{FakeAuthAction, FakeDataRequiredAction, FakeDataRetrievalAction}
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.EN
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
@@ -51,8 +51,7 @@ class ViewMovementListControllerSpec extends SpecBase with MovementListFixtures 
     val controller: ViewMovementListController = new ViewMovementListController(
       app.injector.instanceOf[MessagesControllerComponents],
       FakeSuccessAuthAction,
-      new FakeDataRetrievalAction(Some(testMinTraderKnownFacts)),
-      new FakeDataRequiredAction(testMinTraderKnownFacts),
+      new FakeDataRetrievalAction(testMinTraderKnownFacts),
       mockGetMovementListConnector,
       view,
       errorHandler

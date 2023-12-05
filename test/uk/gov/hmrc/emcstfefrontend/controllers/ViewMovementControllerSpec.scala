@@ -23,7 +23,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{FakeAuthAction, FakeDataRequiredAction, FakeDataRetrievalAction}
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
 import uk.gov.hmrc.emcstfefrontend.models.common.{AddressModel, TraderModel}
 import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
@@ -44,8 +44,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction {
     val controller: ViewMovementController = new ViewMovementController(
       app.injector.instanceOf[MessagesControllerComponents],
       FakeSuccessAuthAction,
-      new FakeDataRetrievalAction(None),
-      new FakeDataRequiredAction(testMinTraderKnownFacts),
+      new FakeDataRetrievalAction(testMinTraderKnownFacts),
       mockGetMovementConnector,
       app.injector.instanceOf[ViewMovementPage],
       app.injector.instanceOf[ErrorHandler]

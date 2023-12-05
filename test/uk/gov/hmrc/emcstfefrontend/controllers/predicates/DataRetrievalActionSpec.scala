@@ -23,7 +23,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
 import uk.gov.hmrc.emcstfefrontend.mocks.services.MockGetTraderKnownFactsService
 import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
-import uk.gov.hmrc.emcstfefrontend.models.requests.OptionalDataRequest
+import uk.gov.hmrc.emcstfefrontend.models.requests.DataRequest
 import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -37,27 +37,18 @@ class DataRetrievalActionSpec
 
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  lazy val dataRetrievalAction: ActionTransformer[UserRequest, OptionalDataRequest] =
+  lazy val dataRetrievalAction: ActionTransformer[UserRequest, DataRequest] =
     new DataRetrievalActionImpl(mockGetTraderKnownFactsService).apply()
 
   "Data Retrieval Action" when {
-    "there is no data in the cache" must {
-      "set TraderKnownFacts to 'None' in the request" in {
-        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(None))
-
-        val result = dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)).futureValue.value
-
-        result.traderKnownFacts shouldBe None
-      }
-    }
 
     "there is data in the cache" must {
       "build a TraderKnownFacts object and add it to the request" in {
-        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(Some(testMinTraderKnownFacts)))
+        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(testMinTraderKnownFacts))
 
         val result = dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)).futureValue.value
 
-        result.traderKnownFacts shouldBe defined
+        result.traderKnownFacts shouldBe testMinTraderKnownFacts
       }
     }
   }

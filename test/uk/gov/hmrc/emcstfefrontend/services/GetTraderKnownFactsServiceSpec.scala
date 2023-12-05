@@ -34,23 +34,23 @@ class GetTraderKnownFactsServiceSpec extends UnitSpec with BaseFixtures with Sca
   lazy val testService = new GetTraderKnownFactsService(mockGetTraderKnownFactsConnector)
 
   ".getTraderKnownFacts(ern)" should {
-    "return Some(TraderKnownFacts)" when {
+    "return TraderKnownFacts" when {
       "when Connector returns success from downstream" in {
 
         MockGetTraderKnownFactsConnector.getTraderKnownFacts(testErn).returns(Future.successful(Right(Some(testMinTraderKnownFacts))))
-        testService.getTraderKnownFacts(testErn).futureValue shouldBe Some(testMinTraderKnownFacts)
-      }
-    }
-
-    "return None" when {
-      "when Connector returns success from downstream with no data" in {
-
-        MockGetTraderKnownFactsConnector.getTraderKnownFacts(testErn).returns(Future.successful(Right(None)))
-        testService.getTraderKnownFacts(testErn).futureValue shouldBe None
+        testService.getTraderKnownFacts(testErn).futureValue shouldBe testMinTraderKnownFacts
       }
     }
 
     "throw TraderKnownFactsException" when {
+
+      "when Connector returns success from downstream with no data" in {
+
+        MockGetTraderKnownFactsConnector.getTraderKnownFacts(testErn).returns(Future.successful(Right(None)))
+        intercept[TraderKnownFactsException](await(testService.getTraderKnownFacts(testErn))).getMessage shouldBe
+          s"No known facts found for trader $testErn"
+      }
+
       "when Connector returns failure from downstream" in {
 
         MockGetTraderKnownFactsConnector.getTraderKnownFacts(testErn).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))

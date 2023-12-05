@@ -19,18 +19,18 @@ package uk.gov.hmrc.emcstfefrontend.controllers.predicates
 import play.api.mvc.ActionTransformer
 import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
 import uk.gov.hmrc.emcstfefrontend.models.common.TraderKnownFacts
-import uk.gov.hmrc.emcstfefrontend.models.requests.OptionalDataRequest
+import uk.gov.hmrc.emcstfefrontend.models.requests.DataRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRetrievalAction(optTraderKnownFacts: Option[TraderKnownFacts]) extends DataRetrievalAction {
+class FakeDataRetrievalAction(traderKnownFacts: TraderKnownFacts) extends DataRetrievalAction {
 
-  def apply(): ActionTransformer[UserRequest, OptionalDataRequest] =
+  def apply(): ActionTransformer[UserRequest, DataRequest] =
 
-    new ActionTransformer[UserRequest, OptionalDataRequest] {
+    new ActionTransformer[UserRequest, DataRequest] {
 
-      override def transform[A](request: UserRequest[A]): Future[OptionalDataRequest[A]] =
-        Future(OptionalDataRequest(request, optTraderKnownFacts))
+      override def transform[A](request: UserRequest[A]): Future[DataRequest[A]] =
+        Future(DataRequest(request, traderKnownFacts))
 
       override protected implicit val executionContext: ExecutionContext =
         scala.concurrent.ExecutionContext.Implicits.global

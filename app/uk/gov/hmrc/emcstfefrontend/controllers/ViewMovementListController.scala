@@ -20,7 +20,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.GetMovementListConnector
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{AuthAction, AuthActionHelper, DataRequiredAction, DataRetrievalAction}
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import uk.gov.hmrc.emcstfefrontend.views.html.ViewMovementListPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -31,7 +31,6 @@ import scala.concurrent.ExecutionContext
 class ViewMovementListController @Inject()(mcc: MessagesControllerComponents,
                                            override val auth: AuthAction,
                                            override val getData: DataRetrievalAction,
-                                           override val requireData: DataRequiredAction,
                                            connector: GetMovementListConnector,
                                            viewMovementListPage: ViewMovementListPage,
                                            errorHandler: ErrorHandler
