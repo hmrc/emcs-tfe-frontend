@@ -16,9 +16,9 @@
 
 package mocks.services
 
+import models.MemberState
 import org.scalamock.handlers.CallHandler1
 import org.scalamock.scalatest.MockFactory
-import models.MemberState
 import services.GetMemberStatesService
 import uk.gov.hmrc.http.HeaderCarrier
 

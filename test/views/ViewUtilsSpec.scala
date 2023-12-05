@@ -16,21 +16,18 @@
 
 package views
 
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import play.api.Application
-import play.api.data.{Form, FormError}
-import play.api.data.Forms._
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.test.FakeRequest
+import base.SpecBase
 import fixtures.BaseFixtures
 import models.auth.UserRequest
 import models.requests.DataRequest
-import support.UnitSpec
+import play.api.Application
+import play.api.data.Forms._
+import play.api.data.{Form, FormError}
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.FakeRequest
 import viewmodels.TraderInfo
 
-class ViewUtilsSpec extends UnitSpec with BaseFixtures {
-
-  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+class ViewUtilsSpec extends SpecBase with BaseFixtures {
 
   def messagesApi(app: Application): MessagesApi = app.injector.instanceOf[MessagesApi]
   def messages(app: Application): Messages = messagesApi(app).preferred(FakeRequest())
@@ -85,7 +82,7 @@ class ViewUtilsSpec extends UnitSpec with BaseFixtures {
   ".maybeShowActiveTrader" when {
 
     "given a data request, when the user has multiple ERNs" in {
-      ViewUtils.maybeShowActiveTrader(createDataRequest(true)) mustBe Some(TraderInfo("testTraderName", "ERN"))
+      ViewUtils.maybeShowActiveTrader(createDataRequest(true)) mustBe Some(TraderInfo(testMinTraderKnownFacts.traderName, testErn))
     }
 
     "given a data request, when the user has a single ERN" in {

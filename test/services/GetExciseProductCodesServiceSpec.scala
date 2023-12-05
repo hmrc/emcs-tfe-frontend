@@ -16,9 +16,8 @@
 
 package services
 
-import fixtures.ExciseProductCodeFixtures
-import play.api.test.Helpers._
 import base.SpecBase
+import fixtures.ExciseProductCodeFixtures
 import mocks.connectors.MockGetExciseProductCodesConnector
 import models.response.{ExciseProductCodesException, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,9 +31,9 @@ class GetExciseProductCodesServiceSpec extends SpecBase with MockGetExciseProduc
 
   lazy val testService = new GetExciseProductCodesService(mockGetExciseProductCodesConnector)
 
-  ".getExciseProductCodes" should {
+  ".getExciseProductCodes" must {
 
-    "should return Seq[ExciseProductCode]" when {
+    "must return Seq[ExciseProductCode]" when {
 
       "when Connector returns success from downstream" in {
 
@@ -51,7 +50,7 @@ class GetExciseProductCodesServiceSpec extends SpecBase with MockGetExciseProduc
       }
     }
 
-    "should throw ExciseProductCodesException" when {
+    "must throw ExciseProductCodesException" when {
 
       "when Connector returns failure from downstream" in {
 

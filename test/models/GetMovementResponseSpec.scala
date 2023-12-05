@@ -21,11 +21,10 @@
 
 package models
 
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
-import play.api.libs.json.{JsSuccess, JsValue, Json}
 import base.SpecBase
 import models.common.{AddressModel, TraderModel}
 import models.response.emcsTfe.GetMovementResponse
+import play.api.libs.json.{JsSuccess, JsValue, Json}
 
 import java.time.LocalDate
 
@@ -69,16 +68,16 @@ class GetMovementResponseSpec extends SpecBase {
       |  "numberOfItems": 0
       |}""".stripMargin)
 
-  "GetMovementResponse" should {
+  "GetMovementResponse" must {
     "read from json" in {
-      Json.fromJson[GetMovementResponse](json) shouldBe JsSuccess(model)
+      Json.fromJson[GetMovementResponse](json) mustBe JsSuccess(model)
     }
     "write to json" in {
-      Json.toJson(model) shouldBe json
+      Json.toJson(model) mustBe json
     }
     "return a formatted date" when {
       "dateOfDispatch is valid" in {
-        model.formattedDateOfDispatch shouldBe "04 March 2010"
+        model.formattedDateOfDispatch mustBe "04 March 2010"
       }
     }
   }

@@ -16,15 +16,15 @@
 
 package views.components
 
+import base.SpecBase
+import fixtures.messages.{BaseEnglish, BaseMessages}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.MessagesApi
 import play.twirl.api.Html
-import fixtures.messages.{BaseEnglish, BaseMessages, BaseWelsh}
-import support.UnitSpec
 import views.html.components.link
 
-class LinkSpec extends UnitSpec {
+class LinkSpec extends SpecBase {
 
   abstract class TestFixture(implicit baseMessages: BaseMessages) {
 
@@ -57,7 +57,7 @@ class LinkSpec extends UnitSpec {
 
   "link" when {
 
-    Seq(BaseEnglish, BaseWelsh) foreach { implicit baseMessages =>
+    Seq(BaseEnglish) foreach { implicit baseMessages =>
 
       s"being rendered for '${baseMessages.lang.code}' language code" when {
 
@@ -65,9 +65,9 @@ class LinkSpec extends UnitSpec {
 
           "output the expected HTML" in new TestFixture {
 
-            renderedLink.attr("href") shouldBe url
-            renderedLink.text() shouldBe messages(messageKey)
-            renderedLink.hasClass("govuk-link") shouldBe true
+            renderedLink.attr("href") mustBe url
+            renderedLink.text() mustBe messages(messageKey)
+            renderedLink.hasClass("govuk-link") mustBe true
           }
         }
 
@@ -77,7 +77,7 @@ class LinkSpec extends UnitSpec {
 
             override val id: Option[String] = Some("myId")
 
-            renderedLink.attr("id") shouldBe id.get
+            renderedLink.attr("id") mustBe id.get
           }
         }
 
@@ -87,9 +87,9 @@ class LinkSpec extends UnitSpec {
 
             override val isExternal = true
 
-            renderedLink.text() shouldBe s"${messages(messageKey)} ${baseMessages.opensInNewTab}"
-            renderedLink.attr("target") shouldBe "_blank"
-            renderedLink.attr("rel") shouldBe "noopener noreferrer"
+            renderedLink.text() mustBe s"${messages(messageKey)} ${baseMessages.opensInNewTab}"
+            renderedLink.attr("target") mustBe "_blank"
+            renderedLink.attr("rel") mustBe "noopener noreferrer"
           }
         }
 
@@ -99,8 +99,8 @@ class LinkSpec extends UnitSpec {
 
             override val button: Boolean = true
 
-            renderedLink.attr("role") shouldBe "button"
-            renderedLink.attr("data-module") shouldBe "govuk-button"
+            renderedLink.attr("role") mustBe "button"
+            renderedLink.attr("data-module") mustBe "govuk-button"
           }
         }
 
@@ -112,8 +112,8 @@ class LinkSpec extends UnitSpec {
 
             val span = renderedLink.select("span")
 
-            span.hasClass("govuk-visually-hidden") shouldBe true
-            span.text() shouldBe hiddenContent.get
+            span.hasClass("govuk-visually-hidden") mustBe true
+            span.text() mustBe hiddenContent.get
           }
         }
       }

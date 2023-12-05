@@ -2,14 +2,13 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, urlEqualTo}
 import com.github.tomakehurst.wiremock.http.Fault
-import fixtures.ExciseProductCodeFixtures
+import connectors.referenceData.GetExciseProductCodesConnector
+import fixtures.{BaseFixtures, ExciseProductCodeFixtures}
+import models.ExciseProductCode
+import models.response.UnexpectedDownstreamResponseError
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import connectors.referenceData.GetExciseProductCodesConnector
-import fixtures.BaseFixtures
-import models.ExciseProductCode
-import models.response.UnexpectedDownstreamResponseError
 import support.IntegrationBaseSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -28,7 +27,7 @@ class GetExciseProductCodesConnectorISpec extends IntegrationBaseSpec
     wineExciseProductCode
   )
 
-  ".getExciseProductCodes" should {
+  ".getExciseProductCodes" must {
 
     lazy val connector: GetExciseProductCodesConnector = app.injector.instanceOf[GetExciseProductCodesConnector]
 
@@ -42,7 +41,7 @@ class GetExciseProductCodesConnectorISpec extends IntegrationBaseSpec
               .withBody(Json.stringify(Json.arr(beerExciseProductCode, wineExciseProductCode))))
       )
 
-      connector.getExciseProductCodes().futureValue shouldBe Right(exciseProductCodes)
+      connector.getExciseProductCodes().futureValue mustBe Right(exciseProductCodes)
     }
 
     "must fail when the server responds with any other status" in {
@@ -52,7 +51,7 @@ class GetExciseProductCodesConnectorISpec extends IntegrationBaseSpec
           .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR))
       )
 
-      connector.getExciseProductCodes().futureValue shouldBe Left(UnexpectedDownstreamResponseError)
+      connector.getExciseProductCodes().futureValue mustBe Left(UnexpectedDownstreamResponseError)
     }
 
     "must fail when the connection fails" in {
@@ -62,7 +61,7 @@ class GetExciseProductCodesConnectorISpec extends IntegrationBaseSpec
           .willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE))
       )
 
-      connector.getExciseProductCodes().futureValue shouldBe Left(UnexpectedDownstreamResponseError)
+      connector.getExciseProductCodes().futureValue mustBe Left(UnexpectedDownstreamResponseError)
     }
   }
 }

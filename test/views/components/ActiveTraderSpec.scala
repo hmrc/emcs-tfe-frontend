@@ -16,16 +16,16 @@
 
 package views.components
 
-import org.jsoup.Jsoup
-import play.api.i18n.MessagesApi
+import base.SpecBase
 import config.AppConfig
 import fixtures.messages.ActiveTraderMessages
-import support.UnitSpec
+import org.jsoup.Jsoup
+import play.api.i18n.MessagesApi
 import viewmodels.TraderInfo
 
-class ActiveTraderSpec extends UnitSpec {
+class ActiveTraderSpec extends SpecBase {
 
-  "ActiveTrader" should {
+  "ActiveTrader" must {
 
     Seq(ActiveTraderMessages.English).foreach { messagesForLanguage =>
 
@@ -39,14 +39,14 @@ class ActiveTraderSpec extends UnitSpec {
       val titleSelector = "div.active-trader-info__title"
       val linkSelector = "a.active-trader-info__link"
 
-      "Should not render the active trader component when no trader info supplied" in {
+      "Must not render the active trader component when no trader info supplied" in {
         val html = activeTrader(None, appConfig)
         val doc = Jsoup.parse(html.toString())
 
-        doc.select(divSelector).size shouldEqual 0
+        doc.select(divSelector).size mustEqual 0
       }
 
-      "Should render the active trader component when trader info supplied" when {
+      "Must render the active trader component when trader info supplied" when {
 
         val traderName = "Greggs"
         val ern = "GB123K0950459403"
@@ -57,14 +57,14 @@ class ActiveTraderSpec extends UnitSpec {
           val html = activeTrader(Some(traderInfo), appConfig)
           val doc = Jsoup.parse(html.toString())
 
-          doc.select(divSelector).size shouldEqual 1
+          doc.select(divSelector).size mustEqual 1
         }
 
         "title must exist" in {
           val html = activeTrader(Some(traderInfo), appConfig)
           val doc = Jsoup.parse(html.toString())
 
-          doc.select(titleSelector).text shouldEqual s"$traderName ($ern)"
+          doc.select(titleSelector).text mustEqual s"$traderName ($ern)"
         }
 
         "link must exist" in {
@@ -73,7 +73,7 @@ class ActiveTraderSpec extends UnitSpec {
 
           val link =  doc.select(linkSelector).first
 
-          (link.attr("href"), link.text) shouldEqual ("http://localhost:8310/emcs-tfe", messagesForLanguage.changeTraderType)
+          (link.attr("href"), link.text) mustEqual (controllers.routes.IndexController.exciseNumber().url, messagesForLanguage.changeTraderType)
         }
 
       }

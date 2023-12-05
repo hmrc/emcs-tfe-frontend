@@ -16,9 +16,9 @@
 
 package mocks.services
 
+import models.ExciseProductCode
 import org.scalamock.handlers.CallHandler1
 import org.scalamock.scalatest.MockFactory
-import models.ExciseProductCode
 import services.GetExciseProductCodesService
 import uk.gov.hmrc.http.HeaderCarrier
 

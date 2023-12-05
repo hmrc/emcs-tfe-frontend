@@ -16,22 +16,23 @@
 
 package controllers
 
+import base.SpecBase
+import config.{AppConfig, ErrorHandler}
+import connectors.emcsTfe.GetMessageStatisticsConnector
+import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
+import mocks.connectors.MockEmcsTfeConnector
+import models.common.RoleType.GBWK
+import models.requests.DataRequest
+import models.response.UnexpectedDownstreamResponseError
+import models.response.emcsTfe.GetMessageStatisticsResponse
 import org.scalamock.scalatest.MockFactory
 import play.api.http.Status
 import play.api.i18n.MessagesApi
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import base.SpecBase
-import config.{AppConfig, ErrorHandler}
-import connectors.emcsTfe.GetMessageStatisticsConnector
-import controllers.predicates.FakeAuthAction
-import mocks.connectors.MockEmcsTfeConnector
-import models.common.RoleType.GBWK
-import models.response.UnexpectedDownstreamResponseError
-import models.response.emcsTfe.GetMessageStatisticsResponse
-import views.html.AccountHomePage
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.AccountHomePage
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,7 +42,7 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
   trait Test extends MockEmcsTfeConnector {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
-    implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+    implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"))
     implicit val messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest)
 
     lazy val accountHomePage: AccountHomePage = app.injector.instanceOf[AccountHomePage]
@@ -52,12 +53,13 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
       accountHomePage,
       app.injector.instanceOf[ErrorHandler],
       FakeSuccessAuthAction,
+      new FakeDataRetrievalAction(testMinTraderKnownFacts),
       mockGetMessageStatisticsConnector,
       appConfig
     )
   }
 
-  "GET /consignment/:exciseRegistrationNumber/:arc" should {
+  "GET /consignment/:exciseRegistrationNumber/:arc" must {
     "return 200" when {
       "connector call is successful" in new Test {
         val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
@@ -76,7 +78,7 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
         val expectedPage = accountHomePage(
           ern = testErn,
           roleType = GBWK,
-          businessName = "testBusinessName",
+          businessName = testMinTraderKnownFacts.traderName,
           messageStatistics = testMessageStatistics,
           europaCheckLink = appConfig.europaCheckLink,
           createAMovementLink = appConfig.emcsTfeCreateMovementUrl(testErn)

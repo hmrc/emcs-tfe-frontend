@@ -16,18 +16,18 @@
 
 package viewmodels.helpers
 
+import base.SpecBase
 import fixtures.MemberStatesFixtures
 import play.api.test.FakeRequest
-import base.SpecBase
 import uk.gov.hmrc.govukfrontend.views.Aliases.SelectItem
 
 class SelectItemHelperSpec extends SpecBase
   with MemberStatesFixtures {
   implicit lazy val msgs = messages(FakeRequest())
 
-  ".constructSelectItems" should {
+  ".constructSelectItems" must {
 
-    "should return a list of select items" in {
+    "must return a list of select items" in {
       val result = SelectItemHelper.constructSelectItems(
         selectOptions = Seq(memberStateAT, memberStateBE),
         defaultTextMessageKey = "default",
@@ -39,7 +39,7 @@ class SelectItemHelperSpec extends SpecBase
       )
     }
 
-    "should return a list of select items (pre-selected when there is an existing answer)" in {
+    "must return a list of select items (pre-selected when there is an existing answer)" in {
       val result = SelectItemHelper.constructSelectItems(
         selectOptions = Seq(memberStateAT, memberStateBE),
         defaultTextMessageKey = "default",

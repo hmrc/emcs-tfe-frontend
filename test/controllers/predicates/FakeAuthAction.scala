@@ -16,11 +16,11 @@
 
 package controllers.predicates
 
-import play.api.mvc._
-import play.api.test.StubBodyParserFactory
 import base.SpecBase
 import fixtures.BaseFixtures
 import models.auth.UserRequest
+import play.api.mvc._
+import play.api.test.StubBodyParserFactory
 
 import scala.concurrent.{ExecutionContext, Future}
 

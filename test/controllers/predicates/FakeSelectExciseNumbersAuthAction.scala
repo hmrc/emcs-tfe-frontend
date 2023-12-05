@@ -16,12 +16,12 @@
 
 package controllers.predicates
 
-import play.api.mvc._
-import play.api.test.StubBodyParserFactory
-import uk.gov.hmrc.auth.core.Enrolment
 import base.SpecBase
 import fixtures.BaseFixtures
 import models.auth.ExciseEnrolmentsRequest
+import play.api.mvc._
+import play.api.test.StubBodyParserFactory
+import uk.gov.hmrc.auth.core.Enrolment
 
 import scala.concurrent.{ExecutionContext, Future}
 

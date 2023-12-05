@@ -16,24 +16,24 @@
 
 package connectors.referenceData
 
-import org.scalatest.concurrent.ScalaFutures
+import base.SpecBase
 import fixtures.BaseFixtures
 import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
 import models.response.UnexpectedDownstreamResponseError
-import support.UnitSpec
+import org.scalatest.concurrent.ScalaFutures
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetTraderKnownFactsConnectorSpec extends UnitSpec with BaseFixtures with ScalaFutures with MockAppConfig with MockHttpClient {
+class GetTraderKnownFactsConnectorSpec extends SpecBase with BaseFixtures with ScalaFutures with MockAppConfig with MockHttpClient {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
   lazy val connector = new GetTraderKnownFactsConnector(mockHttpClient, mockAppConfig)
   val baseUrl = "http://test-BaseUrl"
 
-  "check" should {
+  "check" must {
     "return a successful response" when {
       "downstream call is successful" in {
         MockedAppConfig.traderKnownFactsReferenceDataBaseUrl.returns(baseUrl)
@@ -43,7 +43,7 @@ class GetTraderKnownFactsConnectorSpec extends UnitSpec with BaseFixtures with S
           parameters = Seq("exciseRegistrationId" -> testErn)
         ).returns(Future.successful(Right(Some(testMinTraderKnownFacts))))
 
-        connector.getTraderKnownFacts(testErn).futureValue shouldBe Right(Some(testMinTraderKnownFacts))
+        connector.getTraderKnownFacts(testErn).futureValue mustBe Right(Some(testMinTraderKnownFacts))
       }
     }
 
@@ -56,7 +56,7 @@ class GetTraderKnownFactsConnectorSpec extends UnitSpec with BaseFixtures with S
           parameters = Seq("exciseRegistrationId" -> testErn)
         ).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-        connector.getTraderKnownFacts(testErn).futureValue shouldBe Left(UnexpectedDownstreamResponseError)
+        connector.getTraderKnownFacts(testErn).futureValue mustBe Left(UnexpectedDownstreamResponseError)
       }
     }
   }

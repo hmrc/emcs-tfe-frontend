@@ -16,13 +16,11 @@
 
 package connectors.emcsTfe
 
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
-import play.api.http.{HeaderNames, MimeTypes, Status}
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import base.SpecBase
 import fixtures.MovementListFixtures
 import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
+import play.api.http.{HeaderNames, MimeTypes, Status}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,7 +37,7 @@ class GetMovementListConnectorSpec extends SpecBase with Status with MimeTypes w
     MockedAppConfig.emcsTfeBaseUrl.returns(baseUrl)
   }
 
-  "getMovementList" should {
+  "getMovementList" must {
 
     "return a successful response" when {
 
@@ -47,7 +45,7 @@ class GetMovementListConnectorSpec extends SpecBase with Status with MimeTypes w
 
         MockHttpClient.get(s"$baseUrl/movements/$testErn").returns(Future.successful(getMovementListResponse))
 
-        await(connector.getMovementList(exciseRegistrationNumber = testErn)) shouldBe getMovementListResponse
+        await(connector.getMovementList(exciseRegistrationNumber = testErn)) mustBe getMovementListResponse
       }
     }
   }

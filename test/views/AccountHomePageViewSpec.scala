@@ -16,21 +16,20 @@
 
 package views
 
+import base.SpecBase
+import models.common.RoleType._
+import models.requests.DataRequest
+import models.response.emcsTfe.GetMessageStatisticsResponse
 import org.jsoup.Jsoup
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import support.UnitSpec
 import views.html.AccountHomePage
-import play.api.test.Helpers._
-import models.common.RoleType._
-import models.response.emcsTfe.GetMessageStatisticsResponse
 
-class AccountHomePageViewSpec extends UnitSpec {
+class AccountHomePageViewSpec extends SpecBase {
   lazy val page: AccountHomePage = app.injector.instanceOf[AccountHomePage]
-  implicit lazy val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  implicit lazy val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(request)
-  val testErn = "testErn"
+  implicit lazy val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
+  implicit lazy val messages: Messages = messagesApi.preferred(request)
   val testBusinessName = "testBusinessName"
   val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
     "testDateTime",
@@ -41,7 +40,7 @@ class AccountHomePageViewSpec extends UnitSpec {
   val testEuropaCheckLink = "testEuropaCheckLink"
   val testCreateAMovementLink = "testCreateAMovementLink"
 
-  "The account home page" should {
+  "The account home page" must {
     Seq(
       GBWK -> "Excise warehousekeeper located in Great Britain",
       XIWK -> "Excise warehousekeeper located in Northern Ireland",
@@ -59,52 +58,52 @@ class AccountHomePageViewSpec extends UnitSpec {
 
         s"have the correct navigation links for $roleType" in {
           val navigationLinks = doc.getElementsByTag("ul").get(0).children()
-          navigationLinks.get(0).text shouldBe "Home"
-          navigationLinks.get(1).text shouldBe s"Messages ${testMessageStatistics.countOfNewMessages}"
+          navigationLinks.get(0).text mustBe "Home"
+          navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
           if (roleType.isConsignor) {
-            navigationLinks.get(2).text shouldBe "Drafts"
-            navigationLinks.get(3).text shouldBe "Movements"
+            navigationLinks.get(2).text mustBe "Drafts"
+            navigationLinks.get(3).text mustBe "Movements"
           } else {
-            navigationLinks.get(2).text shouldBe "Movements"
+            navigationLinks.get(2).text mustBe "Movements"
           }
         }
         s"have the correct content for $roleType" in {
-          doc.getElementsByTag("h2").get(0).text shouldBe "This section is Account home"
-          doc.getElementsByTag("h1").text shouldBe testBusinessName
-          doc.getElementsByTag("p").get(1).text shouldBe roleTypeDescription
-          doc.getElementsByTag("p").get(2).text shouldBe s"Excise registration number (ERN): $testErn"
+          doc.getElementsByTag("h2").get(0).text mustBe "This section is Account home"
+          doc.getElementsByTag("h1").text mustBe testBusinessName
+          doc.getElementsByTag("p").get(1).text mustBe roleTypeDescription
+          doc.getElementsByTag("p").get(2).text mustBe s"Excise registration number (ERN): $testErn"
 
-          doc.getElementsByTag("h2").get(1).text shouldBe "Your messages"
+          doc.getElementsByTag("h2").get(1).text mustBe "Your messages"
           val messagesLinks = doc.getElementsByTag("ul").get(1).children
-          messagesLinks.get(0).text shouldBe "All messages"
+          messagesLinks.get(0).text mustBe "All messages"
           //TODO link location when built
 
-          doc.getElementsByTag("h2").get(2).text shouldBe "Your movements"
+          doc.getElementsByTag("h2").get(2).text mustBe "Your movements"
           val movementsLinks = doc.getElementsByTag("ul").get(2).children
-          movementsLinks.get(0).text shouldBe "All movements"
+          movementsLinks.get(0).text mustBe "All movements"
           //TODO link location when built
-          movementsLinks.get(1).text shouldBe "Undischarged movements"
+          movementsLinks.get(1).text mustBe "Undischarged movements"
           //TODO link location when built
           if (roleType.isConsignor) {
-            movementsLinks.get(2).text shouldBe "Draft movements"
+            movementsLinks.get(2).text mustBe "Draft movements"
           }
           //TODO link location when built
 
           if (roleType.isConsignor) {
-            doc.getElementsByTag("p").get(3).text shouldBe "Create a new movement"
-            doc.getElementsByTag("p").get(3).getElementsByTag("a").get(0).attr("href") shouldBe testCreateAMovementLink
+            doc.getElementsByTag("p").get(3).text mustBe "Create a new movement"
+            doc.getElementsByTag("p").get(3).getElementsByTag("a").get(0).attr("href") mustBe testCreateAMovementLink
           } else {
-            doc.getElementsByTag("p").text shouldNot contain("Create a new movement")
+            doc.getElementsByTag("p").text mustNot contain("Create a new movement")
           }
 
 
           if (roleType.isNorthernIsland) {
-            doc.getElementsByTag("h2").get(3).text shouldBe "Prevalidate"
+            doc.getElementsByTag("h2").get(3).text mustBe "Prevalidate"
             val prevalidateLinks = doc.getElementsByTag("ul").get(3).children
-            prevalidateLinks.get(0).text shouldBe "Check Europa to find out if a trader can receive excise goods"
-            prevalidateLinks.get(0).getElementsByTag("a").get(0).attr("href") shouldBe testEuropaCheckLink
+            prevalidateLinks.get(0).text mustBe "Check Europa to find out if a trader can receive excise goods"
+            prevalidateLinks.get(0).getElementsByTag("a").get(0).attr("href") mustBe testEuropaCheckLink
           } else {
-            doc.getElementsByTag("h2").text shouldNot contain("Prevalidate")
+            doc.getElementsByTag("h2").text mustNot contain("Prevalidate")
           }
         }
     }

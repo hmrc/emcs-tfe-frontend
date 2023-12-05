@@ -21,24 +21,23 @@
 
 package models
 
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
-import play.api.libs.json.{JsSuccess, Json}
 import base.SpecBase
 import controllers.routes
 import fixtures.MovementListFixtures
 import models.response.emcsTfe.GetMovementListItem
+import play.api.libs.json.{JsSuccess, Json}
 
 
 class GetMovementListItemSpec extends SpecBase with MovementListFixtures {
 
-  "GetMovementListResponse" should {
+  "GetMovementListResponse" must {
 
     "deserialise from JSON" in {
-      Json.fromJson[GetMovementListItem](movement1Json) shouldBe JsSuccess(movement1)
+      Json.fromJson[GetMovementListItem](movement1Json) mustBe JsSuccess(movement1)
     }
 
     "have a link to view the detailed movement information" in {
-      movement1.viewMovementUrl(testErn) shouldBe routes.ViewMovementController.viewMovement(testErn, s"${movement1.arc}")
+      movement1.viewMovementUrl(testErn) mustBe routes.ViewMovementController.viewMovement(testErn, s"${movement1.arc}")
     }
   }
 }

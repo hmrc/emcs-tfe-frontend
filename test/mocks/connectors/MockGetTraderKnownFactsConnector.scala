@@ -16,11 +16,11 @@
 
 package mocks.connectors
 
-import org.scalamock.handlers.CallHandler3
-import org.scalamock.scalatest.MockFactory
 import connectors.referenceData.GetTraderKnownFactsConnector
 import models.common.TraderKnownFacts
 import models.response.ErrorResponse
+import org.scalamock.handlers.CallHandler3
+import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}

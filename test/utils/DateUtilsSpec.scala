@@ -16,7 +16,6 @@
 
 package utils
 
-import org.scalatest.matchers.should.Matchers.convertToStringShouldWrapper
 import base.SpecBase
 
 import java.time.LocalDate
@@ -25,11 +24,11 @@ class DateUtilsSpec extends SpecBase {
 
   trait Test extends DateUtils
 
-  "formatDateForUIOutput" should {
+  "formatDateForUIOutput" must {
     "format the date in the correct format" in new Test {
       val unformattedDate: LocalDate = LocalDate.parse("2010-03-04")
 
-      unformattedDate.formatDateForUIOutput() shouldBe "04 March 2010"
+      unformattedDate.formatDateForUIOutput() mustBe "04 March 2010"
     }
   }
 }

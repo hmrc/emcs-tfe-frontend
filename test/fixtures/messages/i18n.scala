@@ -26,8 +26,3 @@ trait EN extends i18n {
   override val lang: Lang = Lang("en")
 }
 object EN extends EN
-
-trait CY extends i18n {
-  override val lang: Lang = Lang("cy")
-}
-object CY extends CY

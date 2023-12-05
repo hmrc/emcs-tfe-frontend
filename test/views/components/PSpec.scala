@@ -16,13 +16,13 @@
 
 package views.components
 
+import base.SpecBase
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
-import support.UnitSpec
 import views.html.components.p
 
-class PSpec extends UnitSpec {
+class PSpec extends SpecBase {
 
   trait Test {
     def id: Option[String] = None
@@ -33,20 +33,20 @@ class PSpec extends UnitSpec {
     lazy val document: Document = Jsoup.parse(html.toString)
   }
 
-  "p" should {
+  "p" must {
     "have an id" when {
       "an id is supplied" in new Test {
         override def id: Option[String] = Some("an-id")
 
-        document.select("p").hasAttr("id") shouldBe true
-        document.select("p").attr("id") shouldBe "an-id"
+        document.select("p").hasAttr("id") mustBe true
+        document.select("p").attr("id") mustBe "an-id"
       }
     }
     "have no id" when {
       "an id is not supplied" in new Test {
         override def id: Option[String] = None
 
-        document.select("p").hasAttr("id") shouldBe false
+        document.select("p").hasAttr("id") mustBe false
       }
     }
   }

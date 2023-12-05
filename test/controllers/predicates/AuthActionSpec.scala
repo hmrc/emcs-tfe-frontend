@@ -16,17 +16,15 @@
 
 package controllers.predicates
 
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import base.SpecBase
+import config.EnrolmentKeys
+import fixtures.BaseFixtures
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Organisation}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import base.SpecBase
-import config.EnrolmentKeys
-import controllers
-import fixtures.BaseFixtures
 
 import scala.concurrent.ExecutionContext
 
@@ -64,8 +62,8 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
 
           override val authConnector = new FakeFailingAuthConnector(new BearerTokenExpired)
 
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("http://localhost:9949/auth-login-stub/gg-sign-in?continue=http%3A%2F%2Flocalhost%3A8310%2Femcs%2Faccount")
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some("http://localhost:9949/auth-login-stub/gg-sign-in?continue=http%3A%2F%2Flocalhost%3A8310%2Femcs%2Faccount")
         }
       }
 
@@ -75,8 +73,8 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
 
           override val authConnector = new FakeFailingAuthConnector(new InsufficientConfidenceLevel)
 
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
         }
       }
 
@@ -88,8 +86,8 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
 
             override val authConnector = new FakeSuccessAuthConnector(authResponse(affinityGroup = None))
 
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
           }
         }
 
@@ -99,8 +97,8 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
 
             override val authConnector = new FakeSuccessAuthConnector(authResponse(affinityGroup = Some(Agent)))
 
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
           }
         }
 
@@ -112,8 +110,8 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
 
               override val authConnector = new FakeSuccessAuthConnector(authResponse(internalId = None))
 
-              status(result) shouldBe SEE_OTHER
-              redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+              status(result) mustBe SEE_OTHER
+              redirectLocation(result) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
             }
           }
 
@@ -125,8 +123,8 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
 
                 override val authConnector = new FakeSuccessAuthConnector(authResponse(credId = None))
 
-                status(result) shouldBe SEE_OTHER
-                redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+                status(result) mustBe SEE_OTHER
+                redirectLocation(result) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
               }
             }
 
@@ -138,8 +136,8 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
 
                   override val authConnector = new FakeSuccessAuthConnector(authResponse())
 
-                  status(result) shouldBe SEE_OTHER
-                  redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+                  status(result) mustBe SEE_OTHER
+                  redirectLocation(result) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
                 }
               }
 
@@ -155,14 +153,14 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
                     )
                   ))))
 
-                  status(result) shouldBe SEE_OTHER
-                  redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+                  status(result) mustBe SEE_OTHER
+                  redirectLocation(result) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
                 }
               }
 
               s"Enrolments exists for ${EnrolmentKeys.EMCS_ENROLMENT} AND is activated" when {
 
-                s"the ${EnrolmentKeys.ERN} identifier is missing (should be impossible)" must {
+                s"the ${EnrolmentKeys.ERN} identifier is missing (must be impossible)" must {
 
                   "redirect to unauthorised" in new Harness {
 
@@ -174,8 +172,8 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
                       )
                     ))))
 
-                    status(result) shouldBe SEE_OTHER
-                    redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+                    status(result) mustBe SEE_OTHER
+                    redirectLocation(result) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
                   }
                 }
 
@@ -193,7 +191,7 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
                         )
                       ))))
 
-                      status(result) shouldBe OK
+                      status(result) mustBe OK
                     }
                   }
 
@@ -209,8 +207,8 @@ class AuthActionSpec extends SpecBase with BaseFixtures {
                         )
                       ))))
 
-                      status(result) shouldBe SEE_OTHER
-                      redirectLocation(result) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+                      status(result) mustBe SEE_OTHER
+                      redirectLocation(result) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
                     }
                   }
                 }

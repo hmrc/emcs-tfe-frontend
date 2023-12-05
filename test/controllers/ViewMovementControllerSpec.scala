@@ -16,11 +16,6 @@
 
 package controllers
 
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
-import play.api.http.Status
-import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
 import base.SpecBase
 import config.ErrorHandler
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
@@ -28,8 +23,12 @@ import mocks.connectors.MockEmcsTfeConnector
 import models.common.{AddressModel, TraderModel}
 import models.response.UnexpectedDownstreamResponseError
 import models.response.emcsTfe.GetMovementResponse
-import views.html.ViewMovementPage
+import play.api.http.Status
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.ViewMovementPage
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
@@ -51,7 +50,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction {
     )
   }
 
-  "GET /consignment/:exciseRegistrationNumber/:arc" should {
+  "GET /consignment/:exciseRegistrationNumber/:arc" must {
     "return 200" when {
       "connector call is successful" in new Test {
 
@@ -79,7 +78,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction {
 
         val result: Future[Result] = controller.viewMovement(testErn, testArc)(fakeRequest)
 
-        status(result) shouldBe Status.OK
+        status(result) mustBe Status.OK
       }
     }
     "return 500" when {
@@ -91,7 +90,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction {
 
         val result: Future[Result] = controller.viewMovement(testErn, testArc)(fakeRequest)
 
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        status(result) mustBe Status.INTERNAL_SERVER_ERROR
       }
     }
   }

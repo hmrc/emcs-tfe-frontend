@@ -30,9 +30,4 @@ object UnauthorisedMessages {
     override val message: String = "You are not authorised to access this service"
   }
 
-  object Welsh extends ViewMessages with CY {
-    override val title: String = "Unauthorised"
-    override val heading: String = "Unauthorised"
-    override val message: String = "You are not authorised to access this service"
-  }
 }

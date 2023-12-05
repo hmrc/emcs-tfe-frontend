@@ -16,7 +16,6 @@
 
 package viewmodels
 
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import base.SpecBase
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Text, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}
@@ -31,12 +30,12 @@ class SummaryListHelperSpec extends SpecBase {
   }
 
   "SummaryListHelper" when {
-    "rendering" should {
+    "rendering" must {
       "render a list" when {
         "the list has items in it" in new Test {
           override def list: Seq[(String, String)] = Seq(("key", "value"))
 
-          summaryList.rows shouldBe Seq(SummaryListRow(
+          summaryList.rows mustBe Seq(SummaryListRow(
             key = Key(content = Text("key")),
             value = Value(content = Text("value"))
           ))
@@ -46,7 +45,7 @@ class SummaryListHelperSpec extends SpecBase {
         "the list has no items in it" in new Test {
           override def list: Seq[(String, String)] = Seq()
 
-          summaryList.rows shouldBe Seq()
+          summaryList.rows mustBe Seq()
         }
       }
     }

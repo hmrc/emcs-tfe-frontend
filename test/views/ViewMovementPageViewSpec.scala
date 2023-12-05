@@ -16,18 +16,17 @@
 
 package views
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.scalatest.matchers.should.Matchers.convertToStringShouldWrapper
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
-import play.twirl.api.Html
 import base.SpecBase
 import models.auth.UserRequest
 import models.common.{AddressModel, TraderModel}
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.contentAsString
+import play.twirl.api.Html
 import views.html.ViewMovementPage
 
 import java.time.LocalDate
@@ -36,7 +35,7 @@ class ViewMovementPageViewSpec extends SpecBase {
   val page: ViewMovementPage = app.injector.instanceOf[ViewMovementPage]
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  "The ModeOfTransportPage view" should {
+  "The ModeOfTransportPage view" must {
 
     val dataRequest = DataRequest(
       UserRequest(FakeRequest("GET", s"/consignment/$testErn/$testArc"), testErn, testInternalId, testCredId, hasMultipleErns = false)(messagesApi),
@@ -65,58 +64,58 @@ class ViewMovementPageViewSpec extends SpecBase {
     lazy val document: Document = Jsoup.parse(contentAsString(html))
 
     s"have the correct h1" in {
-      document.select("h1").text() shouldBe "ARC"
+      document.select("h1").text() mustBe "ARC"
     }
 
     s"have the correct summary list contents" in {
-      document.select(".govuk-summary-list__row:nth-child(1) .govuk-summary-list__key").text shouldBe "Local Reference Number (LRN)"
-      document.select(".govuk-summary-list__row:nth-child(1) .govuk-summary-list__value").text shouldBe "MyLrn"
-      document.select(".govuk-summary-list__row:nth-child(2) .govuk-summary-list__key").text shouldBe "e-AD status"
-      document.select(".govuk-summary-list__row:nth-child(2) .govuk-summary-list__value").text shouldBe "MyEadStatus"
-      document.select(".govuk-summary-list__row:nth-child(3) .govuk-summary-list__key").text shouldBe "Consignor"
-      document.select(".govuk-summary-list__row:nth-child(3) .govuk-summary-list__value").text shouldBe "MyConsignor"
-      document.select(".govuk-summary-list__row:nth-child(4) .govuk-summary-list__key").text shouldBe "Date of dispatch"
-      document.select(".govuk-summary-list__row:nth-child(4) .govuk-summary-list__value").text shouldBe "04 March 2010"
-      document.select(".govuk-summary-list__row:nth-child(5) .govuk-summary-list__key").text shouldBe "Journey time"
-      document.select(".govuk-summary-list__row:nth-child(5) .govuk-summary-list__value").text shouldBe "MyJourneyTime"
-      document.select(".govuk-summary-list__row:nth-child(6) .govuk-summary-list__key").text shouldBe "Number of items"
-      document.select(".govuk-summary-list__row:nth-child(6) .govuk-summary-list__value").text shouldBe "0"
+      document.select(".govuk-summary-list__row:nth-child(1) .govuk-summary-list__key").text mustBe "Local Reference Number (LRN)"
+      document.select(".govuk-summary-list__row:nth-child(1) .govuk-summary-list__value").text mustBe "MyLrn"
+      document.select(".govuk-summary-list__row:nth-child(2) .govuk-summary-list__key").text mustBe "e-AD status"
+      document.select(".govuk-summary-list__row:nth-child(2) .govuk-summary-list__value").text mustBe "MyEadStatus"
+      document.select(".govuk-summary-list__row:nth-child(3) .govuk-summary-list__key").text mustBe "Consignor"
+      document.select(".govuk-summary-list__row:nth-child(3) .govuk-summary-list__value").text mustBe "MyConsignor"
+      document.select(".govuk-summary-list__row:nth-child(4) .govuk-summary-list__key").text mustBe "Date of dispatch"
+      document.select(".govuk-summary-list__row:nth-child(4) .govuk-summary-list__value").text mustBe "04 March 2010"
+      document.select(".govuk-summary-list__row:nth-child(5) .govuk-summary-list__key").text mustBe "Journey time"
+      document.select(".govuk-summary-list__row:nth-child(5) .govuk-summary-list__value").text mustBe "MyJourneyTime"
+      document.select(".govuk-summary-list__row:nth-child(6) .govuk-summary-list__key").text mustBe "Number of items"
+      document.select(".govuk-summary-list__row:nth-child(6) .govuk-summary-list__value").text mustBe "0"
     }
 
     "have a link to the report a receipt flow for the Movement" in {
       val reportReceiptLink = document.select(".govuk-list > li:nth-child(1) > a:nth-child(1)")
-      reportReceiptLink.text shouldBe "Submit report of receipt"
-      reportReceiptLink.attr("href") shouldBe s"http://localhost:8313/emcs/report-receipt/trader/$testErn/movement/$testArc"
+      reportReceiptLink.text mustBe "Submit report of receipt"
+      reportReceiptLink.attr("href") mustBe s"http://localhost:8313/emcs/report-receipt/trader/$testErn/movement/$testArc"
     }
 
     "have a link to the explain a delay flow for the Movement" in {
       val explainDelayLink = document.select(".govuk-list > li:nth-child(2) > a:nth-child(1)")
-      explainDelayLink.text shouldBe "Explain a delay"
-      explainDelayLink.attr("href") shouldBe s"http://localhost:8316/emcs/explain-delay/trader/$testErn/movement/$testArc"
+      explainDelayLink.text mustBe "Explain a delay"
+      explainDelayLink.attr("href") mustBe s"http://localhost:8316/emcs/explain-delay/trader/$testErn/movement/$testArc"
     }
 
     "have a link to the explain shortage or excess for the Movement" in {
       val explainShortageExcessLink = document.select(".govuk-list > li:nth-child(3) > a:nth-child(1)")
-      explainShortageExcessLink.text shouldBe "Explain shortage or excess"
-      explainShortageExcessLink.attr("href") shouldBe s"http://localhost:8317/emcs/explain-shortage-or-excess/trader/$testErn/movement/$testArc"
+      explainShortageExcessLink.text mustBe "Explain shortage or excess"
+      explainShortageExcessLink.attr("href") mustBe s"http://localhost:8317/emcs/explain-shortage-or-excess/trader/$testErn/movement/$testArc"
     }
 
     "have a link to the Cancel Movement" in {
       val cancelMovementLink = document.select(".govuk-list > li:nth-child(4) > a:nth-child(1)")
-      cancelMovementLink.text shouldBe "Cancel movement"
-      cancelMovementLink.attr("href") shouldBe s"http://localhost:8318/emcs/cancel-movement/trader/$testErn/movement/$testArc"
+      cancelMovementLink.text mustBe "Cancel movement"
+      cancelMovementLink.attr("href") mustBe s"http://localhost:8318/emcs/cancel-movement/trader/$testErn/movement/$testArc"
     }
 
     "have a link to the Change Destination" in {
       val changeDestinationLink = document.select(".govuk-list > li:nth-child(5) > a:nth-child(1)")
-      changeDestinationLink.text shouldBe "Change destination"
-      changeDestinationLink.attr("href") shouldBe s"http://localhost:8319/emcs/change-destination/trader/$testErn/movement/$testArc"
+      changeDestinationLink.text mustBe "Change destination"
+      changeDestinationLink.attr("href") mustBe s"http://localhost:8319/emcs/change-destination/trader/$testErn/movement/$testArc"
     }
 
     "have a link to the Alert or rejection" in {
       val alertOrRejectionLink = document.select(".govuk-list > li:nth-child(6) > a:nth-child(1)")
-      alertOrRejectionLink.text shouldBe "Alert or rejection"
-      alertOrRejectionLink.attr("href") shouldBe s"http://localhost:8320/emcs/alert-or-rejection/trader/$testErn/movement/$testArc"
+      alertOrRejectionLink.text mustBe "Alert or rejection"
+      alertOrRejectionLink.attr("href") mustBe s"http://localhost:8320/emcs/alert-or-rejection/trader/$testErn/movement/$testArc"
     }
   }
 }

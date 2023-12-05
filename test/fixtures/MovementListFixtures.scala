@@ -16,8 +16,8 @@
 
 package fixtures
 
-import play.api.libs.json.{JsValue, Json}
 import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
+import play.api.libs.json.{JsValue, Json}
 
 import java.time.LocalDateTime
 

@@ -16,12 +16,12 @@
 
 package connectors.referenceData
 
-import fixtures.ExciseProductCodeFixtures
-import play.api.http.Status
-import play.api.libs.json.Json
 import base.SpecBase
+import fixtures.ExciseProductCodeFixtures
 import mocks.connectors.MockHttpClient
 import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
+import play.api.http.Status
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HttpClient, HttpResponse}
 
 class GetExciseProductCodesHttpParserSpec extends SpecBase
@@ -29,9 +29,9 @@ class GetExciseProductCodesHttpParserSpec extends SpecBase
 
   override def http: HttpClient = mockHttpClient
 
-  "GetExciseProductCodesReads" should {
+  "GetExciseProductCodesReads" must {
 
-    "should return a Seq of Excise Product Codes" when {
+    "must return a Seq of Excise Product Codes" when {
 
       s"when an OK (${Status.OK}) response is retrieved" in {
 
@@ -51,7 +51,7 @@ class GetExciseProductCodesHttpParserSpec extends SpecBase
       }
     }
 
-    "should return a JsonValidationError" when {
+    "must return a JsonValidationError" when {
 
       s"when invalid json response is retrieved" in {
 
@@ -68,7 +68,7 @@ class GetExciseProductCodesHttpParserSpec extends SpecBase
       }
     }
 
-    "should return UnexpectedDownstreamError" when {
+    "must return UnexpectedDownstreamError" when {
 
       s"when status is anything else" in {
 

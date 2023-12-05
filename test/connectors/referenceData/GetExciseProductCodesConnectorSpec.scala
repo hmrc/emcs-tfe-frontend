@@ -16,8 +16,8 @@
 
 package connectors.referenceData
 
-import fixtures.ExciseProductCodeFixtures
 import base.SpecBase
+import fixtures.ExciseProductCodeFixtures
 import mocks.connectors.MockHttpClient
 import models.response.UnexpectedDownstreamResponseError
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,9 +32,9 @@ class GetExciseProductCodesConnectorSpec extends SpecBase with MockHttpClient wi
   lazy val connector = new GetExciseProductCodesConnectorImpl(mockHttpClient, appConfig)
 
 
-  "getExciseProductCodes" should {
+  "getExciseProductCodes" must {
 
-    "should return a successful response" when {
+    "must return a successful response" when {
 
       "when downstream call is successful" in {
 
@@ -50,7 +50,7 @@ class GetExciseProductCodesConnectorSpec extends SpecBase with MockHttpClient wi
       }
     }
 
-    "should return an error response" when {
+    "must return an error response" when {
 
       "when downstream call fails" in {
 

@@ -16,9 +16,8 @@
 
 package services
 
-import fixtures.MemberStatesFixtures
-import play.api.test.Helpers._
 import base.SpecBase
+import fixtures.MemberStatesFixtures
 import mocks.connectors.MockGetMemberStatesConnector
 import models.response.{MemberStatesException, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,9 +31,9 @@ class GetMemberStatesServiceSpec extends SpecBase with MockGetMemberStatesConnec
 
   lazy val testService = new GetMemberStatesService(mockGetMemberStatesConnector)
 
-  ".getMemberStates" should {
+  ".getMemberStates" must {
 
-    "should return Seq[MemberState]" when {
+    "must return Seq[MemberState]" when {
 
       "when Connector returns success from downstream" in {
 
@@ -51,7 +50,7 @@ class GetMemberStatesServiceSpec extends SpecBase with MockGetMemberStatesConnec
       }
     }
 
-    "should throw MemberStatesException" when {
+    "must throw MemberStatesException" when {
 
       "when Connector returns failure from downstream" in {
 

@@ -16,15 +16,14 @@
 
 package viewmodels
 
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import base.SpecBase
 import fixtures.MovementListFixtures
 import fixtures.messages.ViewMovementListMessages
-import utils.DateUtils
-import views.html.components.link
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{HeadCell, Table, TableRow}
+import utils.DateUtils
+import views.html.components.link
 
 class MovementsListTableHelperSpec extends SpecBase with MovementListFixtures with DateUtils {
 
@@ -34,7 +33,7 @@ class MovementsListTableHelperSpec extends SpecBase with MovementListFixtures wi
 
   "MovementsListTableHelper" when {
 
-    Seq(ViewMovementListMessages.English, ViewMovementListMessages.Welsh) foreach { viewMessages =>
+    Seq(ViewMovementListMessages.English) foreach { viewMessages =>
 
       implicit val messages = messagesApi.preferred(Seq(viewMessages.lang))
 
@@ -44,7 +43,7 @@ class MovementsListTableHelperSpec extends SpecBase with MovementListFixtures wi
 
           "construct the correct heading row" in {
 
-            helper.headerRow shouldBe Some(Seq(
+            helper.headerRow mustBe Some(Seq(
               HeadCell(Text(viewMessages.tableArc)),
               HeadCell(Text(viewMessages.tableConsignor))
             ))
@@ -55,7 +54,7 @@ class MovementsListTableHelperSpec extends SpecBase with MovementListFixtures wi
 
           "construct the expected data rows" in {
 
-            helper.dataRows(testErn, movements) shouldBe Seq(
+            helper.dataRows(testErn, movements) mustBe Seq(
               Seq(
                 TableRow(
                   content = HtmlContent(link(
@@ -86,7 +85,7 @@ class MovementsListTableHelperSpec extends SpecBase with MovementListFixtures wi
 
           "construct the expected data rows" in {
 
-            helper.constructTable(testErn, movements) shouldBe Table(
+            helper.constructTable(testErn, movements) mustBe Table(
               firstCellIsHeader = true,
               rows = Seq(
                 Seq(

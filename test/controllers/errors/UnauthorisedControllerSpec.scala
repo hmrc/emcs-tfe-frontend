@@ -16,14 +16,13 @@
 
 package controllers.errors
 
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import base.SpecBase
+import config.ErrorHandler
+import fixtures.messages.UnauthorisedMessages
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import base.SpecBase
-import config.ErrorHandler
-import fixtures.messages.UnauthorisedMessages
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext
@@ -46,7 +45,7 @@ class UnauthorisedControllerSpec extends SpecBase {
 
   "GET /error/unauthorised" when {
 
-    Seq(UnauthorisedMessages.English, UnauthorisedMessages.Welsh) foreach { viewMessages =>
+    Seq(UnauthorisedMessages.English) foreach { viewMessages =>
 
       s"being rendered for lang '${viewMessages.lang.code}'" must {
 
@@ -54,8 +53,8 @@ class UnauthorisedControllerSpec extends SpecBase {
 
           val result = controller.unauthorised()(fakeRequest)
 
-          status(result) shouldBe UNAUTHORIZED
-          Html(contentAsString(result)) shouldBe errorHandler.standardErrorTemplate(
+          status(result) mustBe UNAUTHORIZED
+          Html(contentAsString(result)) mustBe errorHandler.standardErrorTemplate(
             pageTitle = viewMessages.title,
             heading = viewMessages.heading,
             message = viewMessages.message

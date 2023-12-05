@@ -16,10 +16,10 @@
 
 package controllers.predicates
 
-import play.api.mvc.ActionTransformer
 import models.auth.UserRequest
 import models.common.TraderKnownFacts
 import models.requests.DataRequest
+import play.api.mvc.ActionTransformer
 
 import scala.concurrent.{ExecutionContext, Future}
 

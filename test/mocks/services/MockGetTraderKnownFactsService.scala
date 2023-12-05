@@ -16,9 +16,9 @@
 
 package mocks.services
 
+import models.common.TraderKnownFacts
 import org.scalamock.handlers.CallHandler2
 import org.scalamock.scalatest.MockFactory
-import models.common.TraderKnownFacts
 import services.GetTraderKnownFactsService
 import uk.gov.hmrc.http.HeaderCarrier
 

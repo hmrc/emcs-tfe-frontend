@@ -16,21 +16,21 @@
 
 package connectors.referenceData
 
-import fixtures.MemberStatesFixtures
-import play.api.http.Status
-import play.api.libs.json.Json
 import base.SpecBase
+import fixtures.MemberStatesFixtures
 import mocks.connectors.MockHttpClient
 import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
+import play.api.http.Status
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HttpClient, HttpResponse}
 
 class GetMemberStatesHttpParserSpec extends SpecBase with GetMemberStatesHttpParser with MockHttpClient with MemberStatesFixtures {
 
   override def http: HttpClient = mockHttpClient
 
-  "GetMemberStatesReads" should {
+  "GetMemberStatesReads" must {
 
-    "should return a Seq[MemberState]" when {
+    "must return a Seq[MemberState]" when {
 
       s"when an OK (${Status.OK}) response is retrieved" in {
 
@@ -50,7 +50,7 @@ class GetMemberStatesHttpParserSpec extends SpecBase with GetMemberStatesHttpPar
       }
     }
 
-    "should return a JsonValidationError" when {
+    "must return a JsonValidationError" when {
 
       s"when invalid json response is retrieved" in {
 
@@ -67,7 +67,7 @@ class GetMemberStatesHttpParserSpec extends SpecBase with GetMemberStatesHttpPar
       }
     }
 
-    "should return UnexpectedDownstreamError" when {
+    "must return UnexpectedDownstreamError" when {
 
       s"when status is anything else" in {
 

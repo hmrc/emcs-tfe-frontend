@@ -16,12 +16,12 @@
 
 package config
 
-import featureswitch.core.config.{FeatureSwitching, ReturnToLegacy, StubGetTraderKnownFacts}
+import base.SpecBase
+import featureswitch.core.config.{FeatureSwitching, StubGetTraderKnownFacts}
 import fixtures.BaseFixtures
-import support.UnitSpec
 
 class AppConfigSpec
-  extends UnitSpec
+  extends SpecBase
     with FeatureSwitching
     with BaseFixtures {
 
@@ -30,44 +30,21 @@ class AppConfigSpec
   "AppConfig" when {
 
     ".deskproName must be emcstfe" in {
-      config.deskproName shouldBe "emcstfe"
+      config.deskproName mustBe "emcstfe"
     }
 
     ".feedbackFrontendSurveyUrl() must handoff to feedback frontend with the correct URL" in {
-      config.feedbackFrontendSurveyUrl shouldBe s"http://localhost:9514/feedback/${config.deskproName}"
+      config.feedbackFrontendSurveyUrl mustBe s"http://localhost:9514/feedback/${config.deskproName}"
     }
 
     ".emcsTfeBaseUrl() must return correct URL" in {
-      config.emcsTfeBaseUrl shouldBe s"http://localhost:8311/emcs-tfe"
+      config.emcsTfeBaseUrl mustBe s"http://localhost:8311/emcs-tfe"
     }
 
-    ".emcsTfeHomeUrl()" when {
+    ".emcsTfeHomeUrl" must {
 
-      "ReturnToLegacy is enabled" when {
-
-        "an ERN is supplied" must {
-
-          "return to the legacy URL including the ERN" in {
-            enable(ReturnToLegacy)
-            config.emcsTfeHomeUrl(Some(testErn)) shouldBe s"http://localhost:8080/emcs/trader/$testErn"
-          }
-        }
-
-        "an ERN is NOT supplied" must {
-
-          "return to the legacy URL without the ERN" in {
-            enable(ReturnToLegacy)
-            config.emcsTfeHomeUrl(None) shouldBe s"http://localhost:8080/emcs/trader"
-          }
-        }
-      }
-
-      "ReturnToLegacy is disabled" must {
-
-        "return to the new URL" in {
-          disable(ReturnToLegacy)
-          config.emcsTfeHomeUrl(None) shouldBe s"http://localhost:8310/emcs-tfe"
-        }
+      "return to home" in {
+        config.emcsTfeHomeUrl mustBe controllers.routes.IndexController.exciseNumber().url
       }
     }
 
@@ -77,7 +54,7 @@ class AppConfigSpec
 
         "return to the legacy URL" in {
           enable(StubGetTraderKnownFacts)
-          config.traderKnownFactsReferenceDataBaseUrl shouldBe s"http://localhost:8309/emcs-tfe-reference-data"
+          config.traderKnownFactsReferenceDataBaseUrl mustBe s"http://localhost:8309/emcs-tfe-reference-data"
         }
       }
 
@@ -85,7 +62,7 @@ class AppConfigSpec
 
         "return to the new URL" in {
           disable(StubGetTraderKnownFacts)
-          config.traderKnownFactsReferenceDataBaseUrl shouldBe s"http://localhost:8312/emcs-tfe-reference-data"
+          config.traderKnownFactsReferenceDataBaseUrl mustBe s"http://localhost:8312/emcs-tfe-reference-data"
         }
       }
     }

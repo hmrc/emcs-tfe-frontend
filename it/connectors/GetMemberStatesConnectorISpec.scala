@@ -2,14 +2,13 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, urlEqualTo}
 import com.github.tomakehurst.wiremock.http.Fault
-import fixtures.MemberStatesFixtures
+import connectors.referenceData.GetMemberStatesConnector
+import fixtures.{BaseFixtures, MemberStatesFixtures}
+import models.MemberState
+import models.response.UnexpectedDownstreamResponseError
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import connectors.referenceData.GetMemberStatesConnector
-import fixtures.BaseFixtures
-import models.MemberState
-import models.response.UnexpectedDownstreamResponseError
 import support.IntegrationBaseSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -28,7 +27,7 @@ class GetMemberStatesConnectorISpec extends IntegrationBaseSpec
     memberStateBE
   )
 
-  ".getMemberStates" should {
+  ".getMemberStates" must {
 
     lazy val connector: GetMemberStatesConnector = app.injector.instanceOf[GetMemberStatesConnector]
 
@@ -42,7 +41,7 @@ class GetMemberStatesConnectorISpec extends IntegrationBaseSpec
               .withBody(Json.stringify(Json.arr(memberStateJsonBT, memberStateJsonBE))))
       )
 
-      connector.getMemberStates().futureValue shouldBe Right(memberStatesSeq)
+      connector.getMemberStates().futureValue mustBe Right(memberStatesSeq)
     }
 
     "must fail when the server responds with any other status" in {
@@ -52,7 +51,7 @@ class GetMemberStatesConnectorISpec extends IntegrationBaseSpec
           .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR))
       )
 
-      connector.getMemberStates().futureValue shouldBe Left(UnexpectedDownstreamResponseError)
+      connector.getMemberStates().futureValue mustBe Left(UnexpectedDownstreamResponseError)
     }
 
     "must fail when the connection fails" in {
@@ -62,7 +61,7 @@ class GetMemberStatesConnectorISpec extends IntegrationBaseSpec
           .willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE))
       )
 
-      connector.getMemberStates().futureValue shouldBe Left(UnexpectedDownstreamResponseError)
+      connector.getMemberStates().futureValue mustBe Left(UnexpectedDownstreamResponseError)
     }
   }
 }

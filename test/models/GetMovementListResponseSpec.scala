@@ -21,23 +21,22 @@
 
 package models
 
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
-import play.api.libs.json.{JsSuccess, Json}
 import base.SpecBase
 import fixtures.MovementListFixtures
 import models.response.emcsTfe.GetMovementListResponse
+import play.api.libs.json.{JsSuccess, Json}
 
 
 class GetMovementListResponseSpec extends SpecBase with MovementListFixtures {
 
-  "GetMovementListResponse" should {
+  "GetMovementListResponse" must {
 
     "deserialise from JSON" in {
-      Json.fromJson[GetMovementListResponse](getMovementListJson) shouldBe JsSuccess(getMovementListResponse)
+      Json.fromJson[GetMovementListResponse](getMovementListJson) mustBe JsSuccess(getMovementListResponse)
     }
 
     "have a count of all items" in {
-      getMovementListResponse.count shouldBe 2
+      getMovementListResponse.count mustBe 2
     }
   }
 }

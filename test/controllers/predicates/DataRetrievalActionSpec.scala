@@ -16,26 +16,23 @@
 
 package controllers.predicates
 
-import org.scalatest.concurrent.ScalaFutures
-import play.api.i18n.MessagesApi
-import play.api.mvc.ActionTransformer
-import play.api.test.FakeRequest
+import base.SpecBase
 import fixtures.BaseFixtures
 import mocks.services.MockGetTraderKnownFactsService
 import models.auth.UserRequest
 import models.requests.DataRequest
-import support.UnitSpec
+import org.scalatest.concurrent.ScalaFutures
+import play.api.mvc.ActionTransformer
+import play.api.test.FakeRequest
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DataRetrievalActionSpec
-  extends UnitSpec
+  extends SpecBase
     with BaseFixtures
     with ScalaFutures
     with MockGetTraderKnownFactsService {
-
-  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   lazy val dataRetrievalAction: ActionTransformer[UserRequest, DataRequest] =
     new DataRetrievalActionImpl(mockGetTraderKnownFactsService).apply()
@@ -48,7 +45,7 @@ class DataRetrievalActionSpec
 
         val result = dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)).futureValue.value
 
-        result.traderKnownFacts shouldBe testMinTraderKnownFacts
+        result.traderKnownFacts mustBe testMinTraderKnownFacts
       }
     }
   }

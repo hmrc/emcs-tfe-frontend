@@ -16,11 +16,10 @@
 
 package featureswitch.core.config
 
+import base.SpecBase
+import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
-import config.AppConfig
-import support.UnitSpec
-import play.api.{Configuration, Environment}
-class FeatureSwitchModuleSpec extends UnitSpec {
+class FeatureSwitchModuleSpec extends SpecBase {
 
   object TestFeatureSwitchRegistry extends FeatureSwitchingModule()
 
@@ -28,7 +27,7 @@ class FeatureSwitchModuleSpec extends UnitSpec {
 
     "contain the feature switches for the Business Verification and Companies House stubs" in {
 
-      TestFeatureSwitchRegistry.switches shouldBe Seq(StubGetTraderKnownFacts, ReturnToLegacy)
+      TestFeatureSwitchRegistry.switches mustBe Seq(StubGetTraderKnownFacts, ReturnToLegacy)
     }
 
     "asdfdsa" in {

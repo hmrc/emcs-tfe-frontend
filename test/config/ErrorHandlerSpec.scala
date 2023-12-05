@@ -16,18 +16,17 @@
 
 package config
 
-import org.scalatest.matchers.should.Matchers.convertToStringShouldWrapper
+import base.SpecBase
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import base.SpecBase
 
 class ErrorHandlerSpec extends SpecBase {
 
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
       .configure(
-        "metrics.jvm"     -> false,
+        "metrics.jvm" -> false,
         "metrics.enabled" -> false
       )
       .build()
@@ -36,10 +35,10 @@ class ErrorHandlerSpec extends SpecBase {
 
   private val handler = app.injector.instanceOf[ErrorHandler]
 
-  "standardErrorTemplate" should {
+  "standardErrorTemplate" must {
     "render HTML" in {
       val html = handler.standardErrorTemplate("title", "heading", "message")(fakeRequest)
-      html.contentType shouldBe "text/html"
+      html.contentType mustBe "text/html"
     }
   }
 

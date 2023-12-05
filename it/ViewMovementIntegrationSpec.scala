@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend
-
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import fixtures.BaseFixtures
 import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
-import fixtures.MovementListFixtures
-import fixtures.messages.ViewMovementListMessages
 import stubs.{AuthStub, DownstreamStub}
 import support.IntegrationBaseSpec
 
 import scala.xml.Elem
 
-class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementListFixtures {
+class ViewMovementIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
+
 
   private trait Test {
-
-    val uri: String = "/movements-in/" + testErn
-    val emcsTfeUri: String = s"/emcs-tfe/movements/" + testErn
-
     def setupStubs(): StubMapping
+
+    def uri: String = s"/consignment/$testErn/$testArc"
+
+    def emcsTfeUri: String = s"/emcs-tfe/movement/$testErn/$testArc"
 
     def request(): WSRequest = {
       setupStubs()
@@ -42,7 +40,7 @@ class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementL
     }
   }
 
-  "Calling the View Movements Lists page" when {
+  "Calling the mode of transport page" when {
 
     "user is unauthorised" must {
       "redirect to the Unauthorised controller" in new Test {
@@ -52,12 +50,12 @@ class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementL
         }
 
         val response: WSResponse = await(request().get())
-        response.status shouldBe Status.SEE_OTHER
-        response.header(HeaderNames.LOCATION) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+        response.status mustBe Status.SEE_OTHER
+        response.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
       }
     }
 
-    "user is authorised" should {
+    "user is authorised" must {
 
       "return unauthorised" when {
         "ERN from the URL does not match the ERN of the logged in User" in new Test {
@@ -66,13 +64,12 @@ class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementL
           }
 
           val response: WSResponse = await(request().get())
-          response.status shouldBe Status.SEE_OTHER
-          response.header(HeaderNames.LOCATION) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+          response.status mustBe Status.SEE_OTHER
+          response.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
         }
       }
 
       "return a success page" when {
-
         "all downstream calls are successful" in new Test {
 
           val referenceDataKnownFactsURI = "/emcs-tfe-reference-data/oracle/trader-known-facts"
@@ -80,20 +77,33 @@ class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementL
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
             DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataKnownFactsURI, Map("exciseRegistrationId" -> testErn), Status.OK, testTraderKnownFactsJson)
-            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, getMovementListJson)
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, Json.parse(
+              """{
+                |  "localReferenceNumber": "MyLrn",
+                |  "eadStatus": "MyEadStatus",
+                |   "consignorTrader" : {
+                |     "traderExciseNumber" : "GB12345GTR144",
+                |     "traderName" : "MyConsignor",
+                |     "address": {
+                |       "street" : "Main101",
+                |       "postcode" : "ZZ78",
+                |       "city" : "Zeebrugge"
+                |     }
+                |   },
+                |  "dateOfDispatch": "2010-03-04",
+                |  "journeyTime": "MyJourneyTime",
+                |  "numberOfItems": 0
+                |}""".stripMargin))
           }
 
           val response: WSResponse = await(request().get())
-
-          response.status shouldBe Status.OK
-          response.body should include(ViewMovementListMessages.English.title)
+          response.status mustBe Status.OK
+          response.body must include("Administrative reference code")
+          response.body must include(testArc)
         }
       }
-
       "return an error page" when {
-
         "downstream call returns unexpected JSON" in new Test {
-
           val emcsTfeResponseBody: JsValue = Json.parse(
             s"""
                |{
@@ -108,13 +118,11 @@ class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementL
           }
 
           val response: WSResponse = await(request().get())
-
-          response.status shouldBe Status.INTERNAL_SERVER_ERROR
-          response.body should include("Sorry, we’re experiencing technical difficulties")
+          response.status mustBe Status.INTERNAL_SERVER_ERROR
+          response.body must include("Sorry, we’re experiencing technical difficulties")
         }
 
         "downstream call returns something other than JSON" in new Test {
-
           val emcsTfeResponseBody: Elem = <message>test message</message>
 
           override def setupStubs(): StubMapping = {
@@ -123,14 +131,11 @@ class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementL
           }
 
           val response: WSResponse = await(request().get())
-
-          response.status shouldBe Status.INTERNAL_SERVER_ERROR
-          response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
-          response.body should include("Sorry, we’re experiencing technical difficulties")
+          response.status mustBe Status.INTERNAL_SERVER_ERROR
+          response.header("Content-Type") mustBe Some("text/html; charset=UTF-8")
+          response.body must include("Sorry, we’re experiencing technical difficulties")
         }
-
         "downstream call returns a non-200 HTTP response" in new Test {
-
           val emcsTfeResponseBody: JsValue = Json.parse(
             s"""
                |{
@@ -145,9 +150,8 @@ class ViewMovementListIntegrationSpec extends IntegrationBaseSpec with MovementL
           }
 
           val response: WSResponse = await(request().get())
-
-          response.status shouldBe Status.INTERNAL_SERVER_ERROR
-          response.body should include("Sorry, we’re experiencing technical difficulties")
+          response.status mustBe Status.INTERNAL_SERVER_ERROR
+          response.body must include("Sorry, we’re experiencing technical difficulties")
         }
       }
     }

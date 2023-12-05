@@ -16,7 +16,11 @@
 
 package controllers
 
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
+import base.SpecBase
+import config.EnrolmentKeys
+import controllers.predicates.FakeSelectExciseNumbersAuthAction
+import fixtures.messages.EN
+import mocks.connectors.MockEmcsTfeConnector
 import play.api.http.Status
 import play.api.i18n.MessagesApi
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
@@ -24,13 +28,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
-import base.SpecBase
-import config.EnrolmentKeys
-import controllers.predicates.FakeSelectExciseNumbersAuthAction
-import fixtures.messages.EN
-import mocks.connectors.MockEmcsTfeConnector
-import views.html.ExciseNumbersPage
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.ExciseNumbersPage
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -68,36 +67,36 @@ class IndexControllerSpec extends SpecBase with FakeSelectExciseNumbersAuthActio
 
   ".exciseNumber()" when {
 
-    "Auth returns one EMCS enrolment" should {
+    "Auth returns one EMCS enrolment" must {
 
       "return 303 and redirect movements-in page" in new Test(oneEnrolment) {
 
         val result: Future[Result] = controller.exciseNumber()(fakeRequest)
 
-        status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.AccountHomeController.viewAccountHome(testErn).url)
+        status(result) mustBe Status.SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.AccountHomeController.viewAccountHome(testErn).url)
       }
     }
 
-    "Auth returns no EMCS enrolments" should {
+    "Auth returns no EMCS enrolments" must {
 
       "return 303 and redirect to the unauthorised page" in new Test(Set()) {
 
         val result: Future[Result] = controller.exciseNumber()(fakeRequest)
 
-        status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe Some(errors.routes.UnauthorisedController.unauthorised().url)
+        status(result) mustBe Status.SEE_OTHER
+        redirectLocation(result) mustBe Some(errors.routes.UnauthorisedController.unauthorised().url)
       }
     }
 
-    "Auth returns more than one EMCS enrolment" should {
+    "Auth returns more than one EMCS enrolment" must {
 
       "return OK and render the ExciseNumbers page" in new Test(twoEnrolments) {
 
         val result: Future[Result] = controller.exciseNumber()(fakeRequest)
 
-        status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(Set(testErn, testErn + "_2"))
+        status(result) mustBe Status.OK
+        Html(contentAsString(result)) mustBe view(Set(testErn, testErn + "_2"))
       }
     }
   }

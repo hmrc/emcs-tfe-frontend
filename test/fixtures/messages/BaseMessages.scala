@@ -28,8 +28,3 @@ trait BaseEnglish extends BaseMessages with EN {
   override val opensInNewTab: String = "(opens in new tab)"
 }
 object BaseEnglish extends BaseEnglish
-
-trait BaseWelsh extends BaseMessages with CY {
-  override val opensInNewTab: String = "(opens in new tab)"
-}
-object BaseWelsh extends BaseWelsh

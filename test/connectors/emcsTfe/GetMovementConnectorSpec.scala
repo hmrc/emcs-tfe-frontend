@@ -16,15 +16,13 @@
 
 package connectors.emcsTfe
 
-import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
-import play.api.http.{HeaderNames, MimeTypes, Status}
-import play.api.libs.json.Json
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import base.SpecBase
 import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
 import models.common.{AddressModel, TraderModel}
 import models.response.emcsTfe.GetMovementResponse
+import play.api.http.{HeaderNames, MimeTypes, Status}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import java.time.LocalDate
@@ -42,7 +40,7 @@ class GetMovementConnectorSpec extends SpecBase with Status with MimeTypes with 
     MockedAppConfig.emcsTfeBaseUrl.returns(baseUrl)
   }
 
-  "getMovement" should {
+  "getMovement" must {
     "return a successful response" when {
       "downstream call is successful" in new Test {
         val model: GetMovementResponse = GetMovementResponse(
@@ -66,7 +64,7 @@ class GetMovementConnectorSpec extends SpecBase with Status with MimeTypes with 
 
         MockHttpClient.get(s"$baseUrl/movement/ern/arc?forceFetchNew=true").returns(Future.successful(response))
 
-        await(connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc")) shouldBe response
+        await(connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc")) mustBe response
       }
     }
   }

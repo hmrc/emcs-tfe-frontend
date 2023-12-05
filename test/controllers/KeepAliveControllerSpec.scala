@@ -16,25 +16,23 @@
 
 package controllers
 
+import base.SpecBase
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 class KeepAliveControllerSpec extends SpecBase {
 
-  "keepAlive" - {
+  "keepAlive" must {
 
-    "must return NO_CONTENT" in {
+    "return NO_CONTENT" in {
 
-      val application = applicationBuilder(None).build()
+      val request = FakeRequest(GET, routes.KeepAliveController.keepAlive().url)
 
-      running(application) {
+      val controller = new KeepAliveController(messagesControllerComponents)
 
-        val request = FakeRequest(GET, routes.KeepAliveController.keepAlive().url)
+      val result = controller.keepAlive()(request)
 
-        val result = route(application, request).value
-
-        status(result) mustEqual NO_CONTENT
-      }
+      status(result) mustEqual NO_CONTENT
     }
   }
 }

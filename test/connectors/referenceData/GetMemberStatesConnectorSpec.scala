@@ -16,8 +16,8 @@
 
 package connectors.referenceData
 
-import fixtures.MemberStatesFixtures
 import base.SpecBase
+import fixtures.MemberStatesFixtures
 import mocks.connectors.MockHttpClient
 import models.response.UnexpectedDownstreamResponseError
 import uk.gov.hmrc.http.HeaderCarrier
@@ -31,9 +31,9 @@ class GetMemberStatesConnectorSpec extends SpecBase with MockHttpClient with Mem
 
   lazy val connector = new GetMemberStatesConnectorImpl(mockHttpClient, appConfig)
 
-  "getMemberStates" should {
+  "getMemberStates" must {
 
-    "should return a successful response" when {
+    "must return a successful response" when {
 
       "when downstream call is successful" in {
 
@@ -49,7 +49,7 @@ class GetMemberStatesConnectorSpec extends SpecBase with MockHttpClient with Mem
       }
     }
 
-    "should return an error response" when {
+    "must return an error response" when {
 
       "when downstream call fails" in {
 

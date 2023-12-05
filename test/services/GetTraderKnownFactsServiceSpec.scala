@@ -16,29 +16,29 @@
 
 package services
 
-import org.scalatest.concurrent.ScalaFutures
+import base.SpecBase
 import fixtures.BaseFixtures
 import mocks.config.MockAppConfig
 import mocks.connectors.MockGetTraderKnownFactsConnector
 import models.response.{TraderKnownFactsException, UnexpectedDownstreamResponseError}
-import support.UnitSpec
+import org.scalatest.concurrent.ScalaFutures
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetTraderKnownFactsServiceSpec extends UnitSpec with BaseFixtures with ScalaFutures with MockAppConfig with MockGetTraderKnownFactsConnector {
+class GetTraderKnownFactsServiceSpec extends SpecBase with BaseFixtures with ScalaFutures with MockAppConfig with MockGetTraderKnownFactsConnector {
 
   implicit val hc = HeaderCarrier()
   implicit val ec = ExecutionContext.global
 
   lazy val testService = new GetTraderKnownFactsService(mockGetTraderKnownFactsConnector)
 
-  ".getTraderKnownFacts(ern)" should {
+  ".getTraderKnownFacts(ern)" must {
     "return TraderKnownFacts" when {
       "when Connector returns success from downstream" in {
 
         MockGetTraderKnownFactsConnector.getTraderKnownFacts(testErn).returns(Future.successful(Right(Some(testMinTraderKnownFacts))))
-        testService.getTraderKnownFacts(testErn).futureValue shouldBe testMinTraderKnownFacts
+        testService.getTraderKnownFacts(testErn).futureValue mustBe testMinTraderKnownFacts
       }
     }
 
@@ -47,14 +47,14 @@ class GetTraderKnownFactsServiceSpec extends UnitSpec with BaseFixtures with Sca
       "when Connector returns success from downstream with no data" in {
 
         MockGetTraderKnownFactsConnector.getTraderKnownFacts(testErn).returns(Future.successful(Right(None)))
-        intercept[TraderKnownFactsException](await(testService.getTraderKnownFacts(testErn))).getMessage shouldBe
+        intercept[TraderKnownFactsException](await(testService.getTraderKnownFacts(testErn))).getMessage mustBe
           s"No known facts found for trader $testErn"
       }
 
       "when Connector returns failure from downstream" in {
 
         MockGetTraderKnownFactsConnector.getTraderKnownFacts(testErn).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
-        intercept[TraderKnownFactsException](await(testService.getTraderKnownFacts(testErn))).getMessage shouldBe
+        intercept[TraderKnownFactsException](await(testService.getTraderKnownFacts(testErn))).getMessage mustBe
           s"No known facts found for trader $testErn"
       }
     }

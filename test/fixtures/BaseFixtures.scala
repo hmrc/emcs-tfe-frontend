@@ -16,8 +16,8 @@
 
 package fixtures
 
-import play.api.libs.json.{JsValue, Json}
 import models.common.TraderKnownFacts
+import play.api.libs.json.{JsValue, Json}
 
 
 trait BaseFixtures {

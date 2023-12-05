@@ -16,9 +16,9 @@
 
 package mocks.config
 
+import config.AppConfig
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import config.AppConfig
 
 trait MockAppConfig extends MockFactory {
   val mockAppConfig: AppConfig = mock[AppConfig]

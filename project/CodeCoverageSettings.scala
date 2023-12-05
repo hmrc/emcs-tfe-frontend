@@ -7,11 +7,18 @@ object CodeCoverageSettings {
     "<empty>",
     "Reverse.*",
     "uk.gov.hmrc.BuildInfo",
+    ".*handlers.*",
+    ".*components.*",
     "app.*",
     "prod.*",
     ".*Routes.*",
+    ".*viewmodels.govuk.*",
     "testOnly.*",
-    "testOnlyDoNotUseInAppConf.*"
+    "testOnlyDoNotUseInAppConf.*",
+    ".*featureswitch.*",
+    ".*views.html.components.*",
+    ".*views.html.templates.*",
+    "^views$"
   )
 
   val settings: Seq[Setting[_]] = Seq(

@@ -17,10 +17,10 @@
 package stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status.{OK, UNAUTHORIZED}
-import play.api.libs.json.Json
 import config.EnrolmentKeys
 import fixtures.BaseFixtures
+import play.api.http.Status.{OK, UNAUTHORIZED}
+import play.api.libs.json.Json
 
 object AuthStub extends DownstreamStub with BaseFixtures {
 

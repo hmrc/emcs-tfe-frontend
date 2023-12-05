@@ -16,19 +16,17 @@
 
 package connectors.emcsTfe
 
-import play.api.http.{HeaderNames, MimeTypes, Status}
-import play.api.libs.json.Json
+import base.SpecBase
 import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
-import models.common.{AddressModel, TraderModel}
 import models.response.emcsTfe.GetMessageStatisticsResponse
-import support.UnitSpec
+import play.api.http.{HeaderNames, MimeTypes, Status}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
-import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetMessageStatisticsConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames with MockAppConfig with MockHttpClient {
+class GetMessageStatisticsConnectorSpec extends SpecBase with Status with MimeTypes with HeaderNames with MockAppConfig with MockHttpClient {
 
   trait Test {
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -40,7 +38,7 @@ class GetMessageStatisticsConnectorSpec extends UnitSpec with Status with MimeTy
     MockedAppConfig.emcsTfeBaseUrl.returns(baseUrl)
   }
 
-  "getMessageStatistics" should {
+  "getMessageStatistics" must {
     "return a successful response" when {
       "downstream call is successful" in new Test {
         val model: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
@@ -54,7 +52,7 @@ class GetMessageStatisticsConnectorSpec extends UnitSpec with Status with MimeTy
 
         MockHttpClient.get(s"$baseUrl/message-statistics/ern").returns(Future.successful(response))
 
-        await(connector.getMessageStatistics(exciseRegistrationNumber = "ern")) shouldBe response
+        await(connector.getMessageStatistics(exciseRegistrationNumber = "ern")) mustBe response
       }
     }
   }

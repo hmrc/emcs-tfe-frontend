@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend
-
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import fixtures.BaseFixtures
 import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
-import fixtures.BaseFixtures
 import stubs.{AuthStub, DownstreamStub}
 import support.IntegrationBaseSpec
 
@@ -28,13 +26,13 @@ import scala.xml.Elem
 
 class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
 
-
   private trait Test {
     def setupStubs(): StubMapping
 
     def uri: String = s"/trader/$testErn/account"
 
     def getMessageStatisticsUri: String = s"/emcs-tfe/message-statistics/$testErn"
+    def getTraderKnownFactsUri: String = s"/emcs-tfe-reference-data/oracle/trader-known-facts"
 
     def request(): WSRequest = {
       setupStubs()
@@ -52,12 +50,12 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
         }
 
         val response: WSResponse = await(request().get())
-        response.status shouldBe Status.SEE_OTHER
-        response.header(HeaderNames.LOCATION) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+        response.status mustBe Status.SEE_OTHER
+        response.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
       }
     }
 
-    "user is authorised" should {
+    "user is authorised" must {
 
       "return unauthorised" when {
         "ERN from the URL does not match the ERN of the logged in User" in new Test {
@@ -66,8 +64,8 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
           }
 
           val response: WSResponse = await(request().get())
-          response.status shouldBe Status.SEE_OTHER
-          response.header(HeaderNames.LOCATION) shouldBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
+          response.status mustBe Status.SEE_OTHER
+          response.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.UnauthorisedController.unauthorised().url)
         }
       }
 
@@ -75,6 +73,7 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
         "all downstream calls are successful" in new Test {
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
             DownstreamStub.onSuccess(DownstreamStub.GET, getMessageStatisticsUri, Status.OK, Json.parse(
               s"""{
                  |  "dateTime" : "testDateTime",
@@ -85,7 +84,7 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
           }
 
           val response: WSResponse = await(request().get())
-          response.status shouldBe Status.OK
+          response.status mustBe Status.OK
         }
       }
       "return an error page" when {
@@ -100,12 +99,13 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
 
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
             DownstreamStub.onSuccess(DownstreamStub.GET, getMessageStatisticsUri, Status.OK, emcsTfeResponseBody)
           }
 
           val response: WSResponse = await(request().get())
-          response.status shouldBe Status.INTERNAL_SERVER_ERROR
-          response.body should include("Sorry, we’re experiencing technical difficulties")
+          response.status mustBe Status.INTERNAL_SERVER_ERROR
+          response.body must include("Sorry, we’re experiencing technical difficulties")
         }
 
         "downstream call returns something other than JSON" in new Test {
@@ -113,13 +113,14 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
 
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
             DownstreamStub.onSuccess(DownstreamStub.GET, getMessageStatisticsUri, Status.OK, emcsTfeResponseBody)
           }
 
           val response: WSResponse = await(request().get())
-          response.status shouldBe Status.INTERNAL_SERVER_ERROR
-          response.header("Content-Type") shouldBe Some("text/html; charset=UTF-8")
-          response.body should include("Sorry, we’re experiencing technical difficulties")
+          response.status mustBe Status.INTERNAL_SERVER_ERROR
+          response.header("Content-Type") mustBe Some("text/html; charset=UTF-8")
+          response.body must include("Sorry, we’re experiencing technical difficulties")
         }
         "downstream call returns a non-200 HTTP response" in new Test {
           val emcsTfeResponseBody: JsValue = Json.parse(
@@ -132,12 +133,13 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
 
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
+            DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
             DownstreamStub.onSuccess(DownstreamStub.GET, getMessageStatisticsUri, Status.INTERNAL_SERVER_ERROR, emcsTfeResponseBody)
           }
 
           val response: WSResponse = await(request().get())
-          response.status shouldBe Status.INTERNAL_SERVER_ERROR
-          response.body should include("Sorry, we’re experiencing technical difficulties")
+          response.status mustBe Status.INTERNAL_SERVER_ERROR
+          response.body must include("Sorry, we’re experiencing technical difficulties")
         }
       }
     }

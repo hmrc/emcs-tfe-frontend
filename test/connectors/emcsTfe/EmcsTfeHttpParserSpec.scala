@@ -16,17 +16,17 @@
 
 package connectors.emcsTfe
 
-import play.api.http.Status
-import play.api.libs.json.{Json, Reads}
-import uk.gov.hmrc.http.{HttpClient, HttpResponse}
+import base.SpecBase
 import fixtures.MovementListFixtures
 import mocks.connectors.MockHttpClient
 import models.response.emcsTfe.GetMovementListResponse
 import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
-import support.UnitSpec
+import play.api.http.Status
+import play.api.libs.json.{Json, Reads}
+import uk.gov.hmrc.http.{HttpClient, HttpResponse}
 
 class EmcsTfeHttpParserSpec
-  extends UnitSpec
+  extends SpecBase
     with MovementListFixtures
     with MockHttpClient {
 
@@ -35,7 +35,7 @@ class EmcsTfeHttpParserSpec
     override def http: HttpClient = mockHttpClient
   }
 
-  "EmcsTfeReads.read(method: String, url: String, response: HttpResponse)" should {
+  "EmcsTfeReads.read(method: String, url: String, response: HttpResponse)" must {
 
     "return a successful response" when {
 
@@ -43,7 +43,7 @@ class EmcsTfeHttpParserSpec
 
         val httpResponse = HttpResponse(Status.OK, getMovementListJson, Map())
 
-        httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) shouldBe Right(getMovementListResponse)
+        httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) mustBe Right(getMovementListResponse)
       }
     }
 
@@ -53,7 +53,7 @@ class EmcsTfeHttpParserSpec
 
         val httpResponse = HttpResponse(Status.INTERNAL_SERVER_ERROR, Json.obj(), Map())
 
-        httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) shouldBe Left(UnexpectedDownstreamResponseError)
+        httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) mustBe Left(UnexpectedDownstreamResponseError)
       }
     }
 
@@ -63,14 +63,14 @@ class EmcsTfeHttpParserSpec
 
         val httpResponse = HttpResponse(Status.OK, "", Map())
 
-        httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) shouldBe Left(JsonValidationError)
+        httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) mustBe Left(JsonValidationError)
       }
 
       s"response contains JSON but can't be deserialized to model" in {
 
         val httpResponse = HttpResponse(Status.OK, Json.obj(), Map())
 
-        httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) shouldBe Left(JsonValidationError)
+        httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) mustBe Left(JsonValidationError)
       }
     }
   }

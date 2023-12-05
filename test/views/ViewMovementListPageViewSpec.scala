@@ -16,17 +16,16 @@
 
 package views
 
+import base.SpecBase
+import fixtures.MovementListFixtures
+import fixtures.messages.ViewMovementListMessages.English
+import models.auth.UserRequest
+import models.requests.DataRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.matchers.should.Matchers.convertToStringShouldWrapper
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
-import base.SpecBase
-import fixtures.MovementListFixtures
-import fixtures.messages.ViewMovementListMessages.{English, Welsh}
-import models.auth.UserRequest
-import models.requests.DataRequest
 import viewmodels.MovementsListTableHelper
 import views.html.ViewMovementListPage
 import views.html.components.table
@@ -54,23 +53,23 @@ class ViewMovementListPageViewSpec extends SpecBase with MovementListFixtures {
 
   "The ViewMovementListPage view" when {
 
-    Seq(English, Welsh) foreach { viewMessages =>
+    Seq(English) foreach { viewMessages =>
 
       implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(viewMessages.lang))
 
-      s"being rendered for ${viewMessages.lang.code}" should {
+      s"being rendered for ${viewMessages.lang.code}" must {
 
         s"have the correct title" in new TestFixture {
-          document.title shouldBe viewMessages.title
+          document.title mustBe viewMessages.title
         }
 
         s"have the correct h1" in new TestFixture {
-          document.select("h1").text() shouldBe viewMessages.heading(getMovementListResponse.count)
+          document.select("h1").text() mustBe viewMessages.heading(getMovementListResponse.count)
         }
 
         "have a table rendered for the movements, rendered by the helper" in new TestFixture {
-          document.select("table thead tr th:nth-of-type(1)").text() shouldBe viewMessages.tableArc
-          document.select("table thead tr th:nth-of-type(2)").text() shouldBe viewMessages.tableConsignor
+          document.select("table thead tr th:nth-of-type(1)").text() mustBe viewMessages.tableArc
+          document.select("table thead tr th:nth-of-type(2)").text() mustBe viewMessages.tableConsignor
         }
       }
     }

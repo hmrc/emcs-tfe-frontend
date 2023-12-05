@@ -18,7 +18,7 @@ package mocks.connectors
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.matchers.should.Matchers
+import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.Writes
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads}
 
@@ -36,8 +36,8 @@ trait MockHttpClient extends MockFactory {
         .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(_: HttpReads[T], _: HeaderCarrier, _: ExecutionContext))
         .expects(assertArgs {
           (actualUrl: String, actualParams: Seq[(String, String)], _, _, _, _) => {
-            actualUrl shouldBe url
-            actualParams shouldBe parameters
+            actualUrl mustBe url
+            actualParams mustBe parameters
           }
         })
     }
@@ -47,8 +47,8 @@ trait MockHttpClient extends MockFactory {
       (mockHttpClient
         .POST[I, T](_: String, _: I, _: Seq[(String, String)])(_: Writes[I], _: HttpReads[T], _: HeaderCarrier, _: ExecutionContext))
         .expects(assertArgs { (actualUrl, actualBody: I, _, _, _, _, _) => {
-          actualUrl shouldBe url
-          actualBody shouldBe body
+          actualUrl mustBe url
+          actualBody mustBe body
         }
         })
     }
@@ -58,8 +58,8 @@ trait MockHttpClient extends MockFactory {
       (mockHttpClient
         .PUT[I, T](_: String, _: I, _: Seq[(String, String)])(_: Writes[I], _: HttpReads[T], _: HeaderCarrier, _: ExecutionContext))
         .expects(assertArgs { (actualUrl, actualBody: I, _, _, _, _, _) => {
-          actualUrl shouldBe url
-          actualBody shouldBe body
+          actualUrl mustBe url
+          actualBody mustBe body
         }
         })
     }
@@ -68,7 +68,7 @@ trait MockHttpClient extends MockFactory {
       (mockHttpClient
         .DELETE(_: String, _: Seq[(String, String)])(_: HttpReads[T], _: HeaderCarrier, _: ExecutionContext))
         .expects(assertArgs { (actualUrl, _, _, _, _) => {
-          actualUrl shouldBe url
+          actualUrl mustBe url
         }
         })
     }

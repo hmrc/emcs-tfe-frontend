@@ -16,42 +16,42 @@
 
 package connectors.referenceData
 
-import play.api.http.Status
-import play.api.libs.json.Json
+import base.SpecBase
 import fixtures.BaseFixtures
 import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
 import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
-import support.UnitSpec
+import play.api.http.Status
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HttpClient, HttpResponse}
 
-class GetTraderKnownFactsHttpParserSpec extends UnitSpec with BaseFixtures with MockAppConfig with GetTraderKnownFactsHttpParser with MockHttpClient {
+class GetTraderKnownFactsHttpParserSpec extends SpecBase with BaseFixtures with MockAppConfig with GetTraderKnownFactsHttpParser with MockHttpClient {
 
   override def http: HttpClient = mockHttpClient
 
-  "GetTraderKnownFactsReads.read(method: String, url: String, response: HttpResponse)" should {
+  "GetTraderKnownFactsReads.read(method: String, url: String, response: HttpResponse)" must {
 
     "return 'Some(traderKnownFacts)'" when {
       s"an OK (${Status.OK}) response is retrieved" in {
-        GetTraderKnownFactsReads(testErn).read("", "", HttpResponse(Status.OK, Json.obj("traderName" -> "testTraderName").toString())) shouldBe Right(Some(testMinTraderKnownFacts))
+        GetTraderKnownFactsReads(testErn).read("", "", HttpResponse(Status.OK, Json.obj("traderName" -> "testTraderName").toString())) mustBe Right(Some(testMinTraderKnownFacts))
       }
     }
 
     "return JsonValidationError" when {
       s"an OK (${Status.OK}) response is retrieved but JSON is invalid" in {
-        GetTraderKnownFactsReads(testErn).read("", "", HttpResponse(Status.OK, "bad json")) shouldBe Left(JsonValidationError)
+        GetTraderKnownFactsReads(testErn).read("", "", HttpResponse(Status.OK, "bad json")) mustBe Left(JsonValidationError)
       }
     }
 
-    "should return 'None'" when {
+    "must return 'None'" when {
       s"when a NOT_FOUND (${Status.NO_CONTENT}) response is retrieved" in {
-        GetTraderKnownFactsReads(testErn).read("", "", HttpResponse(Status.NO_CONTENT, "")) shouldBe Right(None)
+        GetTraderKnownFactsReads(testErn).read("", "", HttpResponse(Status.NO_CONTENT, "")) mustBe Right(None)
       }
     }
 
-    "should return UnexpectedDownstreamError" when {
+    "must return UnexpectedDownstreamError" when {
       s"when status is anything else" in {
-        GetTraderKnownFactsReads(testErn).read("", "", HttpResponse(Status.INTERNAL_SERVER_ERROR, "")) shouldBe Left(UnexpectedDownstreamResponseError)
+        GetTraderKnownFactsReads(testErn).read("", "", HttpResponse(Status.INTERNAL_SERVER_ERROR, "")) mustBe Left(UnexpectedDownstreamResponseError)
       }
     }
   }

@@ -16,6 +16,11 @@
 
 package base
 
+import config.{AppConfig, ErrorHandler}
+import fixtures.BaseFixtures
+import models.auth.UserRequest
+import models.requests.DataRequest
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
@@ -23,10 +28,9 @@ import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{MessagesControllerComponents, Request}
-import config.{AppConfig, ErrorHandler}
-import fixtures.BaseFixtures
+import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 
-trait SpecBase extends AnyWordSpecLike with Matchers with OptionValues with ScalaFutures with BaseFixtures with GuiceOneAppPerSuite {
+trait SpecBase extends AnyWordSpecLike with Matchers with MockFactory with OptionValues with ScalaFutures with BaseFixtures with FutureAwaits with DefaultAwaitTimeout with GuiceOneAppPerSuite {
 
   lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
   lazy implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -36,5 +40,11 @@ trait SpecBase extends AnyWordSpecLike with Matchers with OptionValues with Scal
   def messages(request: Request[_]): Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   def messages(candidates: Seq[Lang]): Messages = app.injector.instanceOf[MessagesApi].preferred(candidates)
+
+  def userRequest[A](request: Request[A], ern: String = testErn): UserRequest[A] =
+    UserRequest(request, ern, testInternalId, testCredId, hasMultipleErns = false)
+
+  def dataRequest[A](request: Request[A], ern: String = testErn): DataRequest[A] =
+    DataRequest(userRequest(request, ern), testMinTraderKnownFacts)
 
 }

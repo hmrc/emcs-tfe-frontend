@@ -16,13 +16,13 @@
 
 package views.components
 
+import base.SpecBase
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
-import support.UnitSpec
 import views.html.components.span
 
-class SpanSpec extends UnitSpec {
+class SpanSpec extends SpecBase {
 
   trait Test {
     def id: Option[String] = None
@@ -34,26 +34,26 @@ class SpanSpec extends UnitSpec {
     lazy val document: Document = Jsoup.parse(html.toString)
   }
 
-  "span" should {
+  "span" must {
     "have aria-hidden properties" when {
       "aria-hidden is set to true" in new Test {
         override def ariaHidden: Option[Boolean] = Some(true)
 
-        document.select("span").hasAttr("aria-hidden") shouldBe true
-        document.select("span").attr("aria-hidden") shouldBe "true"
+        document.select("span").hasAttr("aria-hidden") mustBe true
+        document.select("span").attr("aria-hidden") mustBe "true"
       }
       "aria-hidden is set to false" in new Test {
         override def ariaHidden: Option[Boolean] = Some(false)
 
-        document.select("span").hasAttr("aria-hidden") shouldBe true
-        document.select("span").attr("aria-hidden") shouldBe "false"
+        document.select("span").hasAttr("aria-hidden") mustBe true
+        document.select("span").attr("aria-hidden") mustBe "false"
       }
     }
     "have no aria-hidden properties" when {
       "aria-hidden is not supplied" in new Test {
         override def ariaHidden: Option[Boolean] = None
 
-        document.select("span").hasAttr("aria-hidden") shouldBe false
+        document.select("span").hasAttr("aria-hidden") mustBe false
       }
     }
 
@@ -61,15 +61,15 @@ class SpanSpec extends UnitSpec {
       "an id is supplied" in new Test {
         override def id: Option[String] = Some("an-id")
 
-        document.select("span").hasAttr("id") shouldBe true
-        document.select("span").attr("id") shouldBe "an-id"
+        document.select("span").hasAttr("id") mustBe true
+        document.select("span").attr("id") mustBe "an-id"
       }
     }
     "have no id" when {
       "an id is not supplied" in new Test {
         override def id: Option[String] = None
 
-        document.select("span").hasAttr("id") shouldBe false
+        document.select("span").hasAttr("id") mustBe false
       }
     }
   }

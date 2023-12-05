@@ -32,10 +32,4 @@ object ViewMovementListMessages {
     override val tableConsignor: String = "Consignor"
   }
 
-  object Welsh extends ViewMessages with CY {
-    override val title: String = "Movements in"
-    override val heading = (count: Int) => s"Movements in ($count)"
-    override val tableArc: String = "ARC"
-    override val tableConsignor: String = "Consignor"
-  }
 }

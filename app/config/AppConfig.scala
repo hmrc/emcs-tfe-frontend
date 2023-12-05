@@ -42,8 +42,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def getFeatureSwitchValue(feature: String): Boolean = configuration.get[Boolean](feature)
 
-  def welshLanguageSupportEnabled: Boolean = configuration.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
-
   def betaBannerFeedbackUrl(implicit request: RequestHeader): String =
     s"$contactHost/contact/beta-feedback?service=$deskproName&backUrl=${SafeRedirectUrl(host + request.uri).encodedUrl}"
 
