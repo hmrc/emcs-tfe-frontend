@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-package models.response.emcsTfe
+package models.common
 
-import controllers.routes
-import play.api.libs.json.{Json, Reads}
-import play.api.mvc.Call
-
-import java.time.LocalDateTime
-
-case class GetMovementListItem(arc: String,
-                               dateOfDispatch: LocalDateTime,
-                               movementStatus: String,
-                               otherTraderID: String) {
-
-  def viewMovementUrl(ern: String): Call = routes.ViewMovementController.viewMovementOverview(ern, arc)
-}
-
-object GetMovementListItem {
-
-  implicit val reads: Reads[GetMovementListItem] = Json.reads
+class WithName(string: String) {
+  override val toString: String = string
 }

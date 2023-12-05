@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-package controllers
+package uk.gov.hmrc.emcstfefrontend.controllers
 
 import base.SpecBase
 import config.ErrorHandler
+import controllers.ViewMovementController
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
+import fixtures.GetMovementResponseFixtures
 import mocks.connectors.MockEmcsTfeConnector
-import models.common.{AddressModel, TraderModel}
 import models.response.UnexpectedDownstreamResponseError
-import models.response.emcsTfe.GetMovementResponse
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.status
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.ViewMovementPage
+import viewmodels.helpers.ViewMovementHelper
+import views.html.viewMovement.ViewMovementPage
 
-import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
-class ViewMovementControllerSpec extends SpecBase with FakeAuthAction {
+class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMovementResponseFixtures {
 
   trait Test extends MockEmcsTfeConnector {
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -46,39 +47,22 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction {
       new FakeDataRetrievalAction(testMinTraderKnownFacts),
       mockGetMovementConnector,
       app.injector.instanceOf[ViewMovementPage],
-      app.injector.instanceOf[ErrorHandler]
+      app.injector.instanceOf[ErrorHandler],
+      app.injector.instanceOf[ViewMovementHelper]
     )
   }
 
-  "GET /consignment/:exciseRegistrationNumber/:arc" must {
+  ".viewMovementOverview" should {
     "return 200" when {
       "connector call is successful" in new Test {
 
-        val model: GetMovementResponse = GetMovementResponse(
-          "",
-          "",
-          consignorTrader = TraderModel(
-            traderExciseNumber = "GB12345GTR144",
-            traderName = "MyConsignor",
-            address = AddressModel(
-              streetNumber = None,
-              street = Some("Main101"),
-              postcode = Some("ZZ78"),
-              city = Some("Zeebrugge")
-            )
-          ),
-          LocalDate.parse("2008-11-20"),
-          "",
-          0
-        )
-
         MockEmcsTfeConnector
           .getMovement()
-          .returns(Future.successful(Right(model)))
+          .returns(Future.successful(Right(getMovementResponseModel)))
 
-        val result: Future[Result] = controller.viewMovement(testErn, testArc)(fakeRequest)
+        val result: Future[Result] = controller.viewMovementOverview(testErn, testArc)(fakeRequest)
 
-        status(result) mustBe Status.OK
+        status(result) shouldBe Status.OK
       }
     }
     "return 500" when {
@@ -88,9 +72,9 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction {
           .getMovement()
           .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-        val result: Future[Result] = controller.viewMovement(testErn, testArc)(fakeRequest)
+        val result: Future[Result] = controller.viewMovementOverview(testErn, testArc)(fakeRequest)
 
-        status(result) mustBe Status.INTERNAL_SERVER_ERROR
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
     }
   }

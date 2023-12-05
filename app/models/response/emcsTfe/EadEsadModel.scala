@@ -16,21 +16,21 @@
 
 package models.response.emcsTfe
 
-import controllers.routes
-import play.api.libs.json.{Json, Reads}
-import play.api.mvc.Call
+import models.common.OriginType
+import play.api.libs.json.{Json, OFormat}
 
-import java.time.LocalDateTime
+case class EadEsadModel(
+                         localReferenceNumber: String,
+                         invoiceNumber: String,
+                         invoiceDate: Option[String],
+                         originTypeCode: OriginType,
+                         dateOfDispatch: String,
+                         timeOfDispatch: Option[String],
+                         upstreamArc: Option[String],
+                         importSadNumber: Option[Seq[String]]
+                       )
 
-case class GetMovementListItem(arc: String,
-                               dateOfDispatch: LocalDateTime,
-                               movementStatus: String,
-                               otherTraderID: String) {
+object EadEsadModel {
 
-  def viewMovementUrl(ern: String): Call = routes.ViewMovementController.viewMovementOverview(ern, arc)
-}
-
-object GetMovementListItem {
-
-  implicit val reads: Reads[GetMovementListItem] = Json.reads
+  implicit val fmt: OFormat[EadEsadModel] = Json.format
 }

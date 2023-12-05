@@ -26,6 +26,8 @@ trait BaseFixtures {
   val testArc = "ARC"
   val testCredId = "cred1234567891"
   val testInternalId = "int1234567891"
+  val testSequenceNumber = 1
+  val testLrn = "123"
 
   val testMinTraderKnownFacts: TraderKnownFacts = TraderKnownFacts(
     traderName = "testTraderName",

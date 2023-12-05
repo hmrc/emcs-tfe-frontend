@@ -10,7 +10,13 @@ GET        /refresh-session                                   controllers.KeepAl
 
 GET        /                                                  controllers.IndexController.exciseNumber()
 
-GET        /consignment/:exciseRegistrationNumber/:arc        controllers.ViewMovementController.viewMovement(exciseRegistrationNumber, arc)
+GET        /trader/:exciseRegistrationNumber/movement/:arc/overview        controllers.ViewMovementController.viewMovementOverview(exciseRegistrationNumber, arc)
+GET        /trader/:exciseRegistrationNumber/movement/:arc/movement        controllers.ViewMovementController.viewMovementMovement(exciseRegistrationNumber, arc)
+GET        /trader/:exciseRegistrationNumber/movement/:arc/delivery        controllers.ViewMovementController.viewMovementDelivery(exciseRegistrationNumber, arc)
+GET        /trader/:exciseRegistrationNumber/movement/:arc/guarantor       controllers.ViewMovementController.viewMovementGuarantor(exciseRegistrationNumber, arc)
+GET        /trader/:exciseRegistrationNumber/movement/:arc/transport       controllers.ViewMovementController.viewMovementTransport(exciseRegistrationNumber, arc)
+GET        /trader/:exciseRegistrationNumber/movement/:arc/items           controllers.ViewMovementController.viewMovementItems(exciseRegistrationNumber, arc)
+GET        /trader/:exciseRegistrationNumber/movement/:arc/documents       controllers.ViewMovementController.viewMovementDocuments(exciseRegistrationNumber, arc)
 
 GET        /movements-in/:exciseRegistrationNumber            controllers.ViewMovementListController.viewMovementList(exciseRegistrationNumber)
 

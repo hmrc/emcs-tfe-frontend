@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package models.response.emcsTfe
+package base
 
-import controllers.routes
-import play.api.libs.json.{Json, Reads}
-import play.api.mvc.Call
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.scalatest.BeforeAndAfterAll
+import play.api.Play
+import play.twirl.api.Html
 
-import java.time.LocalDateTime
+trait ViewSpecBase extends SpecBase with BeforeAndAfterAll {
 
-case class GetMovementListItem(arc: String,
-                               dateOfDispatch: LocalDateTime,
-                               movementStatus: String,
-                               otherTraderID: String) {
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+    Play.start(app)
+  }
 
-  def viewMovementUrl(ern: String): Call = routes.ViewMovementController.viewMovementOverview(ern, arc)
-}
+  override def afterAll(): Unit = {
+    super.afterAll()
+    Play.stop(app)
+  }
 
-object GetMovementListItem {
-
-  implicit val reads: Reads[GetMovementListItem] = Json.reads
+  def asDocument(html: Html): Document = Jsoup.parse(html.toString())
 }

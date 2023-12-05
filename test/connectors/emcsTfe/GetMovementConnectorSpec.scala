@@ -17,54 +17,41 @@
 package connectors.emcsTfe
 
 import base.SpecBase
-import mocks.config.MockAppConfig
+import fixtures.GetMovementResponseFixtures
 import mocks.connectors.MockHttpClient
-import models.common.{AddressModel, TraderModel}
-import models.response.emcsTfe.GetMovementResponse
+import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetMovementConnectorSpec extends SpecBase with Status with MimeTypes with HeaderNames with MockAppConfig with MockHttpClient {
+class GetMovementConnectorSpec extends SpecBase
+  with Status with MimeTypes with HeaderNames with MockHttpClient with GetMovementResponseFixtures {
 
-  trait Test {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
-    val connector = new GetMovementConnector(mockHttpClient, mockAppConfig)
+  lazy val connector = new GetMovementConnector(mockHttpClient, appConfig)
 
-    val baseUrl: String = "http://test-BaseUrl"
-    MockedAppConfig.emcsTfeBaseUrl.returns(baseUrl)
-  }
+  "getMovement" should {
 
-  "getMovement" must {
     "return a successful response" when {
-      "downstream call is successful" in new Test {
-        val model: GetMovementResponse = GetMovementResponse(
-          localReferenceNumber = "EN",
-          eadStatus = "Accepted",
-          consignorTrader = TraderModel(
-            traderExciseNumber = "GB12345GTR144",
-            traderName = "Current 801 Consignor",
-            address = AddressModel(
-              streetNumber = None,
-              street = Some("Main101"),
-              postcode = Some("ZZ78"),
-              city = Some("Zeebrugge")
-            )
-          ),dateOfDispatch = LocalDate.parse("2008-11-20"),
-          journeyTime = "20 days",
-          numberOfItems = 2
-        )
 
-        val response: HttpResponse = HttpResponse(status = Status.OK, json = Json.toJson(model), headers = Map.empty)
+      "downstream call is successful" in {
 
-        MockHttpClient.get(s"$baseUrl/movement/ern/arc?forceFetchNew=true").returns(Future.successful(response))
+        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true").returns(Future.successful(Right(getMovementResponseModel)))
 
-        await(connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc")) mustBe response
+        connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc").futureValue mustBe Right(getMovementResponseModel)
+      }
+    }
+
+    "return an error response" when {
+
+      "when downstream call fails" in {
+
+        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true").returns(Future.successful(Left(JsonValidationError)))
+
+        connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc").futureValue mustBe Left(JsonValidationError)
       }
     }
   }

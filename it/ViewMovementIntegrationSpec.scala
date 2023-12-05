@@ -15,7 +15,9 @@
  */
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import fixtures.BaseFixtures
+import fixtures.{BaseFixtures, GetMovementResponseFixtures}
+import org.scalatest.OptionValues
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
@@ -24,15 +26,22 @@ import support.IntegrationBaseSpec
 
 import scala.xml.Elem
 
-class ViewMovementIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
+
+class ViewMovementIntegrationSpec extends IntegrationBaseSpec
+  with ScalaFutures
+  with BaseFixtures
+  with IntegrationPatience
+  with OptionValues
+  with GetMovementResponseFixtures {
 
 
   private trait Test {
     def setupStubs(): StubMapping
 
-    def uri: String = s"/consignment/$testErn/$testArc"
-
+    def uri: String = s"/trader/$testErn/movement/$testArc/overview"
     def emcsTfeUri: String = s"/emcs-tfe/movement/$testErn/$testArc"
+
+    def getTraderKnownFactsUri: String = s"/emcs-tfe-reference-data/oracle/trader-known-facts"
 
     def request(): WSRequest = {
       setupStubs()
@@ -71,29 +80,10 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with BaseFixtures 
 
       "return a success page" when {
         "all downstream calls are successful" in new Test {
-
-          val referenceDataKnownFactsURI = "/emcs-tfe-reference-data/oracle/trader-known-facts"
-
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
-            DownstreamStub.onSuccess(DownstreamStub.GET, referenceDataKnownFactsURI, Map("exciseRegistrationId" -> testErn), Status.OK, testTraderKnownFactsJson)
-            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, Json.parse(
-              """{
-                |  "localReferenceNumber": "MyLrn",
-                |  "eadStatus": "MyEadStatus",
-                |   "consignorTrader" : {
-                |     "traderExciseNumber" : "GB12345GTR144",
-                |     "traderName" : "MyConsignor",
-                |     "address": {
-                |       "street" : "Main101",
-                |       "postcode" : "ZZ78",
-                |       "city" : "Zeebrugge"
-                |     }
-                |   },
-                |  "dateOfDispatch": "2010-03-04",
-                |  "journeyTime": "MyJourneyTime",
-                |  "numberOfItems": 0
-                |}""".stripMargin))
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, getMovementResponseInputJson)
+            DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
           }
 
           val response: WSResponse = await(request().get())
@@ -115,6 +105,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with BaseFixtures 
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
+            DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
           }
 
           val response: WSResponse = await(request().get())
@@ -128,6 +119,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with BaseFixtures 
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
+            DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
           }
 
           val response: WSResponse = await(request().get())
@@ -147,6 +139,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec with BaseFixtures 
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.INTERNAL_SERVER_ERROR, emcsTfeResponseBody)
+            DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
           }
 
           val response: WSResponse = await(request().get())

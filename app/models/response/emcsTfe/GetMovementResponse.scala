@@ -14,24 +14,40 @@
  * limitations under the License.
  */
 
-package models.response.emcsTfe
+package uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe
 
+import models.common.{TraderModel, TransportDetailsModel}
+import models.response.emcsTfe.EadEsadModel
 import play.api.libs.json.{Json, OFormat}
-import models.common.TraderModel
-import utils.DateUtils
+import utils.{DateUtils, ExpectedDateOfArrival}
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalTime}
 
 
 case class GetMovementResponse(
+                                arc: String,
+                                sequenceNumber: Int,
                                 localReferenceNumber: String,
+                                eadEsad: EadEsadModel,
                                 eadStatus: String,
                                 consignorTrader: TraderModel,
                                 dateOfDispatch: LocalDate,
                                 journeyTime: String,
-                                numberOfItems: Int
-                              ) extends DateUtils {
+                                numberOfItems: Int,
+                                transportDetails: Seq[TransportDetailsModel]
+                              ) extends DateUtils with ExpectedDateOfArrival {
   def formattedDateOfDispatch: String = dateOfDispatch.formatDateForUIOutput()
+
+  def formattedExpectedDateOfArrival: String = {
+    calculateExpectedDate(
+      dateOfDispatch,
+      eadEsad.timeOfDispatch.map{ _.split(":")}.getOrElse(Array("0","0","0")) match {
+        case Array(h, m, s) => LocalTime.of(h.toInt, m.toInt, s.toInt)
+      },
+      journeyTime
+    ).toLocalDate.formatDateForUIOutput()
+  }
+
 }
 
 object GetMovementResponse {
