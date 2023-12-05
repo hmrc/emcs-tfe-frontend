@@ -1,6 +1,5 @@
 import sbt._
 import uk.gov.hmrc.DefaultBuildSettings.addTestReportOption
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "emcs-tfe-frontend"
@@ -53,7 +52,8 @@ lazy val microservice = Project(appName, file("."))
   )
   .settings(CodeCoverageSettings.settings: _*)
   .settings(PlayKeys.playDefaultPort := 8310)
-  .settings(TwirlKeys.templateImports ++= Seq(
+  .settings(
+    TwirlKeys.templateImports ++= Seq(
     "play.twirl.api.HtmlFormat",
     "play.twirl.api.HtmlFormat._",
     "uk.gov.hmrc.govukfrontend.views.html.components._",
