@@ -6,12 +6,12 @@
 
 GET         /assets/*file                                      controllers.Assets.versioned(path = "/public", file: Asset)
 
-GET         /refresh-session                                   uk.gov.hmrc.emcstfefrontend.controllers.KeepAliveController.keepAlive()
+GET         /refresh-session                                   controllers.KeepAliveController.keepAlive()
 
-GET         /                                                  uk.gov.hmrc.emcstfefrontend.controllers.IndexController.exciseNumber()
+GET         /                                                  controllers.IndexController.exciseNumber()
 
-GET         /consignment/:exciseRegistrationNumber/:arc        uk.gov.hmrc.emcstfefrontend.controllers.ViewMovementController.viewMovement(exciseRegistrationNumber, arc)
+GET         /consignment/:exciseRegistrationNumber/:arc        controllers.ViewMovementController.viewMovement(exciseRegistrationNumber, arc)
 
-GET         /movements-in/:exciseRegistrationNumber            uk.gov.hmrc.emcstfefrontend.controllers.ViewMovementListController.viewMovementList(exciseRegistrationNumber)
+GET         /movements-in/:exciseRegistrationNumber            controllers.ViewMovementListController.viewMovementList(exciseRegistrationNumber)
 
-GET         /trader/:exciseRegistrationNumber/account          uk.gov.hmrc.emcstfefrontend.controllers.AccountHomeController.viewAccountHome(exciseRegistrationNumber)
+GET         /trader/:exciseRegistrationNumber/account          controllers.AccountHomeController.viewAccountHome(exciseRegistrationNumber)

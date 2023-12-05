@@ -60,11 +60,11 @@ lazy val microservice = Project(appName, file("."))
     "uk.gov.hmrc.hmrcfrontend.views.html.components._",
     "uk.gov.hmrc.hmrcfrontend.views.html.helpers._",
     "uk.gov.hmrc.hmrcfrontend.views.config._",
-    "uk.gov.hmrc.emcstfefrontend.views.ViewUtils._",
-    "uk.gov.hmrc.emcstfefrontend.viewmodels.govuk._",
-    "uk.gov.hmrc.emcstfefrontend.controllers.routes._",
+    "views.ViewUtils._",
+    "viewmodels.govuk._",
+    "controllers.routes._",
     "uk.gov.hmrc.hmrcfrontend.views.viewmodels.timeoutdialog.TimeoutDialog",
-    "uk.gov.hmrc.emcstfefrontend.viewmodels.govuk.all._"
+    "viewmodels.govuk.all._"
   ))
 
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(

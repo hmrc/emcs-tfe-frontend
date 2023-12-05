@@ -20,10 +20,10 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
-import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
-import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ViewMovementListMessages
-import uk.gov.hmrc.emcstfefrontend.stubs.{AuthStub, DownstreamStub}
-import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
+import fixtures.MovementListFixtures
+import fixtures.messages.ViewMovementListMessages
+import stubs.{AuthStub, DownstreamStub}
+import support.IntegrationBaseSpec
 
 import scala.xml.Elem
 

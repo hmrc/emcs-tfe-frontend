@@ -1,4 +1,4 @@
-package uk.gov.hmrc.emcstfefrontend.connectors
+package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, urlEqualTo}
 import com.github.tomakehurst.wiremock.http.Fault
@@ -6,11 +6,11 @@ import fixtures.MemberStatesFixtures
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.emcstfefrontend.connectors.referenceData.GetMemberStatesConnector
-import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
-import uk.gov.hmrc.emcstfefrontend.models.MemberState
-import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
-import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
+import connectors.referenceData.GetMemberStatesConnector
+import fixtures.BaseFixtures
+import models.MemberState
+import models.response.UnexpectedDownstreamResponseError
+import support.IntegrationBaseSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 class GetMemberStatesConnectorISpec extends IntegrationBaseSpec

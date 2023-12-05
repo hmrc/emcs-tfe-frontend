@@ -8,10 +8,10 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.emcstfefrontend.connectors.referenceData.GetTraderKnownFactsConnector
-import uk.gov.hmrc.emcstfefrontend.models.common.TraderKnownFacts
-import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
-import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
+import connectors.referenceData.GetTraderKnownFactsConnector
+import models.common.TraderKnownFacts
+import models.response.UnexpectedDownstreamResponseError
+import support.IntegrationBaseSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 

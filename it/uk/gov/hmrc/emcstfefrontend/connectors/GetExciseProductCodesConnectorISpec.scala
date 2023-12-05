@@ -1,4 +1,4 @@
-package uk.gov.hmrc.emcstfefrontend.connectors
+package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, urlEqualTo}
 import com.github.tomakehurst.wiremock.http.Fault
@@ -6,11 +6,11 @@ import fixtures.ExciseProductCodeFixtures
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.emcstfefrontend.connectors.referenceData.GetExciseProductCodesConnector
-import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
-import uk.gov.hmrc.emcstfefrontend.models.ExciseProductCode
-import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
-import uk.gov.hmrc.emcstfefrontend.support.IntegrationBaseSpec
+import connectors.referenceData.GetExciseProductCodesConnector
+import fixtures.BaseFixtures
+import models.ExciseProductCode
+import models.response.UnexpectedDownstreamResponseError
+import support.IntegrationBaseSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 class GetExciseProductCodesConnectorISpec extends IntegrationBaseSpec

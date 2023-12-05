@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.stubs
+package stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status.{OK, UNAUTHORIZED}
 import play.api.libs.json.Json
-import uk.gov.hmrc.emcstfefrontend.config.EnrolmentKeys
-import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
+import config.EnrolmentKeys
+import fixtures.BaseFixtures
 
 object AuthStub extends DownstreamStub with BaseFixtures {
 

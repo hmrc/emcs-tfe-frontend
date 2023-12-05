@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.stubs
+package stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.emcstfefrontend.support.WireMockMethods
+import support.WireMockMethods
 
 import scala.xml.Elem
 

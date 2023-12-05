@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.support
+package support
 
 import play.api.Application
 import play.api.libs.crypto.CookieSigner

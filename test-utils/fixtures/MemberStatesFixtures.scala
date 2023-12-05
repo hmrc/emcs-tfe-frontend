@@ -17,7 +17,7 @@
 package fixtures
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.emcstfefrontend.models.MemberState
+import models.MemberState
 
 trait MemberStatesFixtures {
 
