@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers
 
+import org.scalamock.scalatest.MockFactory
 import play.api.http.Status
 import play.api.i18n.MessagesApi
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.config.{AppConfig, ErrorHandler}
 import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.GetMessageStatisticsConnector
 import uk.gov.hmrc.emcstfefrontend.controllers.predicates.FakeAuthAction
@@ -28,13 +30,12 @@ import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockEmcsTfeConnector
 import uk.gov.hmrc.emcstfefrontend.models.common.RoleType.GBWK
 import uk.gov.hmrc.emcstfefrontend.models.response.UnexpectedDownstreamResponseError
 import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMessageStatisticsResponse
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.AccountHomePage
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccountHomeControllerSpec extends UnitSpec with FakeAuthAction {
+class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFactory {
   val mockGetMessageStatisticsConnector = mock[GetMessageStatisticsConnector]
 
   trait Test extends MockEmcsTfeConnector {
@@ -81,8 +82,8 @@ class AccountHomeControllerSpec extends UnitSpec with FakeAuthAction {
           createAMovementLink = appConfig.emcsTfeCreateMovementUrl(testErn)
         )
 
-        status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe expectedPage.toString()
+        status(result) mustBe Status.OK
+        contentAsString(result) mustBe expectedPage.toString()
 
       }
     }
@@ -94,7 +95,7 @@ class AccountHomeControllerSpec extends UnitSpec with FakeAuthAction {
 
         val result: Future[Result] = controller.viewAccountHome(testErn)(fakeRequest)
 
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        status(result) mustBe Status.INTERNAL_SERVER_ERROR
       }
     }
   }

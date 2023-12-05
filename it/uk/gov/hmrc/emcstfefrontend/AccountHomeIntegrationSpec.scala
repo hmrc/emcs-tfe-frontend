@@ -32,7 +32,7 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
   private trait Test {
     def setupStubs(): StubMapping
 
-    def uri: String = s"/account/trader/$testErn/account"
+    def uri: String = s"/trader/$testErn/account"
 
     def getMessageStatisticsUri: String = s"/emcs-tfe/message-statistics/$testErn"
 

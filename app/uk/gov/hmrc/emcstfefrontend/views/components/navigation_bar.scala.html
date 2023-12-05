@@ -15,9 +15,10 @@
  *@
 
 @import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMessageStatisticsResponse
+@import uk.gov.hmrc.emcstfefrontend.models.common.RoleType.RoleType
 
 @this()
-@(ern: String, getMessageStatisticsResponse: GetMessageStatisticsResponse)(implicit messages: Messages)
+@(ern: String, roleType: RoleType, getMessageStatisticsResponse: GetMessageStatisticsResponse)(implicit messages: Messages)
 <div class="moj-primary-navigation">
 
     <div class="moj-primary-navigation__container">
@@ -37,9 +38,11 @@
                         </a>
                     </li>
 
-                    <li class="moj-primary-navigation__item">
-                        <a id="navigation-drafts-link" class="moj-primary-navigation__link" href="#">@messages("navigation.drafts")</a>
-                    </li>
+                    @if(roleType.isConsignor) {
+                        <li class="moj-primary-navigation__item">
+                            <a id="navigation-drafts-link" class="moj-primary-navigation__link" href="#">@messages("navigation.drafts")</a>
+                        </li>
+                    }
 
                     <li class="moj-primary-navigation__item">
                         <a id="navigation-movements-link" class="moj-primary-navigation__link" href="#">@messages("navigation.movements")</a>
@@ -52,3 +55,7 @@
     </div>
 
 </div>
+
+@{
+    //$COVERAGE-OFF$
+}

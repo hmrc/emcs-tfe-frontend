@@ -41,7 +41,7 @@
 @messages(roleType.descriptionKey)
 }
 
-@layout(pageTitle = Some(messages("viewMovement.title")), fullWidthContent = true, beforeContentBlock = Some(navigationBar(ern, messageStatistics))) {
+@layout(pageTitle = Some(messages("viewMovement.title")), fullWidthContent = true, beforeContentBlock = Some(navigationBar(ern, roleType, messageStatistics))) {
     <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("base.captionHiddenText") </span>@messages("accountHome.caption")</h2>
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-1">@businessName</h1>
     <p class="govuk-caption-m govuk-!-margin-bottom-1 govuk-!-margin-top-0">@roleTypeDescription</p>
@@ -56,7 +56,9 @@
     <ul class="govuk-list">
         <li><a id="all-movements-link" class="govuk-link" href="movements">@messages("accountHome.allMovementsLink")</a></li>
         <li><a id="undischarged-movements-link" class="govuk-link" href="movements">@messages("accountHome.undischargedMovementsLink")</a></li>
-        <li><a id="draft-movements-link" class="govuk-link" href="drafts">@messages("accountHome.draftMovementsLink")</a></li>
+        @if(roleType.isConsignor) {
+            <li><a id="draft-movements-link" class="govuk-link" href="drafts">@messages("accountHome.draftMovementsLink")</a></li>
+        }
     </ul>
 
     @if(roleType.isConsignor) {

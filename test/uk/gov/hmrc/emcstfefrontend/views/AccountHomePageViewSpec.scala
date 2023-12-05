@@ -61,8 +61,12 @@ class AccountHomePageViewSpec extends UnitSpec {
           val navigationLinks = doc.getElementsByTag("ul").get(0).children()
           navigationLinks.get(0).text shouldBe "Home"
           navigationLinks.get(1).text shouldBe s"Messages ${testMessageStatistics.countOfNewMessages}"
-          navigationLinks.get(2).text shouldBe "Drafts"
-          navigationLinks.get(3).text shouldBe "Movements"
+          if (roleType.isConsignor) {
+            navigationLinks.get(2).text shouldBe "Drafts"
+            navigationLinks.get(3).text shouldBe "Movements"
+          } else {
+            navigationLinks.get(2).text shouldBe "Movements"
+          }
         }
         s"have the correct content for $roleType" in {
           doc.getElementsByTag("h2").get(0).text shouldBe "This section is Account home"
@@ -81,7 +85,9 @@ class AccountHomePageViewSpec extends UnitSpec {
           //TODO link location when built
           movementsLinks.get(1).text shouldBe "Undischarged movements"
           //TODO link location when built
-          movementsLinks.get(2).text shouldBe "Draft movements"
+          if (roleType.isConsignor) {
+            movementsLinks.get(2).text shouldBe "Draft movements"
+          }
           //TODO link location when built
 
           if (roleType.isConsignor) {
