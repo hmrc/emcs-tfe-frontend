@@ -35,7 +35,7 @@
 
 @(ern: String, getMovementListResponse: GetMovementListResponse)(implicit request: DataRequest[_], messages: Messages)
 
-@layout(pageTitle = Some(messages("viewMovementList.title")), maybeShowActiveTrader = maybeShowActiveTrader(request)) {
+@layout(pageTitle = messages("viewMovementList.title"), maybeShowActiveTrader = maybeShowActiveTrader(request)) {
 
     @h1() {
         @messages("viewMovementList.heading")

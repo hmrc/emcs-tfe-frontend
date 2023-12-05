@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.emcstfefrontend.views.html.components._
-@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
+package uk.gov.hmrc.emcstfefrontend.viewmodels.govuk
 
-@this(
-        layout: Layout,
-        h1: h1,
-        p: p,
-)
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
-@layout(pageTitle = messages(pageTitle), maybeShowActiveTrader = None) {
-    @h1()(Html(messages(heading)))
-    @p()(Html(messages(message)))
-}
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
-@{
-    //$COVERAGE-OFF$
+import scala.language.implicitConversions
+
+object implicits extends ImplicitConversions
+
+trait ImplicitConversions {
+
+  implicit def stringToText(string: String)(implicit messages: Messages): Text =
+    Text(messages(string))
+
+  implicit def stringToKey(string: String)(implicit messages: Messages): Key =
+    Key(content = Text(messages(string)))
 }

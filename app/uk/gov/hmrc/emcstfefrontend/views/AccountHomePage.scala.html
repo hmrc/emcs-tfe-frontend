@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.emcstfefrontend.config.AppConfig
 @import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMessageStatisticsResponse
 @import uk.gov.hmrc.emcstfefrontend.models.common.RoleType.RoleType
+@import uk.gov.hmrc.emcstfefrontend.models.requests.DataRequest
 
 @this(
         layout: Layout,
@@ -28,6 +29,7 @@
         list: spaced_list,
         navigationBar: navigation_bar
 )
+
 @(
         ern: String,
         roleType: RoleType,
@@ -35,13 +37,13 @@
         messageStatistics: GetMessageStatisticsResponse,
         europaCheckLink: String,
         createAMovementLink: String
-)(implicit request: Request[_], messages: Messages)
+)(implicit request: DataRequest[_], messages: Messages)
 
 @roleTypeDescription = {
 @messages(roleType.descriptionKey)
 }
 
-@layout(pageTitle = Some(messages("viewMovement.title")), fullWidthContent = true, beforeContentBlock = Some(navigationBar(ern, roleType, messageStatistics))) {
+@layout(pageTitle = messages("viewMovement.title"), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true, showBackLink = false, beforeContentBlock = Some(navigationBar(ern, roleType, messageStatistics))) {
     <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("base.captionHiddenText") </span>@messages("accountHome.caption")</h2>
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-1">@businessName</h1>
     <p class="govuk-caption-m govuk-!-margin-bottom-1 govuk-!-margin-top-0">@roleTypeDescription</p>

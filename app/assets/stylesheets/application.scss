@@ -1,3 +1,6 @@
+$govuk-assets-path: "/emcs/account/assets/lib/govuk-frontend/govuk/assets/";
+$hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
+
 @import "lib/govuk-frontend/govuk/base";
 //@import "_width-container.scss";
 @import "primary-navigation";

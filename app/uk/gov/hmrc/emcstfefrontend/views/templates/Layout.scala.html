@@ -14,44 +14,101 @@
  * limitations under the License.
  *@
 
+@import views.html.helper.CSPNonce
 @import uk.gov.hmrc.emcstfefrontend.config.AppConfig
 @import uk.gov.hmrc.emcstfefrontend.viewmodels.TraderInfo
 @import uk.gov.hmrc.emcstfefrontend.views.html.components.activeTrader
-@import uk.gov.hmrc.emcstfefrontend.views.html.templates.{FullWidthMainContentTemplate => FullWidthMainContent}
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
-@import views.html.helper.CSPNonce
-@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
+@import uk.gov.hmrc.emcstfefrontend.views.html.templates.FullWidthMainContentTemplate
+@import uk.gov.hmrc.emcstfefrontend.viewmodels.govuk.all._
 
 @this(
-        appConfig: AppConfig,
-        hmrcLayout: HmrcLayout,
-        defaultMainContent: TwoThirdsMainContent,
-        fullWidthMainContent: FullWidthMainContent,
-        betaBanner: StandardBetaBanner,
-        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-        activeTrader: activeTrader
+    appConfig: AppConfig,
+    govukLayout: GovukLayout,
+    govukBackLink: GovukBackLink,
+    hmrcHead: HmrcHead,
+    hmrcStandardHeader: HmrcStandardHeader,
+    hmrcStandardFooter: HmrcStandardFooter,
+    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
+    hmrcLanguageSelect: HmrcLanguageSelect,
+    hmrcTimeoutDialog: HmrcTimeoutDialog,
+    hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
+    hmrcScripts: HmrcScripts,
+    betaBanner: StandardBetaBanner,
+    defaultMainContent: TwoThirdsMainContent,
+    fullWidthMainContent: FullWidthMainContentTemplate,
+    activeTrader: activeTrader
 )
-@(pageTitle: Option[String] = None, maybeShowActiveTrader: Option[TraderInfo], fullWidthContent: Boolean = false, beforeContentBlock: Option[Html] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
-@applicationCss = {
-    <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" @CSPNonce.get.map { n => nonce="@n"}/>
+@(
+        pageTitle: String,
+        maybeShowActiveTrader: Option[TraderInfo],
+        showBackLink: Boolean = true,
+        timeout: Boolean = true,
+        showSignOut: Boolean = true,
+        fullWidthContent: Boolean = false,
+        additionalCss: Html = Html(""),
+        additionalScripts: Html = Html(""),
+        beforeContentBlock: Option[Html] = None
+)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+
+@head = {
+
+    @hmrcHead(
+        headBlock = if(timeout) { Some(
+            hmrcTimeoutDialog(TimeoutDialog(
+                timeout             = Some(appConfig.timeout),
+                countdown           = Some(appConfig.countdown),
+                keepAliveUrl        = None,
+                keepAliveButtonText = Some(messages("timeout.keepAlive")),
+                signOutUrl          = Some(appConfig.signOutUrl),
+                signOutButtonText   = Some(messages("timeout.signOut")),
+                title               = Some(messages("timeout.title")),
+                message             = Some(messages("timeout.message"))
+            )))
+        } else None
+    )
+
+    @additionalCss
+    <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css"@CSPNonce.get.map {n=> nonce="@n"} />
 }
 
+@scripts = {
+    <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("javascripts/application.min.js")'></script>
+    @additionalScripts
+}
 
 @beforeContent = {
     @beforeContentBlock.getOrElse(())
     @{ activeTrader(maybeShowActiveTrader, appConfig) }
+    @if(showBackLink) {
+        @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible"))
+    }
 }
 
-@hmrcLayout(
-    pageTitle = pageTitle,
-    isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled,
-    mainContentLayout = if(fullWidthContent) Some(fullWidthMainContent(_)) else Some(defaultMainContent(_)),
-    phaseBanner = Some(betaBanner(appConfig.betaBannerFeedbackUrl)),
-    signOutUrl = Some(appConfig.feedbackFrontendSurveyUrl),
-    additionalHeadBlock = Some(applicationCss),
-    beforeContentBlock = Some(beforeContent)
-)(contentBlock)
+@content = {
+    @contentBlock
+
+    <div class="govuk-!-margin-top-8">
+        @hmrcReportTechnicalIssueHelper()
+    </div>
+}
+
+
+@govukLayout(
+    pageTitle   = Some(pageTitle),
+    headBlock   = Some(head),
+    headerBlock = Some(hmrcStandardHeader(
+        serviceUrl  = Some(appConfig.emcsTfeHomeUrl),
+        signOutUrl  = if(showSignOut) Some(appConfig.signOutUrl) else None,
+        phaseBanner = Some(betaBanner(appConfig.betaBannerFeedbackUrl))
+    )),
+    beforeContentBlock = Some(beforeContent),
+    footerBlock        = Some(hmrcStandardFooter()),
+    scriptsBlock       = Some(hmrcScripts(
+        scriptsBlock = Some(scripts)
+    )),
+    mainContentLayout = if(fullWidthContent) Some(fullWidthMainContent(_)) else Some(defaultMainContent(_))
+)(content)
 
 @{
     //$COVERAGE-OFF$

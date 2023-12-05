@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.emcstfefrontend.views.html.components._
-@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
+package uk.gov.hmrc.emcstfefrontend.viewmodels.govuk
 
-@this(
-        layout: Layout,
-        h1: h1,
-        p: p,
-)
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
-@layout(pageTitle = messages(pageTitle), maybeShowActiveTrader = None) {
-    @h1()(Html(messages(heading)))
-    @p()(Html(messages(message)))
-}
+sealed trait LegendSize
 
-@{
-    //$COVERAGE-OFF$
+object LegendSize {
+  case object ExtraLarge extends WithCssClass("govuk-fieldset__legend--xl") with LegendSize
+  case object Large      extends WithCssClass("govuk-fieldset__legend--l") with LegendSize
+  case object Medium     extends WithCssClass("govuk-fieldset__legend--m") with LegendSize
+  case object Small      extends WithCssClass("govuk-fieldset__legend--s") with LegendSize
 }

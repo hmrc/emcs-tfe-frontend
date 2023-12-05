@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers
 
+import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.emcstfefrontend.config.{AppConfig, ErrorHandler}
-import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.{GetMessageStatisticsConnector, GetMovementConnector}
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.AuthAction
+import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.GetMessageStatisticsConnector
+import uk.gov.hmrc.emcstfefrontend.controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import uk.gov.hmrc.emcstfefrontend.models.common.RoleType
 import uk.gov.hmrc.emcstfefrontend.views.html.AccountHomePage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -30,18 +31,19 @@ import scala.concurrent.ExecutionContext
 class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
                                       accountHomePage: AccountHomePage,
                                       errorHandler: ErrorHandler,
-                                      authAction: AuthAction,
+                                      val auth: AuthAction,
+                                      val getData: DataRetrievalAction,
                                       messageStatisticsConnector: GetMessageStatisticsConnector,
                                       appConfig: AppConfig
-                                     )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                     )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def viewAccountHome(exciseRegistrationNumber: String): Action[AnyContent] =
-    authAction(exciseRegistrationNumber).async { implicit request =>
+    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       messageStatisticsConnector.getMessageStatistics(exciseRegistrationNumber).map {
         case Right(messageStatistics) => Ok(accountHomePage(
           exciseRegistrationNumber,
           RoleType.fromExciseRegistrationNumber(exciseRegistrationNumber),
-          "testBusinessName", //TODO - update with real business name when complete
+          request.traderKnownFacts.traderName,
           messageStatistics,
           appConfig.europaCheckLink,
           appConfig.emcsTfeCreateMovementUrl(exciseRegistrationNumber)

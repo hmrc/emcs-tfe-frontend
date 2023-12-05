@@ -19,6 +19,7 @@ package uk.gov.hmrc.emcstfefrontend.config
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.mvc.RequestHeader
+import uk.gov.hmrc.emcstfefrontend.controllers.routes
 import uk.gov.hmrc.emcstfefrontend.featureswitch.core.config._
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -30,6 +31,12 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   lazy val host: String = configuration.get[String]("host")
   lazy val deskproName: String = configuration.get[String]("deskproName")
+
+  lazy val timeout: Int = configuration.get[Int]("timeout-dialog.timeout")
+  lazy val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
+  lazy val signOutUrl: String = configuration.get[String]("urls.signOut")
+
+  lazy val emcsTfeHomeUrl: String = routes.IndexController.exciseNumber().url
 
   private lazy val contactHost = configuration.get[String]("contact-frontend.host")
 

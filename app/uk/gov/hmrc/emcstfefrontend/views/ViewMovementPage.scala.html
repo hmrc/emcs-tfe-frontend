@@ -38,7 +38,7 @@
         getMovementResponse: GetMovementResponse
 )(implicit request: DataRequest[_], messages: Messages)
 
-@layout(pageTitle = Some(messages("viewMovement.title")), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true) {
+@layout(pageTitle = messages("viewMovement.title"), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true) {
     @span(messages("common.arc"))
     @h1()(Html(arc))
     @h2(messages("viewMovement.heading"))

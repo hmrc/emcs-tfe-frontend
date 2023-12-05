@@ -26,7 +26,7 @@
         case Some(TraderInfo(traderName, ern)) =>
             <div class="active-trader-info govuk-!-margin-bottom-0" aria-label="Organisation switcher">
                 <div class="active-trader-info__title">{ traderName } ({ ern })</div>
-                <a href={ appConfig.emcsTfeHomeUrl(None) } class="active-trader-info__link">{ messages("activeTrader.link") }</a>
+                <a href={ appConfig.emcsTfeHomeUrl } class="active-trader-info__link">{ messages("activeTrader.link") }</a>
             </div>
         case None => ()
     }
