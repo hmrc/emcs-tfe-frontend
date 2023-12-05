@@ -38,7 +38,7 @@
 
     @bullets(exciseNumbers.map { ern =>
       link(
-          uk.gov.hmrc.emcstfefrontend.controllers.routes.ViewMovementListController.viewMovementList(ern).url,
+          uk.gov.hmrc.emcstfefrontend.controllers.routes.AccountHomeController.viewAccountHome(ern).url,
           ern
       )
     }.toSeq)

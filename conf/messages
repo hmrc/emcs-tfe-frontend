@@ -8,6 +8,7 @@ errorPage.message = Please try again in a few minutes.
 base.saveAndContinue = Save and continue
 base.saveMovement    = Save and return to movement
 base.opensInNewTab   = (opens in new tab)
+base.captionHiddenText = This section is
 
 common.arc = Administrative reference code
 
@@ -40,3 +41,30 @@ exciseNumbers.title = Select a trader Excise Registration Number to use for EMCS
 exciseNumbers.heading = Select a trader Excise Registration Number to use for EMCS
 exciseNumbers.p1 = There are multiple EMCS Excise Registration Numbers associated with this login.
 exciseNumbers.p2 = Select an Excise Registration Number to continue to EMCS.
+
+navigation.home = Home
+navigation.messages = Messages
+navigation.drafts = Drafts
+navigation.movements = Movements
+
+accountHome.caption = Account home
+accountHome.roleType.GBWK = Excise warehousekeeper located in Great Britain
+accountHome.roleType.XIWK = Excise warehousekeeper located in Northern Ireland
+accountHome.roleType.GBRC = Registered consignor located in Great Britain
+accountHome.roleType.XIRC = Registered consignor located in Northern Ireland
+accountHome.roleType.XI00 = Registered consignee located in Northern Ireland
+accountHome.roleType.XITC = Temporary registered consignee located in Northern Ireland
+accountHome.roleType.XIPA = Certified consignor located in Northern Ireland
+accountHome.roleType.XIPB = Certified consignee located in Northern Ireland
+accountHome.roleType.XIPC = Temporary certified consignor located in Northern Ireland
+accountHome.roleType.XIPD = Temporary certified consignee located in Northern Ireland
+accountHome.ern = Excise registration number (ERN):
+accountHome.yourMessages = Your messages
+accountHome.allMessagesLink = All messages
+accountHome.yourMovements = Your movements
+accountHome.allMovementsLink = All movements
+accountHome.undischargedMovementsLink = Undischarged movements
+accountHome.draftMovementsLink = Draft movements
+accountHome.createMovementLink = Create a new movement
+accountHome.prevalidate = Prevalidate
+accountHome.checkLink = Check Europa to find out if a trader can receive excise goods

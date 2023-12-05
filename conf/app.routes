@@ -11,3 +11,5 @@ GET         /                                                  uk.gov.hmrc.emcst
 GET         /consignment/:exciseRegistrationNumber/:arc        uk.gov.hmrc.emcstfefrontend.controllers.ViewMovementController.viewMovement(exciseRegistrationNumber, arc)
 
 GET         /movements-in/:exciseRegistrationNumber            uk.gov.hmrc.emcstfefrontend.controllers.ViewMovementListController.viewMovementList(exciseRegistrationNumber)
+
+GET         /trader/:exciseRegistrationNumber/account          uk.gov.hmrc.emcstfefrontend.controllers.AccountHomeController.viewAccountHome(exciseRegistrationNumber)

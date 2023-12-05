@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.fixtures
+package uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe
 
-trait BaseFixtures {
+import play.api.libs.json.{Json, OFormat}
 
-  val testErn = "GBWKTestErn"
-  val testArc = "ARC"
-  val testCredId = "cred1234567891"
-  val testInternalId = "int1234567891"
+case class GetMessageStatisticsResponse(dateTime: String, exciseRegistrationNumber: String, countOfAllMessages: Int, countOfNewMessages: Int)
 
+object GetMessageStatisticsResponse {
+  implicit val fmt: OFormat[GetMessageStatisticsResponse] = Json.format
 }

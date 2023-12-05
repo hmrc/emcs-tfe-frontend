@@ -70,4 +70,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   def emcsTfeCreateMovementUrl(ern: String): String =
     servicesConfig.getString("urls.emcsTfeCreateMovement") + s"/trader/$ern"
+
+  def europaCheckLink: String =
+    servicesConfig.getString("urls.europaCheckLink")
 }

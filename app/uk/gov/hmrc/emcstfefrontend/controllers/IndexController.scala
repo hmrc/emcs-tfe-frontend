@@ -39,7 +39,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
         Redirect(errors.routes.UnauthorisedController.unauthorised().url)
       case exciseRegistrationNumbers if exciseRegistrationNumbers.size == 1 =>
         logger.debug("[exciseNumber] User only has one active EMCS enrolment.")
-        Redirect(routes.ViewMovementListController.viewMovementList(exciseRegistrationNumbers.head.value))
+        Redirect(routes.AccountHomeController.viewAccountHome(exciseRegistrationNumbers.head.value))
       case exciseRegistrationNumbers =>
         logger.debug("[exciseNumber] User has multiple active EMCS enrolments.")
         Ok(view(exciseRegistrationNumbers.map(_.value)))

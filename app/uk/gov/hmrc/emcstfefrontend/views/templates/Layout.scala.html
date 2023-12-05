@@ -28,14 +28,21 @@
         betaBanner: StandardBetaBanner,
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 )
-@(pageTitle: Option[String] = None, fullWidthContent: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: Option[String] = None, fullWidthContent: Boolean = false, beforeContentBlock: Option[Html] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+
+@applicationCss = {
+    <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" @CSPNonce.get.map { n => nonce="@n"}/>
+}
+
 
 @hmrcLayout(
     pageTitle = pageTitle,
     isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled,
     mainContentLayout = if(fullWidthContent) Some(fullWidthMainContent(_)) else Some(defaultMainContent(_)),
     phaseBanner = Some(betaBanner(appConfig.betaBannerFeedbackUrl)),
-    signOutUrl = Some(appConfig.feedbackFrontendSurveyUrl)
+    signOutUrl = Some(appConfig.feedbackFrontendSurveyUrl),
+    additionalHeadBlock = Some(applicationCss),
+    beforeContentBlock = beforeContentBlock
 )(contentBlock)
 
 @{

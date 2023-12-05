@@ -45,10 +45,10 @@ class IndexControllerSpec extends SpecBase with FakeSelectExciseNumbersAuthActio
   )
 
   val twoEnrolments = oneEnrolment + Enrolment(
-      key = EnrolmentKeys.EMCS_ENROLMENT,
-      identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testErn + "_2")),
-      state = EnrolmentKeys.ACTIVATED
-    )
+    key = EnrolmentKeys.EMCS_ENROLMENT,
+    identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testErn + "_2")),
+    state = EnrolmentKeys.ACTIVATED
+  )
 
   class Test(enrolments: Set[Enrolment]) extends MockEmcsTfeConnector {
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -75,7 +75,7 @@ class IndexControllerSpec extends SpecBase with FakeSelectExciseNumbersAuthActio
         val result: Future[Result] = controller.exciseNumber()(fakeRequest)
 
         status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.ViewMovementListController.viewMovementList(testErn).url)
+        redirectLocation(result) shouldBe Some(routes.AccountHomeController.viewAccountHome(testErn).url)
       }
     }
 
