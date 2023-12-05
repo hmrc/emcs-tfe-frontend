@@ -16,16 +16,13 @@
 
 package uk.gov.hmrc.emcstfefrontend.config
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import org.scalatest.matchers.should.Matchers.convertToStringShouldWrapper
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 
-class ErrorHandlerSpec extends AnyWordSpec
-  with Matchers
-  with GuiceOneAppPerSuite {
+class ErrorHandlerSpec extends SpecBase {
 
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()

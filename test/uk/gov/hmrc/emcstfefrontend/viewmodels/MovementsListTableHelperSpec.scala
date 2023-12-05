@@ -16,19 +16,18 @@
 
 package uk.gov.hmrc.emcstfefrontend.viewmodels
 
-import play.api.i18n.MessagesApi
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ViewMovementListMessages
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.utils.DateUtils
 import uk.gov.hmrc.emcstfefrontend.views.html.components.link
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{HeadCell, Table, TableRow}
 
-class MovementsListTableHelperSpec extends UnitSpec with MovementListFixtures with DateUtils {
+class MovementsListTableHelperSpec extends SpecBase with MovementListFixtures with DateUtils {
 
-  lazy val messagesApi = app.injector.instanceOf[MessagesApi]
   lazy val link = app.injector.instanceOf[link]
   lazy val helper: MovementsListTableHelper = new MovementsListTableHelper(link)
   lazy val movements = getMovementListResponse.movements

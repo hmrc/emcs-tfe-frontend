@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.emcstfefrontend.viewmodels
 
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Text, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}
 
-class SummaryListHelperSpec extends UnitSpec {
+class SummaryListHelperSpec extends SpecBase {
   trait Test {
     def list: Seq[(String, String)]
 

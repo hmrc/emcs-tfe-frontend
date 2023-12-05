@@ -42,6 +42,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   def emcsTfeBaseUrl: String = s"$emcsTfeService/emcs-tfe"
 
+  def referenceDataBaseUrl: String = servicesConfig.baseUrl("emcs-tfe-reference-data") + "/emcs-tfe-reference-data"
+
   def welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
   def loginUrl: String = servicesConfig.getString("urls.login")

@@ -16,19 +16,17 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers.predicates
 
-import play.api.i18n.MessagesApi
 import play.api.mvc._
 import play.api.test.StubBodyParserFactory
 import uk.gov.hmrc.auth.core.Enrolment
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.fixtures.BaseFixtures
 import uk.gov.hmrc.emcstfefrontend.models.auth.ExciseEnrolmentsRequest
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait FakeSelectExciseNumbersAuthAction extends StubBodyParserFactory with BaseFixtures { _: UnitSpec =>
+trait FakeSelectExciseNumbersAuthAction extends StubBodyParserFactory with BaseFixtures { _: SpecBase =>
 
-  implicit lazy val messagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val ec = app.injector.instanceOf[ExecutionContext]
 
   class FakeSuccessSelectExciseNumbersAuthAction(enrolments: Set[Enrolment]) extends SelectExciseNumberAuthAction {

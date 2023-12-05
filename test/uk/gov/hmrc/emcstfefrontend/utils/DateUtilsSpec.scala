@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.emcstfefrontend.utils
 
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
+import org.scalatest.matchers.should.Matchers.convertToStringShouldWrapper
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 
 import java.time.LocalDate
 
-class DateUtilsSpec extends UnitSpec {
+class DateUtilsSpec extends SpecBase {
 
   trait Test extends DateUtils
 

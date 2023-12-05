@@ -16,18 +16,19 @@
 
 package uk.gov.hmrc.emcstfefrontend.controllers.errors
 
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.UnauthorisedMessages
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext
 
-class UnauthorisedControllerSpec extends UnitSpec {
+class UnauthorisedControllerSpec extends SpecBase {
 
   trait Test {
     implicit val hc: HeaderCarrier = HeaderCarrier()

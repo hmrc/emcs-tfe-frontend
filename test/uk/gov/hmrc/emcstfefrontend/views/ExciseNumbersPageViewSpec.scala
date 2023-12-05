@@ -18,16 +18,17 @@ package uk.gov.hmrc.emcstfefrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatest.matchers.should.Matchers.convertToStringShouldWrapper
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
+import uk.gov.hmrc.emcstfefrontend.base.SpecBase
 import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
 import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ExciseNumbersMessages
-import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.emcstfefrontend.views.html.ExciseNumbersPage
 import uk.gov.hmrc.emcstfefrontend.views.html.components.link
 
-class ExciseNumbersPageViewSpec extends UnitSpec with MovementListFixtures {
+class ExciseNumbersPageViewSpec extends SpecBase with MovementListFixtures {
 
   implicit val fakeRequest = FakeRequest("GET", "/excise-numbers")
 
