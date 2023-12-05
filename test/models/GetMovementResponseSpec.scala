@@ -22,63 +22,44 @@
 package models
 
 import base.SpecBase
-import models.common.{AddressModel, TraderModel}
-import models.response.emcsTfe.GetMovementResponse
-import play.api.libs.json.{JsSuccess, JsValue, Json}
-
-import java.time.LocalDate
-
-
-class GetMovementResponseSpec extends SpecBase {
+import fixtures.GetMovementResponseFixtures
+import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
+import play.api.libs.json.{JsSuccess, Json}
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 
 
-  val model: GetMovementResponse = GetMovementResponse(
-    localReferenceNumber = "MyLrn",
-    eadStatus = "MyEadStatus",
-    consignorTrader = TraderModel(
-      traderExciseNumber = "GB12345GTR144",
-      traderName = "Current 801 Consignor",
-      address = AddressModel(
-        streetNumber = None,
-        street = Some("Main101"),
-        postcode = Some("ZZ78"),
-        city = Some("Zeebrugge")
-      )
-    ),
-    dateOfDispatch = LocalDate.parse("2010-03-04"),
-    journeyTime = "MyJourneyTime",
-    numberOfItems = 0
-  )
+class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures {
 
-  val json: JsValue = Json.parse(
-    """{
-      |  "localReferenceNumber": "MyLrn",
-      |  "eadStatus": "MyEadStatus",
-      |    "consignorTrader" : {
-      |      "traderExciseNumber" : "GB12345GTR144",
-      |      "traderName" : "Current 801 Consignor",
-      |      "address": {
-      |        "street" : "Main101",
-      |        "postcode" : "ZZ78",
-      |        "city" : "Zeebrugge"
-      |      }
-      |    },
-      |  "dateOfDispatch": "2010-03-04",
-      |  "journeyTime": "MyJourneyTime",
-      |  "numberOfItems": 0
-      |}""".stripMargin)
+  "GetMovementResponse" should {
 
-  "GetMovementResponse" must {
     "read from json" in {
-      Json.fromJson[GetMovementResponse](json) mustBe JsSuccess(model)
+      Json.fromJson[GetMovementResponse](getMovementResponseInputJson) shouldBe JsSuccess(getMovementResponseModel)
     }
+
     "write to json" in {
-      Json.toJson(model) mustBe json
+      Json.toJson(getMovementResponseModel) shouldBe getMovementResponseInputJson
     }
-    "return a formatted date" when {
-      "dateOfDispatch is valid" in {
-        model.formattedDateOfDispatch mustBe "04 March 2010"
+
+    ".formattedDateOfDispatch" in {
+      getMovementResponseModel.formattedDateOfDispatch shouldBe "20 November 2008"
+    }
+
+    ".formattedExpectedDateOfArrival" when {
+
+      "a timeOfDispatch is present on the movement" in {
+        getMovementResponseModel.formattedExpectedDateOfArrival shouldBe "10 December 2008"
       }
+
+      "a timeOfDispatch is absent from the movement" in {
+        val model = getMovementResponseModel.eadEsad.copy(timeOfDispatch = None)
+
+        getMovementResponseModel
+          .copy(eadEsad = model)
+          .formattedExpectedDateOfArrival shouldBe "10 December 2008"
+      }
+
     }
+
   }
+
 }

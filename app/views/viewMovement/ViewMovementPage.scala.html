@@ -1,0 +1,75 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import models.requests.DataRequest
+@import viewmodels.SubNavigationTab
+@import views.html.components.moj.subNavigation
+@import views.html.components.{h1, h2, link, spaced_list}
+@import views.html.templates.Layout
+@import viewmodels.Overview
+
+@this(
+        appConfig: AppConfig,
+        layout: Layout,
+        h1: h1,
+        h2: h2,
+        list: spaced_list,
+        link: link,
+        subNavigation: subNavigation
+)
+
+@(
+        ern: String,
+        arc: String,
+        subNavigationTabs: Seq[SubNavigationTab],
+        currentSubNavigationTab: SubNavigationTab,
+        movementTabBody: HtmlContent
+)(implicit request: DataRequest[_], messages: Messages)
+
+@layout(pageTitle = messages("viewMovement.title"), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true) {
+
+    @h2(messages("common.arc"), "govuk-caption-xl")
+
+    @h1()(Html(arc))
+
+    @subNavigation(subNavigationTabs, currentSubNavigationTab)
+
+    @{movementTabBody.asHtml}
+
+    @if(currentSubNavigationTab==Overview) {
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-half" id="actions">
+                @h2(messages("viewMovement.actions.heading"), "govuk-heading-l")
+                @list(Seq(
+                    link(appConfig.emcsTfeReportAReceiptUrl(ern, arc), "viewMovement.reportAReceipt", Some("submit-report-of-receipt")),
+                    link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "viewMovement.explainDelay", Some("explain-a-delay")),
+                    link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "viewMovement.explainShortageOrExcess", Some("explain-shortage-or-excess")),
+                    link(appConfig.emcsTfeCancelMovementUrl(ern, arc), "viewMovement.cancelMovement", Some("cancel-this-movement")),
+                    link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "viewMovement.changeDestination", Some("submit-a-change-of-destination")),
+                    link(appConfig.emcsTfeAlertOrRejectionUrl(ern, arc), "viewMovement.alertOrRejection", Some("submit-alert-or-rejection"))
+                ))
+            </div>
+            <div class="govuk-grid-column-one-half" id="history">
+               @h2(messages("viewMovement.history.heading"), "govuk-heading-l")
+            </div>
+        </div>
+    }
+}
+
+@{
+    //$COVERAGE-OFF$
+}

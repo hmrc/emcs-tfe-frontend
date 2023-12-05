@@ -16,13 +16,15 @@
 
 package controllers
 
-import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import config.ErrorHandler
 import connectors.emcsTfe.GetMovementConnector
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
-import views.html.ViewMovementPage
+import play.api.i18n.I18nSupport
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import viewmodels._
+import viewmodels.helpers.ViewMovementHelper
+import views.html.viewMovement.ViewMovementPage
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -33,13 +35,50 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        override val getData: DataRetrievalAction,
                                        connector: GetMovementConnector,
                                        viewMovementPage: ViewMovementPage,
-                                       errorHandler: ErrorHandler
-                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                       errorHandler: ErrorHandler,
+                                       helper: ViewMovementHelper
+                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport with AuthActionHelper {
 
-  def viewMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
+  def viewMovementOverview(exciseRegistrationNumber: String, arc: String): Action[AnyContent] = {
+    viewMovement(exciseRegistrationNumber, arc, Overview)
+  }
+
+  def viewMovementMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
+    viewMovement(exciseRegistrationNumber, arc, Movement)
+
+  def viewMovementDelivery(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
+    viewMovement(exciseRegistrationNumber, arc, Delivery)
+
+  def viewMovementGuarantor(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
+    viewMovement(exciseRegistrationNumber, arc, Guarantor)
+
+  def viewMovementTransport(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
+    viewMovement(exciseRegistrationNumber, arc, Transport)
+
+  def viewMovementItems(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
+    viewMovement(exciseRegistrationNumber, arc, Items)
+
+  def viewMovementDocuments(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
+    viewMovement(exciseRegistrationNumber, arc, Documents)
+
+  private def viewMovement(
+                            exciseRegistrationNumber: String,
+                            arc: String,
+                            currentSubNavigationTab: SubNavigationTab
+                          ): Action[AnyContent] =
+
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       connector.getMovement(exciseRegistrationNumber, arc).map {
-        case Right(response) => Ok(viewMovementPage(exciseRegistrationNumber, arc, response))
+
+        case Right(movement) => Ok(
+          viewMovementPage(
+            exciseRegistrationNumber,
+            arc,
+            SubNavigationTab.values,
+            currentSubNavigationTab,
+            helper.movementCard(currentSubNavigationTab, movement)
+          )
+        )
         case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
       }
     }

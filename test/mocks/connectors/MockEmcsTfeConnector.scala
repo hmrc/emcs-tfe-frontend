@@ -18,9 +18,10 @@ package mocks.connectors
 
 import connectors.emcsTfe.{GetMovementConnector, GetMovementListConnector}
 import models.response.ErrorResponse
-import models.response.emcsTfe.{GetMovementListResponse, GetMovementResponse}
+import models.response.emcsTfe.GetMovementListResponse
 import org.scalamock.handlers.{CallHandler3, CallHandler4}
 import org.scalamock.scalatest.MockFactory
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}

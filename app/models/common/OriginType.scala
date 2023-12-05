@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package models.response.emcsTfe
+package models.common
 
-import controllers.routes
-import play.api.libs.json.{Json, Reads}
-import play.api.mvc.Call
+sealed trait OriginType
 
-import java.time.LocalDateTime
+object OriginType extends Enumerable.Implicits {
 
-case class GetMovementListItem(arc: String,
-                               dateOfDispatch: LocalDateTime,
-                               movementStatus: String,
-                               otherTraderID: String) {
+  case object TaxWarehouse extends WithName("1") with OriginType
+  case object Import extends WithName("2") with OriginType
+  case object DutyPaid extends WithName("3") with OriginType
 
-  def viewMovementUrl(ern: String): Call = routes.ViewMovementController.viewMovementOverview(ern, arc)
-}
+  val values: Seq[OriginType] = Seq(
+    TaxWarehouse,
+    Import,
+    DutyPaid
+  )
 
-object GetMovementListItem {
-
-  implicit val reads: Reads[GetMovementListItem] = Json.reads
+  implicit val enumerable: Enumerable[OriginType] =
+    Enumerable(values.map(v => v.toString -> v): _*)
 }

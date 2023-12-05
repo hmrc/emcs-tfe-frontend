@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,25 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package models.response.emcsTfe
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.components.{h2, summaryCard}
 
-import controllers.routes
-import play.api.libs.json.{Json, Reads}
-import play.api.mvc.Call
+@this(
+        h2: h2,
+        summaryCard: summaryCard,
+)
 
-import java.time.LocalDateTime
 
-case class GetMovementListItem(arc: String,
-                               dateOfDispatch: LocalDateTime,
-                               movementStatus: String,
-                               otherTraderID: String) {
+@(summaryListRows: Seq[SummaryListRow])(implicit request: Request[_], messages: Messages)
 
-  def viewMovementUrl(ern: String): Call = routes.ViewMovementController.viewMovementOverview(ern, arc)
-}
+@h2(messages("viewMovement.overview.title"), "govuk-heading-l")
 
-object GetMovementListItem {
+@summaryCard(
+    Card(Some(CardTitle(Text(messages("viewMovement.overview.title"))))),
+    summaryListRows
+)
 
-  implicit val reads: Reads[GetMovementListItem] = Json.reads
+@{
+    //$COVERAGE-OFF$
 }
