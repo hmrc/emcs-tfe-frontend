@@ -78,7 +78,7 @@
 }
 
 @beforeContent = {
-    @{ activeTrader(maybeShowActiveTrader, appConfig) }
+    @{ activeTrader(maybeShowActiveTrader) }
     @beforeContentBlock.getOrElse(())
     @if(showBackLink) {
         @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible"))

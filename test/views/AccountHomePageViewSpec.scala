@@ -37,8 +37,6 @@ class AccountHomePageViewSpec extends SpecBase {
     1,
     1
   )
-  val testEuropaCheckLink = "testEuropaCheckLink"
-  val testCreateAMovementLink = "testCreateAMovementLink"
 
   "The account home page" must {
     Seq(
@@ -54,7 +52,7 @@ class AccountHomePageViewSpec extends SpecBase {
       XIPD -> "Temporary certified consignee located in Northern Ireland"
     ) foreach {
       case (roleType, roleTypeDescription) =>
-        lazy val doc = Jsoup.parse(page(testErn, roleType, testBusinessName, testMessageStatistics, testEuropaCheckLink, testCreateAMovementLink).toString())
+        lazy val doc = Jsoup.parse(page(testErn, roleType, testBusinessName, testMessageStatistics).toString())
 
         s"have the correct navigation links for $roleType" in {
           val navigationLinks = doc.getElementsByTag("ul").get(0).children()
@@ -74,24 +72,36 @@ class AccountHomePageViewSpec extends SpecBase {
           doc.getElementsByTag("p").get(2).text mustBe s"Excise registration number (ERN): $testErn"
 
           doc.getElementsByTag("h2").get(1).text mustBe "Your messages"
+
           val messagesLinks = doc.getElementsByTag("ul").get(1).children
+
           messagesLinks.get(0).text mustBe "All messages"
-          //TODO link location when built
+          //TODO update link location when built
+          messagesLinks.get(0).getElementsByTag("a").attr("href") mustBe testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
 
           doc.getElementsByTag("h2").get(2).text mustBe "Your movements"
+
           val movementsLinks = doc.getElementsByTag("ul").get(2).children
+
           movementsLinks.get(0).text mustBe "All movements"
-          //TODO link location when built
+          //TODO update link location when MOV01 is built
+          movementsLinks.get(0).getElementsByTag("a").attr("href") mustBe controllers.routes.ViewMovementListController.viewMovementList(testErn).url
+
           movementsLinks.get(1).text mustBe "Undischarged movements"
           //TODO link location when built
+          movementsLinks.get(1).getElementsByTag("a").attr("href") mustBe testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+
           if (roleType.isConsignor) {
             movementsLinks.get(2).text mustBe "Draft movements"
+            //TODO update link location when built
+            movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+          } else {
+            movementsLinks.text mustNot contain("Draft movements")
           }
-          //TODO link location when built
 
           if (roleType.isConsignor) {
             doc.getElementsByTag("p").get(3).text mustBe "Create a new movement"
-            doc.getElementsByTag("p").get(3).getElementsByTag("a").get(0).attr("href") mustBe testCreateAMovementLink
+            doc.getElementsByTag("p").get(3).getElementsByTag("a").get(0).attr("href") mustBe appConfig.emcsTfeCreateMovementUrl(testErn)
           } else {
             doc.getElementsByTag("p").text mustNot contain("Create a new movement")
           }
@@ -101,7 +111,7 @@ class AccountHomePageViewSpec extends SpecBase {
             doc.getElementsByTag("h2").get(3).text mustBe "Prevalidate"
             val prevalidateLinks = doc.getElementsByTag("ul").get(3).children
             prevalidateLinks.get(0).text mustBe "Check Europa to find out if a trader can receive excise goods"
-            prevalidateLinks.get(0).getElementsByTag("a").get(0).attr("href") mustBe testEuropaCheckLink
+            prevalidateLinks.get(0).getElementsByTag("a").get(0).attr("href") mustBe appConfig.europaCheckLink
           } else {
             doc.getElementsByTag("h2").text mustNot contain("Prevalidate")
           }

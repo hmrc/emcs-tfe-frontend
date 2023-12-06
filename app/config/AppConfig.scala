@@ -24,6 +24,8 @@ import featureswitch.core.config._
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import scala.annotation.unused
+
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configuration) extends FeatureSwitching {
 
@@ -37,6 +39,18 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   lazy val signOutUrl: String = configuration.get[String]("urls.signOut")
 
   lazy val emcsTfeHomeUrl: String = routes.IndexController.exciseNumber().url
+
+  // TODO: update with new URL when MOV01 is created
+  def emcsTfeListMovementsUrl(ern: String): String = routes.ViewMovementListController.viewMovementList(ern).url
+
+  // TODO: update with new URL when MOV01 filters are created
+  def emcsTfeDraftMovementsUrl(@unused ern: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+
+  // TODO: update with new URL when MOV01 filters are created
+  def emcsTfeMessagesUrl(@unused ern: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+
+  // TODO: update with new URL when MOV01 filters are created
+  def emcsTfeUndischargedMovementsUrl(@unused ern: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
 
   private lazy val contactHost = configuration.get[String]("contact-frontend.host")
 

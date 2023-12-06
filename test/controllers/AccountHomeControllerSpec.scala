@@ -37,7 +37,7 @@ import views.html.AccountHomePage
 import scala.concurrent.{ExecutionContext, Future}
 
 class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFactory {
-  val mockGetMessageStatisticsConnector = mock[GetMessageStatisticsConnector]
+  val mockGetMessageStatisticsConnector: GetMessageStatisticsConnector = mock[GetMessageStatisticsConnector]
 
   trait Test extends MockEmcsTfeConnector {
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -79,9 +79,7 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
           ern = testErn,
           roleType = GBWK,
           businessName = testMinTraderKnownFacts.traderName,
-          messageStatistics = testMessageStatistics,
-          europaCheckLink = appConfig.europaCheckLink,
-          createAMovementLink = appConfig.emcsTfeCreateMovementUrl(testErn)
+          messageStatistics = testMessageStatistics
         )
 
         status(result) mustBe Status.OK

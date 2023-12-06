@@ -98,6 +98,19 @@ object RoleType {
     override val isConsignor: Boolean = false
   }
 
+  val values: Seq[RoleType] = Seq(
+    GBWK,
+    XIWK,
+    GBRC,
+    XIRC,
+    XI00,
+    XITC,
+    XIPA,
+    XIPB,
+    XIPC,
+    XIPD
+  )
+
 }
 
 

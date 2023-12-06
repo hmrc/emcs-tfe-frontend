@@ -44,9 +44,7 @@ class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
           exciseRegistrationNumber,
           RoleType.fromExciseRegistrationNumber(exciseRegistrationNumber),
           request.traderKnownFacts.traderName,
-          messageStatistics,
-          appConfig.europaCheckLink,
-          appConfig.emcsTfeCreateMovementUrl(exciseRegistrationNumber)
+          messageStatistics
         ))
         case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
       }

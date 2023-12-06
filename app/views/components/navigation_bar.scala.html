@@ -14,10 +14,14 @@
  * limitations under the License.
  *@
 
+@import config.AppConfig
 @import models.response.emcsTfe.GetMessageStatisticsResponse
 @import models.common.RoleType.RoleType
 
-@this()
+@this(
+        appConfig: AppConfig
+)
+
 @(ern: String, roleType: RoleType, getMessageStatisticsResponse: GetMessageStatisticsResponse)(implicit messages: Messages)
 <div class="moj-primary-navigation">
 
@@ -29,23 +33,23 @@
 
                 <ul class="moj-primary-navigation__list">
                     <li class="moj-primary-navigation__item">
-                        <a id="navigation-home-link" class="moj-primary-navigation__link" aria-current="page" href=>@messages("navigation.home")</a>
+                        <a id="navigation-home-link" class="moj-primary-navigation__link" aria-current="page" href="@appConfig.emcsTfeHomeUrl">@messages("navigation.home")</a>
                     </li>
 
                     <li class="moj-primary-navigation__item">
-                        <a id="navigation-messages-link" class="moj-primary-navigation__link" href="#">@messages("navigation.messages")
+                        <a id="navigation-messages-link" class="moj-primary-navigation__link" href="@appConfig.emcsTfeMessagesUrl(ern)">@messages("navigation.messages")
                         <span class="hmrc-notification-badge govuk-!-margin-left-1">@getMessageStatisticsResponse.countOfNewMessages</span>
                         </a>
                     </li>
 
                     @if(roleType.isConsignor) {
                         <li class="moj-primary-navigation__item">
-                            <a id="navigation-drafts-link" class="moj-primary-navigation__link" href="#">@messages("navigation.drafts")</a>
+                            <a id="navigation-drafts-link" class="moj-primary-navigation__link" href="@appConfig.emcsTfeDraftMovementsUrl(ern)">@messages("navigation.drafts")</a>
                         </li>
                     }
 
                     <li class="moj-primary-navigation__item">
-                        <a id="navigation-movements-link" class="moj-primary-navigation__link" href="#">@messages("navigation.movements")</a>
+                        <a id="navigation-movements-link" class="moj-primary-navigation__link" href="@appConfig.emcsTfeListMovementsUrl(ern)">@messages("navigation.movements")</a>
                     </li>
                 </ul>
 

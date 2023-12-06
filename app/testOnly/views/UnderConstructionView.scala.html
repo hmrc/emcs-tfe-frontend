@@ -14,26 +14,25 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
-@import viewmodels.TraderInfo
+@import views.html.components.{h1, p}
 
 @this(
-        appConfig: AppConfig
+        layout: templates.Layout,
+        h1: h1,
+        p: p
 )
 
-@(maybeShowActiveTrader: Option[TraderInfo])(implicit messages: Messages)
+@()(implicit request: Request[_], messages: Messages)
 
-@{
-    maybeShowActiveTrader match {
-        case Some(TraderInfo(traderName, ern)) =>
-            <div class="active-trader-info govuk-!-margin-bottom-0" aria-label="Organisation switcher">
-                <div class="active-trader-info__title">{ traderName } ({ ern })</div>
-                <a href={ appConfig.emcsTfeHomeUrl } class="active-trader-info__link">{ messages("activeTrader.link") }</a>
-            </div>
-        case None => ()
+@layout(pageTitle = titleNoForm("Flow not built yet"), maybeShowActiveTrader = None) {
+
+    @h1()(Html("Flow not built yet"))
+
+    @p(){
+     This is a placeholder page, in future this page will be replaced with the correct onward route for the flow.
     }
 }
 
 @{
-    //$COVERAGE-OFF$
+ //$COVERAGE-OFF$
 }

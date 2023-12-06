@@ -23,28 +23,28 @@ import java.time.LocalDateTime
 
 trait MovementListFixtures extends BaseFixtures {
 
-  lazy val movement1 = GetMovementListItem(
+  lazy val movement1: GetMovementListItem = GetMovementListItem(
     arc = "18GB00000000000232361",
     dateOfDispatch = LocalDateTime.parse("2009-01-26T14:11:00"),
     movementStatus = "Accepted",
     otherTraderID = "ABCD1234"
   )
 
-  lazy val movement1Json = Json.obj(
+  lazy val movement1Json: JsValue = Json.obj(
     "arc" -> "18GB00000000000232361",
     "dateOfDispatch" -> LocalDateTime.parse("2009-01-26T14:11:00"),
     "movementStatus" -> "Accepted",
     "otherTraderID" -> "ABCD1234"
   )
 
-  lazy val movement2 = GetMovementListItem(
+  lazy val movement2: GetMovementListItem = GetMovementListItem(
     arc = "GBTR000000EMCS1000040",
     dateOfDispatch = LocalDateTime.parse("2009-01-26T14:12:00"),
     movementStatus = "Accepted",
     otherTraderID = "ABCD1234"
   )
 
-  lazy val movement2Json = Json.obj(
+  lazy val movement2Json: JsValue = Json.obj(
     "arc" -> "GBTR000000EMCS1000040",
     "dateOfDispatch" -> "2009-01-26T14:12:00",
     "movementStatus" -> "Accepted",

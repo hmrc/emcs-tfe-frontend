@@ -35,12 +35,10 @@
         roleType: RoleType,
         businessName: String,
         messageStatistics: GetMessageStatisticsResponse,
-        europaCheckLink: String,
-        createAMovementLink: String
 )(implicit request: DataRequest[_], messages: Messages)
 
 @roleTypeDescription = {
-@messages(roleType.descriptionKey)
+    @messages(roleType.descriptionKey)
 }
 
 @layout(pageTitle = messages("viewMovement.title"), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true, showBackLink = false, beforeContentBlock = Some(navigationBar(ern, roleType, messageStatistics))) {
@@ -51,26 +49,26 @@
 
     <h2 class="govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1">@messages("accountHome.yourMessages")</h2>
     <ul class="govuk-list">
-        <li><a id="all-messages-link" class="govuk-link" href="messages">@messages("accountHome.allMessagesLink")</a></li>
+        <li><a id="all-messages-link" class="govuk-link" href="@appConfig.emcsTfeMessagesUrl(ern)">@messages("accountHome.allMessagesLink")</a></li>
     </ul>
 
     <h2 class="govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1">@messages("accountHome.yourMovements")</h2>
     <ul class="govuk-list">
-        <li><a id="all-movements-link" class="govuk-link" href="movements">@messages("accountHome.allMovementsLink")</a></li>
-        <li><a id="undischarged-movements-link" class="govuk-link" href="movements">@messages("accountHome.undischargedMovementsLink")</a></li>
+        <li><a id="all-movements-link" class="govuk-link" href="@appConfig.emcsTfeListMovementsUrl(ern)">@messages("accountHome.allMovementsLink")</a></li>
+        <li><a id="undischarged-movements-link" class="govuk-link" href="@appConfig.emcsTfeUndischargedMovementsUrl(ern)">@messages("accountHome.undischargedMovementsLink")</a></li>
         @if(roleType.isConsignor) {
-            <li><a id="draft-movements-link" class="govuk-link" href="drafts">@messages("accountHome.draftMovementsLink")</a></li>
+            <li><a id="draft-movements-link" class="govuk-link" href="@appConfig.emcsTfeDraftMovementsUrl(ern)">@messages("accountHome.draftMovementsLink")</a></li>
         }
     </ul>
 
     @if(roleType.isConsignor) {
-        <p class="govuk-body"><a id="create-movement-link" class="govuk-link" href=@createAMovementLink>@messages("accountHome.createMovementLink")</a></p>
+        <p class="govuk-body"><a id="create-movement-link" class="govuk-link" href="@appConfig.emcsTfeCreateMovementUrl(ern)">@messages("accountHome.createMovementLink")</a></p>
     }
 
     @if(roleType.isNorthernIsland) {
         <h2 class="govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1">@messages("accountHome.prevalidate")</h2>
         <ul class="govuk-list">
-            <li><a id="check-link" class="govuk-link" href=@europaCheckLink>@messages("accountHome.checkLink")</a></li>
+            <li><a id="check-link" class="govuk-link" href="@appConfig.europaCheckLink">@messages("accountHome.checkLink")</a></li>
         </ul>
     }
 }

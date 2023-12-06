@@ -17,7 +17,6 @@
 package views.components
 
 import base.SpecBase
-import config.AppConfig
 import fixtures.messages.ActiveTraderMessages
 import org.jsoup.Jsoup
 import play.api.i18n.MessagesApi
@@ -33,14 +32,12 @@ class ActiveTraderSpec extends SpecBase {
 
       val activeTrader = app.injector.instanceOf[views.html.components.activeTrader]
 
-      lazy val appConfig = app.injector.instanceOf[AppConfig]
-
       val divSelector = "div.active-trader-info"
       val titleSelector = "div.active-trader-info__title"
       val linkSelector = "a.active-trader-info__link"
 
       "Must not render the active trader component when no trader info supplied" in {
-        val html = activeTrader(None, appConfig)
+        val html = activeTrader(None)
         val doc = Jsoup.parse(html.toString())
 
         doc.select(divSelector).size mustEqual 0
@@ -54,21 +51,21 @@ class ActiveTraderSpec extends SpecBase {
 
         "trader info div must exist" in {
 
-          val html = activeTrader(Some(traderInfo), appConfig)
+          val html = activeTrader(Some(traderInfo))
           val doc = Jsoup.parse(html.toString())
 
           doc.select(divSelector).size mustEqual 1
         }
 
         "title must exist" in {
-          val html = activeTrader(Some(traderInfo), appConfig)
+          val html = activeTrader(Some(traderInfo))
           val doc = Jsoup.parse(html.toString())
 
           doc.select(titleSelector).text mustEqual s"$traderName ($ern)"
         }
 
         "link must exist" in {
-          val html = activeTrader(Some(traderInfo), appConfig)
+          val html = activeTrader(Some(traderInfo))
           val doc = Jsoup.parse(html.toString())
 
           val link =  doc.select(linkSelector).first
