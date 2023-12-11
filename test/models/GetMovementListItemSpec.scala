@@ -37,7 +37,7 @@ class GetMovementListItemSpec extends SpecBase with MovementListFixtures {
     }
 
     "have a link to view the detailed movement information" in {
-      movement1.viewMovementUrl(testErn) mustBe routes.ViewMovementController.viewMovement(testErn, s"${movement1.arc}")
+      movement1.viewMovementUrl(testErn) mustBe routes.ViewMovementController.viewMovementOverview(testErn, s"${movement1.arc}")
     }
   }
 }

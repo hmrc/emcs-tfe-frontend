@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package models.response.emcsTfe
+package models.common
 
-import controllers.routes
-import play.api.libs.json.{Json, Reads}
-import play.api.mvc.Call
+import play.api.libs.json.{Json, OFormat}
 
-import java.time.LocalDateTime
+case class TransportDetailsModel(
+    transportUnitCode: String,
+    identityOfTransportUnits: Option[String],
+    commercialSealIdentification: Option[String],
+    complementaryInformation: Option[String],
+    sealInformation: Option[String]
+)
 
-case class GetMovementListItem(arc: String,
-                               dateOfDispatch: LocalDateTime,
-                               movementStatus: String,
-                               otherTraderID: String) {
+object TransportDetailsModel {
 
-  def viewMovementUrl(ern: String): Call = routes.ViewMovementController.viewMovementOverview(ern, arc)
-}
-
-object GetMovementListItem {
-
-  implicit val reads: Reads[GetMovementListItem] = Json.reads
+  implicit val fmt: OFormat[TransportDetailsModel] = Json.format
 }
