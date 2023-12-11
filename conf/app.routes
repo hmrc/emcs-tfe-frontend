@@ -21,3 +21,6 @@ GET        /trader/:exciseRegistrationNumber/movement/:arc/documents       contr
 GET        /movements-in/:exciseRegistrationNumber            controllers.ViewMovementListController.viewMovementList(exciseRegistrationNumber)
 
 GET        /trader/:exciseRegistrationNumber/account          controllers.AccountHomeController.viewAccountHome(exciseRegistrationNumber)
+
+GET        /movements/:ern                                    controllers.ViewAllMovementsController.onPageLoad(ern: String, search: MovementListSearchOptions)
+POST       /movements/:ern                                    controllers.ViewAllMovementsController.onSubmit(ern: String, search: MovementListSearchOptions)

@@ -33,10 +33,9 @@ object SelectItemHelper {
     ) ++ selectOptions.map { option =>
       SelectItem(
         value = Some(option.code),
-        text = option.displayName,
+        text = messages(option.displayName),
         selected = existingAnswer.contains(option.code)
       )
     }
   }
-
 }

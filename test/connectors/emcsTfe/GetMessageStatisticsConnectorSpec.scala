@@ -22,6 +22,12 @@ import mocks.connectors.MockHttpClient
 import models.response.emcsTfe.GetMessageStatisticsResponse
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.Json
+import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
+import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockHttpClient
+import uk.gov.hmrc.emcstfefrontend.models.MovementListSearchOptions
+import uk.gov.hmrc.emcstfefrontend.models.common.{AddressModel, TraderModel}
+import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMessageStatisticsResponse
+import uk.gov.hmrc.emcstfefrontend.support.UnitSpec
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}

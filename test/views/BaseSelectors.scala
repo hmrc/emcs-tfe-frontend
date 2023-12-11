@@ -34,6 +34,11 @@ trait BaseSelectors {
   val label: String => String = forId => s"main label[for='$forId']"
   def radioButton(radioIndex: Int) = s".govuk-radios > div:nth-child($radioIndex) > label"
   def checkboxItem(index: Int) = s".govuk-checkboxes > div:nth-child($index) > label"
+  val subHeadingCaptionSelector: String = "main .govuk-caption-xl"
+  val hiddenText = s".govuk-visually-hidden"
+  val strong: Int => String = i => s"main span.govuk-\\!-font-weight-bold:nth-of-type($i)"
+  val legend = "main legend"
+  def checkboxDividerItem(index: Int) = s".govuk-checkboxes > div:nth-child($index)"
   val dateDay = s".govuk-date-input .govuk-date-input__item:nth-of-type(1)"
   val dateMonth = s".govuk-date-input .govuk-date-input__item:nth-of-type(2)"
   val dateYear = s".govuk-date-input .govuk-date-input__item:nth-of-type(3)"
@@ -53,3 +58,4 @@ trait BaseSelectors {
 }
 
 object BaseSelectors extends BaseSelectors
+
