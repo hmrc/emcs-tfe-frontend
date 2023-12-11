@@ -70,15 +70,17 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       connector.getMovement(exciseRegistrationNumber, arc).map {
 
-        case Right(movement) => Ok(
-          viewMovementPage(
-            exciseRegistrationNumber,
-            arc,
-            SubNavigationTab.values,
-            currentSubNavigationTab,
-            helper.movementCard(currentSubNavigationTab, movement)
+        case Right(movement) =>
+          Ok(
+            viewMovementPage(
+              ern = exciseRegistrationNumber,
+              arc = arc,
+              isConsignor = exciseRegistrationNumber == movement.consignorTrader.traderExciseNumber,
+              subNavigationTabs = SubNavigationTab.values,
+              currentSubNavigationTab = currentSubNavigationTab,
+              movementTabBody = helper.movementCard(currentSubNavigationTab, movement)
+            )
           )
-        )
         case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
       }
     }

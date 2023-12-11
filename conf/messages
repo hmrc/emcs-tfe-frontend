@@ -16,11 +16,19 @@ common.arc = Administrative reference code
 
 viewMovement.title = Movement details
 viewMovement.reportAReceipt = Submit report of receipt
+viewMovement.reportAReceipt.info = You can only do this after you have taken delivery of the goods.
 viewMovement.explainDelay = Explain a delay
+viewMovement.explainDelay.info = You can only do this while the goods are in transit or if they were unsafe on arrival.
 viewMovement.explainShortageOrExcess = Explain a shortage or excess
+viewMovement.explainShortageOrExcess.info = You can only do this after an excess or shortage has been recorded in a report of receipt.
 viewMovement.cancelMovement = Cancel this movement
+viewMovement.cancelMovement.info = You can only do this while the goods are in transit.
 viewMovement.changeDestination = Submit a change of destination
+viewMovement.changeDestination.info = You can only do this while the goods are in transit, or for a movement that has been totally or partially refused, or rejected.
 viewMovement.alertOrRejection = Submit alert or rejection
+viewMovement.alertOrRejection.info = You can only do this while the goods are in transit or if the transporting vehicles have not departed your premises.
+viewMovement.printOrSaveEad = Print or save a copy of the eAD
+viewMovement.printOrSaveEad.info = Make a printed or digital copy of this movement. Goods must travel with a copy of the eAD or other document showing the administrative reference code (ARC).
 viewMovement.createMovement = Create movement
 viewMovement.actions.heading = Actions
 viewMovement.history.heading = History
@@ -32,6 +40,7 @@ viewMovement.overview.journeyTime = Expected date of arrival
 viewMovement.overview.consignor = Consignor
 viewMovement.overview.numberOfItems = Number of items
 viewMovement.overview.transporting = Transporting vehicle(s)
+
 
 viewMovementList.title = Movements in
 viewMovementList.heading = Movements in
