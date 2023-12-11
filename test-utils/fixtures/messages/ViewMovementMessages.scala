@@ -34,10 +34,12 @@ object ViewMovementMessages {
     val actionLinkSubmitReportOfReceipt = "Submit report of receipt"
     val actionLinkExplainDelay = "Explain a delay"
     val actionLinkExplainShortageOrExcess = "Explain a shortage or excess"
-    val actionLinCancelMovement = "Cancel this movement"
+    val actionLinkCancelMovement = "Cancel this movement"
     val actionLinkChangeOfDestination = "Submit a change of destination"
     val actionLinkAlertOrRejection = "Submit alert or rejection"
+    val actionLinkPrint = "Print or save a copy of the eAD"
   }
 
-  object English extends ViewMessages with BaseEnglish
+  object English extends ViewMessages with EN
+
 }

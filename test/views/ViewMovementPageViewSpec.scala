@@ -49,45 +49,86 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
 
     Seq(English) foreach { messagesForLanguage =>
 
-      s"being rendered in lang code of '${messagesForLanguage.lang.code}'" should {
+      s"being rendered in lang code of '${messagesForLanguage.lang.code}'" when {
 
-        "render the overview tab" when {
+        "rendering the overview tab" should {
 
-          val view = app.injector.instanceOf[ViewMovementPage]
+          "display the navigation and overview card" when {
 
-          implicit val doc: Document = Jsoup.parse(
-            view(
-              testErn,
-              testArc,
-              SubNavigationTab.values,
-              Overview,
-              helper.movementCard(Overview, getMovementResponseModel)
-            ).toString()
-          )
+            val view = app.injector.instanceOf[ViewMovementPage]
+            implicit val doc: Document = Jsoup.parse(
+              view(
+                testErn,
+                testArc,
+                isConsignor = true,
+                SubNavigationTab.values,
+                Overview,
+                helper.movementCard(Overview, getMovementResponseModel)
+              ).toString()
+            )
 
-          behave like pageWithExpectedElementsAndMessages(Seq(
-            Selectors.title -> messagesForLanguage.title,
-            Selectors.h2(1) -> messagesForLanguage.arcSubheading,
-            Selectors.h1 -> testArc,
+            behave like pageWithExpectedElementsAndMessages(Seq(
+              Selectors.title -> messagesForLanguage.title,
+              Selectors.h2(1) -> messagesForLanguage.arcSubheading,
+              Selectors.h1 -> testArc,
 
-            Selectors.subNavigationTabSelected -> messagesForLanguage.overviewTabHeading,
+              Selectors.subNavigationTabSelected -> messagesForLanguage.overviewTabHeading,
 
-            Selectors.summaryCardRowKey(1) -> messagesForLanguage.overviewCardLrn,
-            Selectors.summaryCardRowKey(2) -> messagesForLanguage.overviewCardEadStatus,
-            Selectors.summaryCardRowKey(3) -> messagesForLanguage.overviewCardDateOfDispatch,
-            Selectors.summaryCardRowKey(4) -> messagesForLanguage.overviewCardExpectedDate,
-            Selectors.summaryCardRowKey(5) -> messagesForLanguage.overviewCardConsignor,
-            Selectors.summaryCardRowKey(6) -> messagesForLanguage.overviewCardNumberOfItems,
-            Selectors.summaryCardRowKey(7) -> messagesForLanguage.overviewCardTransporting,
+              Selectors.summaryCardRowKey(1) -> messagesForLanguage.overviewCardLrn,
+              Selectors.summaryCardRowKey(2) -> messagesForLanguage.overviewCardEadStatus,
+              Selectors.summaryCardRowKey(3) -> messagesForLanguage.overviewCardDateOfDispatch,
+              Selectors.summaryCardRowKey(4) -> messagesForLanguage.overviewCardExpectedDate,
+              Selectors.summaryCardRowKey(5) -> messagesForLanguage.overviewCardConsignor,
+              Selectors.summaryCardRowKey(6) -> messagesForLanguage.overviewCardNumberOfItems,
+              Selectors.summaryCardRowKey(7) -> messagesForLanguage.overviewCardTransporting
+            ))
 
-            Selectors.actionLink(1) -> messagesForLanguage.actionLinkSubmitReportOfReceipt,
-            Selectors.actionLink(2) -> messagesForLanguage.actionLinkExplainDelay,
-            Selectors.actionLink(3) -> messagesForLanguage.actionLinkExplainShortageOrExcess,
-            Selectors.actionLink(4) -> messagesForLanguage.actionLinCancelMovement,
-            Selectors.actionLink(5) -> messagesForLanguage.actionLinkChangeOfDestination,
-            Selectors.actionLink(6) -> messagesForLanguage.actionLinkAlertOrRejection,
-          ))
+          }
 
+          "display the action links for a consignor" when {
+            val view = app.injector.instanceOf[ViewMovementPage]
+            implicit val doc: Document = Jsoup.parse(
+              view(
+                testErn,
+                testArc,
+                isConsignor = true,
+                SubNavigationTab.values,
+                Overview,
+                helper.movementCard(Overview, getMovementResponseModel)
+              ).toString()
+            )
+
+            behave like pageWithExpectedElementsAndMessages(Seq(
+              Selectors.actionLink(1) -> messagesForLanguage.actionLinkCancelMovement,
+              Selectors.actionLink(2) -> messagesForLanguage.actionLinkChangeOfDestination,
+              Selectors.actionLink(3) -> messagesForLanguage.actionLinkExplainDelay,
+              Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess,
+              Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
+            ))
+          }
+
+          "display the action links for a consignee" when {
+            val view = app.injector.instanceOf[ViewMovementPage]
+            implicit val doc: Document = Jsoup.parse(
+              view(
+                testErn,
+                testArc,
+                isConsignor = false,
+                SubNavigationTab.values,
+                Overview,
+                helper.movementCard(Overview, getMovementResponseModel)
+              ).toString()
+            )
+
+            behave like pageWithExpectedElementsAndMessages(Seq(
+              Selectors.actionLink(1) -> messagesForLanguage.actionLinkAlertOrRejection,
+              Selectors.actionLink(2) -> messagesForLanguage.actionLinkSubmitReportOfReceipt,
+              Selectors.actionLink(3) -> messagesForLanguage.actionLinkExplainDelay,
+              Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess,
+              Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
+
+            ))
+          }
         }
       }
     }
