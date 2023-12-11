@@ -1,15 +1,17 @@
 # microservice specific routes
 
-->          /hmrc-frontend                                     hmrcfrontend.Routes
+->         /hmrc-frontend                                     hmrcfrontend.Routes
 
-->          /errors                                            error.Routes
+->         /errors                                            error.Routes
 
-GET         /assets/*file                                      controllers.Assets.versioned(path = "/public", file: Asset)
+GET        /assets/*file                                      controllers.Assets.versioned(path = "/public", file: Asset)
 
-GET         /                                                  uk.gov.hmrc.emcstfefrontend.controllers.IndexController.exciseNumber()
+GET        /refresh-session                                   controllers.KeepAliveController.keepAlive()
 
-GET         /consignment/:exciseRegistrationNumber/:arc        uk.gov.hmrc.emcstfefrontend.controllers.ViewMovementController.viewMovement(exciseRegistrationNumber, arc)
+GET        /                                                  controllers.IndexController.exciseNumber()
 
-GET         /movements-in/:exciseRegistrationNumber            uk.gov.hmrc.emcstfefrontend.controllers.ViewMovementListController.viewMovementList(exciseRegistrationNumber)
+GET        /consignment/:exciseRegistrationNumber/:arc        controllers.ViewMovementController.viewMovement(exciseRegistrationNumber, arc)
 
-GET         /trader/:exciseRegistrationNumber/account          uk.gov.hmrc.emcstfefrontend.controllers.AccountHomeController.viewAccountHome(exciseRegistrationNumber)
+GET        /movements-in/:exciseRegistrationNumber            controllers.ViewMovementListController.viewMovementList(exciseRegistrationNumber)
+
+GET        /trader/:exciseRegistrationNumber/account          controllers.AccountHomeController.viewAccountHome(exciseRegistrationNumber)
