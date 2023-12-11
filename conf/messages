@@ -203,3 +203,14 @@ activeTrader.link = Change trader type
 
 site.govuk = GOV.UK
 site.back = Back
+
+viewAllMovements.title = Movements
+viewAllMovements.heading = Movements
+viewAllMovements.consignor = Consignor: {0}
+viewAllMovements.dateOfDispatch = Date of dispatch: {0}
+viewAllMovements.sort.label = Sort by
+viewAllMovements.sort.button = Sort movements
+viewAllMovements.sort.arc = ARC (A-Z)
+viewAllMovements.sort.arcReverse = ARC (Z-A)
+viewAllMovements.sort.newest = Dispatched (newest)
+viewAllMovements.sort.oldest = Dispatched (oldest)

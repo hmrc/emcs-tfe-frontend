@@ -18,16 +18,36 @@ package models.response.emcsTfe
 
 import controllers.routes
 import play.api.libs.json.{Json, Reads}
+import uk.gov.hmrc.govukfrontend.views.html.components.Text
 import play.api.mvc.Call
+import controllers.routes
+import uk.gov.hmrc.emcstfefrontend.utils.DateUtils
+import uk.gov.hmrc.emcstfefrontend.viewmodels.govuk.TagFluency
+import uk.gov.hmrc.govukfrontend.views.viewmodels.tag.Tag
 
 import java.time.LocalDateTime
 
 case class GetMovementListItem(arc: String,
                                dateOfDispatch: LocalDateTime,
                                movementStatus: String,
-                               otherTraderID: String) {
+                               otherTraderID: String) extends TagFluency with DateUtils {
 
   def viewMovementUrl(ern: String): Call = routes.ViewMovementController.viewMovementOverview(ern, arc)
+
+  val formattedDateOfDispatch: String = dateOfDispatch.toLocalDate.formatDateForUIOutput()
+
+  val statusTag: Tag = (movementStatus match {
+    case "Accepted" =>
+      TagViewModel(Text(movementStatus)).blue()
+    case "Deemed exported" | "Diverted" | "Exporting" =>
+      TagViewModel(Text(movementStatus)).green()
+    case "Partially refused" | "Refused" | "Rejected" =>
+      TagViewModel(Text(movementStatus)).orange()
+    case "Cancelled" | "Manually closed" | "Replaced" | "Stopped" =>
+      TagViewModel(Text(movementStatus)).purple()
+    case _ =>
+      TagViewModel(Text(movementStatus))
+  }).withCssClass("govuk-!-margin-top-5")
 }
 
 object GetMovementListItem {

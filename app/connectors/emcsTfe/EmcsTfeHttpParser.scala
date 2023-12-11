@@ -19,6 +19,9 @@ package connectors.emcsTfe
 import play.api.http.Status.OK
 import connectors.BaseConnectorUtils
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
+import uk.gov.hmrc.emcstfefrontend.connectors.BaseConnectorUtils
+import uk.gov.hmrc.emcstfefrontend.models.MovementListSearchOptions
+import uk.gov.hmrc.emcstfefrontend.models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,6 +45,6 @@ trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
     }
   }
 
-  def get(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
-    http.GET[Either[ErrorResponse, A]](url)(EmcsTfeReads, hc, ec)
+  def get(url: String, queryParams: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
+    http.GET[Either[ErrorResponse, A]](url, queryParams)(EmcsTfeReads, hc, ec)
 }

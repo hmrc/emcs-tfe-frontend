@@ -1,4 +1,5 @@
 import sbt._
+import play.sbt.routes.RoutesKeys
 import uk.gov.hmrc.DefaultBuildSettings.addTestReportOption
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
@@ -16,6 +17,10 @@ lazy val microservice = Project(appName, file("."))
     scalaVersion := "2.13.8",
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     Assets / pipelineStages := Seq(gzip),
+    RoutesKeys.routesImport ++= Seq(
+      "uk.gov.hmrc.emcstfefrontend.models._",
+      "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl"
+    )
   )
   .settings(
     scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",

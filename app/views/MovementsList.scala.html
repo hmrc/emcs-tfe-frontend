@@ -1,0 +1,59 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListItem
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.Select
+@import uk.gov.hmrc.emcstfefrontend.viewmodels.ViewAllMovementsTableHelper
+@import uk.gov.hmrc.emcstfefrontend.views.html.components._
+@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
+@import uk.gov.hmrc.emcstfefrontend.config.AppConfig
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
+
+@this(
+    layout: Layout,
+    table: table,
+    h1: h1,
+    appConfig: AppConfig,
+    govukButton: GovukButton,
+    govukPagination : GovukPagination,
+    govukSelect : GovukSelect,
+    helper: ViewAllMovementsTableHelper
+)
+
+@(ern: String, movements: Seq[GetMovementListItem], selectItems: Seq[SelectItem], pagination: Option[Pagination])(implicit request: Request[_], messages: Messages)
+
+    @govukSelect(Select(
+        items = selectItems,
+        name = "name",
+        id = "id",
+        label = Label(
+            content = Text(messages("viewAllMovements.sort.label"))
+        )
+    ))
+
+    @govukButton(ButtonViewModel(Text(messages("viewAllMovements.sort.button"))))
+
+    @table(helper.constructTable(ern, movements))
+
+    @pagination.map{ paginationLinks =>
+        @govukPagination(paginationLinks)
+    }
+
+@{
+    //$COVERAGE-OFF$
+}
