@@ -5,3 +5,7 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
 @import "active-trader-info";
 @import "primary-navigation";
 @import "sub-navigation";
+
+.white-space-nowrap {
+  white-space: nowrap;
+}

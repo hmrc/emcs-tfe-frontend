@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class GetMovementConnector @Inject()(val http: HttpClient,
                                      config: AppConfig) extends EmcsTfeHttpParser[GetMovementResponse] {
 
-  override implicit val reads: Reads[GetMovementResponse] = GetMovementResponse.format
+  override implicit val reads: Reads[GetMovementResponse] = GetMovementResponse.reads
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
   def getMovement(exciseRegistrationNumber: String, arc: String)(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, GetMovementResponse]] = {

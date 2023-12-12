@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package models.common
+package fixtures.messages
 
-import play.api.libs.json.{Json, Reads}
+object UnitOfMeasureMessages {
 
-case class AddressModel(streetNumber: Option[String],
-                        street: Option[String],
-                        postcode: Option[String],
-                        city: Option[String])
+  sealed trait ViewMessages { _: i18n =>
+    val kilogramsShort: String = "kg"
+    val kilogramsLong: String = "kilograms"
+    val litres20Short: String = "litres"
+    val litres20Long: String = "litres (temperature of 20°C)"
+    val litres15Short: String = "litres"
+    val litres15Long: String = "litres (temperature of 15°C)"
+    val thousandsShort: String = "x1000"
+    val thousandsLong: String = "x1000 items"
+  }
 
-object AddressModel {
-  implicit val reads: Reads[AddressModel] = Json.reads
+  object English extends ViewMessages with BaseEnglish
 }

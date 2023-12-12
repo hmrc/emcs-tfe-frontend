@@ -25,7 +25,7 @@ import play.api.libs.json.{JsValue, Json}
 
 import java.time.LocalDate
 
-trait GetMovementResponseFixtures {
+trait GetMovementResponseFixtures extends ItemFixtures {
   _: BaseFixtures =>
 
   val eadEsadModel: EadEsadModel = EadEsadModel(
@@ -145,7 +145,8 @@ trait GetMovementResponseFixtures {
           UnsatisfactoryModel(Shortage, None),
         )
       ))
-    ))
+    )),
+    items = Seq(item1, item2)
   )
 
   val getMovementResponseInputJson: JsValue = Json.obj(
@@ -273,6 +274,10 @@ trait GetMovementResponseFixtures {
         )
       ),
       "otherInformation" -> "some great reason"
+    ),
+    "items" -> Json.arr(
+      item1Json,
+      item2Json
     )
   )
 }

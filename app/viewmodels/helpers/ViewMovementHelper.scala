@@ -32,6 +32,8 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 import utils.ExpectedDateOfArrival
 import viewmodels._
 import views.html.components.{list, p}
+import viewmodels.{Items, Overview, SubNavigationTab}
+import views.html.components.list
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.Inject
@@ -40,16 +42,18 @@ class ViewMovementHelper @Inject()(
                                     list: list,
                                     p: p,
                                     overviewPartial: overview_partial,
+                                    viewMovementItemsHelper: ViewMovementItemsHelper
                                   ) extends ExpectedDateOfArrival {
 
   def movementCard(subNavigationTab: SubNavigationTab, movementResponse: GetMovementResponse)
-                  (implicit request: DataRequest[_], messages: Messages): HtmlContent =
+                  (implicit request: DataRequest[_], messages: Messages): Html =
 
     subNavigationTab match {
       case Overview => constructMovementOverview(movementResponse)
       case Movement => constructMovementView(movementResponse)
       case Delivery => constructMovementDelivery(movementResponse)
-      case _ => HtmlContent("")
+      case Items    => viewMovementItemsHelper.constructMovementItems(movementResponse)
+      case _ => Html("")
     }
 
   private[helpers] def summaryListRowBuilder(key: String, value: String)(implicit messages: Messages) = SummaryListRow(
@@ -94,8 +98,7 @@ class ViewMovementHelper @Inject()(
       )
     }
 
-    HtmlContent(
-      overviewPartial(
+    overviewPartial(
         headingMessageKey = Some("viewMovement.overview.title"),
         cardTitleMessageKey = "viewMovement.overview.title",
         summaryListRows = Seq(
@@ -108,7 +111,6 @@ class ViewMovementHelper @Inject()(
           transportingVehicles
         )
       )
-    )
 
   }
 
@@ -149,8 +151,7 @@ class ViewMovementHelper @Inject()(
     //Invoice section - end
 
 
-    HtmlContent(
-      HtmlFormat.fill(
+    HtmlFormat.fill(
         Seq(
           overviewPartial(
             headingMessageKey = Some("viewMovement.movement.title"),
@@ -182,7 +183,6 @@ class ViewMovementHelper @Inject()(
           )
         )
       )
-    )
   }
 
   private[helpers] def getDateOfArrivalRow(movementResponse: GetMovementResponse)(implicit messages: Messages) = {
@@ -249,8 +249,7 @@ private[helpers] def constructMovementDelivery(movementResponse: GetMovementResp
     )
   }
 
-  HtmlContent(
-    HtmlFormat.fill(Seq(
+  HtmlFormat.fill(Seq(
       overviewPartial(
         headingMessageKey = Some("viewMovement.delivery.title"),
         cardTitleMessageKey = "viewMovement.delivery.consignor",
@@ -278,10 +277,9 @@ private[helpers] def constructMovementDelivery(movementResponse: GetMovementResp
         )
       }.getOrElse(Html(""))
     ))
-  )
 }
 
-private[helpers] def renderAddress(address: AddressModel): HtmlContent = {
+private[helpers] def renderAddress(address: AddressModel): Html = {
   val firstLineOfAddress = (address.streetNumber, address.street) match {
     case (Some(propertyNumber), Some(street)) => Html(s"$propertyNumber $street <br>")
     case (Some(number), None) => Html(s"$number <br>")
@@ -290,13 +288,12 @@ private[helpers] def renderAddress(address: AddressModel): HtmlContent = {
   }
   val city = address.city.fold(Html(""))(city => Html(s"$city <br>"))
   val postCode = address.postcode.fold(Html(""))(postcode => Html(s"$postcode"))
-  HtmlContent(
+
     HtmlFormat.fill(Seq(
       firstLineOfAddress,
       city,
       postCode
     ))
-  )
 }
 
 }

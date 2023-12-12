@@ -30,9 +30,9 @@ trait MockEmcsTfeConnector extends MockFactory {
   lazy val mockGetMovementListConnector: GetMovementListConnector = mock[GetMovementListConnector]
 
   object MockEmcsTfeConnector {
-    def getMovement(): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementResponse]]] = {
+    def getMovement(ern: String, arc: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementResponse]]] = {
       (mockGetMovementConnector.getMovement(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(*, *, *, *)
+        .expects(ern, arc, *, *)
     }
 
     def getMovementList(ern: String): CallHandler3[String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementListResponse]]] =

@@ -17,10 +17,10 @@
 package controllers
 
 import config.ErrorHandler
-import connectors.emcsTfe.GetMovementConnector
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.GetMovementService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels._
 import viewmodels.helpers.ViewMovementHelper
@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext
 class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        override val auth: AuthAction,
                                        override val getData: DataRetrievalAction,
-                                       connector: GetMovementConnector,
+                                       getMovementService: GetMovementService,
                                        viewMovementPage: ViewMovementPage,
                                        errorHandler: ErrorHandler,
                                        helper: ViewMovementHelper
@@ -67,20 +67,18 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                           ): Action[AnyContent] =
 
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
-      connector.getMovement(exciseRegistrationNumber, arc).map {
-
-        case Right(movement) =>
-          Ok(
-            viewMovementPage(
-              ern = exciseRegistrationNumber,
-              arc = arc,
-              isConsignor = exciseRegistrationNumber == movement.consignorTrader.traderExciseNumber,
-              subNavigationTabs = SubNavigationTab.values,
-              currentSubNavigationTab = currentSubNavigationTab,
-              movementTabBody = helper.movementCard(currentSubNavigationTab, movement)
-            )
-          )
-        case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
+      getMovementService.getMovement(exciseRegistrationNumber, arc).map { movement =>
+        Ok(viewMovementPage(
+          ern = exciseRegistrationNumber,
+          arc = arc,
+          isConsignor = exciseRegistrationNumber == movement.consignorTrader.traderExciseNumber,
+          subNavigationTabs = SubNavigationTab.values,
+          currentSubNavigationTab = currentSubNavigationTab,
+          movementTabBody = helper.movementCard(currentSubNavigationTab, movement)
+        ))
+      } recover {
+        case _ =>
+          InternalServerError(errorHandler.standardErrorTemplate())
       }
     }
 }

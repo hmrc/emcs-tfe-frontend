@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package models.common
+package models.response.emcsTfe
 
 import play.api.libs.json.{Json, Reads}
 
-case class AddressModel(streetNumber: Option[String],
-                        street: Option[String],
-                        postcode: Option[String],
-                        city: Option[String])
-
-object AddressModel {
-  implicit val reads: Reads[AddressModel] = Json.reads
+case class Packaging(typeOfPackage: String,
+                     quantity: Option[BigDecimal])
+object Packaging {
+  implicit val reads: Reads[Packaging] = Json.reads
 }

@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package models.common
+package models.response.emcsTfe
 
+import models.common.UnitOfMeasure
 import play.api.libs.json.{Json, Reads}
 
-case class AddressModel(streetNumber: Option[String],
-                        street: Option[String],
-                        postcode: Option[String],
-                        city: Option[String])
+case class MovementItem(itemUniqueReference: Int,
+                        productCode: String,
+                        cnCode: String,
+                        quantity: BigDecimal,
+                        commercialDescription: Option[String],
+                        packaging: Seq[Packaging],
+                        unitOfMeasure: Option[UnitOfMeasure])
 
-object AddressModel {
-  implicit val reads: Reads[AddressModel] = Json.reads
+object MovementItem {
+  implicit val reads: Reads[MovementItem] = Json.reads
 }

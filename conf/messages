@@ -14,6 +14,15 @@ base.captionHiddenText = This section is
 
 common.arc = Administrative reference code
 
+unitOfMeasure.kilograms.short = kg
+unitOfMeasure.kilograms.long = kilograms
+unitOfMeasure.litres15.short = litres
+unitOfMeasure.litres15.long = litres (temperature of 15°C)
+unitOfMeasure.litres20.short = litres
+unitOfMeasure.litres20.long = litres (temperature of 20°C)
+unitOfMeasure.thousands.short = x1000
+unitOfMeasure.thousands.long = x1000 items
+
 # MOV02 - Links
 viewMovement.title = Movement details
 viewMovement.reportAReceipt = Submit report of receipt
@@ -114,6 +123,16 @@ viewMovement.delivery.placeOfDestination = Place of destination
 viewMovement.delivery.placeOfDestination.name = Business name
 viewMovement.delivery.placeOfDestination.ern = Excise registration number (ERN)
 viewMovement.delivery.placeOfDestination.address = Address
+
+# MOV02 - Items
+viewMovement.items.table.heading.item = Item
+viewMovement.items.table.heading.description = Commercial description
+viewMovement.items.table.heading.quantity = Quantity
+viewMovement.items.table.heading.packaging = Packaging
+viewMovement.items.table.heading.receipt = Receipt
+viewMovement.items.table.row.item = Item {0}
+viewMovement.items.table.row.quantity = {0} {1}
+viewMovement.items.receiptStatus.notReceipted = Not Receipted
 
 viewMovementList.title = Movements in
 viewMovementList.heading = Movements in

@@ -17,7 +17,7 @@
 package models.response.emcsTfe
 
 import models.common.OriginType
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, Reads}
 import utils.DateUtils
 
 import java.time.{LocalDate, LocalTime}
@@ -46,5 +46,5 @@ case class EadEsadModel(
 
 object EadEsadModel {
 
-  implicit val fmt: OFormat[EadEsadModel] = Json.format
+  implicit val reads: Reads[EadEsadModel] = Json.reads
 }
