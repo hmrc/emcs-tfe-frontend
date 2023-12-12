@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.emcstfefrontend.viewmodels
 
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import uk.gov.hmrc.emcstfefrontend.base.SpecBase
-import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
-import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ViewMovementListMessages.English
-import uk.gov.hmrc.emcstfefrontend.utils.DateUtils
-import uk.gov.hmrc.emcstfefrontend.views.html.components.movementTableRowContent
+import base.SpecBase
+import fixtures.MovementListFixtures
+import fixtures.messages.ViewAllMovementsMessages.English
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
+import utils.DateUtils
+import viewmodels.ViewAllMovementsTableHelper
+import views.html.components.movementTableRowContent
 
 class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures with DateUtils {
 
@@ -42,7 +42,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
 
         "construct the expected data rows" in {
 
-          helper.constructTable(testErn, movements) shouldBe Table(
+          helper.constructTable(testErn, movements) mustBe Table(
             firstCellIsHeader = false,
             rows = Seq(
               Seq(
@@ -50,7 +50,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
                   content = HtmlContent(movementTableRowContent(testErn, movement1))
                 ),
                 TableRow(
-                  content = HtmlContent(new GovukTag().apply(movement1.statusTag))
+                  content = HtmlContent(new GovukTag().apply(movement1.statusTag)),
+                  classes = "govuk-!-text-align-right"
                 )
               ),
               Seq(
@@ -58,7 +59,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
                   content = HtmlContent(movementTableRowContent(testErn, movement2))
                 ),
                 TableRow(
-                  content = HtmlContent(new GovukTag().apply(movement2.statusTag))
+                  content = HtmlContent(new GovukTag().apply(movement2.statusTag)),
+                  classes = "govuk-!-text-align-right"
                 )
               )
             )

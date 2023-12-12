@@ -14,18 +14,16 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListItem
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.Select
-@import uk.gov.hmrc.emcstfefrontend.viewmodels.ViewAllMovementsTableHelper
-@import uk.gov.hmrc.emcstfefrontend.views.html.components._
-@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
-@import uk.gov.hmrc.emcstfefrontend.config.AppConfig
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
+@import models.response.emcsTfe.GetMovementListItem
+@import viewmodels.ViewAllMovementsTableHelper
+@import views.html.components._
+@import config.AppConfig
 
 @this(
-    layout: Layout,
     table: table,
     h1: h1,
     appConfig: AppConfig,
@@ -37,16 +35,24 @@
 
 @(ern: String, movements: Seq[GetMovementListItem], selectItems: Seq[SelectItem], pagination: Option[Pagination])(implicit request: Request[_], messages: Messages)
 
-    @govukSelect(Select(
-        items = selectItems,
-        name = "name",
-        id = "id",
-        label = Label(
-            content = Text(messages("viewAllMovements.sort.label"))
-        )
-    ))
+    <div style="display: inline-flex; align-items: flex-end;">
+        @govukSelect(Select(
+            items = selectItems,
+            name = "sortBy",
+            id = "sortBy",
+            label = Label(
+                content = Text(messages("viewAllMovements.sort.label")),
+                attributes = Map("style" -> "float: left;"),
+                classes = "govuk-!-margin-top-1 govuk-!-margin-right-2"
+            )
+        ))
 
-    @govukButton(ButtonViewModel(Text(messages("viewAllMovements.sort.button"))))
+        @govukButton(
+            ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
+                .withCssClass("govuk-!-margin-left-2")
+        )
+
+    </div>
 
     @table(helper.constructTable(ern, movements))
 

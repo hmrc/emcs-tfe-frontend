@@ -18,7 +18,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     Assets / pipelineStages := Seq(gzip),
     RoutesKeys.routesImport ++= Seq(
-      "uk.gov.hmrc.emcstfefrontend.models._",
+      "models._",
       "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl"
     )
   )

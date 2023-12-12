@@ -18,12 +18,11 @@ package models.response.emcsTfe
 
 import controllers.routes
 import play.api.libs.json.{Json, Reads}
-import uk.gov.hmrc.govukfrontend.views.html.components.Text
 import play.api.mvc.Call
-import controllers.routes
-import uk.gov.hmrc.emcstfefrontend.utils.DateUtils
-import uk.gov.hmrc.emcstfefrontend.viewmodels.govuk.TagFluency
+import uk.gov.hmrc.govukfrontend.views.html.components.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.tag.Tag
+import utils.DateUtils
+import viewmodels.govuk.TagFluency
 
 import java.time.LocalDateTime
 

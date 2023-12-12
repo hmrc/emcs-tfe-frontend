@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.forms
+package forms
 
+import forms.mappings.Mappings
+import models.MovementListSearchOptions
 import play.api.data.Form
-import uk.gov.hmrc.emcstfefrontend.forms.mappings.Mappings
-import uk.gov.hmrc.emcstfefrontend.models.MovementListSearchOptions
+import play.api.data.Forms.mapping
 
 import javax.inject.Inject
 
 class ViewAllMovementsFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[String] =
+  def apply(): Form[MovementListSearchOptions] =
     Form(
-      ViewAllMovementsFormProvider.sortByKey -> text()
+      mapping(
+        ViewAllMovementsFormProvider.sortByKey -> text()
+      )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
     )
-
-  def bindFromSearch(movementListSearchOptions: MovementListSearchOptions): Form[String] = {
-    println("=========================")
-    println(Map(ViewAllMovementsFormProvider.sortByKey -> movementListSearchOptions.sortOrder))
-    println("=========================")
-    apply().bind(Map(ViewAllMovementsFormProvider.sortByKey -> movementListSearchOptions.sortOrder))
-  }
 }
 
 object ViewAllMovementsFormProvider {

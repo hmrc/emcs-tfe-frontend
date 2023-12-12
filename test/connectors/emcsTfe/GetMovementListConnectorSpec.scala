@@ -20,13 +20,8 @@ import base.SpecBase
 import fixtures.MovementListFixtures
 import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
+import models.MovementListSearchOptions
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import uk.gov.hmrc.emcstfefrontend.base.SpecBase
-import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
-import uk.gov.hmrc.emcstfefrontend.mocks.config.MockAppConfig
-import uk.gov.hmrc.emcstfefrontend.mocks.connectors.MockHttpClient
-import uk.gov.hmrc.emcstfefrontend.models.MovementListSearchOptions
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -60,7 +55,7 @@ class GetMovementListConnectorSpec extends SpecBase with Status with MimeTypes w
           None
         )
 
-        await(actualResult) shouldBe expectedResult
+        await(actualResult) mustBe expectedResult
       }
 
       "search options are given" in new Test {
@@ -78,7 +73,7 @@ class GetMovementListConnectorSpec extends SpecBase with Status with MimeTypes w
           Some(searchOptions)
         )
 
-        await(actualResult) shouldBe expectedResult
+        await(actualResult) mustBe expectedResult
       }
     }
   }

@@ -16,14 +16,11 @@
 
 package connectors.emcsTfe
 
-import play.api.libs.json.Reads
 import config.AppConfig
+import models.MovementListSearchOptions
 import models.response.ErrorResponse
 import models.response.emcsTfe.GetMovementListResponse
-import uk.gov.hmrc.emcstfefrontend.config.AppConfig
-import uk.gov.hmrc.emcstfefrontend.models.MovementListSearchOptions
-import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListResponse
+import play.api.libs.json.Reads
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}

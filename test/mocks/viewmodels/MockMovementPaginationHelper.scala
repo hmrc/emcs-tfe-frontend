@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.mocks.viewmodels
+package mocks.viewmodels
 
-import org.scalamock.handlers.{CallHandler3, CallHandler4}
+import models.MovementListSearchOptions
+import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.{GetMovementConnector, GetMovementListConnector}
-import uk.gov.hmrc.emcstfefrontend.models.MovementListSearchOptions
-import uk.gov.hmrc.emcstfefrontend.models.response.ErrorResponse
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse, GetMovementResponse}
-import uk.gov.hmrc.emcstfefrontend.viewmodels.MovementPaginationHelper
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
-import uk.gov.hmrc.http.HeaderCarrier
-
-import scala.concurrent.{ExecutionContext, Future}
+import viewmodels.MovementPaginationHelper
 
 trait MockMovementPaginationHelper extends MockFactory {
 

@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models
+package models
 
+import models.MovementListSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS}
+import models.MovementSortingSelectOption.ArcAscending
 import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.emcstfefrontend.models.MovementListSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS, DEFAULT_SORT_ORDER}
-import uk.gov.hmrc.emcstfefrontend.models.MovementSortingSelectOption.Arc
 
-case class MovementListSearchOptions(sortOrder: String = DEFAULT_SORT_ORDER,
+case class MovementListSearchOptions(sortBy: MovementSortingSelectOption = ArcAscending,
                                      index: Int = DEFAULT_INDEX,
-                                     maxCount: Int = DEFAULT_MAX_ROWS) {
+                                     maxRows: Int = DEFAULT_MAX_ROWS) {
 
-  val startingPosition: Int = ((index-1) * maxCount) + 1
+  val startingPosition: Int = ((index-1) * maxRows) + 1
 
   val queryParams: Seq[(String, String)] = Seq(
-    "search.sortOrder" -> sortOrder,
+    "search.sortOrder" -> sortBy.sortOrder,
+    "search.sortField" -> sortBy.sortField,
     "search.startingPosition" -> startingPosition.toString,
-    "search.maxCount" -> maxCount.toString
+    "search.maxRows" -> maxRows.toString
   )
 }
 
 object MovementListSearchOptions {
 
-  val DEFAULT_SORT_ORDER: String = Arc.code
   val DEFAULT_INDEX: Int = 1
   val DEFAULT_MAX_ROWS: Int = 10
 
@@ -45,19 +45,27 @@ object MovementListSearchOptions {
 
       override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, MovementListSearchOptions]] = {
         Some(for {
-          sortOrder <- stringBinder.bind("sortOrder", params).getOrElse(Right(DEFAULT_SORT_ORDER))
+          sortOrder <- stringBinder.bind("sortBy", params).getOrElse(Right(ArcAscending.code))
           index <- intBinder.bind("index", params).getOrElse(Right(DEFAULT_INDEX))
         } yield {
-          MovementListSearchOptions(sortOrder, index, DEFAULT_MAX_ROWS)
+          MovementListSearchOptions(MovementSortingSelectOption(sortOrder), index, DEFAULT_MAX_ROWS)
         })
       }
 
       override def unbind(key: String, searchOptions: MovementListSearchOptions): String =
         Seq(
-          stringBinder.unbind("sortOrder", searchOptions.sortOrder),
+          stringBinder.unbind("sortBy", searchOptions.sortBy.code),
           intBinder.unbind("index", searchOptions.index)
         ).mkString("&")
     }
+
+  def apply(sortBy: String): MovementListSearchOptions = MovementListSearchOptions(
+    sortBy = MovementSortingSelectOption(sortBy)
+  )
+
+  def unapply(options: MovementListSearchOptions): Option[String] =
+    Some(options.sortBy.code)
+
 }
 
 

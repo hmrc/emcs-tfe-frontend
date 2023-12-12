@@ -16,12 +16,9 @@
 
 package connectors.emcsTfe
 
-import play.api.http.Status.OK
 import connectors.BaseConnectorUtils
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
-import uk.gov.hmrc.emcstfefrontend.connectors.BaseConnectorUtils
-import uk.gov.hmrc.emcstfefrontend.models.MovementListSearchOptions
-import uk.gov.hmrc.emcstfefrontend.models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
+import play.api.http.Status.OK
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
