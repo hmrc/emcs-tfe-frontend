@@ -31,6 +31,8 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 import utils.ExpectedDateOfArrival
 import viewmodels._
 import views.html.components.{list, p}
+import viewmodels.{Items, Overview, SubNavigationTab}
+import views.html.components.list
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.Inject
