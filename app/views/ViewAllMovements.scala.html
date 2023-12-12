@@ -14,20 +14,20 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListItem
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.Select
-@import uk.gov.hmrc.emcstfefrontend.viewmodels.ViewAllMovementsTableHelper
-@import uk.gov.hmrc.emcstfefrontend.views.html.components._
-@import uk.gov.hmrc.emcstfefrontend.views.html._
-@import uk.gov.hmrc.emcstfefrontend.views.html.templates.Layout
-@import uk.gov.hmrc.emcstfefrontend.config.AppConfig
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+@import models.response.emcsTfe.GetMovementListItem
+@import viewmodels.ViewAllMovementsTableHelper
+@import views.html.components._
+@import views.html._
+@import views.html.templates.Layout
+@import config.AppConfig
 
 @this(
-    layout: Layout,
+    layout: templates.Layout,
     formHelper: FormWithCSRF,
     table: table,
     h1: h1,
@@ -40,7 +40,7 @@
 
 @(form: Form[_], action: Call, ern: String, movements: Seq[GetMovementListItem], selectItems: Seq[SelectItem], pagination: Option[Pagination])(implicit request: Request[_], messages: Messages)
 
-    @layout(pageTitle = Some(messages("viewAllMovements.title"))) {
+    @layout(pageTitle = messages("viewAllMovements.title"), maybeShowActiveTrader = None) {
 
         @formHelper(action) {
 

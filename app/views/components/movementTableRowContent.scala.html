@@ -14,8 +14,8 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListItem
-@import uk.gov.hmrc.emcstfefrontend.views.html.components._
+@import models.response.emcsTfe.GetMovementListItem
+@import views.html.components._
 
 @this(
     link: link,
@@ -27,7 +27,7 @@
 
 <h2 class="govuk-!-margin-bottom-0">
     @link(
-        link = "#",//TODO update with actual link
+        link = movement.viewMovementUrl(ern).url,
         messageKey = movement.arc,
         classes = "govuk-heading-m govuk-link"
     )

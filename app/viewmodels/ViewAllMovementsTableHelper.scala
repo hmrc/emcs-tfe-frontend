@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.viewmodels
+package viewmodels
 
+import models.response.emcsTfe.GetMovementListItem
 import play.api.i18n.Messages
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListItem
-import uk.gov.hmrc.emcstfefrontend.utils.DateUtils
-import uk.gov.hmrc.emcstfefrontend.views.html.components._
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
+import utils.DateUtils
+import viewmodels.govuk.TagFluency
+import views.html.components.movementTableRowContent
 
 import javax.inject.Inject
 
-class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: movementTableRowContent) extends DateUtils {
+class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: movementTableRowContent) extends DateUtils with TagFluency {
 
   private[viewmodels] def dataRows(ern: String, movements: Seq[GetMovementListItem])
                                   (implicit messages: Messages): Seq[Seq[TableRow]] =
@@ -36,7 +37,8 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: movementTab
           content = HtmlContent(movementTableRowContent(ern, movement))
         ),
         TableRow(
-          content = HtmlContent(new GovukTag().apply(movement.statusTag))
+          content = HtmlContent(new GovukTag().apply(movement.statusTag)),
+          classes = "govuk-!-text-align-right"
         )
       )
     }

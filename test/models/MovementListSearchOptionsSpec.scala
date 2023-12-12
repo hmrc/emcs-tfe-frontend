@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models
+package models
 
-import uk.gov.hmrc.emcstfefrontend.base.SpecBase
-import uk.gov.hmrc.emcstfefrontend.models.MovementSortingSelectOption.Arc
+import base.SpecBase
+import models.MovementSortingSelectOption.{ArcAscending, ArcDescending, Oldest}
 
 class MovementListSearchOptionsSpec extends SpecBase {
 
@@ -26,9 +26,9 @@ class MovementListSearchOptionsSpec extends SpecBase {
     "construct with default options" in {
 
       val expectedResult = MovementListSearchOptions(
-        sortOrder = Arc.code,
+        sortBy = ArcAscending,
         index = 1,
-        maxCount = 10
+        maxRows = 10
       )
 
       val actualResult = MovementListSearchOptions()
@@ -49,13 +49,13 @@ class MovementListSearchOptionsSpec extends SpecBase {
       "all query parameters are supplied" in {
 
         val expectedResult = Some(Right(MovementListSearchOptions(
-          sortOrder = "testSortOrder",
+          sortBy = ArcDescending,
           index = 5,
-          maxCount = MovementListSearchOptions.DEFAULT_MAX_ROWS
+          maxRows = MovementListSearchOptions.DEFAULT_MAX_ROWS
         )))
 
         val actualResult = MovementListSearchOptions.queryStringBinder.bind("search", Map(
-          "sortOrder" -> Seq("testSortOrder"),
+          "sortBy" -> Seq(ArcDescending.code),
           "index" -> Seq("5")
         ))
 
@@ -64,28 +64,28 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
       "some query parameters are supplied" in {
 
+        val expectedResult = Some(Right(MovementListSearchOptions(
+          sortBy = ArcAscending,
+          index = 5,
+          maxRows = MovementListSearchOptions.DEFAULT_MAX_ROWS
+        )))
+
         val actualResult = MovementListSearchOptions.queryStringBinder.bind("search", Map(
           "index" -> Seq("5")
         ))
-
-        val expectedResult = Some(Right(MovementListSearchOptions(
-          sortOrder = Arc.code,
-          index = 5,
-          maxCount = MovementListSearchOptions.DEFAULT_MAX_ROWS
-        )))
 
         actualResult mustBe expectedResult
       }
 
       "No query parameters are supplied" in {
 
-        val actualResult = MovementListSearchOptions.queryStringBinder.bind("search", Map())
-
         val expectedResult = Some(Right(MovementListSearchOptions(
-          sortOrder = Arc.code,
+          sortBy = ArcAscending,
           index = 1,
-          maxCount = MovementListSearchOptions.DEFAULT_MAX_ROWS
+          maxRows = MovementListSearchOptions.DEFAULT_MAX_ROWS
         )))
+
+        val actualResult = MovementListSearchOptions.queryStringBinder.bind("search", Map())
 
         actualResult mustBe expectedResult
       }
@@ -93,7 +93,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
     "unbind QueryString to URL format" in {
 
-      val expectedResult = "sortOrder=D&index=1"
+      val expectedResult = s"sortBy=${ArcAscending.code}&index=1"
 
       val actualResult = MovementListSearchOptions.queryStringBinder.unbind("search", MovementListSearchOptions())
 
@@ -105,9 +105,10 @@ class MovementListSearchOptionsSpec extends SpecBase {
       "using default values" in {
 
         val expectedResult: Seq[(String, String)] = Seq(
-          "search.sortOrder" -> "D",
+          "search.sortOrder" -> ArcAscending.sortOrder,
+          "search.sortField" -> ArcAscending.sortField,
           "search.startingPosition" -> "1",
-          "search.maxCount" -> "10"
+          "search.maxRows" -> "10"
         )
 
         val actualResult = MovementListSearchOptions().queryParams
@@ -118,15 +119,16 @@ class MovementListSearchOptionsSpec extends SpecBase {
       "given values" in {
 
         val expectedResult: Seq[(String, String)] = Seq(
-          "search.sortOrder" -> "testOrder",
+          "search.sortOrder" -> Oldest.sortOrder,
+          "search.sortField" -> Oldest.sortField,
           "search.startingPosition" -> "26",
-          "search.maxCount" -> "5"
+          "search.maxRows" -> "5"
         )
 
         val actualResult = MovementListSearchOptions(
-          sortOrder = "testOrder",
+          sortBy = Oldest,
           index = 6,
-          maxCount = 5
+          maxRows = 5
         ).queryParams
 
         actualResult mustBe expectedResult
@@ -143,7 +145,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
           val actualResult = MovementListSearchOptions(
             index = 1,
-            maxCount = 10
+            maxRows = 10
           ).startingPosition
 
           actualResult mustBe expectedResult
@@ -155,7 +157,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
           val actualResult = MovementListSearchOptions(
             index = 2,
-            maxCount = 10
+            maxRows = 10
           ).startingPosition
 
           actualResult mustBe expectedResult
@@ -167,7 +169,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
           val actualResult = MovementListSearchOptions(
             index = 50,
-            maxCount = 10
+            maxRows = 10
           ).startingPosition
 
           actualResult mustBe expectedResult
@@ -182,7 +184,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
           val actualResult = MovementListSearchOptions(
             index = 1,
-            maxCount = 5
+            maxRows = 5
           ).startingPosition
 
           actualResult mustBe expectedResult
@@ -194,7 +196,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
           val actualResult = MovementListSearchOptions(
             index = 2,
-            maxCount = 5
+            maxRows = 5
           ).startingPosition
 
           actualResult mustBe expectedResult
@@ -206,7 +208,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
           val actualResult = MovementListSearchOptions(
             index = 50,
-            maxCount = 5
+            maxRows = 5
           ).startingPosition
 
           actualResult mustBe expectedResult
@@ -221,7 +223,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
           val actualResult = MovementListSearchOptions(
             index = 1,
-            maxCount = 5
+            maxRows = 5
           ).startingPosition
 
           actualResult mustBe expectedResult
@@ -233,7 +235,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
           val actualResult = MovementListSearchOptions(
             index = 2,
-            maxCount = 30
+            maxRows = 30
           ).startingPosition
 
           actualResult mustBe expectedResult
@@ -245,11 +247,45 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
           val actualResult = MovementListSearchOptions(
             index = 50,
-            maxCount = 30
+            maxRows = 30
           ).startingPosition
 
           actualResult mustBe expectedResult
         }
+      }
+    }
+
+    "apply" should {
+
+      "return a valid MovementListSearchOption" in {
+
+        val expectedResult = MovementListSearchOptions(
+          sortBy = Oldest,
+          index = 1,
+          maxRows = 10
+        )
+
+        val actualResult = MovementListSearchOptions.apply(Oldest.code)
+
+        actualResult mustBe expectedResult
+      }
+    }
+
+    "unapply" should {
+
+      "return the string values for MovementListSearchOptions" in {
+
+        val expectedResult = Some(Oldest.code)
+
+        val actualResult = MovementListSearchOptions.unapply(
+          MovementListSearchOptions(
+            sortBy = Oldest,
+            index = 1,
+            maxRows = 10
+          )
+        )
+
+        actualResult mustBe expectedResult
       }
     }
   }

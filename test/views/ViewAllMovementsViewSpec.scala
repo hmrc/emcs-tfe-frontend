@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.views
+package views
 
+import base.SpecBase
+import controllers.routes
+import fixtures.MovementListFixtures
+import fixtures.messages.ViewAllMovementsMessages.English
+import forms.ViewAllMovementsFormProvider
+import models.{MovementListSearchOptions, MovementSortingSelectOption}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.matchers.should.Matchers.convertToStringShouldWrapper
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
-import uk.gov.hmrc.emcstfefrontend.base.SpecBase
-import uk.gov.hmrc.emcstfefrontend.fixtures.MovementListFixtures
-import uk.gov.hmrc.emcstfefrontend.fixtures.messages.ViewAllMovementsMessages.English
-import uk.gov.hmrc.emcstfefrontend.forms.ViewAllMovementsFormProvider
-import uk.gov.hmrc.emcstfefrontend.models.{MovementListSearchOptions, MovementSortingSelectOption}
-import uk.gov.hmrc.emcstfefrontend.views.html.ViewAllMovements
-import uk.gov.hmrc.emcstfefrontend.viewmodels.MovementsListTableHelper
-import uk.gov.hmrc.emcstfefrontend.views.html.components.table
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
-import uk.gov.hmrc.emcstfefrontend.controllers.routes
+import viewmodels.MovementsListTableHelper
+import views.html.ViewAllMovements
+import views.html.components.table
 
 
 class ViewAllMovementsViewSpec extends SpecBase with MovementListFixtures {
@@ -46,12 +46,9 @@ class ViewAllMovementsViewSpec extends SpecBase with MovementListFixtures {
     val nextLink = ".govuk-pagination__next a"
   }
 
-
   abstract class TestFixture(pagination: Option[Pagination])(implicit messages: Messages) {
 
     implicit val fakeRequest = FakeRequest("GET", "/movements")
-
-    PaginationItem("link1", Some("1"))
 
     val view: ViewAllMovements = app.injector.instanceOf[ViewAllMovements]
     val helper: MovementsListTableHelper = app.injector.instanceOf[MovementsListTableHelper]
@@ -81,13 +78,13 @@ class ViewAllMovementsViewSpec extends SpecBase with MovementListFixtures {
       document.select(Selectors.h1).text() shouldBe English.heading
 
       document.select(Selectors.headingLinkRow(1)).text() shouldBe getMovementListResponse.movements(0).arc
-      document.select(Selectors.headingLinkRow(1)).attr("href") shouldBe "#"
+      document.select(Selectors.headingLinkRow(1)).attr("href") shouldBe getMovementListResponse.movements(0).viewMovementUrl(testErn).url
       document.select(Selectors.consignorRow(1)).text() shouldBe English.consignor(getMovementListResponse.movements(0).otherTraderID)
       document.select(Selectors.dateOfDispatchRow(1)).text() shouldBe English.dateOfDispatch(getMovementListResponse.movements(0).formattedDateOfDispatch)
       document.select(Selectors.statusTagRow(1)).text() shouldBe getMovementListResponse.movements(0).movementStatus
 
       document.select(Selectors.headingLinkRow(2)).text() shouldBe getMovementListResponse.movements(1).arc
-      document.select(Selectors.headingLinkRow(2)).attr("href") shouldBe "#"
+      document.select(Selectors.headingLinkRow(2)).attr("href") shouldBe getMovementListResponse.movements(1).viewMovementUrl(testErn).url
       document.select(Selectors.consignorRow(2)).text() shouldBe English.consignor(getMovementListResponse.movements(1).otherTraderID)
       document.select(Selectors.dateOfDispatchRow(2)).text() shouldBe English.dateOfDispatch(getMovementListResponse.movements(1).formattedDateOfDispatch)
       document.select(Selectors.statusTagRow(2)).text() shouldBe getMovementListResponse.movements(1).movementStatus
@@ -107,13 +104,13 @@ class ViewAllMovementsViewSpec extends SpecBase with MovementListFixtures {
       document.select(Selectors.h1).text() shouldBe English.heading
 
       document.select(Selectors.headingLinkRow(1)).text() shouldBe getMovementListResponse.movements(0).arc
-      document.select(Selectors.headingLinkRow(1)).attr("href") shouldBe "#"
+      document.select(Selectors.headingLinkRow(1)).attr("href") shouldBe getMovementListResponse.movements(0).viewMovementUrl(testErn).url
       document.select(Selectors.consignorRow(1)).text() shouldBe English.consignor(getMovementListResponse.movements(0).otherTraderID)
       document.select(Selectors.dateOfDispatchRow(1)).text() shouldBe English.dateOfDispatch(getMovementListResponse.movements(0).formattedDateOfDispatch)
       document.select(Selectors.statusTagRow(1)).text() shouldBe getMovementListResponse.movements(0).movementStatus
 
       document.select(Selectors.headingLinkRow(2)).text() shouldBe getMovementListResponse.movements(1).arc
-      document.select(Selectors.headingLinkRow(1)).attr("href") shouldBe "#"
+      document.select(Selectors.headingLinkRow(2)).attr("href") shouldBe getMovementListResponse.movements(1).viewMovementUrl(testErn).url
       document.select(Selectors.consignorRow(2)).text() shouldBe English.consignor(getMovementListResponse.movements(1).otherTraderID)
       document.select(Selectors.dateOfDispatchRow(2)).text() shouldBe English.dateOfDispatch(getMovementListResponse.movements(1).formattedDateOfDispatch)
       document.select(Selectors.statusTagRow(2)).text() shouldBe getMovementListResponse.movements(1).movementStatus

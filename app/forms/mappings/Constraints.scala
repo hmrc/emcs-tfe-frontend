@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.forms.mappings
+package forms.mappings
 
 import play.api.data.validation.{Constraint, Invalid, Valid}
 

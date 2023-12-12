@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.viewmodels
+package viewmodels
 
-import uk.gov.hmrc.emcstfefrontend.controllers.routes
-import uk.gov.hmrc.emcstfefrontend.models.MovementListSearchOptions
-import uk.gov.hmrc.emcstfefrontend.utils.DateUtils
+import controllers.routes
+import models.MovementListSearchOptions
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{Pagination, PaginationItem, PaginationLink}
+import utils.DateUtils
 
 import javax.inject.Inject
 

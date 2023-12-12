@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.controllers
+package controllers
 
+import config.ErrorHandler
+import connectors.emcsTfe.GetMovementListConnector
+import controllers.predicates.AuthAction
+import forms.ViewAllMovementsFormProvider
+import models.MovementListSearchOptions.DEFAULT_MAX_ROWS
+import models.auth.UserRequest
+import models.{MovementListSearchOptions, MovementSortingSelectOption}
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import uk.gov.hmrc.emcstfefrontend.config.ErrorHandler
-import uk.gov.hmrc.emcstfefrontend.connectors.emcsTfe.GetMovementListConnector
-import uk.gov.hmrc.emcstfefrontend.controllers.predicates.AuthAction
-import uk.gov.hmrc.emcstfefrontend.forms.ViewAllMovementsFormProvider
-import uk.gov.hmrc.emcstfefrontend.models.MovementListSearchOptions.DEFAULT_MAX_ROWS
-import uk.gov.hmrc.emcstfefrontend.models.auth.UserRequest
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementListResponse
-import uk.gov.hmrc.emcstfefrontend.models.{MovementListSearchOptions, MovementSortingSelectOption}
-import uk.gov.hmrc.emcstfefrontend.viewmodels.MovementPaginationHelper
-import uk.gov.hmrc.emcstfefrontend.views.html.ViewAllMovements
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import viewmodels.MovementPaginationHelper
+import views.html.ViewAllMovements
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
@@ -44,25 +43,22 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                           )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
   def onPageLoad(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
     authAction(ern).async { implicit request =>
-      renderView(ern, searchOptions)
+      renderView(Ok, ern, searchOptions)
     }
 
   def onSubmit(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
     authAction(ern).async { implicit request =>
       formProvider().bindFromRequest().fold(
-        _ => renderView(ern, searchOptions),
-        value => {
-          val updatedSearchOptions = searchOptions.copy(sortOrder = value)
-          renderView(ern, updatedSearchOptions)
-        }
+        _ => renderView(BadRequest, ern, searchOptions),
+        value => Future(Redirect(routes.ViewAllMovementsController.onPageLoad(ern, value)))
       )
     }
 
-  private def renderView(ern: String, searchOptions: MovementListSearchOptions)(implicit request: UserRequest[_], messages: Messages) = {
+  private def renderView(status: Status, ern: String, searchOptions: MovementListSearchOptions)(implicit request: UserRequest[_], messages: Messages) = {
     connector.getMovementList(ern, Some(searchOptions)).map {
       case Right(movementList) =>
 
-        val pageCount = if (movementList.count % DEFAULT_MAX_ROWS != 0)
+        val pageCount = if(movementList.count % DEFAULT_MAX_ROWS != 0)
           (movementList.count / DEFAULT_MAX_ROWS) + 1
         else
           movementList.count / DEFAULT_MAX_ROWS
@@ -70,12 +66,12 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
         if (searchOptions.index <= 0 || searchOptions.index > pageCount)
           Redirect(routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()))
         else {
-          Ok(view(
-            form = formProvider.bindFromSearch(searchOptions),
+          status(view(
+            form = formProvider(),
             action = routes.ViewAllMovementsController.onSubmit(ern, searchOptions),
             ern = ern,
             movements = movementList.movements,
-            selectItems = MovementSortingSelectOption.constructSelectItems(),
+            selectItems = MovementSortingSelectOption.constructSelectItems(Some(searchOptions.sortBy.code)),
             pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions)
           ))
         }

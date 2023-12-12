@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package fixtures.messages
+package forms
 
-object ViewAllMovementsMessages {
+import base.SpecBase
+import models.MovementSortingSelectOption.ArcAscending
 
-  sealed trait ViewMessages { _: i18n =>
-    val title: String = "Movements"
-    val heading: String = "Movements"
-    def consignor(string: String): String = s"Consignor: $string"
-    def dateOfDispatch(string: String): String = s"Date of dispatch: $string"
-    val previous: String = "Previous"
-    val next: String = "Next"
-    val sortArcAscending = "ARC (A-Z)"
-    val sortArcDescending = "ARC (Z-A)"
-    val sortNewest = "Dispatched (newest)"
-    val sortOldest = "Dispatched (oldest)"
+class ViewAllMovementsFormProviderSpec extends SpecBase {
 
+  val form = new ViewAllMovementsFormProvider()()
+
+  ".sortBy" should {
+
+    val fieldName = "sortBy"
+
+    s"not bind a value that contains XSS chars" in {
+
+      val boundForm = form.bind(Map(fieldName -> ArcAscending.code))
+      boundForm.errors mustBe Seq.empty
+    }
   }
-
-  object English extends ViewMessages with EN
 }

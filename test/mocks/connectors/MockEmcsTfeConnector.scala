@@ -17,6 +17,7 @@
 package mocks.connectors
 
 import connectors.emcsTfe.{GetMovementConnector, GetMovementListConnector}
+import models.MovementListSearchOptions
 import models.response.ErrorResponse
 import models.response.emcsTfe.{GetMovementListResponse, GetMovementResponse}
 import org.scalamock.handlers.{CallHandler3, CallHandler4}
