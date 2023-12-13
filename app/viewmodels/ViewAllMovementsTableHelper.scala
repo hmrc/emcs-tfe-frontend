@@ -23,7 +23,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
 import utils.DateUtils
 import viewmodels.govuk.TagFluency
-import views.html.components.movementTableRowContent
+import views.html.viewAllMovements.movementTableRowContent
 
 import javax.inject.Inject
 

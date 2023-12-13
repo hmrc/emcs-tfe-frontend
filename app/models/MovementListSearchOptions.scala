@@ -29,7 +29,7 @@ case class MovementListSearchOptions(sortBy: MovementSortingSelectOption = ArcAs
   val queryParams: Seq[(String, String)] = Seq(
     "search.sortOrder" -> sortBy.sortOrder,
     "search.sortField" -> sortBy.sortField,
-    "search.startingPosition" -> startingPosition.toString,
+    "search.startPosition" -> startingPosition.toString,
     "search.maxRows" -> maxRows.toString
   )
 }

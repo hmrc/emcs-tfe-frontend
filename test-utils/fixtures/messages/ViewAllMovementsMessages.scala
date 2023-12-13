@@ -23,13 +23,14 @@ object ViewAllMovementsMessages {
     val heading: String = "Movements"
     def consignor(string: String): String = s"Consignor: $string"
     def dateOfDispatch(string: String): String = s"Date of dispatch: $string"
-    val previous: String = "Previous"
-    val next: String = "Next"
+    val sortByLabel = "Sort by"
+    val sortByButton = "Sort movements"
     val sortArcAscending = "ARC (A-Z)"
     val sortArcDescending = "ARC (Z-A)"
     val sortNewest = "Dispatched (newest)"
     val sortOldest = "Dispatched (oldest)"
-
+    val previous: String = "Previous"
+    val next: String = "Next"
   }
 
   object English extends ViewMessages with EN
