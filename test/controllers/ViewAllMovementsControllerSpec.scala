@@ -37,7 +37,7 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.SelectItemHelper
-import views.html.ViewAllMovements
+import views.html.viewAllMovements.ViewAllMovements
 
 import scala.concurrent.{ExecutionContext, Future}
 

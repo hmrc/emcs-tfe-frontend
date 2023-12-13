@@ -107,7 +107,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val expectedResult: Seq[(String, String)] = Seq(
           "search.sortOrder" -> ArcAscending.sortOrder,
           "search.sortField" -> ArcAscending.sortField,
-          "search.startingPosition" -> "1",
+          "search.startPosition" -> "1",
           "search.maxRows" -> "10"
         )
 
@@ -121,7 +121,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val expectedResult: Seq[(String, String)] = Seq(
           "search.sortOrder" -> Oldest.sortOrder,
           "search.sortField" -> Oldest.sortField,
-          "search.startingPosition" -> "26",
+          "search.startPosition" -> "26",
           "search.maxRows" -> "5"
         )
 

@@ -30,14 +30,16 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
 import viewmodels.MovementsListTableHelper
-import views.html.ViewAllMovements
 import views.html.components.table
+import views.html.viewAllMovements.ViewAllMovements
 
 
 class ViewAllMovementsViewSpec extends SpecBase with MovementListFixtures {
 
   object Selectors extends BaseSelectors {
     val headingLinkRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > h2 > a"
+
+    val selectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
     val consignorRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > ul > li:nth-child(1)"
     val dateOfDispatchRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > ul > li:nth-child(2)"
     val statusTagRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(2) > strong"
@@ -77,6 +79,13 @@ class ViewAllMovementsViewSpec extends SpecBase with MovementListFixtures {
       document.title shouldBe English.title
       document.select(Selectors.h1).text() shouldBe English.heading
 
+      document.select(Selectors.label("sortBy")).text() shouldBe English.sortByLabel
+      document.select(Selectors.selectOption(2)).text() shouldBe English.sortArcAscending
+      document.select(Selectors.selectOption(3)).text() shouldBe English.sortArcDescending
+      document.select(Selectors.selectOption(4)).text() shouldBe English.sortNewest
+      document.select(Selectors.selectOption(5)).text() shouldBe English.sortOldest
+      document.select(Selectors.button).text() shouldBe English.sortByButton
+
       document.select(Selectors.headingLinkRow(1)).text() shouldBe getMovementListResponse.movements(0).arc
       document.select(Selectors.headingLinkRow(1)).attr("href") shouldBe getMovementListResponse.movements(0).viewMovementUrl(testErn).url
       document.select(Selectors.consignorRow(1)).text() shouldBe English.consignor(getMovementListResponse.movements(0).otherTraderID)
@@ -100,8 +109,17 @@ class ViewAllMovementsViewSpec extends SpecBase with MovementListFixtures {
       next = Some(PaginationLink("next-link"))
     ))) {
 
+
+
       document.title shouldBe English.title
       document.select(Selectors.h1).text() shouldBe English.heading
+
+      document.select(Selectors.label("sortBy")).text() shouldBe English.sortByLabel
+      document.select(Selectors.selectOption(2)).text() shouldBe English.sortArcAscending
+      document.select(Selectors.selectOption(3)).text() shouldBe English.sortArcDescending
+      document.select(Selectors.selectOption(4)).text() shouldBe English.sortNewest
+      document.select(Selectors.selectOption(5)).text() shouldBe English.sortOldest
+      document.select(Selectors.button).text() shouldBe English.sortByButton
 
       document.select(Selectors.headingLinkRow(1)).text() shouldBe getMovementListResponse.movements(0).arc
       document.select(Selectors.headingLinkRow(1)).attr("href") shouldBe getMovementListResponse.movements(0).viewMovementUrl(testErn).url
