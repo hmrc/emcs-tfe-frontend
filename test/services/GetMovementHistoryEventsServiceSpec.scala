@@ -49,7 +49,7 @@ class GetMovementHistoryEventsServiceSpec extends SpecBase with MockGetMovementH
 
       "when Connector returns failure from downstream" in {
 
-        val expectedResult = "No movement history events response"
+        val expectedResult = "Failed to retrieve movement history events from emcs-tfe: UnexpectedDownstreamResponseError"
 
         MockGetMovementHistoryEventsConnector.getMovementHistoryEvents(testErn, testArc).returns(Future(Left(UnexpectedDownstreamResponseError)))
 

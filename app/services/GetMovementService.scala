@@ -27,18 +27,23 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
                                    getPackagingTypesService: GetPackagingTypesService,
-                                   getCnCodeInformationService: GetCnCodeInformationService)(implicit ec: ExecutionContext) {
+                                   getCnCodeInformationService: GetCnCodeInformationService,
+                                   getMovementHistoryEventsService: GetMovementHistoryEventsService)(implicit ec: ExecutionContext) {
 
   def getMovement(ern: String, arc: String)(implicit hc: HeaderCarrier): Future[GetMovementResponse] =
     getMovementConnector.getMovement(ern, arc).flatMap {
       case Right(movement) =>
         for {
+          historyEvents <- getMovementHistoryEventsService.getMovementHistoryEvents(ern, arc)
           itemsWithPackaging <- getPackagingTypesService.getMovementItemsWithPackagingTypes(movement.items)
           itemsWithCnCodeInfo <- getCnCodeInformationService.getCnCodeInformation(itemsWithPackaging)
           itemsWithPackagingAndCnCodeInfo = itemsWithCnCodeInfo.map {
             case (item, cnCodeInfo) => item.copy(unitOfMeasure = Some(cnCodeInfo.unitOfMeasure))
           }
-        } yield movement.copy(items = itemsWithPackagingAndCnCodeInfo)
+        } yield movement.copy(
+          items = itemsWithPackagingAndCnCodeInfo,
+          eventHistorySummary = Some(historyEvents)
+        )
 
       case Left(errorResponse) =>
         throw MovementException(s"Failed to retrieve movement from emcs-tfe: $errorResponse")

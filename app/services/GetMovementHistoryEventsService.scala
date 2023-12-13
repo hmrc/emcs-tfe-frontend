@@ -30,7 +30,7 @@ class GetMovementHistoryEventsService @Inject()(connector: GetMovementHistoryEve
 
   def getMovementHistoryEvents(ern: String, arc: String)(implicit hc: HeaderCarrier): Future[GetMovementHistoryEventsResponse] = {
     connector.getMovementHistoryEvents(ern, arc).map {
-      case Left(_) => throw MovementHistoryEventsException("No movement history events response")
+      case Left(errorResponse) => throw MovementHistoryEventsException(s"Failed to retrieve movement history events from emcs-tfe: $errorResponse")
       case Right(events) => events
     }
   }

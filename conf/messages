@@ -135,6 +135,28 @@ viewMovement.items.table.row.item = Item {0}
 viewMovement.items.table.row.quantity = {0} {1}
 viewMovement.items.receiptStatus.notReceipted = Not Receipted
 
+# MOV02 - History events
+movementHistoryEvent.IE801.first.label = Movement created
+movementHistoryEvent.IE801.further.label = Update to movement
+movementHistoryEvent.IE802.cod.label = Reminder to provide change of destination
+movementHistoryEvent.IE802.ror.label = Report of receipt due
+movementHistoryEvent.IE802.des.label = Reminder to provide destination
+movementHistoryEvent.IE803.diverted.label = Diverted movement
+movementHistoryEvent.IE803.split.label = Notification of split movement
+movementHistoryEvent.IE807.label = Movement intercepted
+movementHistoryEvent.IE810.label = Cancellation
+movementHistoryEvent.IE813.label = Change of destination submitted
+movementHistoryEvent.IE818.label = Report of receipt submitted
+movementHistoryEvent.IE819.label = Alert or rejection submitted
+movementHistoryEvent.IE829.label = Customs acceptance of movement for export
+movementHistoryEvent.IE837.label = Explanation for delay submitted
+movementHistoryEvent.IE839.label = Customs rejection of movement for export
+movementHistoryEvent.IE840.first.label = First notification of event
+movementHistoryEvent.IE840.complementary.label = Complementary notification of event
+movementHistoryEvent.IE871.label = Explanation for a shortage or excess
+movementHistoryEvent.IE881.label = Manual closure response
+movementHistoryEvent.IE905.label = Manual closure response of a movement
+
 viewMovementList.title = Movements in
 viewMovementList.heading = Movements in
 viewMovementList.table.arc = ARC

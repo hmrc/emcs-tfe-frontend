@@ -1,0 +1,49 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewmodels.TimelineEvent
+@import views.html.components.link
+
+@import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
+@this(link: link)
+
+@(timelineEvents: Seq[TimelineEvent])(implicit messages: Messages)
+
+@htmlForTimelineEvent(timelineEvent: TimelineEvent) = {
+    <li class="hmrc-timeline__event">
+
+        <h2 class="hmrc-timeline__event-title">
+            @link(link = timelineEvent.url, messageKey = timelineEvent.title, id = Some(s"${timelineEvent.eventType}-history-event"))
+        </h2>
+
+        <time class="hmrc-timeline__event-meta" datetime="@{ISO_LOCAL_DATE_TIME.format(timelineEvent.date)}">
+            @{timelineEvent.date.toLocalDate.formatDateForUIOutput()}
+        </time>
+
+    </li>
+}
+
+@if(timelineEvents.nonEmpty) {
+    <ol class="hmrc-timeline govuk-!-margin-top-5">
+        @timelineEvents.map(htmlForTimelineEvent)
+    </ol>
+}
+
+@{
+    //$COVERAGE-OFF$
+}
+

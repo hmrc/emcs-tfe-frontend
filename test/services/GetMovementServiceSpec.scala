@@ -19,11 +19,11 @@ package services
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import mocks.connectors.MockEmcsTfeConnector
-import mocks.services.{MockGetCnCodeInformationService, MockGetPackagingTypesService}
+import mocks.services.{MockGetCnCodeInformationService, MockGetMovementHistoryEventsService, MockGetPackagingTypesService}
 import models.common.UnitOfMeasure.Kilograms
 import models.response.emcsTfe.MovementItem
 import models.response.referenceData.CnCodeInformation
-import models.response.{CnCodeInformationException, MovementException, PackagingTypesException, UnexpectedDownstreamResponseError}
+import models.response.{CnCodeInformationException, MovementException, MovementHistoryEventsException, PackagingTypesException, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,6 +32,7 @@ class GetMovementServiceSpec extends SpecBase
   with MockEmcsTfeConnector
   with MockGetPackagingTypesService
   with MockGetCnCodeInformationService
+  with MockGetMovementHistoryEventsService
   with GetMovementResponseFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -40,7 +41,8 @@ class GetMovementServiceSpec extends SpecBase
   lazy val testService = new GetMovementService(
     getMovementConnector = mockGetMovementConnector,
     getPackagingTypesService = mockGetPackagingTypesService,
-    getCnCodeInformationService = mockGetCnCodeInformationService
+    getCnCodeInformationService = mockGetCnCodeInformationService,
+    getMovementHistoryEventsService = mockGetMovementHistoryEventsService
   )
 
   val movementItems: Seq[MovementItem] = Seq(item1, item2)
@@ -48,7 +50,7 @@ class GetMovementServiceSpec extends SpecBase
 
   ".getMovement" when {
 
-    "Connector returns success from downstream" when {
+    "GetMovementConnector returns success from downstream" when {
 
       "Reference Data returns success for Packaging Types" when {
 
@@ -58,6 +60,9 @@ class GetMovementServiceSpec extends SpecBase
 
             MockEmcsTfeConnector.getMovement(testErn, testArc)
               .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
+
+            MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+              .returns(Future.successful(getMovementHistoryEventsResponseModel))
 
             MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItems)
               .returns(Future.successful(movementItemsWithPackaging))
@@ -94,6 +99,9 @@ class GetMovementServiceSpec extends SpecBase
             MockEmcsTfeConnector.getMovement(testErn, testArc)
               .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
 
+            MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+              .returns(Future.successful(getMovementHistoryEventsResponseModel))
+
             MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItems)
               .returns(Future.successful(movementItemsWithPackaging))
 
@@ -111,6 +119,9 @@ class GetMovementServiceSpec extends SpecBase
 
         "raise a CnCodeInformationException" in {
 
+          MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+            .returns(Future.successful(getMovementHistoryEventsResponseModel))
+
           MockEmcsTfeConnector.getMovement(testErn, testArc)
             .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
 
@@ -124,8 +135,7 @@ class GetMovementServiceSpec extends SpecBase
       }
     }
 
-    "Connector returns failure from downstream" must {
-
+    "GetMovementConnector returns failure from downstream" must {
       "raise a MovementException" in {
 
         MockEmcsTfeConnector.getMovement(testErn, testArc)
@@ -134,6 +144,21 @@ class GetMovementServiceSpec extends SpecBase
         val result = intercept[MovementException](await(testService.getMovement(testErn, testArc)(hc)))
 
         result.getMessage must include("Failed to retrieve movement from emcs-tfe")
+      }
+    }
+
+    "GetMovementHistoryEventsService returns failure from downstream" must {
+      "raise a MovementHistoryEventsException" in {
+
+        MockEmcsTfeConnector.getMovement(testErn, testArc)
+          .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
+
+        MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+          .returns(Future.failed(MovementHistoryEventsException("bang")))
+
+        val result = intercept[MovementHistoryEventsException](await(testService.getMovement(testErn, testArc)(hc)))
+
+        result.getMessage must include("bang")
       }
     }
   }
