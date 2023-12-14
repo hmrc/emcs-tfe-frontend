@@ -29,7 +29,7 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
 
   val warehouseKeeperDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "GBWK123")
   val registeredConsignorDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "GBRC123")
-  val nonWKRCDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "GB00123")
+  val nonWKRCDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "XI00123")
 
   "getMovementScenarioFromMovement" when {
 

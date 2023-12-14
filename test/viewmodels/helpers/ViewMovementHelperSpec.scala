@@ -19,9 +19,9 @@ package viewmodels.helpers
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import models.common.DestinationType._
-import models.common.RoleType.Unknown
+import models.common.RoleType.GBWK
 import models.common.{AddressModel, TraderModel}
-import models.movementScenario.MovementScenario.ExportWithCustomsDeclarationLodgedInTheEu
+import models.movementScenario.MovementScenario.{EuTaxWarehouse, ExportWithCustomsDeclarationLodgedInTheEu}
 import models.requests.DataRequest
 import models.response.InvalidUserTypeException
 import org.jsoup.Jsoup
@@ -340,10 +340,10 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
     "throw an exception when the user type / destination type can't be matched" in {
       lazy val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
-        deliveryPlaceCustomsOfficeReferenceNumber = Some("FR123456789"),
-        destinationType = Export
-      ))(dataRequest(FakeRequest("GET", "/"), ern = "GB00123456789"), implicitly)
-      intercept[InvalidUserTypeException](result).message mustBe s"[ViewMovementHelper][constructMovementView][getMovementTypeForMovementView] invalid UserType and movement scenario combination for MOV journey: $Unknown | $ExportWithCustomsDeclarationLodgedInTheEu"
+        deliveryPlaceTrader = None,
+        destinationType = TaxWarehouse
+      ))(dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789"), implicitly)
+      intercept[InvalidUserTypeException](result).message mustBe s"[ViewMovementHelper][constructMovementView][getMovementTypeForMovementView] invalid UserType and movement scenario combination for MOV journey: $GBWK | $EuTaxWarehouse"
     }
   }
 

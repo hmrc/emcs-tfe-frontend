@@ -36,8 +36,8 @@ object MovementScenario extends Enumerable.Implicits with Logging {
   def getMovementScenarioFromMovement(movementResponse: GetMovementResponse): MovementScenario = {
     movementResponse.destinationType match {
       case DestinationType.TaxWarehouse =>
-          if (movementResponse.deliveryPlaceTrader.map(_.traderExciseNumber).exists(RoleType.fromExciseRegistrationNumber(_).isGreatBritain) ||
-            movementResponse.deliveryPlaceTrader.map(_.traderExciseNumber).exists(RoleType.fromExciseRegistrationNumber(_).isNorthernIreland)) {
+          if (movementResponse.deliveryPlaceTrader.map(_.traderExciseNumber).exists(RoleType.isGB) ||
+            movementResponse.deliveryPlaceTrader.map(_.traderExciseNumber).exists(RoleType.isXI)) {
           MovementScenario.GbTaxWarehouse
         } else {
           MovementScenario.EuTaxWarehouse
@@ -47,8 +47,8 @@ object MovementScenario extends Enumerable.Implicits with Logging {
       case DestinationType.DirectDelivery => MovementScenario.DirectDelivery
       case DestinationType.ExemptedOrganisation => MovementScenario.ExemptedOrganisation
       case DestinationType.Export =>
-        if (movementResponse.deliveryPlaceCustomsOfficeReferenceNumber.exists(RoleType.fromExciseRegistrationNumber(_).isGreatBritain) ||
-              movementResponse.deliveryPlaceCustomsOfficeReferenceNumber.exists(RoleType.fromExciseRegistrationNumber(_).isNorthernIreland)) {
+        if (movementResponse.deliveryPlaceCustomsOfficeReferenceNumber.exists(RoleType.isGB) ||
+              movementResponse.deliveryPlaceCustomsOfficeReferenceNumber.exists(RoleType.isXI)) {
           MovementScenario.ExportWithCustomsDeclarationLodgedInTheUk
         } else {
           MovementScenario.ExportWithCustomsDeclarationLodgedInTheEu

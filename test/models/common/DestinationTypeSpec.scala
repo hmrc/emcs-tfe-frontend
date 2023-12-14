@@ -28,7 +28,7 @@ class DestinationTypeSpec extends SpecBase {
       RegisteredConsignee.toString mustBe "2"
       TemporaryRegisteredConsignee.toString mustBe "3"
       DirectDelivery.toString mustBe "4"
-      ExemptedOrganisations.toString mustBe "5"
+      ExemptedOrganisation.toString mustBe "5"
       Export.toString mustBe "6"
     }
   }

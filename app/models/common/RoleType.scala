@@ -30,11 +30,13 @@ object RoleType extends Logging {
     case "XIPB" => XIPB
     case "XIPC" => XIPC
     case "XIPD" => XIPD
-    case prefix => {
-      logger.warn(s"[RoleType][fromExciseRegistrationNumber] - Invalid ERN prefix: $prefix defaulting to Unknown")
-      Unknown
-    }
+    case invalidPrefix => throw new IllegalArgumentException(s"Invalid exciseRegistrationNumber prefix: $invalidPrefix")
+
   }
+
+  def isGB(ern: String): Boolean = ern.take(2).equals("GB")
+
+  def isXI(ern: String): Boolean = ern.take(2).equals("XI")
 
   sealed trait RoleType {
     val descriptionKey: String
@@ -121,14 +123,6 @@ object RoleType extends Logging {
     override val descriptionKey = "accountHome.roleType.XIPD"
     override val countryCode = "XI"
     override val isNorthernIreland: Boolean = true
-    override val isGreatBritain: Boolean = false
-    override val isConsignor: Boolean = false
-  }
-
-  case object Unknown extends RoleType {
-    override val descriptionKey = "accountHome.roleType.unknown"
-    override val countryCode = ""
-    override val isNorthernIreland: Boolean = false
     override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = false
   }

@@ -140,6 +140,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
             view(
               testErn,
               testArc,
+              isConsignor = false,
               SubNavigationTab.values,
               Movement,
               helper.movementCard(Movement, getMovementResponseModel)
