@@ -35,6 +35,6 @@ class GetMovementListConnector @Inject()(val http: HttpClient,
   lazy val baseUrl: String = config.emcsTfeBaseUrl
   def getMovementList(exciseRegistrationNumber: String, search: Option[MovementListSearchOptions] = None)
                      (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, GetMovementListResponse]] =
-    get(s"$baseUrl/movements/$exciseRegistrationNumber", search.fold[Seq[(String, String)]](Seq.empty)(_.queryParams))
+    get(s"$baseUrl/movements/$exciseRegistrationNumber", search.map(_.queryParams).getOrElse(Seq.empty))
 
 }
