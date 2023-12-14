@@ -16,29 +16,32 @@
 
 package viewmodels.helpers
 
-import models.response.emcsTfe.MovementItem
+import models.response.emcsTfe.{GetMovementResponse, MovementItem}
 import play.api.i18n.Messages
-import play.twirl.api.Html
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{HeadCell, Table, TableRow}
 import utils.ExpectedDateOfArrival
 import viewmodels.govuk.TagFluency
-import views.html.components.{link, list}
+import views.html.components.{h2, link, list}
 
 import javax.inject.Inject
 
 class ViewMovementItemsHelper @Inject()(list: list,
                                         link: link,
+                                        h2: h2,
                                         govukTable: GovukTable,
                                        ) extends ExpectedDateOfArrival with TagFluency {
 
   def constructMovementItems(movement: GetMovementResponse)(implicit messages: Messages): Html = {
-    govukTable(Table(
-      firstCellIsHeader = true,
-      rows = dataRows(movement.items),
-      head = headerRow
+    HtmlFormat.fill(Seq(
+      h2(messages("viewMovement.items.h2")),
+      govukTable(Table(
+        firstCellIsHeader = true,
+        rows = dataRows(movement.items),
+        head = headerRow
+      ))
     ))
   }
 
@@ -83,11 +86,11 @@ class ViewMovementItemsHelper @Inject()(list: list,
             Html(pckg.typeOfPackage)
           )))
         )
-//        TODO: Add in as part of ETFE-2882 (dependent on ETFE-2864 & ETFE-2858)
-//        TableRow(
-//          content = HtmlContent(itemReceiptStatus),
-//          classes = "white-space-nowrap"
-//        )
+        //        TODO: Add in as part of ETFE-2882 (dependent on ETFE-2864 & ETFE-2858)
+        //        TableRow(
+        //          content = HtmlContent(itemReceiptStatus),
+        //          classes = "white-space-nowrap"
+        //        )
       )
     }
 }

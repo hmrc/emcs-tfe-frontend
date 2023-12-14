@@ -34,6 +34,7 @@ object ViewMovementMessages {
     val overviewCardNumberOfItems = "Number of items"
     val overviewCardTransporting = "Transporting vehicle(s)"
 
+    val itemsH2 = "Item details"
     val itemsTableItemHeading = "Item"
     val itemsTableCommercialDescriptionHeading = "Commercial description"
     val itemsTableQuantityHeading = "Quantity"

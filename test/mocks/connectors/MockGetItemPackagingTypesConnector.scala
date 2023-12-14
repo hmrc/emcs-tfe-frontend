@@ -19,7 +19,7 @@ package mocks.connectors
 import connectors.referenceData.GetItemPackagingTypesConnector
 import models.response.ErrorResponse
 import models.response.referenceData.ItemPackaging
-import org.scalamock.handlers.{CallHandler2, CallHandler3}
+import org.scalamock.handlers.CallHandler2
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 

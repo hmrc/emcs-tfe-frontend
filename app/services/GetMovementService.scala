@@ -18,7 +18,7 @@ package services
 
 import connectors.emcsTfe.GetMovementConnector
 import models.response.MovementException
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
+import models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}

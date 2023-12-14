@@ -22,15 +22,15 @@ import play.api.libs.json.{Json, OFormat}
 import java.time.LocalDate
 
 case class ReportOfReceiptModel(arc: String,
-                                      sequenceNumber: Int,
-                                      dateAndTimeOfValidationOfReportOfReceiptExport: Option[String],
-                                      consigneeTrader: Option[TraderModel],
-                                      deliveryPlaceTrader: Option[TraderModel],
-                                      destinationOffice: String,
-                                      dateOfArrival: LocalDate,
-                                      acceptMovement: String,
-                                      individualItems: Seq[ReceiptedItemsModel],
-                                      otherInformation: Option[String])
+                                sequenceNumber: Int,
+                                dateAndTimeOfValidationOfReportOfReceiptExport: Option[String],
+                                consigneeTrader: Option[TraderModel],
+                                deliveryPlaceTrader: Option[TraderModel],
+                                destinationOffice: String,
+                                dateOfArrival: LocalDate,
+                                acceptMovement: String,
+                                individualItems: Seq[ReceiptedItemsModel],
+                                otherInformation: Option[String])
 
 object ReportOfReceiptModel {
   implicit val format: OFormat[ReportOfReceiptModel] = Json.format

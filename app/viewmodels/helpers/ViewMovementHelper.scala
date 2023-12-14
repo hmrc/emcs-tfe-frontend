@@ -16,11 +16,10 @@
 
 package viewmodels.helpers
 
-import models.common.RoleType
+import models.common.{AddressModel, RoleType}
 import models.common.RoleType.{GBRC, GBWK, XIRC, XIWK}
 import models.movementScenario.MovementScenario
 import models.movementScenario.MovementScenario._
-import models.common.AddressModel
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import models.response.{InvalidUserTypeException, MissingDispatchPlaceTraderException}
@@ -32,8 +31,6 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 import utils.ExpectedDateOfArrival
 import viewmodels._
 import views.html.components.{list, p}
-import viewmodels.{Items, Overview, SubNavigationTab}
-import views.html.components.list
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.Inject
@@ -62,14 +59,14 @@ class ViewMovementHelper @Inject()(
     classes = "govuk-summary-list__row"
   )
 
-  private[helpers] def summaryListRowBuilder(key: String, value: HtmlContent)(implicit messages: Messages) = SummaryListRow(
+  private[helpers] def summaryListRowBuilder(key: String, value: Html)(implicit messages: Messages) = SummaryListRow(
     key = Key(Text(value = messages(key))),
-    value = Value(value),
+    value = Value(HtmlContent(value)),
     classes = "govuk-summary-list__row"
   )
 
   private[helpers] def constructMovementOverview(movementResponse: GetMovementResponse)
-                                                (implicit messages: Messages): HtmlContent = {
+                                                (implicit messages: Messages): Html = {
 
     val localReferenceNumber = summaryListRowBuilder("viewMovement.overview.lrn", movementResponse.localReferenceNumber)
 
@@ -115,7 +112,7 @@ class ViewMovementHelper @Inject()(
   }
 
   private[helpers] def constructMovementView(movementResponse: GetMovementResponse)
-                                            (implicit request: DataRequest[_], messages: Messages): HtmlContent = {
+                                            (implicit request: DataRequest[_], messages: Messages): Html = {
 
 
     val userRole = RoleType.fromExciseRegistrationNumber(request.ern)
@@ -128,12 +125,12 @@ class ViewMovementHelper @Inject()(
 
     //Summary section - start
     val localReferenceNumber = summaryListRowBuilder("viewMovement.movement.summary.lrn", movementResponse.localReferenceNumber)
-    val eadStatus = if (movementResponse.eadStatus.equalsIgnoreCase("None")) None else Some(summaryListRowBuilder("viewMovement.movement.summary.eADStatus", HtmlContent(
+    val eadStatus = if (movementResponse.eadStatus.equalsIgnoreCase("None")) None else Some(summaryListRowBuilder("viewMovement.movement.summary.eADStatus",
       HtmlFormat.fill(Seq(
         p()(Text(movementResponse.eadStatus).asHtml),
         p(classes = "govuk-hint govuk-!-margin-top-0")(Text(eadStatusExplanation).asHtml)
       )
-    ))))
+    )))
     val receiptStatus = optReceiptStatusMessage.map(statusMessage => summaryListRowBuilder("viewMovement.movement.summary.receiptStatus", statusMessage))
     val movementType = summaryListRowBuilder("viewMovement.movement.summary.type", movementTypeValue)
     val movementDirection = summaryListRowBuilder("viewMovement.movement.summary.direction", if(userRole.isConsignor) "viewMovement.movement.summary.direction.out" else "viewMovement.movement.summary.direction.in")
@@ -218,7 +215,7 @@ class ViewMovementHelper @Inject()(
     }
   }
 
-private[helpers] def constructMovementDelivery(movementResponse: GetMovementResponse)(implicit messages: Messages): HtmlContent = {
+private[helpers] def constructMovementDelivery(movementResponse: GetMovementResponse)(implicit messages: Messages): Html = {
   val consignorSummaryCards = Seq(
     summaryListRowBuilder("viewMovement.delivery.consignor.name", movementResponse.consignorTrader.traderName),
     summaryListRowBuilder("viewMovement.delivery.consignor.ern", movementResponse.consignorTrader.traderExciseNumber),

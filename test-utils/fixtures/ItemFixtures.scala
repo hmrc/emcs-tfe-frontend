@@ -111,4 +111,21 @@ trait ItemFixtures { _: BaseFixtures =>
   val item2WithPackagingAndUnitOfMeasure = item2WithPackaging.copy(
     unitOfMeasure = Some(Kilograms)
   )
+
+  val testCnCodeResponse = Json.obj(
+    "22041011" -> Json.obj(
+      "cnCode" -> "22041011",
+        "cnCodeDescription" -> "Wine sparkling",
+        "exciseProductCode" -> "W300",
+        "exciseProductCodeDescription" -> "Wine",
+        "unitOfMeasureCode" -> 3
+    ),
+    "22041011" -> Json.obj(
+      "cnCode" -> "22041011",
+      "cnCodeDescription" -> "Wine sparkling",
+      "exciseProductCode" -> "W200",
+      "exciseProductCodeDescription" -> "Wine",
+      "unitOfMeasureCode" -> 3
+    )
+  )
 }

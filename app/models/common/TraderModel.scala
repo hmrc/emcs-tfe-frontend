@@ -16,7 +16,7 @@
 
 package models.common
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, OFormat}
 
 case class TraderModel(traderExciseNumber: String,
                        traderName: String,
@@ -24,5 +24,5 @@ case class TraderModel(traderExciseNumber: String,
 }
 
 object TraderModel {
-  implicit val reads: Reads[TraderModel] = Json.reads
+  implicit val format: OFormat[TraderModel] = Json.format
 }

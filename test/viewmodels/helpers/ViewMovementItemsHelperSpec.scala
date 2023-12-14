@@ -19,12 +19,12 @@ package viewmodels.helpers
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.messages.{UnitOfMeasureMessages, ViewMovementMessages}
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
 import viewmodels.govuk.TagFluency
-import views.html.components.{link, list}
+import views.html.components.{h2, link, list}
 
 class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtures with TagFluency {
 
@@ -32,6 +32,7 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
   lazy val govukTable = app.injector.instanceOf[GovukTable]
   lazy val link = app.injector.instanceOf[link]
   lazy val list = app.injector.instanceOf[list]
+  lazy val h2 = app.injector.instanceOf[h2]
 
   val movementResponseWithReferenceData = getMovementResponseModel.copy(items = Seq(
     item1WithPackagingAndUnitOfMeasure,
@@ -51,8 +52,9 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
 
           val result = helper.constructMovementItems(movementResponseWithReferenceData)
 
-          result mustBe govukTable(
-            Table(
+          result mustBe HtmlFormat.fill(Seq(
+            h2(messagesForLang.itemsH2),
+            govukTable(Table(
               firstCellIsHeader = true,
               head = Some(Seq(
                 HeadCell(Text(messagesForLang.itemsTableItemHeading)),
@@ -116,8 +118,8 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
 //                )
                 )
               )
-            )
-          )
+            ))
+          ))
         }
       }
     }

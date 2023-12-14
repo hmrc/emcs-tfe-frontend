@@ -21,7 +21,8 @@ import config.ErrorHandler
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.GetMovementResponseFixtures
 import mocks.connectors.MockEmcsTfeConnector
-import models.response.UnexpectedDownstreamResponseError
+import mocks.services.MockGetMovementService
+import models.response.{MovementException, UnexpectedDownstreamResponseError}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
@@ -33,7 +34,7 @@ import views.html.viewMovement.ViewMovementPage
 
 import scala.concurrent.Future
 
-class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMovementResponseFixtures with MockEmcsTfeConnector {
+class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMovementResponseFixtures with MockGetMovementService {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
@@ -42,7 +43,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
     app.injector.instanceOf[MessagesControllerComponents],
     FakeSuccessAuthAction,
     new FakeDataRetrievalAction(testMinTraderKnownFacts),
-    mockGetMovementConnector,
+    mockGetMovementService,
     app.injector.instanceOf[ViewMovementPage],
     app.injector.instanceOf[ErrorHandler],
     app.injector.instanceOf[ViewMovementHelper]
@@ -61,9 +62,9 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
       "return 200" when {
         "connector call is successful" in {
 
-          MockEmcsTfeConnector
-            .getMovement()
-            .returns(Future.successful(Right(getMovementResponseModel)))
+          MockGetMovementService
+            .getMovement(testErn, testArc)
+            .returns(Future.successful(getMovementResponseModel))
 
           val result: Future[Result] = testNameToMethod._2()
 
@@ -73,9 +74,9 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
       "return 500" when {
         "connector call is unsuccessful" in {
 
-          MockEmcsTfeConnector
-            .getMovement()
-            .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+          MockGetMovementService
+            .getMovement(testErn, testArc)
+            .returns(Future.failed(MovementException("bang")))
 
           val result: Future[Result] = testNameToMethod._2()
 

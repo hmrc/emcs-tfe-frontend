@@ -16,10 +16,10 @@
 
 package mocks.services
 
+import models.response.emcsTfe.GetMovementResponse
 import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
 import services.GetMovementService
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future

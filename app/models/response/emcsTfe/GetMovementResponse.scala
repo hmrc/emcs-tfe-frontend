@@ -16,12 +16,9 @@
 
 package models.response.emcsTfe
 
-import models.common.{TraderModel, TransportDetailsModel}
-import models.response.emcsTfe.{EadEsadModel, MovementItem}
-import play.api.libs.json.{Json, Reads}
 import models.common.{DestinationType, TraderModel, TransportDetailsModel}
 import models.response.emcsTfe.reportOfReceipt.ReportOfReceiptModel
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, Reads}
 import utils.{DateUtils, ExpectedDateOfArrival}
 
 import java.time.{LocalDate, LocalTime}

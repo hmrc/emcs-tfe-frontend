@@ -125,6 +125,7 @@ viewMovement.delivery.placeOfDestination.ern = Excise registration number (ERN)
 viewMovement.delivery.placeOfDestination.address = Address
 
 # MOV02 - Items
+viewMovement.items.h2 = Item details
 viewMovement.items.table.heading.item = Item
 viewMovement.items.table.heading.description = Commercial description
 viewMovement.items.table.heading.quantity = Quantity

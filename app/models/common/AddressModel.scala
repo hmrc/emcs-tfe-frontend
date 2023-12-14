@@ -16,7 +16,7 @@
 
 package models.common
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, OFormat}
 
 case class AddressModel(streetNumber: Option[String],
                         street: Option[String],
@@ -24,5 +24,5 @@ case class AddressModel(streetNumber: Option[String],
                         city: Option[String])
 
 object AddressModel {
-  implicit val reads: Reads[AddressModel] = Json.reads
+  implicit val format: OFormat[AddressModel] = Json.format
 }
