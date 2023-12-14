@@ -22,11 +22,11 @@ import fixtures.messages.ViewMovementMessages.English
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import viewmodels.helpers.ViewMovementHelper
-import viewmodels.{Overview, SubNavigationTab}
+import viewmodels.{Movement, Overview, SubNavigationTab}
 import views.html.viewMovement.ViewMovementPage
 
 
@@ -35,14 +35,15 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
   val page: ViewMovementPage = app.injector.instanceOf[ViewMovementPage]
   val helper: ViewMovementHelper = app.injector.instanceOf[ViewMovementHelper]
 
-  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
-
-  implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"))
+  implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"), ern = "GBRC123456789")
+  implicit val messages: Messages = messages(fakeRequest)
 
   object Selectors extends BaseSelectors {
     val subNavigationTabSelected = s"main nav.moj-sub-navigation a[aria-current=page]"
     def actionLink(i: Int) = s"main #actions > ul > li:nth-child($i) > a"
     def summaryCardRowKey(i: Int) = s"main div.govuk-summary-card div.govuk-summary-list__row:nth-of-type($i) > dt"
+    def summaryCardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"main div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
+    def summaryCardTitle(i: Int) = s"main div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
   }
 
   "The ViewMovementPageView" when {
@@ -74,6 +75,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
 
               Selectors.subNavigationTabSelected -> messagesForLanguage.overviewTabHeading,
 
+              Selectors.summaryCardTitle(1) -> messagesForLanguage.overviewCardTitle,
               Selectors.summaryCardRowKey(1) -> messagesForLanguage.overviewCardLrn,
               Selectors.summaryCardRowKey(2) -> messagesForLanguage.overviewCardEadStatus,
               Selectors.summaryCardRowKey(3) -> messagesForLanguage.overviewCardDateOfDispatch,
@@ -129,6 +131,45 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
 
             ))
           }
+        }
+
+        "render the movement tab" when {
+
+          val view = app.injector.instanceOf[ViewMovementPage]
+          implicit val doc: Document = Jsoup.parse(
+            view(
+              testErn,
+              testArc,
+              SubNavigationTab.values,
+              Movement,
+              helper.movementCard(Movement, getMovementResponseModel)
+            ).toString()
+          )
+
+          behave like pageWithExpectedElementsAndMessages(Seq(
+            Selectors.title -> messagesForLanguage.title,
+            Selectors.h2(1) -> messagesForLanguage.arcSubheading,
+            Selectors.h1 -> testArc,
+
+            Selectors.subNavigationTabSelected -> messagesForLanguage.movementTabHeading,
+
+            Selectors.summaryCardTitle(1) -> messagesForLanguage.movementSummaryCardTitle,
+            Selectors.summaryCardAtIndexRowKey(1, 1) -> messagesForLanguage.movementSummaryCardLrn,
+            Selectors.summaryCardAtIndexRowKey(1, 2) -> messagesForLanguage.movementSummaryCardEADStatus,
+            Selectors.summaryCardAtIndexRowKey(1, 3) -> messagesForLanguage.movementSummaryCardReceiptStatus,
+            Selectors.summaryCardAtIndexRowKey(1, 4) -> messagesForLanguage.movementSummaryCardMovementType,
+            Selectors.summaryCardAtIndexRowKey(1, 5) -> messagesForLanguage.movementSummaryCardMovementDirection,
+
+            Selectors.summaryCardTitle(2) -> messagesForLanguage.movementTimeAndDateCardTitle,
+            Selectors.summaryCardAtIndexRowKey(2, 1) -> messagesForLanguage.movementTimeAndDateCardDateOfDispatch,
+            Selectors.summaryCardAtIndexRowKey(2, 2) -> messagesForLanguage.movementTimeAndDateCardTimeOfDispatch,
+            Selectors.summaryCardAtIndexRowKey(2, 3) -> messagesForLanguage.movementTimeAndDateCardDateOfArrival,
+
+            Selectors.summaryCardTitle(3) -> messagesForLanguage.movementInvoiceCardTitle,
+            Selectors.summaryCardAtIndexRowKey(3, 1) -> messagesForLanguage.movementInvoiceCardReference,
+            Selectors.summaryCardAtIndexRowKey(3, 2) -> messagesForLanguage.movementInvoiceCardDateOfIssue
+          ))
+
         }
       }
     }

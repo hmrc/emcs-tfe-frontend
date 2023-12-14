@@ -18,10 +18,14 @@ package models.requests
 
 import play.api.mvc.WrappedRequest
 import models.auth.UserRequest
+import models.common.RoleType.RoleType
 import models.common.TraderKnownFacts
 
 case class DataRequest[A](request: UserRequest[A],
                           traderKnownFacts: TraderKnownFacts) extends WrappedRequest[A](request) {
   val internalId: String = request.internalId
   val ern: String = request.ern
+  val isWarehouseKeeper: Boolean = request.isWarehouseKeeper
+  val isRegisteredConsignor: Boolean = request.isRegisteredConsignor
+  val userTypeFromErn: RoleType = request.userTypeFromErn
 }

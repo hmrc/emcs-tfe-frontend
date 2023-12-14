@@ -35,3 +35,9 @@ case class ExciseProductCodesException(message: String) extends Exception(messag
 case class MemberStatesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class TraderKnownFactsException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class InvalidDestinationTypeException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class InvalidUserTypeException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class MissingDispatchPlaceTraderException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse

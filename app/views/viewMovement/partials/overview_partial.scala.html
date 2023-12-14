@@ -19,16 +19,17 @@
 
 @this(
         h2: h2,
-        summaryCard: summaryCard,
+        summaryCard: summaryCard
 )
 
+@(headingMessageKey: Option[String], cardTitleMessageKey: String, summaryListRows: Seq[SummaryListRow])(implicit messages: Messages)
 
-@(summaryListRows: Seq[SummaryListRow])(implicit request: Request[_], messages: Messages)
-
-@h2(messages("viewMovement.overview.title"), "govuk-heading-l")
+@if(headingMessageKey.isDefined) {
+ @h2(messages(headingMessageKey.get), "govuk-heading-l")
+}
 
 @summaryCard(
-    Card(Some(CardTitle(Text(messages("viewMovement.overview.title"))))),
+    Card(Some(CardTitle(Text(messages(cardTitleMessageKey))))),
     summaryListRows
 )
 

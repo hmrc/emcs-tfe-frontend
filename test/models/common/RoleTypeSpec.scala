@@ -72,8 +72,8 @@ class RoleTypeSpec extends SpecBase {
       }
     }
     "the ERN begins with an unexpected prefix" must {
-      "throw an exception" in {
-        intercept[IllegalArgumentException](fromExciseRegistrationNumber("InvalidTestErn"))
+      s"return $Unknown" in {
+        fromExciseRegistrationNumber("InvalidTestErn") mustBe Unknown
       }
     }
   }

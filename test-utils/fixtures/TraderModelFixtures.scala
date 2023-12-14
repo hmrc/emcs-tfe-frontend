@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package utils
+package fixtures
 
-import java.time.{LocalDate, LocalTime}
-import java.time.format.DateTimeFormatter
+import models.common.TraderModel
 
-trait DateUtils {
-  implicit class LocalDateExtensions(date: LocalDate) {
-    def formatDateForUIOutput(): String = {
-      val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-      formatter.format(date)
-    }
-  }
+trait TraderModelFixtures extends AddressModelFixtures {
 
-  implicit class LocalTimeExtensions(time: LocalTime) {
-    def formatTimeForUIOutput(): String = {
-      val formatter = DateTimeFormatter.ofPattern("h:mm a")
-      formatter.format(time)
-    }
-  }
+  val traderExciseNumber = "GB0000000012346"
+
+  val maxTraderModel: TraderModel = TraderModel(
+    traderExciseNumber = traderExciseNumber,
+    traderName = "name",
+    address = maxAddressModel
+  )
+
+
 }

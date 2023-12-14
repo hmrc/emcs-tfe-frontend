@@ -107,7 +107,7 @@ class AccountHomePageViewSpec extends SpecBase {
           }
 
 
-          if (roleType.isNorthernIsland) {
+          if (roleType.isNorthernIreland) {
             doc.getElementsByTag("h2").get(3).text mustBe "Prevalidate"
             val prevalidateLinks = doc.getElementsByTag("ul").get(3).children
             prevalidateLinks.get(0).text mustBe "Check Europa to find out if a trader can receive excise goods"

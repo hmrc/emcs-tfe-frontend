@@ -12,7 +12,7 @@ object CodeCoverageSettings {
     "app.*",
     "prod.*",
     ".*Routes.*",
-    ".*viewmodels.govuk.*",
+    ".*viewmodels.govuk*",
     "testOnly.*",
     "testOnlyDoNotUseInAppConf.*",
     ".*featureswitch.*",

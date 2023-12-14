@@ -23,9 +23,9 @@ package models
 
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
+import models.response.emcsTfe.GetMovementResponse
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.libs.json.{JsSuccess, Json}
-import uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe.GetMovementResponse
 
 
 class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures {

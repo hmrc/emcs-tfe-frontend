@@ -16,6 +16,8 @@
 
 package models.auth
 
+import models.common.RoleType
+import models.common.RoleType._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{MessagesRequestHeader, PreferredMessagesProvider, Request, WrappedRequest}
 
@@ -23,4 +25,9 @@ case class UserRequest[A](request: Request[A],
                           ern: String,
                           internalId: String,
                           credId: String,
-                          hasMultipleErns: Boolean)(implicit val messagesApi: MessagesApi) extends WrappedRequest[A](request) with PreferredMessagesProvider with MessagesRequestHeader
+                          hasMultipleErns: Boolean)(implicit val messagesApi: MessagesApi) extends WrappedRequest[A](request) with PreferredMessagesProvider with MessagesRequestHeader {
+
+  lazy val userTypeFromErn: RoleType = RoleType.fromExciseRegistrationNumber(ern)
+  lazy val isWarehouseKeeper: Boolean = (userTypeFromErn == GBWK) || (userTypeFromErn == XIWK)
+  lazy val isRegisteredConsignor: Boolean = (userTypeFromErn == GBRC) || (userTypeFromErn == XIRC)
+}

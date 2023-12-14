@@ -19,12 +19,12 @@ package models.common
 sealed trait DestinationType
 
 object DestinationType extends Enumerable.Implicits {
-
+//registered consignor = import
   case object TaxWarehouse extends WithName("1") with DestinationType
   case object RegisteredConsignee extends WithName("2") with DestinationType
   case object TemporaryRegisteredConsignee extends WithName("3") with DestinationType
   case object DirectDelivery extends WithName("4") with DestinationType
-  case object ExemptedOrganisations extends WithName("5") with DestinationType
+  case object ExemptedOrganisation extends WithName("5") with DestinationType
   case object Export extends WithName("6") with DestinationType
   case object UnknownDestination extends WithName("8") with DestinationType
   case object CertifiedConsignee extends WithName("9") with DestinationType
@@ -36,7 +36,7 @@ object DestinationType extends Enumerable.Implicits {
     RegisteredConsignee,
     TemporaryRegisteredConsignee,
     DirectDelivery,
-    ExemptedOrganisations,
+    ExemptedOrganisation,
     Export,
     UnknownDestination,
     CertifiedConsignee,

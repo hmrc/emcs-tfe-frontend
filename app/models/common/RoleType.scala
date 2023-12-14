@@ -16,7 +16,9 @@
 
 package models.common
 
-object RoleType {
+import utils.Logging
+
+object RoleType extends Logging {
   def fromExciseRegistrationNumber(exciseRegistrationNumber: String): RoleType = exciseRegistrationNumber.take(4) match {
     case "GBWK" => GBWK
     case "XIWK" => XIWK
@@ -28,73 +30,106 @@ object RoleType {
     case "XIPB" => XIPB
     case "XIPC" => XIPC
     case "XIPD" => XIPD
-    case invalidPrefix => throw new IllegalArgumentException(s"Invalid exciseRegistrationNumber prefix: $invalidPrefix")
+    case prefix => {
+      logger.warn(s"[RoleType][fromExciseRegistrationNumber] - Invalid ERN prefix: $prefix defaulting to Unknown")
+      Unknown
+    }
   }
 
   sealed trait RoleType {
     val descriptionKey: String
-    val isNorthernIsland: Boolean
+    val countryCode: String
+    val isNorthernIreland: Boolean
+    val isGreatBritain: Boolean
     val isConsignor: Boolean
   }
 
   case object GBWK extends RoleType {
     override val descriptionKey = "accountHome.roleType.GBWK"
-    override val isNorthernIsland: Boolean = false
+    override val countryCode = "GB"
+    override val isNorthernIreland: Boolean = false
+    override val isGreatBritain: Boolean = true
     override val isConsignor: Boolean = true
   }
 
   case object XIWK extends RoleType {
     override val descriptionKey = "accountHome.roleType.XIWK"
-    override val isNorthernIsland: Boolean = true
+    override val countryCode = "XI"
+    override val isNorthernIreland: Boolean = true
+    override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = true
   }
 
   case object GBRC extends RoleType {
     override val descriptionKey = "accountHome.roleType.GBRC"
-    override val isNorthernIsland: Boolean = false
+    override val countryCode = "GB"
+    override val isNorthernIreland: Boolean = false
+    override val isGreatBritain: Boolean = true
     override val isConsignor: Boolean = true
 
   }
 
   case object XIRC extends RoleType {
     override val descriptionKey = "accountHome.roleType.XIRC"
-    override val isNorthernIsland: Boolean = true
+    override val countryCode = "XI"
+    override val isNorthernIreland: Boolean = true
+    override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = true
   }
 
   case object XI00 extends RoleType {
     override val descriptionKey = "accountHome.roleType.XI00"
-    override val isNorthernIsland: Boolean = true
+    override val countryCode = "XI"
+    override val isNorthernIreland: Boolean = true
+    override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = false
   }
 
   case object XITC extends RoleType {
     override val descriptionKey = "accountHome.roleType.XITC"
-    override val isNorthernIsland: Boolean = true
+    override val countryCode = "XI"
+    override val isNorthernIreland: Boolean = true
+    override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = false
   }
 
   case object XIPA extends RoleType {
     override val descriptionKey = "accountHome.roleType.XIPA"
-    override val isNorthernIsland: Boolean = true
+    override val countryCode = "XI"
+    override val isNorthernIreland: Boolean = true
+    override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = true
   }
 
   case object XIPB extends RoleType {
     override val descriptionKey = "accountHome.roleType.XIPB"
-    override val isNorthernIsland: Boolean = true
+    override val countryCode = "XI"
+    override val isNorthernIreland: Boolean = true
+    override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = false
   }
 
   case object XIPC extends RoleType {
     override val descriptionKey = "accountHome.roleType.XIPC"
-    override val isNorthernIsland: Boolean = true
+    override val countryCode = "XI"
+    override val isNorthernIreland: Boolean = true
+    override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = true
   }
 
   case object XIPD extends RoleType {
     override val descriptionKey = "accountHome.roleType.XIPD"
-    override val isNorthernIsland: Boolean = true
+    override val countryCode = "XI"
+    override val isNorthernIreland: Boolean = true
+    override val isGreatBritain: Boolean = false
+    override val isConsignor: Boolean = false
+  }
+
+  case object Unknown extends RoleType {
+    override val descriptionKey = "accountHome.roleType.unknown"
+    override val countryCode = ""
+    override val isNorthernIreland: Boolean = false
+    override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = false
   }
 
