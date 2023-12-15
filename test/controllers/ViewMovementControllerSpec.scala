@@ -41,7 +41,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
   lazy val controller: ViewMovementController = new ViewMovementController(
     app.injector.instanceOf[MessagesControllerComponents],
     FakeSuccessAuthAction,
-    new FakeDataRetrievalAction(testMinTraderKnownFacts),
+    new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
     mockGetMovementService,
     app.injector.instanceOf[ViewMovementPage],
     app.injector.instanceOf[ErrorHandler],

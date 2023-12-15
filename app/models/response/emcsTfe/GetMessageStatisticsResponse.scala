@@ -18,7 +18,10 @@ package models.response.emcsTfe
 
 import play.api.libs.json.{Json, OFormat}
 
-case class GetMessageStatisticsResponse(dateTime: String, exciseRegistrationNumber: String, countOfAllMessages: Int, countOfNewMessages: Int)
+case class GetMessageStatisticsResponse(dateTime: String,
+                                        exciseRegistrationNumber: String,
+                                        countOfAllMessages: Int,
+                                        countOfNewMessages: Int)
 
 object GetMessageStatisticsResponse {
   implicit val fmt: OFormat[GetMessageStatisticsResponse] = Json.format

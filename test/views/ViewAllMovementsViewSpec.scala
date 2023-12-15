@@ -21,6 +21,7 @@ import controllers.routes
 import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
 import forms.ViewAllMovementsFormProvider
+import models.requests.DataRequest
 import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -57,6 +58,8 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
   }
 
   implicit val fakeRequest = FakeRequest("GET", "/movements")
+
+  implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
   lazy val view: ViewAllMovements = app.injector.instanceOf[ViewAllMovements]
   lazy val helper: MovementsListTableHelper = app.injector.instanceOf[MovementsListTableHelper]

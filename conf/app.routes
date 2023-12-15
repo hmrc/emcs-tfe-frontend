@@ -20,8 +20,6 @@ GET        /trader/:exciseRegistrationNumber/movement/:arc/documents          co
 
 GET        /trader/:exciseRegistrationNumber/movement/:arc/item/:idx/details  controllers.ItemDetailsController.onPageLoad(exciseRegistrationNumber, arc, idx: Int)
 
-GET        /movements-in/:exciseRegistrationNumber                          controllers.ViewMovementListController.viewMovementList(exciseRegistrationNumber)
-
 GET        /trader/:exciseRegistrationNumber/account                        controllers.AccountHomeController.viewAccountHome(exciseRegistrationNumber)
 
 GET        /trader/:ern/movements                                           controllers.ViewAllMovementsController.onPageLoad(ern: String, search: MovementListSearchOptions)

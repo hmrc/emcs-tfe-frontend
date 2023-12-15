@@ -18,6 +18,7 @@ package views.components
 
 import base.SpecBase
 import fixtures.messages.NavigationBarMessages
+import models.NavigationBannerInfo
 import models.common.RoleType
 import models.response.emcsTfe.GetMessageStatisticsResponse
 import org.jsoup.Jsoup
@@ -26,7 +27,7 @@ import views.html.components.navigation_bar
 
 class NavigationBarSpec extends SpecBase {
 
-  val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
+  override val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
     dateTime = "testDateTime",
     exciseRegistrationNumber = testErn,
     countOfAllMessages = 10,
@@ -43,7 +44,12 @@ class NavigationBarSpec extends SpecBase {
 
       RoleType.values.foreach {
         roleType =>
-          val html = navigation_bar(testErn, roleType, testMessageStatistics)
+          val ern = {
+            val prefix = roleType.descriptionKey.split('.').last // accountHome.roleType.GBWK -> GBWK etc
+
+            prefix + "123"
+          }
+          val html = navigation_bar(NavigationBannerInfo(ern, testMessageStatistics.countOfNewMessages))
           val doc = Jsoup.parse(html.toString())
 
           s"Role Type is [${msgs(roleType.descriptionKey)}]" must {
@@ -53,7 +59,7 @@ class NavigationBarSpec extends SpecBase {
             "render the Messages link" in {
               doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(testMessageStatistics.countOfNewMessages)
             }
-            if(roleType.isConsignor) {
+            if (roleType.isConsignor) {
               "render the Drafts link" in {
                 doc.select("#navigation-drafts-link").text() mustBe messagesForLanguage.drafts
               }
@@ -61,9 +67,9 @@ class NavigationBarSpec extends SpecBase {
               "not render the Drafts link" in {
                 doc.select("#navigation-drafts-link").size() mustBe 0
               }
+            }
             "render the Movements link" in {
               doc.select("#navigation-movements-link").text() mustBe messagesForLanguage.movements
-            }
             }
           }
       }

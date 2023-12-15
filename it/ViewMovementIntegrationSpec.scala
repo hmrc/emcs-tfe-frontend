@@ -48,6 +48,8 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
     def postCnCodeInformationUri: String = s"/emcs-tfe-reference-data/oracle/cn-code-information"
     def getWineOperationsUri: String = s"/emcs-tfe-reference-data/oracle/wine-operations"
 
+    def getMessageStatisticsUri: String = s"/emcs-tfe/message-statistics/$testErn"
+
     def request(): WSRequest = {
       setupStubs()
       buildRequest(uri)
@@ -90,6 +92,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, getMovementResponseInputJson)
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
             DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
+            DownstreamStub.onSuccess(DownstreamStub.GET, getMessageStatisticsUri, Status.OK, Json.toJson(testMessageStatistics))
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
             DownstreamStub.onSuccess(DownstreamStub.POST, getWineOperationsUri, Status.OK, wineOperationsJson)
@@ -115,6 +118,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             AuthStub.authorised()
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
             DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
+            DownstreamStub.onSuccess(DownstreamStub.GET, getMessageStatisticsUri, Status.OK, Json.toJson(testMessageStatistics))
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
@@ -133,6 +137,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             AuthStub.authorised()
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, emcsTfeResponseBody)
             DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
+            DownstreamStub.onSuccess(DownstreamStub.GET, getMessageStatisticsUri, Status.OK, Json.toJson(testMessageStatistics))
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
@@ -157,6 +162,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             AuthStub.authorised()
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.INTERNAL_SERVER_ERROR, emcsTfeResponseBody)
             DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
+            DownstreamStub.onSuccess(DownstreamStub.GET, getMessageStatisticsUri, Status.OK, Json.toJson(testMessageStatistics))
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)

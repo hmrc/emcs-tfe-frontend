@@ -18,7 +18,7 @@ package controllers.predicates
 
 import base.SpecBase
 import fixtures.BaseFixtures
-import mocks.services.MockGetTraderKnownFactsService
+import mocks.services.{MockGetMessageStatisticsService, MockGetTraderKnownFactsService}
 import models.auth.UserRequest
 import models.requests.DataRequest
 import org.scalatest.concurrent.ScalaFutures
@@ -32,20 +32,24 @@ class DataRetrievalActionSpec
   extends SpecBase
     with BaseFixtures
     with ScalaFutures
-    with MockGetTraderKnownFactsService {
+    with MockGetTraderKnownFactsService
+    with MockGetMessageStatisticsService {
 
   lazy val dataRetrievalAction: ActionTransformer[UserRequest, DataRequest] =
-    new DataRetrievalActionImpl(mockGetTraderKnownFactsService).apply()
+    new DataRetrievalActionImpl(mockGetTraderKnownFactsService, mockGetMessageStatisticsService).apply()
 
-  "Data Retrieval Action" when {
+  "Data Retrieval Action" must {
 
-    "there is data in the cache" must {
-      "build a TraderKnownFacts object and add it to the request" in {
+    "return a DataRequest" when {
+      "downstream calls are successful" in {
         MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(testMinTraderKnownFacts))
+        MockGetMessageStatisticsService.getMessageStatistics(testErn).returns(Future.successful(testMessageStatistics))
 
         val result = dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)).futureValue.value
 
+        result mustBe a[DataRequest[_]]
         result.traderKnownFacts mustBe testMinTraderKnownFacts
+        result.messageStatistics mustBe testMessageStatistics
       }
     }
   }

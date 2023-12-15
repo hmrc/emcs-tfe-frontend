@@ -17,14 +17,12 @@
 package controllers
 
 import base.SpecBase
-import config.{AppConfig, ErrorHandler}
+import config.AppConfig
 import connectors.emcsTfe.GetMessageStatisticsConnector
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import mocks.connectors.MockEmcsTfeConnector
 import models.common.RoleType.GBWK
 import models.requests.DataRequest
-import models.response.UnexpectedDownstreamResponseError
-import models.response.emcsTfe.GetMessageStatisticsResponse
 import org.scalamock.scalatest.MockFactory
 import play.api.http.Status
 import play.api.i18n.MessagesApi
@@ -51,52 +49,23 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
     val controller: AccountHomeController = new AccountHomeController(
       app.injector.instanceOf[MessagesControllerComponents],
       accountHomePage,
-      app.injector.instanceOf[ErrorHandler],
       FakeSuccessAuthAction,
-      new FakeDataRetrievalAction(testMinTraderKnownFacts),
-      mockGetMessageStatisticsConnector,
-      appConfig
+      new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics)
     )
   }
 
   "GET /consignment/:exciseRegistrationNumber/:arc" must {
-    "return 200" when {
-      "connector call is successful" in new Test {
-        val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
-          dateTime = "testDateTime",
-          exciseRegistrationNumber = testErn,
-          countOfAllMessages = 1,
-          countOfNewMessages = 1
-        )
+    "return 200" in new Test {
+      val result: Future[Result] = controller.viewAccountHome(testErn)(fakeRequest)
 
-        (mockGetMessageStatisticsConnector.getMessageStatistics(_: String)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(testErn, *, *)
-          .returns(Future.successful(Right(testMessageStatistics)))
+      val expectedPage = accountHomePage(
+        ern = testErn,
+        roleType = GBWK
+      )
 
-        val result: Future[Result] = controller.viewAccountHome(testErn)(fakeRequest)
+      status(result) mustBe Status.OK
+      contentAsString(result) mustBe expectedPage.toString()
 
-        val expectedPage = accountHomePage(
-          ern = testErn,
-          roleType = GBWK,
-          businessName = testMinTraderKnownFacts.traderName,
-          messageStatistics = testMessageStatistics
-        )
-
-        status(result) mustBe Status.OK
-        contentAsString(result) mustBe expectedPage.toString()
-
-      }
-    }
-    "return 500" when {
-      "connector call is unsuccessful" in new Test {
-        (mockGetMessageStatisticsConnector.getMessageStatistics(_: String)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(testErn, *, *)
-          .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
-
-        val result: Future[Result] = controller.viewAccountHome(testErn)(fakeRequest)
-
-        status(result) mustBe Status.INTERNAL_SERVER_ERROR
-      }
     }
   }
 }

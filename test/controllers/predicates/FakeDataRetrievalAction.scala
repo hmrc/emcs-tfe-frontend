@@ -19,18 +19,19 @@ package controllers.predicates
 import models.auth.UserRequest
 import models.common.TraderKnownFacts
 import models.requests.DataRequest
+import models.response.emcsTfe.GetMessageStatisticsResponse
 import play.api.mvc.ActionTransformer
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRetrievalAction(traderKnownFacts: TraderKnownFacts) extends DataRetrievalAction {
+class FakeDataRetrievalAction(traderKnownFacts: TraderKnownFacts, messageStatisticsResponse: GetMessageStatisticsResponse) extends DataRetrievalAction {
 
   def apply(): ActionTransformer[UserRequest, DataRequest] =
 
     new ActionTransformer[UserRequest, DataRequest] {
 
       override def transform[A](request: UserRequest[A]): Future[DataRequest[A]] =
-        Future(DataRequest(request, traderKnownFacts))
+        Future(DataRequest(request, traderKnownFacts, messageStatisticsResponse))
 
       override protected implicit val executionContext: ExecutionContext =
         scala.concurrent.ExecutionContext.Implicits.global

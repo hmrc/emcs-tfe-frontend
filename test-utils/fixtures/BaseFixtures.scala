@@ -17,6 +17,7 @@
 package fixtures
 
 import models.common.TraderKnownFacts
+import models.response.emcsTfe.GetMessageStatisticsResponse
 import play.api.libs.json.{JsValue, Json}
 
 
@@ -28,9 +29,10 @@ trait BaseFixtures {
   val testInternalId = "int1234567891"
   val testSequenceNumber = 1
   val testLrn = "123"
+  val testTraderName = "testTraderName"
 
   val testMinTraderKnownFacts: TraderKnownFacts = TraderKnownFacts(
-    traderName = "testTraderName",
+    traderName = testTraderName,
     addressLine1 = None,
     addressLine2 = None,
     addressLine3 = None,
@@ -40,4 +42,23 @@ trait BaseFixtures {
   )
 
   val testTraderKnownFactsJson: JsValue = Json.parse("""{ "traderName": "Trader" }""")
+
+
+  val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
+    dateTime = "",
+    exciseRegistrationNumber = "GBRC001234569",
+    countOfAllMessages = 1,
+    countOfNewMessages = 1
+  )
+
+  val testMessageStatisticsJson: JsValue = Json.parse(
+  s"""
+      |{
+      |   "dateTime": "2009-01-26T14:11:00",
+      |   "exciseRegistrationNumber": "$testErn",
+      |   "countOfAllMessages" : 1,
+      |   "countOfNewMessages" : 1
+      |}""".stripMargin
+  )
+
 }

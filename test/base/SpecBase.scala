@@ -45,6 +45,6 @@ trait SpecBase extends AnyWordSpecLike with Matchers with MockFactory with Optio
     UserRequest(request, ern, testInternalId, testCredId, hasMultipleErns = false)
 
   def dataRequest[A](request: Request[A], ern: String = testErn): DataRequest[A] =
-    DataRequest(userRequest(request, ern), testMinTraderKnownFacts)
+    DataRequest(userRequest(request, ern), testMinTraderKnownFacts, testMessageStatistics)
 
 }
