@@ -161,7 +161,190 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
     }
   }
 
+  ".constructMovementDelivery" should {
+    "output the correct cards" when {
+
+      "consignor, place of dispatch, consignee and place of destination are present" in {
+        val result = helper.constructMovementDelivery(getMovementResponseModel)
+        val card = Jsoup.parse(result.asHtml.toString())
+        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
+        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
+        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+
+        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Place of dispatch"
+        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Mr Dispatcher 801"
+        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+
+        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Consignee"
+        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
+        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+
+        card.select(Selectors.cardAtIndexTitle(4)).text() mustBe "Place of destination"
+        card.select(Selectors.cardAtIndexRowKey(4, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(4, 1)).text() mustBe "Mr Delivery place"
+        card.select(Selectors.cardAtIndexRowKey(4, 2)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(4, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(4, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(4, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+      }
+
+      "consignor, consignee and place of destination are present" in {
+        val result = helper.constructMovementDelivery(getMovementResponseModel.copy(placeOfDispatchTrader = None))
+        val card = Jsoup.parse(result.asHtml.toString())
+        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
+        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
+        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+
+        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Consignee"
+        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignee"
+        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+
+        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Place of destination"
+        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Mr Delivery place"
+        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+      }
+
+      "consignor, place of dispatch and place of destination are present" in {
+        val result = helper.constructMovementDelivery(getMovementResponseModel.copy(consigneeTrader = None))
+        val card = Jsoup.parse(result.asHtml.toString())
+        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
+        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
+        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+
+        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Place of dispatch"
+        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Mr Dispatcher 801"
+        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+
+        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Place of destination"
+        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Mr Delivery place"
+        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+      }
+
+      "consignor, place of dispatch and consignee are present" in {
+        val result = helper.constructMovementDelivery(getMovementResponseModel.copy(deliveryPlaceTrader = None))
+        val card = Jsoup.parse(result.asHtml.toString())
+        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
+        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
+        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+
+        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Place of dispatch"
+        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Mr Dispatcher 801"
+        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+
+        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Consignee"
+        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
+        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
+        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+      }
+    }
+  }
+
   "summaryListRowBuilder" should {
+  "construct a key value summary list row (when value is a string)" in {
+    val result = helper.summaryListRowBuilder("random.key", "random.value")
+    result mustBe SummaryListRow(
+      key = Key(Text(value = "random.key")),
+      value = Value(Text(value = "random.value")),
+      classes = "govuk-summary-list__row"
+    )
+  }
+
+  "construct a key value summary list row (when value is HTML)" in {
+    val result = helper.summaryListRowBuilder("random.key", HtmlContent("some html value"))
+    result mustBe SummaryListRow(
+      key = Key(Text(value = "random.key")),
+      value = Value(HtmlContent("some html value")),
+      classes = "govuk-summary-list__row"
+    )
+  }
+}
+
+  ".renderAddress" should {
+
+    "render street number and street when provided" in {
+      val addressModel: AddressModel = AddressModel(
+        Some("1"), Some("Street Street"), Some("POST CODE"), Some("City City")
+      )
+      helper.renderAddress(addressModel) mustBe HtmlContent("1 Street Street <br>City City <br>POST CODE")
+    }
+
+    "render just street number when no street provided" in {
+      val addressModel: AddressModel = AddressModel(
+        Some("1"), None, Some("POST CODE"), Some("City City")
+      )
+      helper.renderAddress(addressModel) mustBe HtmlContent("1 <br>City City <br>POST CODE")
+    }
+
+    "render just street when no street number provided" in {
+      val addressModel: AddressModel = AddressModel(
+        None, Some("Street Street"), Some("POST CODE"), Some("City City")
+      )
+      helper.renderAddress(addressModel) mustBe HtmlContent("Street Street <br>City City <br>POST CODE")
+    }
+
+    "render nothing when all fields are undefined" in {
+      val addressModel: AddressModel = AddressModel(
+        None, None, None, None
+      )
+      helper.renderAddress(addressModel) mustBe HtmlContent("")
+    }
+
+    "render all rows when all fields are defined" in {
+      val addressModel: AddressModel = AddressModel(
+        Some("1"), Some("Street Street"), Some("POST CODE"), Some("City City")
+      )
+      helper.renderAddress(addressModel) mustBe HtmlContent("1 Street Street <br>City City <br>POST CODE")
+    }
+  }
+
+  ".summaryListRowBuilder" should {
     "construct a key value summary list row (when value is a string)" in {
       val result = helper.summaryListRowBuilder("random.key", "random.value")
       result mustBe SummaryListRow(
@@ -373,6 +556,44 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         )
       }
 
+    }
+  }
+
+  ".renderAddress" should {
+
+    "render street number and street when provided" in {
+      val addressModel: AddressModel = AddressModel(
+        Some("1"), Some("Street Street"), Some("POST CODE"), Some("City City")
+      )
+      helper.renderAddress(addressModel) mustBe HtmlContent("1 Street Street <br>City City <br>POST CODE")
+    }
+
+    "render just street number when no street provided" in {
+      val addressModel: AddressModel = AddressModel(
+        Some("1"), None, Some("POST CODE"), Some("City City")
+      )
+      helper.renderAddress(addressModel) mustBe HtmlContent("1 <br>City City <br>POST CODE")
+    }
+
+    "render just street when no street number provided" in {
+      val addressModel: AddressModel = AddressModel(
+        None, Some("Street Street"), Some("POST CODE"), Some("City City")
+      )
+      helper.renderAddress(addressModel) mustBe HtmlContent("Street Street <br>City City <br>POST CODE")
+    }
+
+    "render nothing when all fields are undefined" in {
+      val addressModel: AddressModel = AddressModel(
+        None, None, None, None
+      )
+      helper.renderAddress(addressModel) mustBe HtmlContent("")
+    }
+
+    "render all rows when all fields are defined" in {
+      val addressModel: AddressModel = AddressModel(
+        Some("1"), Some("Street Street"), Some("POST CODE"), Some("City City")
+      )
+      helper.renderAddress(addressModel) mustBe HtmlContent("1 Street Street <br>City City <br>POST CODE")
     }
   }
 }

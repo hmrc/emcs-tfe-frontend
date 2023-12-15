@@ -96,6 +96,25 @@ viewMovement.movement.invoice = Invoice
 viewMovement.movement.invoice.reference = Invoice reference
 viewMovement.movement.invoice.dateOfIssue = Invoice date of issue
 
+# MOV02 - Delivery
+viewMovement.delivery.title = Delivery details
+viewMovement.delivery.consignor = Consignor
+viewMovement.delivery.consignor.name = Business name
+viewMovement.delivery.consignor.ern = Excise registration number (ERN)
+viewMovement.delivery.consignor.address = Address
+viewMovement.delivery.placeOfDispatch = Place of dispatch
+viewMovement.delivery.placeOfDispatch.name = Business name
+viewMovement.delivery.placeOfDispatch.ern = Excise ID (ERN)
+viewMovement.delivery.placeOfDispatch.address = Address
+viewMovement.delivery.consignee = Consignee
+viewMovement.delivery.consignee.name = Business name
+viewMovement.delivery.consignee.ern = Excise registration number (ERN)
+viewMovement.delivery.consignee.address = Address
+viewMovement.delivery.placeOfDestination = Place of destination
+viewMovement.delivery.placeOfDestination.name = Business name
+viewMovement.delivery.placeOfDestination.ern = Excise registration number (ERN)
+viewMovement.delivery.placeOfDestination.address = Address
+
 viewMovementList.title = Movements in
 viewMovementList.heading = Movements in
 viewMovementList.table.arc = ARC

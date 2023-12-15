@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.controllers
+package controllers
 
 import base.SpecBase
 import config.ErrorHandler
-import controllers.ViewMovementController
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.GetMovementResponseFixtures
 import mocks.connectors.MockEmcsTfeConnector
@@ -32,50 +31,59 @@ import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.ViewMovementHelper
 import views.html.viewMovement.ViewMovementPage
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMovementResponseFixtures {
+class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMovementResponseFixtures with MockEmcsTfeConnector {
 
-  trait Test extends MockEmcsTfeConnector {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
-    implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
 
-    val controller: ViewMovementController = new ViewMovementController(
-      app.injector.instanceOf[MessagesControllerComponents],
-      FakeSuccessAuthAction,
-      new FakeDataRetrievalAction(testMinTraderKnownFacts),
-      mockGetMovementConnector,
-      app.injector.instanceOf[ViewMovementPage],
-      app.injector.instanceOf[ErrorHandler],
-      app.injector.instanceOf[ViewMovementHelper]
-    )
-  }
+  lazy val controller: ViewMovementController = new ViewMovementController(
+    app.injector.instanceOf[MessagesControllerComponents],
+    FakeSuccessAuthAction,
+    new FakeDataRetrievalAction(testMinTraderKnownFacts),
+    mockGetMovementConnector,
+    app.injector.instanceOf[ViewMovementPage],
+    app.injector.instanceOf[ErrorHandler],
+    app.injector.instanceOf[ViewMovementHelper]
+  )
 
-  ".viewMovementOverview" should {
-    "return 200" when {
-      "connector call is successful" in new Test {
+  Seq(
+    ".viewMovementOverview" -> (() => controller.viewMovementOverview(testErn, testArc)(fakeRequest)),
+    ".viewMovementMovement" -> (() => controller.viewMovementMovement(testErn, testArc)(fakeRequest)),
+    ".viewMovementDelivery" -> (() => controller.viewMovementDelivery(testErn, testArc)(fakeRequest)),
+    ".viewMovementGuarantor" -> (() => controller.viewMovementGuarantor(testErn, testArc)(fakeRequest)),
+    ".viewMovementTransport" -> (() => controller.viewMovementTransport(testErn, testArc)(fakeRequest)),
+    ".viewMovementItems" -> (() => controller.viewMovementItems(testErn, testArc)(fakeRequest)),
+    ".viewMovementDocuments" -> (() => controller.viewMovementDocuments(testErn, testArc)(fakeRequest))
+  ).foreach { testNameToMethod =>
+    testNameToMethod._1 should {
+      "return 200" when {
+        "connector call is successful" in {
 
-        MockEmcsTfeConnector
-          .getMovement()
-          .returns(Future.successful(Right(getMovementResponseModel)))
+          MockEmcsTfeConnector
+            .getMovement()
+            .returns(Future.successful(Right(getMovementResponseModel)))
 
-        val result: Future[Result] = controller.viewMovementOverview(testErn, testArc)(fakeRequest)
+          val result: Future[Result] = testNameToMethod._2()
 
-        status(result) shouldBe Status.OK
+          status(result) shouldBe Status.OK
+        }
+      }
+      "return 500" when {
+        "connector call is unsuccessful" in {
+
+          MockEmcsTfeConnector
+            .getMovement()
+            .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+          val result: Future[Result] = testNameToMethod._2()
+
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        }
       }
     }
-    "return 500" when {
-      "connector call is unsuccessful" in new Test {
-
-        MockEmcsTfeConnector
-          .getMovement()
-          .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
-
-        val result: Future[Result] = controller.viewMovementOverview(testErn, testArc)(fakeRequest)
-
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-      }
-    }
   }
+
+
 }

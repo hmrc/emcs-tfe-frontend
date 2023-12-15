@@ -26,7 +26,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import viewmodels.helpers.ViewMovementHelper
-import viewmodels.{Movement, Overview, SubNavigationTab}
+import viewmodels._
 import views.html.viewMovement.ViewMovementPage
 
 
@@ -69,7 +69,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
             )
 
             behave like pageWithExpectedElementsAndMessages(Seq(
-              Selectors.title -> messagesForLanguage.title,
+              Selectors.title -> messagesForLanguage.title(testArc, messagesForLanguage.overviewTabHeading),
               Selectors.h2(1) -> messagesForLanguage.arcSubheading,
               Selectors.h1 -> testArc,
 
@@ -171,6 +171,50 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
             Selectors.summaryCardAtIndexRowKey(3, 2) -> messagesForLanguage.movementInvoiceCardDateOfIssue
           ))
 
+        }
+
+        "rendering the Delivery tab" should {
+          "display the navigation and delivery cards" when {
+
+            val view = app.injector.instanceOf[ViewMovementPage]
+            implicit val doc: Document = Jsoup.parse(
+              view(
+                testErn,
+                testArc,
+                isConsignor = true,
+                SubNavigationTab.values,
+                Delivery,
+                helper.movementCard(Delivery, getMovementResponseModel)
+              ).toString()
+            )
+
+            behave like pageWithExpectedElementsAndMessages(Seq(
+              Selectors.title -> messagesForLanguage.title(testArc, messagesForLanguage.deliveryTabHeading),
+              Selectors.h2(1) -> messagesForLanguage.arcSubheading,
+              Selectors.h1 -> testArc,
+              Selectors.h2(2) -> messagesForLanguage.deliveryDetailsHeading,
+
+              Selectors.subNavigationTabSelected -> messagesForLanguage.deliveryTabHeading,
+
+              Selectors.summaryCardTitle(1) -> messagesForLanguage.deliveryConsignorCardTitle,
+              Selectors.summaryCardAtIndexRowKey(1, 1) -> messagesForLanguage.deliveryCardBusinessName,
+              Selectors.summaryCardAtIndexRowKey(1, 2) -> messagesForLanguage.deliveryCardERN,
+              Selectors.summaryCardAtIndexRowKey(1, 3) -> messagesForLanguage.deliveryCardAddress,
+              Selectors.summaryCardTitle(2) -> messagesForLanguage.deliveryPlaceOfDispatchCardTitle,
+              Selectors.summaryCardAtIndexRowKey(2, 1) -> messagesForLanguage.deliveryCardBusinessName,
+              Selectors.summaryCardAtIndexRowKey(2, 2) -> messagesForLanguage.deliveryPlaceOfDispatchCardERN,
+              Selectors.summaryCardAtIndexRowKey(2, 3) -> messagesForLanguage.deliveryCardAddress,
+              Selectors.summaryCardTitle(3) -> messagesForLanguage.deliveryConsigneeCardTitle,
+              Selectors.summaryCardAtIndexRowKey(3, 1) -> messagesForLanguage.deliveryCardBusinessName,
+              Selectors.summaryCardAtIndexRowKey(3, 2) -> messagesForLanguage.deliveryCardERN,
+              Selectors.summaryCardAtIndexRowKey(3, 3) -> messagesForLanguage.deliveryCardAddress,
+              Selectors.summaryCardTitle(4) -> messagesForLanguage.deliveryPlaceOfDestinationCardTitle,
+              Selectors.summaryCardAtIndexRowKey(4, 1) -> messagesForLanguage.deliveryCardBusinessName,
+              Selectors.summaryCardAtIndexRowKey(4, 2) -> messagesForLanguage.deliveryCardERN,
+              Selectors.summaryCardAtIndexRowKey(4, 3) -> messagesForLanguage.deliveryCardAddress
+            ))
+
+          }
         }
       }
     }
