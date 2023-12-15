@@ -51,3 +51,5 @@ case class MovementException(message: String) extends Exception(message) with No
 case class MovementHistoryEventsException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class WineOperationsException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class MessageStatisticsException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse

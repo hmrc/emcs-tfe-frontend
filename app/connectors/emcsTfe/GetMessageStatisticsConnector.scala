@@ -16,9 +16,9 @@
 
 package connectors.emcsTfe
 
-import play.api.libs.json.Reads
+import play.api.libs.json.{JsResultException, Reads}
 import config.AppConfig
-import models.response.ErrorResponse
+import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import models.response.emcsTfe.GetMessageStatisticsResponse
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -36,5 +36,13 @@ class GetMessageStatisticsConnector @Inject()(val http: HttpClient,
     def url: String = s"$baseUrl/message-statistics/$exciseRegistrationNumber"
 
     get(url)
+      .recover {
+        case JsResultException(errors) =>
+          logger.warn(s"[getMessageStatistics] Bad JSON response from emcs-tfe-reference-data: " + errors)
+          Left(JsonValidationError)
+        case error =>
+          logger.warn(s"[getMessageStatistics] Unexpected error from reference-data: ${error.getClass} ${error.getMessage}")
+          Left(UnexpectedDownstreamResponseError)
+      }
   }
 }

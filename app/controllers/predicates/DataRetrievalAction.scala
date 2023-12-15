@@ -19,14 +19,15 @@ package controllers.predicates
 import play.api.mvc.ActionTransformer
 import models.auth.UserRequest
 import models.requests.DataRequest
-import services.GetTraderKnownFactsService
+import services.{GetMessageStatisticsService, GetTraderKnownFactsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRetrievalActionImpl @Inject()(getTraderKnownFactsService: GetTraderKnownFactsService)
+class DataRetrievalActionImpl @Inject()(getTraderKnownFactsService: GetTraderKnownFactsService,
+                                        getMessageStatisticsService: GetMessageStatisticsService)
                                        (implicit val ec: ExecutionContext) extends DataRetrievalAction {
 
   def apply(): ActionTransformer[UserRequest, DataRequest] = new ActionTransformer[UserRequest, DataRequest] {
@@ -39,8 +40,9 @@ class DataRetrievalActionImpl @Inject()(getTraderKnownFactsService: GetTraderKno
 
       for {
         traderKnownFacts <- getTraderKnownFactsService.getTraderKnownFacts(request.ern)
+        messageStatistics <- getMessageStatisticsService.getMessageStatistics(request.ern)
       } yield {
-        DataRequest(request, traderKnownFacts)
+        DataRequest(request, traderKnownFacts, messageStatistics)
       }
     }
   }

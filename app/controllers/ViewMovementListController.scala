@@ -21,6 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import config.ErrorHandler
 import connectors.emcsTfe.GetMovementListConnector
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
+import models.common.RoleType
 import views.html.ViewMovementListPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -39,7 +40,14 @@ class ViewMovementListController @Inject()(mcc: MessagesControllerComponents,
   def viewMovementList(exciseRegistrationNumber: String): Action[AnyContent] =
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       connector.getMovementList(exciseRegistrationNumber).map {
-        case Right(movementList) => Ok(viewMovementListPage(exciseRegistrationNumber, movementList))
+        case Right(movementList) => Ok(
+          viewMovementListPage(
+            exciseRegistrationNumber,
+            RoleType.fromExciseRegistrationNumber(exciseRegistrationNumber),
+            movementList,
+            request.messageStatistics
+          )
+        )
         case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
       }
     }

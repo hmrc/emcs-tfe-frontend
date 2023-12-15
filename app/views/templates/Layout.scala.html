@@ -18,6 +18,7 @@
 @import config.AppConfig
 @import viewmodels.TraderInfo
 @import views.html.components.activeTrader
+@import views.html.components.navigation_bar
 @import views.html.templates.FullWidthMainContentTemplate
 @import viewmodels.govuk.all._
 
@@ -36,12 +37,14 @@
     betaBanner: StandardBetaBanner,
     defaultMainContent: TwoThirdsMainContent,
     fullWidthMainContent: FullWidthMainContentTemplate,
-    activeTrader: activeTrader
+    activeTrader: activeTrader,
+    navigationBar: navigation_bar
 )
 
 @(
         pageTitle: String,
         maybeShowActiveTrader: Option[TraderInfo],
+        maybeShowNavigationBanner: Option[NavigationBannerInfo],
         showBackLink: Boolean = true,
         timeout: Boolean = true,
         showSignOut: Boolean = true,
@@ -79,6 +82,7 @@
 
 @beforeContent = {
     @{ activeTrader(maybeShowActiveTrader) }
+    @maybeShowNavigationBanner.map(info => navigationBar(info))
     @beforeContentBlock.getOrElse(())
     @if(showBackLink) {
         @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible"))

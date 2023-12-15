@@ -20,9 +20,11 @@ import play.api.mvc.WrappedRequest
 import models.auth.UserRequest
 import models.common.RoleType.RoleType
 import models.common.TraderKnownFacts
+import models.response.emcsTfe.GetMessageStatisticsResponse
 
 case class DataRequest[A](request: UserRequest[A],
-                          traderKnownFacts: TraderKnownFacts) extends WrappedRequest[A](request) {
+                          traderKnownFacts: TraderKnownFacts,
+                          messageStatistics: GetMessageStatisticsResponse) extends WrappedRequest[A](request) {
   val internalId: String = request.internalId
   val ern: String = request.ern
   val isWarehouseKeeper: Boolean = request.isWarehouseKeeper

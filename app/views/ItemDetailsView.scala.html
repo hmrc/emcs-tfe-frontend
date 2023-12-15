@@ -30,7 +30,11 @@
 
 @(item: MovementItem)(implicit request: DataRequest[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(item.productCodeDescription.getOrElse(messages("itemDetails.heading", item.itemUniqueReference))), maybeShowActiveTrader = maybeShowActiveTrader(request)) {
+@layout(
+    pageTitle = titleNoForm(item.productCodeDescription.getOrElse(messages("itemDetails.heading", item.itemUniqueReference))),
+    maybeShowActiveTrader = maybeShowActiveTrader(request),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages))
+) {
 
         @h1()(Html(item.productCodeDescription.getOrElse(messages("itemDetails.heading", item.itemUniqueReference))))
 

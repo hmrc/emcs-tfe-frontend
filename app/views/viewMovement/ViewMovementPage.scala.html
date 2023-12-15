@@ -44,7 +44,7 @@
         historyEvents: Seq[TimelineEvent]
 )(implicit request: DataRequest[_], messages: Messages)
 
-@layout(titleNoForm(arc, Some(currentSubNavigationTab.name)), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true) {
+@layout(titleNoForm(arc, Some(currentSubNavigationTab.name)), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true, maybeShowNavigationBanner = None) {
 
     @h2(messages("common.arc"), "govuk-caption-xl")
 

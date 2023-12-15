@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import views.html.components._
-@import views.html.templates.Layout
+package models
 
-@this(
-        layout: Layout,
-        h1: h1,
-        p: p,
-)
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
-@layout(pageTitle = messages(pageTitle), maybeShowActiveTrader = None, maybeShowNavigationBanner = None) {
-    @h1()(Html(messages(heading)))
-    @p()(Html(messages(message)))
-}
-
-@{
-    //$COVERAGE-OFF$
-}
+case class NavigationBannerInfo(ern :String, countOfNewMessages: Int)

@@ -16,37 +16,32 @@
 
 package controllers
 
-import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import config.{AppConfig, ErrorHandler}
-import connectors.emcsTfe.GetMessageStatisticsConnector
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import models.common.RoleType
-import views.html.AccountHomePage
+import play.api.i18n.I18nSupport
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.AccountHomePage
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
                                       accountHomePage: AccountHomePage,
-                                      errorHandler: ErrorHandler,
                                       val auth: AuthAction,
                                       val getData: DataRetrievalAction,
-                                      messageStatisticsConnector: GetMessageStatisticsConnector,
-                                      appConfig: AppConfig
                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
-  def viewAccountHome(exciseRegistrationNumber: String): Action[AnyContent] =
-    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
-      messageStatisticsConnector.getMessageStatistics(exciseRegistrationNumber).map {
-        case Right(messageStatistics) => Ok(accountHomePage(
+  def viewAccountHome(exciseRegistrationNumber: String): Action[AnyContent] = {
+    authorisedWithData(exciseRegistrationNumber) { implicit request =>
+      Ok(
+        accountHomePage(
           exciseRegistrationNumber,
-          RoleType.fromExciseRegistrationNumber(exciseRegistrationNumber),
-          request.traderKnownFacts.traderName,
-          messageStatistics
-        ))
-        case Left(_) => InternalServerError(errorHandler.standardErrorTemplate())
-      }
+          RoleType.fromExciseRegistrationNumber(exciseRegistrationNumber)
+        )
+      )
     }
+  }
+
 }
+
