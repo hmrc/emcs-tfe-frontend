@@ -30,7 +30,7 @@ class SelectItemHelperSpec extends SpecBase
     "must return a list of select items" in {
       val result = SelectItemHelper.constructSelectItems(
         selectOptions = Seq(memberStateAT, memberStateBE),
-        defaultTextMessageKey = "default",
+        defaultTextMessageKey = Some("default"),
         existingAnswer = None)
       result mustBe Seq(
         SelectItem(selected = true, disabled = true, text = "default"),
@@ -39,10 +39,21 @@ class SelectItemHelperSpec extends SpecBase
       )
     }
 
+    "must not return a default value when no default message key is given" in {
+      val result = SelectItemHelper.constructSelectItems(
+        selectOptions = Seq(memberStateAT, memberStateBE),
+        defaultTextMessageKey = None,
+        existingAnswer = None)
+      result mustBe Seq(
+        SelectItem(value = Some("AT"), text = "Austria (AT)", selected = false),
+        SelectItem(value = Some("BE"), text = "Belgium (BE)", selected = false)
+      )
+    }
+
     "must return a list of select items (pre-selected when there is an existing answer)" in {
       val result = SelectItemHelper.constructSelectItems(
         selectOptions = Seq(memberStateAT, memberStateBE),
-        defaultTextMessageKey = "default",
+        defaultTextMessageKey = Some("default"),
         existingAnswer = Some("BE"))
       result mustBe Seq(
         SelectItem(selected = false, disabled = true, text = "default"),

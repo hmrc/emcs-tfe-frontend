@@ -31,6 +31,22 @@ object ViewAllMovementsMessages {
     val sortOldest = "Dispatched (oldest)"
     val previous: String = "Previous"
     val next: String = "Next"
+
+
+    val searchKeyArc = "ARC"
+    val searchKeyLrn = "LRN"
+    val searchKeyErn = "ERN"
+    val searchKeyTransporter = "Transporter"
+
+    val searchHeading = "Search for a movement"
+    val searchText = "You can search by Administrative Reference Code (ARC), Local Reference Number (LRN), trader Excise Reference Number (ERN) or transporter name."
+    val searchInputHiddenLabel = "Search for a movement"
+    val searchSelectHiddenLabel = "Search by"
+    val searchSelectARC = "ARC"
+    val searchSelectLRN = "LRN"
+    val searchSelectERN = "ERN"
+    val searchSelectTransporter = "Transporter"
+
   }
 
   object English extends ViewMessages with EN

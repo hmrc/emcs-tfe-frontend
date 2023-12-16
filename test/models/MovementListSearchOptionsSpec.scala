@@ -17,6 +17,7 @@
 package models
 
 import base.SpecBase
+import models.MovementSearchSelectOption.{ARC, ERN, Transporter}
 import models.MovementSortingSelectOption.{ArcAscending, ArcDescending, Oldest}
 
 class MovementListSearchOptionsSpec extends SpecBase {
@@ -93,9 +94,9 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
     "unbind QueryString to URL format" in {
 
-      val expectedResult = s"sortBy=${ArcAscending.code}&index=1"
+      val expectedResult = s"searchKey=arc&searchValue=ARC123&sortBy=${ArcAscending.code}&index=1"
 
-      val actualResult = MovementListSearchOptions.queryStringBinder.unbind("search", MovementListSearchOptions())
+      val actualResult = MovementListSearchOptions.queryStringBinder.unbind("search", MovementListSearchOptions(Some(ARC), Some("ARC123")))
 
       actualResult mustBe expectedResult
     }
@@ -119,6 +120,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
       "given values" in {
 
         val expectedResult: Seq[(String, String)] = Seq(
+          "search.transporterTraderName" -> "robots in disguise",
           "search.sortOrder" -> Oldest.sortOrder,
           "search.sortField" -> Oldest.sortField,
           "search.startPosition" -> "26",
@@ -126,6 +128,8 @@ class MovementListSearchOptionsSpec extends SpecBase {
         )
 
         val actualResult = MovementListSearchOptions(
+          searchKey = Some(Transporter),
+          searchValue = Some("robots in disguise"),
           sortBy = Oldest,
           index = 6,
           maxRows = 5
@@ -260,12 +264,14 @@ class MovementListSearchOptionsSpec extends SpecBase {
       "return a valid MovementListSearchOption" in {
 
         val expectedResult = MovementListSearchOptions(
+          searchKey = Some(ARC),
+          searchValue = Some("ARC123"),
           sortBy = Oldest,
           index = 1,
           maxRows = 10
         )
 
-        val actualResult = MovementListSearchOptions.apply(Oldest.code)
+        val actualResult = MovementListSearchOptions.apply(Some(ARC.code), Some("ARC123"), Oldest.code)
 
         actualResult mustBe expectedResult
       }
@@ -275,10 +281,12 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
       "return the string values for MovementListSearchOptions" in {
 
-        val expectedResult = Some(Oldest.code)
+        val expectedResult = Some(Some("otherTraderId"), Some("ERN123456"), Oldest.code)
 
         val actualResult = MovementListSearchOptions.unapply(
           MovementListSearchOptions(
+            searchKey = Some(ERN),
+            searchValue = Some("ERN123456"),
             sortBy = Oldest,
             index = 1,
             maxRows = 10

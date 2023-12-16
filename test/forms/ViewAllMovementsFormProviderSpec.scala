@@ -17,6 +17,8 @@
 package forms
 
 import base.SpecBase
+import models.MovementListSearchOptions
+import models.MovementSearchSelectOption.ARC
 import models.MovementSortingSelectOption.ArcAscending
 
 class ViewAllMovementsFormProviderSpec extends SpecBase {
@@ -25,11 +27,32 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
   ".sortBy" should {
 
-    val fieldName = "sortBy"
+    val sortByKey = "sortBy"
+    val searchKey = "searchKey"
+    val searchValue = "searchValue"
 
-    s"not bind a value that contains XSS chars" in {
+    "bind when the searchKey is present" in {
+      val boundForm = form.bind(Map(searchKey -> ARC.code, sortByKey -> ArcAscending.code))
+      boundForm.get mustBe MovementListSearchOptions(Some(ARC), None)
+    }
 
-      val boundForm = form.bind(Map(fieldName -> ArcAscending.code))
+    "bind when the searchValue is present" in {
+      val boundForm = form.bind(Map(searchValue -> "ARC1", sortByKey -> ArcAscending.code))
+      boundForm.get mustBe MovementListSearchOptions(None, Some("ARC1"))
+    }
+
+    "remove any non-alphanumerics from the form values" in {
+      val boundForm = form.bind(Map(
+        searchKey -> "$$arc\\/&.?",
+        searchValue -> "ARC1/injecting-viruses!!!!<script>\"alert</script>",
+        sortByKey -> "^^arcAsc!?",
+      ))
+      boundForm.get mustBe MovementListSearchOptions(Some(ARC), Some("ARC1injectingvirusesscriptalertscript"), sortBy = ArcAscending)
+    }
+
+    "not bind a value that contains XSS chars" in {
+
+      val boundForm = form.bind(Map(sortByKey -> ArcAscending.code))
       boundForm.errors mustBe Seq.empty
     }
   }

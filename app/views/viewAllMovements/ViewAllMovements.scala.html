@@ -31,26 +31,85 @@
     formHelper: FormWithCSRF,
     table: table,
     h1: h1,
+    h2: h2,
+    p: p,
     appConfig: AppConfig,
     govukPagination : GovukPagination,
     govukSelect : GovukSelect,
+    govukInput: GovukInput,
+    govukButton: GovukButton,
+    govukFieldset: GovukFieldset,
     movementList: MovementsList,
     helper: ViewAllMovementsTableHelper
 )
 
-@(form: Form[_], action: Call, ern: String, movements: Seq[GetMovementListItem], selectItems: Seq[SelectItem], pagination: Option[Pagination])(implicit request: Request[_], messages: Messages)
 
-    @layout(pageTitle = messages("viewAllMovements.title"), maybeShowActiveTrader = None) {
+@(form: Form[_], action: Call, ern: String, movements: Seq[GetMovementListItem], sortSelectItems: Seq[SelectItem], searchSelectItems: Seq[SelectItem], pagination: Option[Pagination])(implicit request: Request[_], messages: Messages)
+  @searchFields = {
 
-        @formHelper(action) {
-
-            @h1() {
-                @messages("viewAllMovements.heading")
-            }
-
-            @movementList(ern, movements, selectItems, pagination)
-        }
+    @p() {
+      @messages("viewAllMovements.search.p1")
     }
+
+    <div class="hmrc-search-group-wrapper">
+      <div class="govuk-grid-column-one-half hmrc-search-group">
+
+        @govukInput(
+          InputViewModel(
+            field = form("searchValue"),
+            label = LabelViewModel(Text(messages("viewAllMovements.search.heading"))).hidden
+          ).withCssClass("govuk-input--width-30 custom-input").withInputType("search")
+        )
+
+      </div>
+
+      <div class="govuk-grid-column-one-half hmrc-search-group-flex">
+        @govukSelect(Select(
+          items = searchSelectItems,
+          name = "searchKey",
+          id = "searchKey",
+          label = LabelViewModel(
+            content = Text(messages("viewAllMovements.search.by.hidden"))
+          ).hidden,
+          classes = "hmrc-search-by-dropdown"
+        ))
+        @govukButton(
+          ButtonViewModel(Text(messages("viewAllMovements.search.button")))
+          .withCssClass("govuk-!-margin-left-2 hmrc-search-button")
+        )
+      </div>
+    </div>
+  }
+
+  @layout(pageTitle = messages("viewAllMovements.title"), maybeShowActiveTrader = None, fullWidthContent = true) {
+
+      @formHelper(action) {
+
+        @h1() {
+            @messages("viewAllMovements.heading")
+        }
+
+
+        @govukFieldset(Fieldset(
+          legend = Some(Legend(
+            content = Text(messages("viewAllMovements.search.heading")),
+            classes = "govuk-fieldset__legend--m",
+            isPageHeading = false
+          )),
+          classes = "govuk-!-margin-bottom-2",
+          html = searchFields
+        ))
+
+        <div class="govuk-grid-column-one-third govuk-!-padding-0">
+          @* TODO: placeholder for filter component *@
+          <aside style="border: 1px solid #b1b4b6; padding: 15px">
+            @h2("Filters", "govuk-heading-m")
+          </aside>
+        </div>
+
+        @movementList(ern, movements, sortSelectItems, pagination)
+      }
+  }
 
 @{
     //$COVERAGE-OFF$
