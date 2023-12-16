@@ -17,8 +17,6 @@
 package fixtures
 
 import models.common.OriginType.TaxWarehouse
-import models.common.{AddressModel, TraderModel, TransportDetailsModel}
-import models.response.emcsTfe.{EadEsadModel, GetMovementResponse}
 import models.common.WrongWithMovement.{Excess, Shortage}
 import models.common.{AddressModel, DestinationType, TraderModel, TransportDetailsModel}
 import models.response.emcsTfe.reportOfReceipt.{ReceiptedItemsModel, ReportOfReceiptModel, UnsatisfactoryModel}
@@ -77,7 +75,7 @@ trait GetMovementResponseFixtures {
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
       )
-    ),
+    )),
     consigneeTrader = Some(TraderModel(
       traderExciseNumber = "GB12345GTR144",
       traderName = "Current 801 Consignee",
@@ -88,29 +86,8 @@ trait GetMovementResponseFixtures {
         city = Some("Zeebrugge")
       )
     )),
-    placeOfDispatchTrader = Some(TraderModel(
-      traderExciseNumber = "GB12345GTR144",
-      traderName = "Mr Dispatcher 801",
-      address = AddressModel(
-        streetNumber = None,
-        street = Some("Main101"),
-        postcode = Some("ZZ78"),
-        city = Some("Zeebrugge")
-      )
-    )),
-    deliveryPlaceTrader = Some(TraderModel(
-      traderExciseNumber = "GB12345GTR144",
-      traderName = "Mr Delivery place",
-      address = AddressModel(
-        streetNumber = None,
-        street = Some("Main101"),
-        postcode = Some("ZZ78"),
-        city = Some("Zeebrugge")
-      )
-    )),
-      deliveryPlaceCustomsOfficeReferenceNumber = Some("FR000003"),
-
-      dateOfDispatch = LocalDate.parse("2008-11-20"),
+    deliveryPlaceCustomsOfficeReferenceNumber = Some("FR000003"),
+    dateOfDispatch = LocalDate.parse("2008-11-20"),
     journeyTime = "20 days",
     numberOfItems = 2,
     transportDetails = Seq(
@@ -204,8 +181,8 @@ trait GetMovementResponseFixtures {
       )
     ),
     "placeOfDispatchTrader" -> Json.obj(
-      "traderExciseNumber" -> "GB12345GTR144",
-      "traderName" -> "Mr Dispatcher 801",
+      "traderExciseNumber" -> "GBRC345GTR145",
+      "traderName" -> "Current 801 Consignor",
       "address" -> Json.obj(
         "street" -> "Main101",
         "postcode" -> "ZZ78",
@@ -214,7 +191,7 @@ trait GetMovementResponseFixtures {
     ),
     "deliveryPlaceTrader" -> Json.obj(
       "traderExciseNumber" -> "GB12345GTR144",
-      "traderName" -> "Mr Delivery place",
+      "traderName" -> "Current 801 Consignee",
       "address" -> Json.obj(
         "street" -> "Main101",
         "postcode" -> "ZZ78",

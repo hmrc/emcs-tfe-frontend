@@ -25,8 +25,8 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import viewmodels.helpers.ViewMovementHelper
 import viewmodels._
+import viewmodels.helpers.ViewMovementHelper
 import views.html.viewMovement.ViewMovementPage
 
 
@@ -148,7 +148,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
           )
 
           behave like pageWithExpectedElementsAndMessages(Seq(
-            Selectors.title -> messagesForLanguage.title,
+            Selectors.title -> messagesForLanguage.title(testArc, messagesForLanguage.movementTabHeading),
             Selectors.h2(1) -> messagesForLanguage.arcSubheading,
             Selectors.h1 -> testArc,
 
