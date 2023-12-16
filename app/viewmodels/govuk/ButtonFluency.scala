@@ -46,6 +46,11 @@ trait ButtonFluency {
         inputType = Some(inputType)
       )
 
+    def withId(id: String): Button =
+      button copy(
+        id = Some(id)
+      )
+
     def withName(name: String): Button =
       button copy (name = Some(name))
 
