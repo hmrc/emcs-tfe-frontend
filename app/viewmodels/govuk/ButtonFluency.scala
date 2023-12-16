@@ -74,5 +74,8 @@ trait ButtonFluency {
 
     def asWarningButton(): Button =
       withCssClass("govuk-button--warning")
+
+    def withId(id: String): Button =
+      button copy (id = Some(id))
   }
 }

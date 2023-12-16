@@ -17,14 +17,12 @@
 package controllers
 
 import base.SpecBase
-import config.ErrorHandler
 import controllers.predicates.FakeAuthAction
 import fixtures.MovementListFixtures
 import fixtures.messages.EN
 import forms.ViewAllMovementsFormProvider
 import mocks.connectors.MockEmcsTfeConnector
 import mocks.viewmodels.MockMovementPaginationHelper
-import models.MovementSearchSelectOption.ARC
 import models.MovementSortingSelectOption.{ArcAscending, Newest}
 import models.response.UnexpectedDownstreamResponseError
 import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
@@ -37,10 +35,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.helpers.SelectItemHelper
 import views.html.viewAllMovements.ViewAllMovements
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures with FakeAuthAction with MockMovementPaginationHelper with MockEmcsTfeConnector {
 

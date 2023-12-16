@@ -37,7 +37,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
   object Selectors extends BaseSelectors {
     val headingLinkRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > h2 > a"
 
-    val selectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
+    val sortBySelectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
     val consignorRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > ul > li:nth-child(1)"
     val dateOfDispatchRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > ul > li:nth-child(2)"
     val statusTagRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(2) > strong"
@@ -49,6 +49,10 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     val searchText = "#main-content .govuk-fieldset > p"
     val hiddenSearchBoxLabel = "#main-content .hmrc-search-group .govuk-form-group > label"
     val hiddenSearchSelectLabel = "#main-content .hmrc-search-group-flex .govuk-form-group > label"
+
+    val sortButton = "#sort-button"
+    val searchButton = "#search-button"
+
     def hiddenInputSearchSelectOption(value: String) = s"#searchKey > option[value=$value]"
   }
 
@@ -90,14 +94,14 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.hiddenInputSearchSelectOption("lrn") -> English.searchSelectLRN,
         Selectors.hiddenInputSearchSelectOption("otherTraderId") -> English.searchSelectERN,
         Selectors.hiddenInputSearchSelectOption("transporterTraderName") -> English.searchSelectTransporter,
-        document.select(Selectors.label("sortBy")).text() shouldBe English.sortByLabel
-          document.select(Selectors.selectOption(2)).text() shouldBe English.sortArcAscending
-        document.select(Selectors.selectOption(3)).text() shouldBe English.sortArcDescending
-      document.select(Selectors.selectOption(4)).text() shouldBe English.sortNewest
-      document.select(Selectors.selectOption(5)).text() shouldBe English.sortOldest
-      document.select(Selectors.button).text() shouldBe English.sortByButton
-
-      Selectors.headingLinkRow(1) -> getMovementListResponse.movements(0).arc,
+        Selectors.searchButton -> English.searchButton,
+        Selectors.label("sortBy") -> English.sortByLabel,
+        Selectors.sortBySelectOption(1) -> English.sortArcAscending,
+        Selectors.sortBySelectOption(2) -> English.sortArcDescending,
+        Selectors.sortBySelectOption(3) -> English.sortNewest,
+        Selectors.sortBySelectOption(4) -> English.sortOldest,
+        Selectors.sortButton -> English.sortByButton,
+        Selectors.headingLinkRow(1) -> getMovementListResponse.movements(0).arc,
         Selectors.consignorRow(1) -> English.consignor(getMovementListResponse.movements(0).otherTraderID),
         Selectors.dateOfDispatchRow(1) -> English.dateOfDispatch(getMovementListResponse.movements(0).formattedDateOfDispatch),
         Selectors.statusTagRow(1) -> getMovementListResponse.movements(0).movementStatus,
@@ -137,12 +141,13 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.hiddenInputSearchSelectOption("lrn") -> English.searchSelectLRN,
         Selectors.hiddenInputSearchSelectOption("otherTraderId") -> English.searchSelectERN,
         Selectors.hiddenInputSearchSelectOption("transporterTraderName") -> English.searchSelectTransporter,
-        document.select(Selectors.label("sortBy")).text() shouldBe English.sortByLabel
-          document.select(Selectors.selectOption(2)).text() shouldBe English.sortArcAscending
-        document.select(Selectors.selectOption(3)).text() shouldBe English.sortArcDescending
-      document.select(Selectors.selectOption(4)).text() shouldBe English.sortNewest
-      document.select(Selectors.selectOption(5)).text() shouldBe English.sortOldest
-      document.select(Selectors.button).text() shouldBe English.sortByButton
+        Selectors.searchButton -> English.searchButton,
+        Selectors.label("sortBy") -> English.sortByLabel,
+        Selectors.sortBySelectOption(1) -> English.sortArcAscending,
+        Selectors.sortBySelectOption(2) -> English.sortArcDescending,
+        Selectors.sortBySelectOption(3) -> English.sortNewest,
+        Selectors.sortBySelectOption(4) -> English.sortOldest,
+        Selectors.sortButton -> English.sortByButton,
         Selectors.headingLinkRow(1) -> getMovementListResponse.movements(0).arc,
         Selectors.consignorRow(1) -> English.consignor(getMovementListResponse.movements(0).otherTraderID),
         Selectors.dateOfDispatchRow(1) -> English.dateOfDispatch(getMovementListResponse.movements(0).formattedDateOfDispatch),

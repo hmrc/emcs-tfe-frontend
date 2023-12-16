@@ -45,22 +45,22 @@ class MovementSearchSelectOptionSpec extends SpecBase with GuiceOneAppPerSuite {
 
       "output the correct messages for ARC" in {
 
-        msgs(ARC.displayName) mustBe English.searchKeyArc
+        msgs(ARC.displayName) mustBe English.searchSelectARC
       }
 
       "output the correct messages for LRN" in {
 
-        msgs(LRN.displayName) mustBe English.searchKeyLrn
+        msgs(LRN.displayName) mustBe English.searchSelectLRN
       }
 
       "output the correct messages for ERN" in {
 
-        msgs(ERN.displayName) mustBe English.searchKeyErn
+        msgs(ERN.displayName) mustBe English.searchSelectERN
       }
 
       "output the correct messages for Transporter" in {
 
-        msgs(Transporter.displayName) mustBe English.searchKeyTransporter
+        msgs(Transporter.displayName) mustBe English.searchSelectTransporter
       }
     }
   }

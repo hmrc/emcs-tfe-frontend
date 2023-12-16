@@ -58,7 +58,7 @@
           InputViewModel(
             field = form("searchValue"),
             label = LabelViewModel(Text(messages("viewAllMovements.search.heading"))).hidden
-          ).withCssClass("govuk-input--width-30 custom-input").withInputType("search")
+          ).withCssClass("govuk-input--width-30").withInputType("search")
         )
 
       </div>
@@ -75,7 +75,8 @@
         ))
         @govukButton(
           ButtonViewModel(Text(messages("viewAllMovements.search.button")))
-          .withCssClass("govuk-!-margin-left-2 hmrc-search-button")
+            .withCssClass("govuk-!-margin-left-2 hmrc-search-button")
+            .withId("search-button")
         )
       </div>
     </div>

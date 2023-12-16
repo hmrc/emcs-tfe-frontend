@@ -281,7 +281,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
       "return the string values for MovementListSearchOptions" in {
 
-        val expectedResult = Some(Some("otherTraderId"), Some("ERN123456"), Oldest.code)
+        val expectedResult = Some((Some("otherTraderId"), Some("ERN123456"), Oldest.code))
 
         val actualResult = MovementListSearchOptions.unapply(
           MovementListSearchOptions(

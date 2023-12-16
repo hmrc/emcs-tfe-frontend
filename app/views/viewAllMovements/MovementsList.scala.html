@@ -49,11 +49,11 @@
             classes = "govuk-!-display-inline"
           ))
 
-        @govukButton(
-            ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
-                .withId("sortBySubmit")
+          @govukButton(
+              ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
                 .withCssClass("govuk-!-margin-left-2")
-        )
+                .withId("sort-button")
+          )
 
       </div>
 
