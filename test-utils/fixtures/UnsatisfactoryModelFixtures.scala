@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package utils
+package fixtures
 
-import java.time.{LocalDate, LocalTime}
-import java.time.format.DateTimeFormatter
+import models.common.WrongWithMovement
+import models.common.WrongWithMovement._
+import models.response.emcsTfe.reportOfReceipt.UnsatisfactoryModel
 
-trait DateUtils {
-  implicit class LocalDateExtensions(date: LocalDate) {
-    def formatDateForUIOutput(): String = {
-      val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-      formatter.format(date)
-    }
+trait UnsatisfactoryModelFixtures extends BaseFixtures {
+
+  val reasonMapping: WrongWithMovement => Int = {
+    case Other => 0
+    case Excess => 1
+    case Shortage => 2
+    case Damaged => 3
+    case BrokenSeals => 4
   }
 
-  implicit class LocalTimeExtensions(time: LocalTime) {
-    def formatTimeForUIOutput(): String = {
-      val formatter = DateTimeFormatter.ofPattern("h:mm a")
-      formatter.format(time)
-    }
-  }
+  def maxUnsatisfactoryModel(reason: WrongWithMovement) = UnsatisfactoryModel(reason, Some("info"))
+
+  def minUnsatisfactoryModel(reason: WrongWithMovement) = UnsatisfactoryModel(reason, None)
+
+
 }

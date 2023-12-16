@@ -14,6 +14,7 @@ base.captionHiddenText = This section is
 
 common.arc = Administrative reference code
 
+# MOV02 - Links
 viewMovement.title = Movement details
 viewMovement.reportAReceipt = Submit report of receipt
 viewMovement.reportAReceipt.info = You can only do this after you have taken delivery of the goods.
@@ -32,6 +33,8 @@ viewMovement.printOrSaveEad.info = Make a printed or digital copy of this moveme
 viewMovement.createMovement = Create movement
 viewMovement.actions.heading = Actions
 viewMovement.history.heading = History
+
+# MOVO2 - Overview
 viewMovement.overview.title = Overview
 viewMovement.overview.lrn = Local Reference Number (LRN)
 viewMovement.overview.eadStatus = Electronic administrative document (eAD) status
@@ -41,6 +44,57 @@ viewMovement.overview.consignor = Consignor
 viewMovement.overview.numberOfItems = Number of items
 viewMovement.overview.transporting = Transporting vehicle(s)
 
+# MOV02 - Movement
+viewMovement.movement.title = Movement details
+viewMovement.movement.summary = Summary
+viewMovement.movement.summary.lrn = LRN
+viewMovement.movement.summary.eADStatus = eAD status
+viewMovement.movement.summary.eADStatus.explanation.accepted = An eAD has been created and the movement may be in transit.
+viewMovement.movement.summary.eADStatus.explanation.cancelled = The consignor has cancelled the movement before the date of dispatch on the eAD.
+viewMovement.movement.summary.eADStatus.explanation.delivered = The consignee has accepted the goods and the movement has been closed.
+viewMovement.movement.summary.eADStatus.explanation.diverted = The consignor has successfully submitted a change of destination before the goods have been received or in response to the consignee’s complete refusal of the goods.
+viewMovement.movement.summary.eADStatus.explanation.manuallyclosed = The member state of the consignor has manually closed the movement due to a technical problem preventing a report of receipt or because the consignee has gone out of business.
+viewMovement.movement.summary.eADStatus.explanation.refused = The consignee has refused all goods in the movement and the consignor must create a change of destination.
+viewMovement.movement.summary.eADStatus.explanation.none =
+viewMovement.movement.summary.eADStatus.explanation.partiallyrefused = The consignee has refused some goods in the movement and the consignor must create a change of destination.
+viewMovement.movement.summary.eADStatus.explanation.exporting = The movement has been accepted for export by customs.
+viewMovement.movement.summary.eADStatus.explanation.deemedexported = The movement has been approved for export by customs, but this status does not confirm that the goods have been exported (the report of receipt will provide confirmation).
+viewMovement.movement.summary.eADStatus.explanation.replaced = The movement of energy products has been split into two or more parts (up to a maximum of 9 parts).
+viewMovement.movement.summary.eADStatus.explanation.stopped = Officials have seized the movement because of an incident or irregularity.
+viewMovement.movement.summary.eADStatus.explanation.rejected = The consignee has rejected the movement and the consignor must now submit a change of destination if the goods are in transit or cancel the movement if the goods have not departed.
+viewMovement.movement.summary.receiptStatus = Receipt status
+viewMovement.movement.summary.receiptStatus.satisfactory = Accepted and satisfactory
+viewMovement.movement.summary.receiptStatus.unsatisfactory = Accepted and unsatisfactory
+viewMovement.movement.summary.receiptStatus.refused = Refused
+viewMovement.movement.summary.receiptStatus.partiallyRefused = Partially refused
+viewMovement.movement.summary.type = Movement type
+viewMovement.movement.summary.type.gbTaxWarehouseTo = Great Britain tax warehouse to {0}
+viewMovement.movement.summary.type.dispatchPlaceTo = {0} tax warehouse to {1}
+viewMovement.movement.summary.type.importFor = Import for {0}
+viewMovement.movement.summary.type.1.gbTaxWarehouse = Great Britain tax warehouse
+viewMovement.movement.summary.type.1.euTaxWarehouse = European Union tax warehouse
+viewMovement.movement.summary.type.2.exportWithCustomsDeclarationLodgedInTheUk = Export with customs declaration lodged in the United Kingdom
+viewMovement.movement.summary.type.2.gbTaxWarehouse = Tax warehouse in Great Britain
+viewMovement.movement.summary.type.2.directDelivery = Direct delivery
+viewMovement.movement.summary.type.2.euTaxWarehouse = Tax warehouse in the European Union
+viewMovement.movement.summary.type.2.exemptedOrganisation = Exempted organisation
+viewMovement.movement.summary.type.2.exportWithCustomsDeclarationLodgedInTheEu = Export with customs declaration lodged in the European Union
+viewMovement.movement.summary.type.2.registeredConsignee = Registered consignee
+viewMovement.movement.summary.type.2.temporaryRegisteredConsignee = Temporary registered consignee
+viewMovement.movement.summary.type.2.unknownDestination = Unknown destination
+viewMovement.movement.summary.type.dispatchPlace.GB = Great Britain
+viewMovement.movement.summary.type.dispatchPlace.XI = Northern Ireland
+viewMovement.movement.summary.direction = Movement direction
+viewMovement.movement.summary.direction.out = Outbound
+viewMovement.movement.summary.direction.in = Inbound
+viewMovement.movement.timeAndDate = Time and date
+viewMovement.movement.timeAndDate.dateOfDispatch = Date of dispatch
+viewMovement.movement.timeAndDate.timeOfDispatch = Time of dispatch
+viewMovement.movement.timeAndDate.predictedArrival = Predicted arrival
+viewMovement.movement.timeAndDate.dateOfArrival = Date of arrival
+viewMovement.movement.invoice = Invoice
+viewMovement.movement.invoice.reference = Invoice reference
+viewMovement.movement.invoice.dateOfIssue = Invoice date of issue
 
 viewMovementList.title = Movements in
 viewMovementList.heading = Movements in
@@ -72,6 +126,7 @@ accountHome.roleType.XIPA = Certified consignor located in Northern Ireland
 accountHome.roleType.XIPB = Certified consignee located in Northern Ireland
 accountHome.roleType.XIPC = Temporary certified consignor located in Northern Ireland
 accountHome.roleType.XIPD = Temporary certified consignee located in Northern Ireland
+accountHome.roleType.unknown = Unknown
 accountHome.ern = Excise registration number (ERN):
 accountHome.yourMessages = Your messages
 accountHome.allMessagesLink = All messages

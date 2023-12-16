@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models.response.emcsTfe
+package models.response.emcsTfe
 
-import models.common.{TraderModel, TransportDetailsModel}
-import models.response.emcsTfe.EadEsadModel
+import models.common.{DestinationType, TraderModel, TransportDetailsModel}
+import models.response.emcsTfe.reportOfReceipt.ReportOfReceiptModel
 import play.api.libs.json.{Json, OFormat}
 import utils.{DateUtils, ExpectedDateOfArrival}
 
@@ -27,16 +27,23 @@ import java.time.{LocalDate, LocalTime}
 case class GetMovementResponse(
                                 arc: String,
                                 sequenceNumber: Int,
+                                destinationType: DestinationType,
                                 localReferenceNumber: String,
                                 eadEsad: EadEsadModel,
                                 eadStatus: String,
+                                deliveryPlaceTrader: Option[TraderModel],
+                                placeOfDispatchTrader: Option[TraderModel],
+                                deliveryPlaceCustomsOfficeReferenceNumber: Option[String],
                                 consignorTrader: TraderModel,
                                 dateOfDispatch: LocalDate,
                                 journeyTime: String,
                                 numberOfItems: Int,
-                                transportDetails: Seq[TransportDetailsModel]
+                                transportDetails: Seq[TransportDetailsModel],
+                                reportOfReceipt: Option[ReportOfReceiptModel]
                               ) extends DateUtils with ExpectedDateOfArrival {
   def formattedDateOfDispatch: String = dateOfDispatch.formatDateForUIOutput()
+
+  def formattedDateOfArrival: Option[String] = reportOfReceipt.map(_.dateOfArrival.formatDateForUIOutput())
 
   def formattedExpectedDateOfArrival: String = {
     calculateExpectedDate(

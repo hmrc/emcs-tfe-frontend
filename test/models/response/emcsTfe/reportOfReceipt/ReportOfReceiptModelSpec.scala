@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-package utils
+package models.response.emcsTfe.reportOfReceipt
 
-import java.time.{LocalDate, LocalTime}
-import java.time.format.DateTimeFormatter
+import base.SpecBase
+import fixtures.ReportOfReceiptFixtures
+import models.JsonModelBaseSpec
+import play.api.libs.json.{JsObject, Json}
 
-trait DateUtils {
-  implicit class LocalDateExtensions(date: LocalDate) {
-    def formatDateForUIOutput(): String = {
-      val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-      formatter.format(date)
-    }
-  }
+class ReportOfReceiptModelSpec extends SpecBase with ReportOfReceiptFixtures with JsonModelBaseSpec {
 
-  implicit class LocalTimeExtensions(time: LocalTime) {
-    def formatTimeForUIOutput(): String = {
-      val formatter = DateTimeFormatter.ofPattern("h:mm a")
-      formatter.format(time)
-    }
+  "ReportOfReceiptModel" must {
+
+    testJsonToModel(
+      "max fields",
+      Json.toJson(maxReportOfReceiptModel).as[JsObject],
+      maxReportOfReceiptModel
+    )
+
+    testJsonToModel(
+      "min fields",
+      Json.toJson(minSubmitReportOfReceiptModel).as[JsObject],
+      minSubmitReportOfReceiptModel
+    )
+
   }
 }

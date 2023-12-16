@@ -18,6 +18,9 @@ package models.response.emcsTfe
 
 import models.common.OriginType
 import play.api.libs.json.{Json, OFormat}
+import utils.DateUtils
+
+import java.time.{LocalDate, LocalTime}
 
 case class EadEsadModel(
                          localReferenceNumber: String,
@@ -28,7 +31,18 @@ case class EadEsadModel(
                          timeOfDispatch: Option[String],
                          upstreamArc: Option[String],
                          importSadNumber: Option[Seq[String]]
-                       )
+                       ) extends DateUtils {
+
+  def formattedInvoiceDate: Option[String] =
+    invoiceDate.map { dateAsString =>
+      LocalDate.parse(dateAsString).formatDateForUIOutput()
+    }
+
+  def formattedTimeOfDispatch: Option[String] =
+    timeOfDispatch.map { timeAsString =>
+      LocalTime.parse(timeAsString).formatTimeForUIOutput()
+    }
+}
 
 object EadEsadModel {
 

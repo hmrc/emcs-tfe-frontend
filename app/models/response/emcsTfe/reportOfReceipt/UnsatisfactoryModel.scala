@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package utils
+package models.response.emcsTfe.reportOfReceipt
 
-import java.time.{LocalDate, LocalTime}
-import java.time.format.DateTimeFormatter
+import models.common.WrongWithMovement
+import play.api.libs.json.{Json, OFormat}
 
-trait DateUtils {
-  implicit class LocalDateExtensions(date: LocalDate) {
-    def formatDateForUIOutput(): String = {
-      val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-      formatter.format(date)
-    }
-  }
+case class UnsatisfactoryModel(reason: WrongWithMovement,
+                               additionalInformation: Option[String])
 
-  implicit class LocalTimeExtensions(time: LocalTime) {
-    def formatTimeForUIOutput(): String = {
-      val formatter = DateTimeFormatter.ofPattern("h:mm a")
-      formatter.format(time)
-    }
-  }
+object UnsatisfactoryModel {
+  implicit val format: OFormat[UnsatisfactoryModel] = Json.format
+
 }

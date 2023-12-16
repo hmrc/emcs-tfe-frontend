@@ -18,7 +18,7 @@ package utils
 
 import base.SpecBase
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalTime}
 
 class DateUtilsSpec extends SpecBase {
 
@@ -28,7 +28,14 @@ class DateUtilsSpec extends SpecBase {
     "format the date in the correct format" in new Test {
       val unformattedDate: LocalDate = LocalDate.parse("2010-03-04")
 
-      unformattedDate.formatDateForUIOutput() mustBe "04 March 2010"
+      unformattedDate.formatDateForUIOutput() mustBe "4 March 2010"
+    }
+  }
+
+  "formatTimeForUIOutput" should {
+    "format the time in the correct format" in new Test {
+      val time: LocalTime = LocalTime.of(20, 1, 3)
+      time.formatTimeForUIOutput().toLowerCase mustBe "8:01 pm"
     }
   }
 }

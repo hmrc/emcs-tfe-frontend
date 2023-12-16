@@ -22,7 +22,9 @@ object ViewMovementMessages {
     val title: String = "Movement details"
     val arcSubheading: String = "Administrative reference code"
     val overviewTabHeading = "Overview"
+    val movementTabHeading = "Movement"
 
+    val overviewCardTitle = "Overview"
     val overviewCardLrn = "Local Reference Number (LRN)"
     val overviewCardEadStatus = "Electronic administrative document (eAD) status"
     val overviewCardDateOfDispatch = "Date of dispatch"
@@ -38,6 +40,23 @@ object ViewMovementMessages {
     val actionLinkChangeOfDestination = "Submit a change of destination"
     val actionLinkAlertOrRejection = "Submit alert or rejection"
     val actionLinkPrint = "Print or save a copy of the eAD"
+
+    val movementSummaryCardTitle = "Summary"
+    val movementSummaryCardLrn = "LRN"
+    val movementSummaryCardEADStatus = "eAD status"
+    val movementSummaryCardReceiptStatus = "Receipt status"
+    val movementSummaryCardMovementType = "Movement type"
+    val movementSummaryCardMovementDirection = "Movement direction"
+
+    val movementTimeAndDateCardTitle = "Time and date"
+    val movementTimeAndDateCardDateOfDispatch = "Date of dispatch"
+    val movementTimeAndDateCardTimeOfDispatch = "Time of dispatch"
+    val movementTimeAndDateCardPredictedDateOfArrival = "Predicted arrival"
+    val movementTimeAndDateCardDateOfArrival = "Date of arrival"
+
+    val movementInvoiceCardTitle = "Invoice"
+    val movementInvoiceCardReference = "Invoice reference"
+    val movementInvoiceCardDateOfIssue = "Invoice date of issue"
   }
 
   object English extends ViewMessages with EN
