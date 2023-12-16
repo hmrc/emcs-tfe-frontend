@@ -39,9 +39,8 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        helper: ViewMovementHelper
                                       )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport with AuthActionHelper {
 
-  def viewMovementOverview(exciseRegistrationNumber: String, arc: String): Action[AnyContent] = {
+  def viewMovementOverview(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
     viewMovement(exciseRegistrationNumber, arc, Overview)
-  }
 
   def viewMovementMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
     viewMovement(exciseRegistrationNumber, arc, Movement)

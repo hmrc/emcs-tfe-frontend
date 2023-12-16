@@ -35,6 +35,7 @@ case class GetMovementResponse(
                                 placeOfDispatchTrader: Option[TraderModel],
                                 deliveryPlaceCustomsOfficeReferenceNumber: Option[String],
                                 consignorTrader: TraderModel,
+                                consigneeTrader: Option[TraderModel],
                                 dateOfDispatch: LocalDate,
                                 journeyTime: String,
                                 numberOfItems: Int,

@@ -18,11 +18,12 @@ package fixtures.messages
 
 object ViewMovementMessages {
 
-  sealed trait ViewMessages { _: i18n =>
-    val title: String = "Movement details"
+  sealed trait ViewMessages extends BaseEnglish { _: i18n =>
+    def title(arc: String, section: String): String = titleHelper(s"$arc - $section")
     val arcSubheading: String = "Administrative reference code"
     val overviewTabHeading = "Overview"
     val movementTabHeading = "Movement"
+    val deliveryTabHeading = "Delivery"
 
     val overviewCardTitle = "Overview"
     val overviewCardLrn = "Local Reference Number (LRN)"
@@ -57,6 +58,16 @@ object ViewMovementMessages {
     val movementInvoiceCardTitle = "Invoice"
     val movementInvoiceCardReference = "Invoice reference"
     val movementInvoiceCardDateOfIssue = "Invoice date of issue"
+
+    val deliveryDetailsHeading = "Delivery details"
+    val deliveryConsignorCardTitle = "Consignor"
+    val deliveryPlaceOfDispatchCardTitle = "Place of dispatch"
+    val deliveryConsigneeCardTitle = "Consignee"
+    val deliveryPlaceOfDestinationCardTitle = "Place of destination"
+    val deliveryCardBusinessName = "Business name"
+    val deliveryCardERN = "Excise registration number (ERN)"
+    val deliveryPlaceOfDispatchCardERN = "Excise ID (ERN)"
+    val deliveryCardAddress = "Address"
   }
 
   object English extends ViewMessages with EN

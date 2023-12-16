@@ -76,6 +76,16 @@ trait GetMovementResponseFixtures {
         city = Some("Zeebrugge")
       )
     )),
+    consigneeTrader = Some(TraderModel(
+      traderExciseNumber = "GB12345GTR144",
+      traderName = "Current 801 Consignee",
+      address = AddressModel(
+        streetNumber = None,
+        street = Some("Main101"),
+        postcode = Some("ZZ78"),
+        city = Some("Zeebrugge")
+      )
+    )),
     deliveryPlaceCustomsOfficeReferenceNumber = Some("FR000003"),
     dateOfDispatch = LocalDate.parse("2008-11-20"),
     journeyTime = "20 days",
@@ -155,6 +165,33 @@ trait GetMovementResponseFixtures {
     "consignorTrader" -> Json.obj(
       "traderExciseNumber" -> "GBRC345GTR145",
       "traderName" -> "Current 801 Consignor",
+      "address" -> Json.obj(
+        "street" -> "Main101",
+        "postcode" -> "ZZ78",
+        "city" -> "Zeebrugge"
+      )
+    ),
+    "consigneeTrader" -> Json.obj(
+      "traderExciseNumber" -> "GB12345GTR144",
+      "traderName" -> "Current 801 Consignee",
+      "address" -> Json.obj(
+        "street" -> "Main101",
+        "postcode" -> "ZZ78",
+        "city" -> "Zeebrugge"
+      )
+    ),
+    "placeOfDispatchTrader" -> Json.obj(
+      "traderExciseNumber" -> "GBRC345GTR145",
+      "traderName" -> "Current 801 Consignor",
+      "address" -> Json.obj(
+        "street" -> "Main101",
+        "postcode" -> "ZZ78",
+        "city" -> "Zeebrugge"
+      )
+    ),
+    "deliveryPlaceTrader" -> Json.obj(
+      "traderExciseNumber" -> "GB12345GTR144",
+      "traderName" -> "Current 801 Consignee",
       "address" -> Json.obj(
         "street" -> "Main101",
         "postcode" -> "ZZ78",

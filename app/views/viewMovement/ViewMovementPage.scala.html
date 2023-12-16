@@ -41,7 +41,7 @@
         movementTabBody: HtmlContent
 )(implicit request: DataRequest[_], messages: Messages)
 
-@layout(pageTitle = messages("viewMovement.title"), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true) {
+@layout(titleNoForm(arc, Some(currentSubNavigationTab.name)), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true) {
 
     @h2(messages("common.arc"), "govuk-caption-xl")
 

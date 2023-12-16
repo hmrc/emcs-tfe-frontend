@@ -20,6 +20,7 @@ import models.common.RoleType
 import models.common.RoleType.{GBRC, GBWK, XIRC, XIWK}
 import models.movementScenario.MovementScenario
 import models.movementScenario.MovementScenario._
+import models.common.AddressModel
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import models.response.{InvalidUserTypeException, MissingDispatchPlaceTraderException}
@@ -29,7 +30,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.{HtmlContent, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 import utils.ExpectedDateOfArrival
-import viewmodels.{Movement, Overview, SubNavigationTab}
+import viewmodels._
 import views.html.components.{list, p}
 import views.html.viewMovement.partials.overview_partial
 
@@ -47,6 +48,7 @@ class ViewMovementHelper @Inject()(
     subNavigationTab match {
       case Overview => constructMovementOverview(movementResponse)
       case Movement => constructMovementView(movementResponse)
+      case Delivery => constructMovementDelivery(movementResponse)
       case _ => HtmlContent("")
     }
 
@@ -215,5 +217,86 @@ class ViewMovementHelper @Inject()(
         throw InvalidUserTypeException(s"[ViewMovementHelper][constructMovementView][getMovementTypeForMovementView] invalid UserType and movement scenario combination for MOV journey: $userType | $destinationType")
     }
   }
+
+private[helpers] def constructMovementDelivery(movementResponse: GetMovementResponse)(implicit messages: Messages): HtmlContent = {
+  val consignorSummaryCards = Seq(
+    summaryListRowBuilder("viewMovement.delivery.consignor.name", movementResponse.consignorTrader.traderName),
+    summaryListRowBuilder("viewMovement.delivery.consignor.ern", movementResponse.consignorTrader.traderExciseNumber),
+    summaryListRowBuilder("viewMovement.delivery.consignor.address", renderAddress(movementResponse.consignorTrader.address))
+  )
+
+  val optPlaceOfDispatchSummaryCards = movementResponse.placeOfDispatchTrader.map { placeOfDispatch =>
+    Seq(
+      summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.name", placeOfDispatch.traderName),
+      summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.ern", placeOfDispatch.traderExciseNumber),
+      summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.address", renderAddress(placeOfDispatch.address))
+    )
+  }
+
+  val optConsigneeSummaryCards = movementResponse.consigneeTrader.map { consigneeTrader =>
+    Seq(
+      summaryListRowBuilder("viewMovement.delivery.consignee.name", consigneeTrader.traderName),
+      summaryListRowBuilder("viewMovement.delivery.consignee.ern", consigneeTrader.traderExciseNumber),
+      summaryListRowBuilder("viewMovement.delivery.consignee.address", renderAddress(consigneeTrader.address))
+    )
+  }
+
+  val optPlaceOfDestinationCards = movementResponse.deliveryPlaceTrader.map { deliverPlaceTrader =>
+    Seq(
+      summaryListRowBuilder("viewMovement.delivery.placeOfDestination.name", deliverPlaceTrader.traderName),
+      summaryListRowBuilder("viewMovement.delivery.placeOfDestination.ern", deliverPlaceTrader.traderExciseNumber),
+      summaryListRowBuilder("viewMovement.delivery.placeOfDestination.address", renderAddress(deliverPlaceTrader.address))
+    )
+  }
+
+  HtmlContent(
+    HtmlFormat.fill(Seq(
+      overviewPartial(
+        headingMessageKey = Some("viewMovement.delivery.title"),
+        cardTitleMessageKey = "viewMovement.delivery.consignor",
+        consignorSummaryCards
+      ),
+      optPlaceOfDispatchSummaryCards.map { placeOfDispatchSummaryCards =>
+        overviewPartial(
+          headingMessageKey = None,
+          cardTitleMessageKey = "viewMovement.delivery.placeOfDispatch",
+          placeOfDispatchSummaryCards
+        )
+      }.getOrElse(Html("")),
+      optConsigneeSummaryCards.map { consigneeSummaryCards =>
+        overviewPartial(
+          headingMessageKey = None,
+          cardTitleMessageKey = "viewMovement.delivery.consignee",
+          consigneeSummaryCards
+        )
+      }.getOrElse(Html("")),
+      optPlaceOfDestinationCards.map { placeOfDestinationCards =>
+        overviewPartial(
+          headingMessageKey = None,
+          cardTitleMessageKey = "viewMovement.delivery.placeOfDestination",
+          placeOfDestinationCards
+        )
+      }.getOrElse(Html(""))
+    ))
+  )
+}
+
+private[helpers] def renderAddress(address: AddressModel): HtmlContent = {
+  val firstLineOfAddress = (address.streetNumber, address.street) match {
+    case (Some(propertyNumber), Some(street)) => Html(s"$propertyNumber $street <br>")
+    case (Some(number), None) => Html(s"$number <br>")
+    case (None, Some(street)) => Html(s"$street <br>")
+    case _ => Html("")
+  }
+  val city = address.city.fold(Html(""))(city => Html(s"$city <br>"))
+  val postCode = address.postcode.fold(Html(""))(postcode => Html(s"$postcode"))
+  HtmlContent(
+    HtmlFormat.fill(Seq(
+      firstLineOfAddress,
+      city,
+      postCode
+    ))
+  )
+}
 
 }
