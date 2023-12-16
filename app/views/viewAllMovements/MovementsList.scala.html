@@ -35,31 +35,34 @@
 
 @(ern: String, movements: Seq[GetMovementListItem], selectItems: Seq[SelectItem], pagination: Option[Pagination])(implicit request: Request[_], messages: Messages)
 
-    <div style="display: inline-flex; align-items: flex-end;">
-        @govukSelect(Select(
-            items = selectItems,
-            name = "sortBy",
-            id = "sortBy",
-            label = Label(
-                content = Text(messages("viewAllMovements.sort.label")),
-                classes = "govuk-!-display-inline govuk-!-padding-right-2"
-            ),
+    <div class="govuk-grid-column-two-thirds">
+
+      <div style="display: inline-flex; align-items: flex-end;">
+          @govukSelect(Select(
+              items = selectItems,
+              name = "sortBy",
+              id = "sortBy",
+              label = Label(
+                  content = Text(messages("viewAllMovements.sort.label")),
+                  classes = "govuk-!-display-inline govuk-!-padding-right-2"
+              ),
             classes = "govuk-!-display-inline"
-        ))
+          ))
 
-        @govukButton(
-            ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
-                .withId("sortBySubmit")
+          @govukButton(
+              ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
                 .withCssClass("govuk-!-margin-left-2")
-        )
+                .withId("sortBySubmit")
+          )
 
+      </div>
+
+      @table(helper.constructTable(ern, movements))
+
+      @pagination.map{ paginationLinks =>
+          @govukPagination(paginationLinks)
+      }
     </div>
-
-    @table(helper.constructTable(ern, movements))
-
-    @pagination.map{ paginationLinks =>
-        @govukPagination(paginationLinks)
-    }
 
 @{
     //$COVERAGE-OFF$

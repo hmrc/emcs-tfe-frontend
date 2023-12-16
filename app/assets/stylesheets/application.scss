@@ -6,6 +6,36 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
 @import "primary-navigation";
 @import "sub-navigation";
 
+.hmrc-search-by-dropdown {
+  min-width: auto;
+  background-color: #f3f2f1;
+  margin-left: -1px;
+}
+
+@media (max-width: 640px) {
+  .hmrc-search-group-wrapper {
+    display: flex;
+    align-items: flex-end;
+  }
+}
+
+.hmrc-search-group {
+  padding: 0;
+}
+
+.hmrc-search-group-flex {
+  padding: 0;
+  display: flex;
+}
+
+.hmrc-search-button {
+  display: inline-block;
+  margin-left: 10px;
+  position: relative;
+  vertical-align: bottom;
+  width: auto;
+}
+
 .white-space-nowrap {
   white-space: nowrap;
 }

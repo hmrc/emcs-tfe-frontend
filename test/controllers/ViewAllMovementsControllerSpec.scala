@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import config.ErrorHandler
 import controllers.predicates.FakeAuthAction
 import fixtures.MovementListFixtures
 import fixtures.messages.EN
@@ -27,7 +26,7 @@ import mocks.viewmodels.MockMovementPaginationHelper
 import models.MovementSortingSelectOption.{ArcAscending, Newest}
 import models.response.UnexpectedDownstreamResponseError
 import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
-import models.{MovementListSearchOptions, MovementSortingSelectOption}
+import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.http.Status
 import play.api.i18n.MessagesApi
@@ -39,37 +38,32 @@ import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.SelectItemHelper
 import views.html.viewAllMovements.ViewAllMovements
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures with FakeAuthAction with MockMovementPaginationHelper {
+class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures with FakeAuthAction with MockMovementPaginationHelper with MockEmcsTfeConnector {
 
-  trait Test extends MockEmcsTfeConnector {
+  val movements: Seq[GetMovementListItem] = Seq.fill(10)(movement1)
+  lazy val threePageMovementListResponse: GetMovementListResponse =
+    GetMovementListResponse(movements, 30)
 
-    val movements: Seq[GetMovementListItem] = (1 to 10) map {_ => movement1}
-    lazy val threePageMovementListResponse: GetMovementListResponse =
-      GetMovementListResponse(movements, 30)
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+  implicit val messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
 
-    implicit val messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
+  lazy val view = app.injector.instanceOf[ViewAllMovements]
+  lazy val formProvider = app.injector.instanceOf[ViewAllMovementsFormProvider]
 
-    val view = app.injector.instanceOf[ViewAllMovements]
-    val errorHandler = app.injector.instanceOf[ErrorHandler]
-    val formProvider = app.injector.instanceOf[ViewAllMovementsFormProvider]
+  val selectItemList = SelectItemHelper.constructSelectItems(MovementSortingSelectOption.values, None, None)
 
-    val selectItemList = SelectItemHelper.constructSelectItems(MovementSortingSelectOption.values, None, None)
-
-    val controller: ViewAllMovementsController = new ViewAllMovementsController(
-      mcc = app.injector.instanceOf[MessagesControllerComponents],
-      connector = mockGetMovementListConnector,
-      view = view,
-      errorHandler = errorHandler,
-      authAction = FakeSuccessAuthAction,
-      paginationHelper = mockMovementPaginationHelper,
-      formProvider = formProvider
-    )
-  }
+  lazy val controller: ViewAllMovementsController = new ViewAllMovementsController(
+    mcc = app.injector.instanceOf[MessagesControllerComponents],
+    connector = mockGetMovementListConnector,
+    view = view,
+    errorHandler = errorHandler,
+    authAction = FakeSuccessAuthAction,
+    paginationHelper = mockMovementPaginationHelper,
+    formProvider = formProvider
+  )
 
   "GET /" when {
 
@@ -77,7 +71,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
 
     "connector call is successful" should {
 
-      "redirect to the index 1 when current index is below the minimum" in new Test {
+      "redirect to the index 1 when current index is below the minimum" in {
 
         val searchOptions = MovementListSearchOptions(index = 0)
 
@@ -91,7 +85,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
         redirectLocation(result) shouldBe Some(routes.ViewAllMovementsController.onPageLoad(testErn, MovementListSearchOptions(index = 1)).url)
       }
 
-      "show the correct view and pagination with an index of 1" in new Test {
+      "show the correct view and pagination with an index of 1" in {
 
         val searchOptions = MovementListSearchOptions(index = 1)
 
@@ -109,12 +103,13 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
           ern = testErn,
           movements = movements,
-          selectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
           pagination = None
         )
       }
 
-      "show the correct view and pagination with an index of 2" in new Test {
+      "show the correct view and pagination with an index of 2" in {
 
         val searchOptions = MovementListSearchOptions(index = 2)
 
@@ -132,12 +127,13 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
           ern = testErn,
           movements = movements,
-          selectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
           pagination = None
         )
       }
 
-      "show the correct view and pagination with an index of 3" in new Test {
+      "show the correct view and pagination with an index of 3" in {
 
         val searchOptions = MovementListSearchOptions(index = 3)
 
@@ -155,12 +151,13 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
           ern = testErn,
           movements = movements,
-          selectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
           pagination = None
         )
       }
 
-      "redirect to the index 1 when current index is above the maximum" in new Test {
+      "redirect to the index 1 when current index is above the maximum" in {
 
         val searchOptions = MovementListSearchOptions(index = 4)
 
@@ -174,7 +171,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
         redirectLocation(result) shouldBe Some(routes.ViewAllMovementsController.onPageLoad(testErn, MovementListSearchOptions(index = 1)).url)
       }
 
-      "show the correct view and pagination when movement count is 1 above a multiple of the pageCount" in new Test {
+      "show the correct view and pagination when movement count is 1 above a multiple of the pageCount" in {
 
         val searchOptions = MovementListSearchOptions(index = 3)
 
@@ -192,12 +189,13 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
           ern = testErn,
           movements = movements,
-          selectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
           pagination = None
         )
       }
 
-      "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in new Test {
+      "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in {
 
         val searchOptions = MovementListSearchOptions(index = 3)
 
@@ -215,7 +213,8 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
           ern = testErn,
           movements = movements,
-          selectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
           pagination = None
         )
       }
@@ -223,7 +222,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
 
     "connector call is unsuccessful" should {
 
-      "return 500" in new Test {
+      "return 500" in {
 
         MockEmcsTfeConnector
           .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
@@ -245,7 +244,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
 
       "connector call is successful" should {
 
-        "redirect to the index 1 when current index is below the minimum" in new Test {
+        "redirect to the index 1 when current index is below the minimum" in {
 
           val searchOptions = MovementListSearchOptions(index = 0)
 
@@ -261,7 +260,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           redirectLocation(result) shouldBe Some(routes.ViewAllMovementsController.onPageLoad(testErn, MovementListSearchOptions(index = 1)).url)
         }
 
-        "show the correct view and pagination with an index of 1" in new Test {
+        "show the correct view and pagination with an index of 1" in {
 
           val searchOptions = MovementListSearchOptions(index = 1)
 
@@ -281,12 +280,13 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
             ern = testErn,
             movements = movements,
-            selectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
             pagination = None
           )
         }
 
-        "show the correct view and pagination with an index of 2" in new Test {
+        "show the correct view and pagination with an index of 2" in {
 
           val searchOptions = MovementListSearchOptions(index = 2)
 
@@ -306,12 +306,13 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
             ern = testErn,
             movements = movements,
-            selectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
             pagination = None
           )
         }
 
-        "show the correct view and pagination with an index of 3" in new Test {
+        "show the correct view and pagination with an index of 3" in {
 
           val searchOptions = MovementListSearchOptions(index = 3)
 
@@ -331,12 +332,13 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
             ern = testErn,
             movements = movements,
-            selectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
             pagination = None
           )
         }
 
-        "redirect to the index 1 when current index is above the maximum" in new Test {
+        "redirect to the index 1 when current index is above the maximum" in {
 
           val searchOptions = MovementListSearchOptions(index = 4)
 
@@ -352,7 +354,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           redirectLocation(result) shouldBe Some(routes.ViewAllMovementsController.onPageLoad(testErn, MovementListSearchOptions(index = 1)).url)
         }
 
-        "show the correct view and pagination when movement count is 1 above a multiple of the pageCount" in new Test {
+        "show the correct view and pagination when movement count is 1 above a multiple of the pageCount" in {
 
           val searchOptions = MovementListSearchOptions(index = 3)
 
@@ -372,12 +374,13 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
             ern = testErn,
             movements = movements,
-            selectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
             pagination = None
           )
         }
 
-        "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in new Test {
+        "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in {
 
           val searchOptions = MovementListSearchOptions(index = 3)
 
@@ -397,7 +400,8 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
             ern = testErn,
             movements = movements,
-            selectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
             pagination = None
           )
         }
@@ -405,7 +409,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
 
       "connector call is unsuccessful" should {
 
-        "return 500" in new Test {
+        "return 500" in {
 
           MockEmcsTfeConnector
             .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
@@ -421,7 +425,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
 
     "valid data is submitted" when {
 
-      "redirect to ViewAllMovementsController.onPageLoad" in new Test {
+      "redirect to ViewAllMovementsController.onPageLoad" in {
 
         val searchOptions = MovementListSearchOptions(index = 1)
 

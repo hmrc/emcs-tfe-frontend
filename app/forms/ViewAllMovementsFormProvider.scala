@@ -19,7 +19,7 @@ package forms
 import forms.mappings.Mappings
 import models.MovementListSearchOptions
 import play.api.data.Form
-import play.api.data.Forms.mapping
+import play.api.data.Forms.{mapping, optional}
 
 import javax.inject.Inject
 
@@ -28,12 +28,22 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
   def apply(): Form[MovementListSearchOptions] =
     Form(
       mapping(
-        ViewAllMovementsFormProvider.sortByKey -> text()
+        ViewAllMovementsFormProvider.searchKey -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllMovementsFormProvider.searchValue -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
     )
+
+  /**
+   * As these form values will be used as query parameters, we will need to silently guard against users entering `&` or `/` for example,
+   * this function will replace any non-alphanumeric with a blank value e.g. "value&unexpected/parameter" -> "valueunexpectedparameter
+   */
+  private def removeAnyNonAlphanumerics(rawString: String): String = rawString.replaceAll("[^A-Za-z0-9]", "")
 }
 
 object ViewAllMovementsFormProvider {
 
   val sortByKey = "sortBy"
+  val searchKey = "searchKey"
+  val searchValue = "searchValue"
 }
