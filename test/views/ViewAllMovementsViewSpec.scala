@@ -50,8 +50,8 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     val hiddenSearchBoxLabel = "#main-content .hmrc-search-group .govuk-form-group > label"
     val hiddenSearchSelectLabel = "#main-content .hmrc-search-group-flex .govuk-form-group > label"
 
-    val sortButton = "#sort-button"
-    val searchButton = "#search-button"
+    val sortButton = "#sortBySubmit"
+    val searchButton = "#searchButton"
 
     def hiddenInputSearchSelectOption(value: String) = s"#searchKey > option[value=$value]"
   }
