@@ -18,7 +18,6 @@ package controllers
 
 import base.SpecBase
 import config.AppConfig
-import connectors.emcsTfe.GetMessageStatisticsConnector
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import mocks.connectors.MockEmcsTfeConnector
 import models.common.RoleType.GBWK
@@ -35,7 +34,6 @@ import views.html.AccountHomePage
 import scala.concurrent.{ExecutionContext, Future}
 
 class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFactory {
-  val mockGetMessageStatisticsConnector: GetMessageStatisticsConnector = mock[GetMessageStatisticsConnector]
 
   trait Test extends MockEmcsTfeConnector {
     implicit val hc: HeaderCarrier = HeaderCarrier()
