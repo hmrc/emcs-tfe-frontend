@@ -26,7 +26,7 @@
 @htmlForTimelineEvent(timelineEvent: TimelineEvent, index: Int) = {
     <li class="hmrc-timeline__event">
 
-        <h2 class="hmrc-timeline__event-title">
+        <h2 class="hmrc-timeline__event-title govuk-heading-s">
             @link(link = timelineEvent.url, messageKey = timelineEvent.title, id = Some(s"history-event-$index"))
         </h2>
 
