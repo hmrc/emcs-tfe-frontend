@@ -43,22 +43,21 @@ trait BaseFixtures {
 
   val testTraderKnownFactsJson: JsValue = Json.parse("""{ "traderName": "Trader" }""")
 
-
   val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
-    dateTime = "",
-    exciseRegistrationNumber = "GBRC001234569",
-    countOfAllMessages = 1,
-    countOfNewMessages = 1
+    dateTime = "testDateTime",
+    exciseRegistrationNumber = testErn,
+    countOfAllMessages = 10,
+    countOfNewMessages = 5
   )
 
   val testMessageStatisticsJson: JsValue = Json.parse(
-  s"""
-      |{
-      |   "dateTime": "2009-01-26T14:11:00",
-      |   "exciseRegistrationNumber": "$testErn",
-      |   "countOfAllMessages" : 1,
-      |   "countOfNewMessages" : 1
-      |}""".stripMargin
+    s"""
+       |{
+       |   "dateTime": "2009-01-26T14:11:00",
+       |   "exciseRegistrationNumber": "$testErn",
+       |   "countOfAllMessages" : 1,
+       |   "countOfNewMessages" : 1
+       |}""".stripMargin
   )
 
 }

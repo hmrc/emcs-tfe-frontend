@@ -20,19 +20,11 @@ import base.SpecBase
 import fixtures.messages.NavigationBarMessages
 import models.NavigationBannerInfo
 import models.common.RoleType
-import models.response.emcsTfe.GetMessageStatisticsResponse
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import views.html.components.navigation_bar
 
 class NavigationBarSpec extends SpecBase {
-
-  override val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
-    dateTime = "testDateTime",
-    exciseRegistrationNumber = testErn,
-    countOfAllMessages = 10,
-    countOfNewMessages = 5
-  )
 
   val navigation_bar: navigation_bar = app.injector.instanceOf[navigation_bar]
 
