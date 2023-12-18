@@ -23,11 +23,11 @@
 
 @(timelineEvents: Seq[TimelineEvent])(implicit messages: Messages)
 
-@htmlForTimelineEvent(timelineEvent: TimelineEvent) = {
+@htmlForTimelineEvent(timelineEvent: TimelineEvent, index: Int) = {
     <li class="hmrc-timeline__event">
 
         <h2 class="hmrc-timeline__event-title">
-            @link(link = timelineEvent.url, messageKey = timelineEvent.title, id = Some(s"${timelineEvent.eventType}-history-event"))
+            @link(link = timelineEvent.url, messageKey = timelineEvent.title, id = Some(s"history-event-$index"))
         </h2>
 
         <time class="hmrc-timeline__event-meta" datetime="@{ISO_LOCAL_DATE_TIME.format(timelineEvent.date)}">
@@ -39,7 +39,7 @@
 
 @if(timelineEvents.nonEmpty) {
     <ol class="hmrc-timeline govuk-!-margin-top-5">
-        @timelineEvents.map(htmlForTimelineEvent)
+        @timelineEvents.zipWithIndex.map { case (event, index) => @htmlForTimelineEvent(event, index) }
     </ol>
 }
 

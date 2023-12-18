@@ -18,4 +18,4 @@ package viewmodels
 
 import java.time.LocalDateTime
 
-case class TimelineEvent(eventType: String,  title: String, date: LocalDateTime, url: String)
+case class TimelineEvent(eventType: String, title: String, date: LocalDateTime, url: String)
