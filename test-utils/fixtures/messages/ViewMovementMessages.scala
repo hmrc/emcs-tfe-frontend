@@ -42,7 +42,11 @@ object ViewMovementMessages {
     val itemsTableReceiptHeading = "Receipt"
 
     val itemsTableItemRow: Int => String = "Item " + _
-    val itemsReceiptStatusNotReceipted = "Not Receipted"
+    val itemsReceiptStatusNotReceipted = "Not submitted"
+    val itemsReceiptStatusUnsatisfactory = "Unsatisfactory"
+    val itemsReceiptStatusRefused = "Refused"
+    val itemsReceiptStatusSatisfactory = "Satisfactory"
+    val itemsReceiptStatusPartiallyRefused = "Partially refused"
 
     val actionLinkSubmitReportOfReceipt = "Submit report of receipt"
     val actionLinkExplainDelay = "Explain a delay"

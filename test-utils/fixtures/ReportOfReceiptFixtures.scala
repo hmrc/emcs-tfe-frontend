@@ -16,6 +16,7 @@
 
 package fixtures
 
+import models.common.AcceptMovement.{PartiallyRefused, Satisfactory}
 import models.response.emcsTfe.reportOfReceipt.ReportOfReceiptModel
 
 import java.time.LocalDate
@@ -32,7 +33,7 @@ trait ReportOfReceiptFixtures extends TraderModelFixtures with ReceiptedItemsMod
     deliveryPlaceTrader = Some(maxTraderModel),
     destinationOffice = destinationOfficeId,
     dateOfArrival = arrivalDate,
-    acceptMovement = "partiallyRefused",
+    acceptMovement = PartiallyRefused,
     individualItems = Seq(
       excessReceiptedItemsModel,
       excessReceiptedItemsModel.copy(eadBodyUniqueReference = 2)
@@ -47,7 +48,7 @@ trait ReportOfReceiptFixtures extends TraderModelFixtures with ReceiptedItemsMod
     deliveryPlaceTrader = None,
     destinationOffice = destinationOfficeId,
     dateOfArrival = arrivalDate,
-    acceptMovement = "satisfactory",
+    acceptMovement = Satisfactory,
     individualItems = Seq(),
     otherInformation = None,
     dateAndTimeOfValidationOfReportOfReceiptExport = None

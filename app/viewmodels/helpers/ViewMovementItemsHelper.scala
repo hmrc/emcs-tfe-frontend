@@ -16,7 +16,8 @@
 
 package viewmodels.helpers
 
-import models.response.emcsTfe.{GetMovementResponse, MovementItem}
+import models.common.AcceptMovement.Satisfactory
+import models.response.emcsTfe.GetMovementResponse
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
@@ -39,7 +40,7 @@ class ViewMovementItemsHelper @Inject()(list: list,
       h2(messages("viewMovement.items.h2")),
       govukTable(Table(
         firstCellIsHeader = true,
-        rows = dataRows(movement.items),
+        rows = dataRows(movement),
         head = headerRow
       ))
     ))
@@ -49,18 +50,19 @@ class ViewMovementItemsHelper @Inject()(list: list,
     HeadCell(Text(messages("viewMovement.items.table.heading.item"))),
     HeadCell(Text(messages("viewMovement.items.table.heading.description"))),
     HeadCell(Text(messages("viewMovement.items.table.heading.quantity"))),
-    HeadCell(Text(messages("viewMovement.items.table.heading.packaging")))
-    //TODO: Add in 'Receipt' column as part of ETFE-2882 (dependent on ETFE-2864 & ETFE-2858)
-    // HeadCell(Text(messages("viewMovement.items.table.heading.receipt")))
+    HeadCell(Text(messages("viewMovement.items.table.heading.packaging"))),
+    HeadCell(Text(messages("viewMovement.items.table.heading.receipt")))
   ))
 
-  private[viewmodels] def dataRows(items: Seq[MovementItem])(implicit messages: Messages): Seq[Seq[TableRow]] =
-    items.sortBy(_.itemUniqueReference).map { item =>
+  private[viewmodels] def dataRows(movement: GetMovementResponse)(implicit messages: Messages): Seq[Seq[TableRow]] =
+    movement.items.sortBy(_.itemUniqueReference).map { item =>
 
-      //TODO: Work out the status of the item based on report of receipt global conclusion and its existence in the report of receipt.
-      //      ETFE-2882 raised for this (dependent on ETFE-2864 & ETFE-2858)
-      //
-      // val itemReceiptStatus = ???
+      val itemReceiptStatus = movement.reportOfReceipt.fold(messages("viewMovement.items.receiptStatus.notReceipted")){ ror =>
+        ror.individualItems.find(_.eadBodyUniqueReference == item.itemUniqueReference) match {
+          case Some(_) => messages(s"viewMovement.items.receiptStatus.${ror.acceptMovement}")
+          case _ => messages(s"viewMovement.items.receiptStatus.$Satisfactory")
+        }
+      }
 
       Seq(
         TableRow(
@@ -85,12 +87,11 @@ class ViewMovementItemsHelper @Inject()(list: list,
           content = HtmlContent(list(item.packaging.map(pckg =>
             Html(pckg.typeOfPackage)
           )))
+        ),
+        TableRow(
+          content = Text(itemReceiptStatus),
+          classes = "white-space-nowrap"
         )
-        //        TODO: Add in as part of ETFE-2882 (dependent on ETFE-2864 & ETFE-2858)
-        //        TableRow(
-        //          content = HtmlContent(itemReceiptStatus),
-        //          classes = "white-space-nowrap"
-        //        )
       )
     }
 }

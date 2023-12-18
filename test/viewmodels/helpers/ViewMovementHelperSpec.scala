@@ -83,7 +83,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "eAD status"
         card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "Accepted An eAD has been created and the movement may be in transit."
         card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Receipt status"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Accepted and satisfactory"
+        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Accepted and unsatisfactory"
         card.select(Selectors.cardAtIndexRowKey(1, 4)).text() mustBe "Movement type"
         card.select(Selectors.cardAtIndexRowValue(1, 4)).text() mustBe "Great Britain tax warehouse to Great Britain tax warehouse"
         card.select(Selectors.cardAtIndexRowKey(1, 5)).text() mustBe "Movement direction"
