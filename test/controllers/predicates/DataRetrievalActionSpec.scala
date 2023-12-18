@@ -21,6 +21,7 @@ import fixtures.BaseFixtures
 import mocks.services.{MockGetMessageStatisticsService, MockGetTraderKnownFactsService}
 import models.auth.UserRequest
 import models.requests.DataRequest
+import models.response.{MessageStatisticsException, TraderKnownFactsException}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.ActionTransformer
 import play.api.test.FakeRequest
@@ -52,5 +53,22 @@ class DataRetrievalActionSpec
         result.messageStatistics mustBe testMessageStatistics
       }
     }
-  }
+
+      "must return a TraderKnownFactsException, given the call to getTraderKnownFacts fails" in {
+        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.failed(TraderKnownFactsException("kaboom")))
+
+        intercept[TraderKnownFactsException] {
+          await(dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)))
+        }
+      }
+
+      "must return a MessageStatisticsException, given the call to getMessageStatistics fails" in {
+        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(testMinTraderKnownFacts))
+        MockGetMessageStatisticsService.getMessageStatistics(testErn).returns(Future.failed(MessageStatisticsException("kablam")))
+
+        intercept[MessageStatisticsException] {
+          await(dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)))
+        }
+      }
+    }
 }
