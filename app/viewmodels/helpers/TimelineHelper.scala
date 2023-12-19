@@ -42,14 +42,14 @@ class TimelineHelper @Inject()() extends Logging with DateUtils {
   def getEventTitleKey(event: MovementHistoryEvent): String = {
     (event.eventType, event.sequenceNumber, event.messageRole) match {
       case ("IE801", 1, 0) => s"movementHistoryEvent.${event.eventType}.first.label"
-      case ("IE801", 2, 0) => s"movementHistoryEvent.${event.eventType}.further.label"
-      case ("IE802", 0, 1) => s"movementHistoryEvent.${event.eventType}.cod.label"
-      case ("IE802", 0, 2) => s"movementHistoryEvent.${event.eventType}.ror.label"
-      case ("IE802", 0, 3) => s"movementHistoryEvent.${event.eventType}.des.label"
-      case ("IE803", 0, 1) => s"movementHistoryEvent.${event.eventType}.diverted.label"
-      case ("IE803", 0, 2) => s"movementHistoryEvent.${event.eventType}.split.label"
-      case ("IE840", 0, 1) => s"movementHistoryEvent.${event.eventType}.first.label"
-      case ("IE840", 0, 2) => s"movementHistoryEvent.${event.eventType}.complementary.label"
+      case ("IE801", _, 0) => s"movementHistoryEvent.${event.eventType}.further.label"
+      case ("IE802", _, 1) => s"movementHistoryEvent.${event.eventType}.cod.label"
+      case ("IE802", _, 2) => s"movementHistoryEvent.${event.eventType}.ror.label"
+      case ("IE802", _, 3) => s"movementHistoryEvent.${event.eventType}.des.label"
+      case ("IE803", _, 1) => s"movementHistoryEvent.${event.eventType}.diverted.label"
+      case ("IE803", _, 2) => s"movementHistoryEvent.${event.eventType}.split.label"
+      case ("IE840", _, 1) => s"movementHistoryEvent.${event.eventType}.first.label"
+      case ("IE840", _, 2) => s"movementHistoryEvent.${event.eventType}.complementary.label"
       case _ => s"movementHistoryEvent.${event.eventType}.label"
     }
 
