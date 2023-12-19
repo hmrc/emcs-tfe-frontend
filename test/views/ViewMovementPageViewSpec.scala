@@ -19,6 +19,7 @@ package views
 import base.ViewSpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.messages.ViewMovementMessages.English
+import models.common.RoleType
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -67,7 +68,9 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel),
-                Seq.empty[TimelineEvent]
+                Seq.empty[TimelineEvent],
+                RoleType.fromExciseRegistrationNumber(testErn),
+                testMessageStatistics
               ).toString()
             )
 
@@ -100,7 +103,9 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel),
-                Seq.empty[TimelineEvent]
+                Seq.empty[TimelineEvent],
+                RoleType.fromExciseRegistrationNumber(testErn),
+                testMessageStatistics
               ).toString()
             )
 
@@ -123,7 +128,9 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel),
-                Seq.empty[TimelineEvent]
+                Seq.empty[TimelineEvent],
+                RoleType.fromExciseRegistrationNumber(testErn),
+                testMessageStatistics
               ).toString()
             )
 
@@ -154,7 +161,9 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                   TimelineEvent(eventType = "someEvent1", title = "Movement created", dateTime = eventDate, url = s"event/someEvent1/id/1"),
                   TimelineEvent(eventType = "someEvent2", title = "Destination changed", dateTime = eventDate, url = s"event/someEvent2/id/2"),
                   TimelineEvent(eventType = "someEvent3", title = "Report of receipt submitted", dateTime = eventDate, url = s"event/someEvent3/id/3")
-                )
+                ),
+                RoleType.fromExciseRegistrationNumber(testErn),
+                testMessageStatistics
               ).toString()
             )
 
@@ -177,7 +186,9 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
               SubNavigationTab.values,
               Movement,
               helper.movementCard(Movement, getMovementResponseModel),
-              Seq.empty[TimelineEvent]
+              Seq.empty[TimelineEvent],
+              RoleType.fromExciseRegistrationNumber(testErn),
+              testMessageStatistics
             ).toString()
           )
 
@@ -219,7 +230,9 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 SubNavigationTab.values,
                 Delivery,
                 helper.movementCard(Delivery, getMovementResponseModel),
-                Seq.empty[TimelineEvent]
+                Seq.empty[TimelineEvent],
+                RoleType.fromExciseRegistrationNumber(testErn),
+                testMessageStatistics
               ).toString()
             )
 
