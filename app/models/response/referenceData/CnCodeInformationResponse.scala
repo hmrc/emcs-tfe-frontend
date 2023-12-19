@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package models.common
+package models.response.referenceData
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{JsError, JsObject, JsSuccess, Reads}
 
-case class TraderModel(traderExciseNumber: String,
-                       traderName: String,
-                       address: AddressModel) {
-}
+case class CnCodeInformationResponse(data: Map[String, CnCodeInformation])
 
-object TraderModel {
-  implicit val format: OFormat[TraderModel] = Json.format
+object CnCodeInformationResponse {
+  implicit val reads: Reads[CnCodeInformationResponse] = {
+    case JsObject(underlying) => JsSuccess(CnCodeInformationResponse(underlying.map {
+      case (key, value) => (key, value.as[CnCodeInformation])
+    }.toMap))
+    case other =>
+      JsError("Unable to read CnCodeInformationResponse as a JSON object: " + other.toString())
+  }
 }

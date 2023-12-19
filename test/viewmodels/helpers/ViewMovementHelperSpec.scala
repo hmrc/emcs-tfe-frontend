@@ -27,6 +27,7 @@ import models.response.InvalidUserTypeException
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
+import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Text, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import views.BaseSelectors
@@ -51,7 +52,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
   "constructMovementOverview" should {
     "output the correct rows" in {
       val result = helper.constructMovementOverview(getMovementResponseModel)
-      val card = Jsoup.parse(result.asHtml.toString())
+      val card = Jsoup.parse(result.toString())
       card.select(Selectors.cardTitle).text() mustBe "Overview"
       card.select(Selectors.cardRowKey(1)).text() mustBe "Local Reference Number (LRN)"
       card.select(Selectors.cardRowValue(1)).text() mustBe testLrn
@@ -75,7 +76,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
       "the date of arrival is set" in {
         val result = helper.constructMovementView(getMovementResponseModel)
-        val card = Jsoup.parse(result.asHtml.toString())
+        val card = Jsoup.parse(result.toString())
         card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Summary"
         card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "LRN"
         card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe testLrn
@@ -105,7 +106,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
       "the date of arrival is NOT set (calculating the predicted date of arrival) - not showing the receipt status" in {
         val result = helper.constructMovementView(getMovementResponseModel.copy(reportOfReceipt = None))
-        val card = Jsoup.parse(result.asHtml.toString())
+        val card = Jsoup.parse(result.toString())
         card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Summary"
         card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "LRN"
         card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe testLrn
@@ -148,7 +149,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
         s"when the eAD status is ${statusToExplanation._1} - show the correct status and explanation" in {
           val result = helper.constructMovementView(getMovementResponseModel.copy(eadStatus = statusToExplanation._1))
-          val card = Jsoup.parse(result.asHtml.toString())
+          val card = Jsoup.parse(result.toString())
           if(statusToExplanation._1 == "None") {
             card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Receipt status"
           } else {
@@ -166,7 +167,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
       "consignor, place of dispatch, consignee and place of destination are present" in {
         val result = helper.constructMovementDelivery(getMovementResponseModel)
-        val card = Jsoup.parse(result.asHtml.toString())
+        val card = Jsoup.parse(result.toString())
         card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
         card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
         card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
@@ -202,7 +203,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
       "consignor, consignee and place of destination are present" in {
         val result = helper.constructMovementDelivery(getMovementResponseModel.copy(placeOfDispatchTrader = None))
-        val card = Jsoup.parse(result.asHtml.toString())
+        val card = Jsoup.parse(result.toString())
         card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
         card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
         card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
@@ -230,7 +231,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
       "consignor, place of dispatch and place of destination are present" in {
         val result = helper.constructMovementDelivery(getMovementResponseModel.copy(consigneeTrader = None))
-        val card = Jsoup.parse(result.asHtml.toString())
+        val card = Jsoup.parse(result.toString())
         card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
         card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
         card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
@@ -258,7 +259,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
       "consignor, place of dispatch and consignee are present" in {
         val result = helper.constructMovementDelivery(getMovementResponseModel.copy(deliveryPlaceTrader = None))
-        val card = Jsoup.parse(result.asHtml.toString())
+        val card = Jsoup.parse(result.toString())
         card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
         card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
         card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
@@ -297,10 +298,10 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
   }
 
   "construct a key value summary list row (when value is HTML)" in {
-    val result = helper.summaryListRowBuilder("random.key", HtmlContent("some html value"))
+    val result = helper.summaryListRowBuilder("random.key", Html("some html value"))
     result mustBe SummaryListRow(
       key = Key(Text(value = "random.key")),
-      value = Value(HtmlContent("some html value")),
+      value = Value(HtmlContent(Html("some html value"))),
       classes = "govuk-summary-list__row"
     )
   }
@@ -312,28 +313,28 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
       val addressModel: AddressModel = AddressModel(
         Some("1"), Some("Street Street"), Some("POST CODE"), Some("City City")
       )
-      helper.renderAddress(addressModel) mustBe HtmlContent("1 Street Street <br>City City <br>POST CODE")
+      helper.renderAddress(addressModel) mustBe Html("1 Street Street <br>City City <br>POST CODE")
     }
 
     "render just street when no street number provided" in {
       val addressModel: AddressModel = AddressModel(
         None, Some("Street Street"), Some("POST CODE"), Some("City City")
       )
-      helper.renderAddress(addressModel) mustBe HtmlContent("Street Street <br>City City <br>POST CODE")
+      helper.renderAddress(addressModel) mustBe Html("Street Street <br>City City <br>POST CODE")
     }
 
     "render nothing when all fields are undefined" in {
       val addressModel: AddressModel = AddressModel(
         None, None, None, None
       )
-      helper.renderAddress(addressModel) mustBe HtmlContent("")
+      helper.renderAddress(addressModel) mustBe Html("")
     }
 
     "render all rows when all fields are defined" in {
       val addressModel: AddressModel = AddressModel(
         Some("1"), Some("Street Street"), Some("POST CODE"), Some("City City")
       )
-      helper.renderAddress(addressModel) mustBe HtmlContent("1 Street Street <br>City City <br>POST CODE")
+      helper.renderAddress(addressModel) mustBe Html("1 Street Street <br>City City <br>POST CODE")
     }
   }
 
@@ -348,10 +349,10 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
     }
 
     "construct a key value summary list row (when value is HTML)" in {
-      val result = helper.summaryListRowBuilder("random.key", HtmlContent("some html value"))
+      val result = helper.summaryListRowBuilder("random.key", Html("some html value"))
       result mustBe SummaryListRow(
         key = Key(Text(value = "random.key")),
-        value = Value(HtmlContent("some html value")),
+        value = Value(HtmlContent(Html("some html value"))),
         classes = "govuk-summary-list__row"
       )
     }

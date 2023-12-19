@@ -17,6 +17,7 @@
 package support
 
 import base.SpecBase
+import org.scalatest.concurrent.IntegrationPatience
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.HeaderNames
@@ -28,7 +29,7 @@ import play.api.{Application, Environment, Mode}
 import scala.concurrent.ExecutionContext
 
 trait IntegrationBaseSpec extends SessionCookieBaker with SpecBase with WireMockHelper with GuiceOneServerPerSuite
-  with BeforeAndAfterEach with BeforeAndAfterAll {
+  with BeforeAndAfterEach with BeforeAndAfterAll with IntegrationPatience {
 
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 

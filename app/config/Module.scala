@@ -28,5 +28,7 @@ class Module extends AbstractModule {
     bind(classOf[SelectExciseNumberAuthAction]).to(classOf[SelectExciseNumberAuthActionImpl])
     bind(classOf[GetExciseProductCodesConnector]).to(classOf[GetExciseProductCodesConnectorImpl]).asEagerSingleton()
     bind(classOf[GetMemberStatesConnector]).to(classOf[GetMemberStatesConnectorImpl]).asEagerSingleton()
+    bind(classOf[GetCnCodeInformationConnector]).to(classOf[GetCnCodeInformationConnectorImpl]).asEagerSingleton()
+    bind(classOf[GetItemPackagingTypesConnector]).to(classOf[GetItemPackagingTypesConnectorImpl]).asEagerSingleton()
   }
 }

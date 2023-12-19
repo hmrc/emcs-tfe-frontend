@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package models.common
+package models.response.emcsTfe
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, Reads}
 
-case class TraderModel(traderExciseNumber: String,
-                       traderName: String,
-                       address: AddressModel) {
-}
-
-object TraderModel {
-  implicit val format: OFormat[TraderModel] = Json.format
+case class Packaging(typeOfPackage: String,
+                     quantity: Option[BigDecimal])
+object Packaging {
+  implicit val reads: Reads[Packaging] = Json.reads
 }

@@ -34,6 +34,16 @@ object ViewMovementMessages {
     val overviewCardNumberOfItems = "Number of items"
     val overviewCardTransporting = "Transporting vehicle(s)"
 
+    val itemsH2 = "Item details"
+    val itemsTableItemHeading = "Item"
+    val itemsTableCommercialDescriptionHeading = "Commercial description"
+    val itemsTableQuantityHeading = "Quantity"
+    val itemsTablePackagingHeading = "Packaging"
+    val itemsTableReceiptHeading = "Receipt"
+
+    val itemsTableItemRow: Int => String = "Item " + _
+    val itemsReceiptStatusNotReceipted = "Not Receipted"
+
     val actionLinkSubmitReportOfReceipt = "Submit report of receipt"
     val actionLinkExplainDelay = "Explain a delay"
     val actionLinkExplainShortageOrExcess = "Explain a shortage or excess"

@@ -36,10 +36,6 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
       Json.fromJson[GetMovementResponse](getMovementResponseInputJson) shouldBe JsSuccess(getMovementResponseModel)
     }
 
-    "write to json" in {
-      Json.toJson(getMovementResponseModel) shouldBe getMovementResponseInputJson
-    }
-
     ".formattedDateOfDispatch" in {
       getMovementResponseModel.formattedDateOfDispatch shouldBe "20 November 2008"
     }

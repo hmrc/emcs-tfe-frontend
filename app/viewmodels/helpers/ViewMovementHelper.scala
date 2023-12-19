@@ -16,11 +16,10 @@
 
 package viewmodels.helpers
 
-import models.common.RoleType
+import models.common.{AddressModel, RoleType}
 import models.common.RoleType.{GBRC, GBWK, XIRC, XIWK}
 import models.movementScenario.MovementScenario
 import models.movementScenario.MovementScenario._
-import models.common.AddressModel
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import models.response.{InvalidUserTypeException, MissingDispatchPlaceTraderException}
@@ -40,16 +39,18 @@ class ViewMovementHelper @Inject()(
                                     list: list,
                                     p: p,
                                     overviewPartial: overview_partial,
+                                    viewMovementItemsHelper: ViewMovementItemsHelper
                                   ) extends ExpectedDateOfArrival {
 
   def movementCard(subNavigationTab: SubNavigationTab, movementResponse: GetMovementResponse)
-                  (implicit request: DataRequest[_], messages: Messages): HtmlContent =
+                  (implicit request: DataRequest[_], messages: Messages): Html =
 
     subNavigationTab match {
       case Overview => constructMovementOverview(movementResponse)
       case Movement => constructMovementView(movementResponse)
       case Delivery => constructMovementDelivery(movementResponse)
-      case _ => HtmlContent("")
+      case Items    => viewMovementItemsHelper.constructMovementItems(movementResponse)
+      case _ => Html("")
     }
 
   private[helpers] def summaryListRowBuilder(key: String, value: String)(implicit messages: Messages) = SummaryListRow(
@@ -58,14 +59,14 @@ class ViewMovementHelper @Inject()(
     classes = "govuk-summary-list__row"
   )
 
-  private[helpers] def summaryListRowBuilder(key: String, value: HtmlContent)(implicit messages: Messages) = SummaryListRow(
+  private[helpers] def summaryListRowBuilder(key: String, value: Html)(implicit messages: Messages) = SummaryListRow(
     key = Key(Text(value = messages(key))),
-    value = Value(value),
+    value = Value(HtmlContent(value)),
     classes = "govuk-summary-list__row"
   )
 
   private[helpers] def constructMovementOverview(movementResponse: GetMovementResponse)
-                                                (implicit messages: Messages): HtmlContent = {
+                                                (implicit messages: Messages): Html = {
 
     val localReferenceNumber = summaryListRowBuilder("viewMovement.overview.lrn", movementResponse.localReferenceNumber)
 
@@ -94,8 +95,7 @@ class ViewMovementHelper @Inject()(
       )
     }
 
-    HtmlContent(
-      overviewPartial(
+    overviewPartial(
         headingMessageKey = Some("viewMovement.overview.title"),
         cardTitleMessageKey = "viewMovement.overview.title",
         summaryListRows = Seq(
@@ -108,12 +108,11 @@ class ViewMovementHelper @Inject()(
           transportingVehicles
         )
       )
-    )
 
   }
 
   private[helpers] def constructMovementView(movementResponse: GetMovementResponse)
-                                            (implicit request: DataRequest[_], messages: Messages): HtmlContent = {
+                                            (implicit request: DataRequest[_], messages: Messages): Html = {
 
 
     val userRole = RoleType.fromExciseRegistrationNumber(request.ern)
@@ -126,12 +125,12 @@ class ViewMovementHelper @Inject()(
 
     //Summary section - start
     val localReferenceNumber = summaryListRowBuilder("viewMovement.movement.summary.lrn", movementResponse.localReferenceNumber)
-    val eadStatus = if (movementResponse.eadStatus.equalsIgnoreCase("None")) None else Some(summaryListRowBuilder("viewMovement.movement.summary.eADStatus", HtmlContent(
+    val eadStatus = if (movementResponse.eadStatus.equalsIgnoreCase("None")) None else Some(summaryListRowBuilder("viewMovement.movement.summary.eADStatus",
       HtmlFormat.fill(Seq(
         p()(Text(movementResponse.eadStatus).asHtml),
         p(classes = "govuk-hint govuk-!-margin-top-0")(Text(eadStatusExplanation).asHtml)
       )
-    ))))
+    )))
     val receiptStatus = optReceiptStatusMessage.map(statusMessage => summaryListRowBuilder("viewMovement.movement.summary.receiptStatus", statusMessage))
     val movementType = summaryListRowBuilder("viewMovement.movement.summary.type", movementTypeValue)
     val movementDirection = summaryListRowBuilder("viewMovement.movement.summary.direction", if(userRole.isConsignor) "viewMovement.movement.summary.direction.out" else "viewMovement.movement.summary.direction.in")
@@ -149,8 +148,7 @@ class ViewMovementHelper @Inject()(
     //Invoice section - end
 
 
-    HtmlContent(
-      HtmlFormat.fill(
+    HtmlFormat.fill(
         Seq(
           overviewPartial(
             headingMessageKey = Some("viewMovement.movement.title"),
@@ -182,7 +180,6 @@ class ViewMovementHelper @Inject()(
           )
         )
       )
-    )
   }
 
   private[helpers] def getDateOfArrivalRow(movementResponse: GetMovementResponse)(implicit messages: Messages) = {
@@ -218,7 +215,7 @@ class ViewMovementHelper @Inject()(
     }
   }
 
-private[helpers] def constructMovementDelivery(movementResponse: GetMovementResponse)(implicit messages: Messages): HtmlContent = {
+private[helpers] def constructMovementDelivery(movementResponse: GetMovementResponse)(implicit messages: Messages): Html = {
   val consignorSummaryCards = Seq(
     summaryListRowBuilder("viewMovement.delivery.consignor.name", movementResponse.consignorTrader.traderName),
     summaryListRowBuilder("viewMovement.delivery.consignor.ern", movementResponse.consignorTrader.traderExciseNumber),
@@ -249,8 +246,7 @@ private[helpers] def constructMovementDelivery(movementResponse: GetMovementResp
     )
   }
 
-  HtmlContent(
-    HtmlFormat.fill(Seq(
+  HtmlFormat.fill(Seq(
       overviewPartial(
         headingMessageKey = Some("viewMovement.delivery.title"),
         cardTitleMessageKey = "viewMovement.delivery.consignor",
@@ -278,10 +274,9 @@ private[helpers] def constructMovementDelivery(movementResponse: GetMovementResp
         )
       }.getOrElse(Html(""))
     ))
-  )
 }
 
-private[helpers] def renderAddress(address: AddressModel): HtmlContent = {
+private[helpers] def renderAddress(address: AddressModel): Html = {
   val firstLineOfAddress = (address.streetNumber, address.street) match {
     case (Some(propertyNumber), Some(street)) => Html(s"$propertyNumber $street <br>")
     case (Some(number), None) => Html(s"$number <br>")
@@ -290,13 +285,12 @@ private[helpers] def renderAddress(address: AddressModel): HtmlContent = {
   }
   val city = address.city.fold(Html(""))(city => Html(s"$city <br>"))
   val postCode = address.postcode.fold(Html(""))(postcode => Html(s"$postcode"))
-  HtmlContent(
+
     HtmlFormat.fill(Seq(
       firstLineOfAddress,
       city,
       postCode
     ))
-  )
 }
 
 }

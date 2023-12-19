@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package models.common
+package models.requests
 
-import play.api.libs.json.{Json, OFormat}
+import models.response.emcsTfe.MovementItem
+import play.api.libs.json.{Json, OWrites}
 
-case class TraderModel(traderExciseNumber: String,
-                       traderName: String,
-                       address: AddressModel) {
+case class CnCodeInformationRequest(items: Seq[CnCodeInformationItem])
+
+case class CnCodeInformationItem(productCode: String, cnCode: String)
+
+object CnCodeInformationRequest {
+  implicit val writes: OWrites[CnCodeInformationRequest] = Json.writes
 }
 
-object TraderModel {
-  implicit val format: OFormat[TraderModel] = Json.format
+object CnCodeInformationItem {
+
+  def apply(items: Seq[MovementItem]): Seq[CnCodeInformationItem] = items.map { item =>
+    CnCodeInformationItem(item.productCode, item.cnCode)
+  }
+
+  implicit val writes: OWrites[CnCodeInformationItem] = Json.writes
 }

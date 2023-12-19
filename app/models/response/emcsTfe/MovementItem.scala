@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package models.common
+package models.response.emcsTfe
 
-import play.api.libs.json.{Json, OFormat}
+import models.common.UnitOfMeasure
+import play.api.libs.json.{Json, Reads}
 
-case class TraderModel(traderExciseNumber: String,
-                       traderName: String,
-                       address: AddressModel) {
-}
+case class MovementItem(itemUniqueReference: Int,
+                        productCode: String,
+                        cnCode: String,
+                        quantity: BigDecimal,
+                        commercialDescription: Option[String],
+                        packaging: Seq[Packaging],
+                        unitOfMeasure: Option[UnitOfMeasure])
 
-object TraderModel {
-  implicit val format: OFormat[TraderModel] = Json.format
+object MovementItem {
+  implicit val reads: Reads[MovementItem] = Json.reads
 }

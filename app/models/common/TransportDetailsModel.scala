@@ -16,7 +16,7 @@
 
 package models.common
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, Reads}
 
 case class TransportDetailsModel(
     transportUnitCode: String,
@@ -28,5 +28,5 @@ case class TransportDetailsModel(
 
 object TransportDetailsModel {
 
-  implicit val fmt: OFormat[TransportDetailsModel] = Json.format
+  implicit val reads: Reads[TransportDetailsModel] = Json.reads
 }
