@@ -139,7 +139,7 @@ class TimelineHelperSpec extends SpecBase {
       )
 
       /*
-       * The event id is calculated by using the hash-code of the event date and
+       * The event id is calculated by using the hash-code of the event date/time and
        * then applying an unsigned bit shift to the right of 1. The unsigned bit
        * shift ensures that we don't get negative event id's, as these event id's
        * are to be displayed in the URL to locate the correct movement history

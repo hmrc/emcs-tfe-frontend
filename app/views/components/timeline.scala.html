@@ -30,8 +30,8 @@
             @link(link = timelineEvent.url, messageKey = timelineEvent.title, id = Some(s"history-event-$index"))
         </h2>
 
-        <time class="hmrc-timeline__event-meta" datetime="@{ISO_LOCAL_DATE_TIME.format(timelineEvent.date)}">
-            @{timelineEvent.date.toLocalDate.formatDateForUIOutput()}
+        <time class="hmrc-timeline__event-meta" datetime="@{ISO_LOCAL_DATE_TIME.format(timelineEvent.dateTime)}">
+            @{timelineEvent.dateTime.toLocalDate.formatDateForUIOutput()}
         </time>
 
     </li>

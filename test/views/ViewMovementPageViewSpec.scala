@@ -152,9 +152,9 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel),
                 Seq(
-                  TimelineEvent(eventType = "someEvent1", title = "Movement created", date = eventDate, url = s"event/someEvent1/id/1"),
-                  TimelineEvent(eventType = "someEvent2", title = "Destination changed", date = eventDate, url = s"event/someEvent2/id/2"),
-                  TimelineEvent(eventType = "someEvent3", title = "Report of receipt submitted", date = eventDate, url = s"event/someEvent3/id/3")
+                  TimelineEvent(eventType = "someEvent1", title = "Movement created", dateTime = eventDate, url = s"event/someEvent1/id/1"),
+                  TimelineEvent(eventType = "someEvent2", title = "Destination changed", dateTime = eventDate, url = s"event/someEvent2/id/2"),
+                  TimelineEvent(eventType = "someEvent3", title = "Report of receipt submitted", dateTime = eventDate, url = s"event/someEvent3/id/3")
                 )
               ).toString()
             )

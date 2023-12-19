@@ -33,10 +33,10 @@ class TimelineHelper @Inject()() extends Logging with DateUtils {
       TimelineEvent(
         eventType = event.eventType,
         title = messages(getEventTitleKey(event)),
-        date = parseDateTime(event.eventDate),
+        dateTime = parseDateTime(event.eventDate),
         url = getHistoryEventUrl(event)
       )
-    }.sortBy(_.date)
+    }.sortBy(_.dateTime)
 
 
   def getEventTitleKey(event: MovementHistoryEvent): String = {
