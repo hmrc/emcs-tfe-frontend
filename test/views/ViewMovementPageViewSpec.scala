@@ -19,7 +19,6 @@ package views
 import base.ViewSpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.messages.ViewMovementMessages.English
-import models.common.RoleType
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -42,10 +41,15 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
 
   object Selectors extends BaseSelectors {
     val subNavigationTabSelected = s"main nav.moj-sub-navigation a[aria-current=page]"
+
     def actionLink(i: Int) = s"main #actions > ul > li:nth-child($i) > a"
+
     def summaryCardRowKey(i: Int) = s"main div.govuk-summary-card div.govuk-summary-list__row:nth-of-type($i) > dt"
+
     def summaryCardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"main div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
+
     def summaryCardTitle(i: Int) = s"main div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
+
     def historyTimelineLink(i: Int) = s"main #history > ol > li:nth-child($i) > h2 > a"
   }
 
@@ -69,7 +73,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel),
                 Seq.empty[TimelineEvent],
-                RoleType.fromExciseRegistrationNumber(testErn),
                 testMessageStatistics
               ).toString()
             )
@@ -104,7 +107,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel),
                 Seq.empty[TimelineEvent],
-                RoleType.fromExciseRegistrationNumber(testErn),
                 testMessageStatistics
               ).toString()
             )
@@ -129,7 +131,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel),
                 Seq.empty[TimelineEvent],
-                RoleType.fromExciseRegistrationNumber(testErn),
                 testMessageStatistics
               ).toString()
             )
@@ -162,7 +163,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                   TimelineEvent(eventType = "someEvent2", title = "Destination changed", dateTime = eventDate, url = s"event/someEvent2/id/2"),
                   TimelineEvent(eventType = "someEvent3", title = "Report of receipt submitted", dateTime = eventDate, url = s"event/someEvent3/id/3")
                 ),
-                RoleType.fromExciseRegistrationNumber(testErn),
                 testMessageStatistics
               ).toString()
             )
@@ -187,7 +187,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
               Movement,
               helper.movementCard(Movement, getMovementResponseModel),
               Seq.empty[TimelineEvent],
-              RoleType.fromExciseRegistrationNumber(testErn),
               testMessageStatistics
             ).toString()
           )
@@ -231,7 +230,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 Delivery,
                 helper.movementCard(Delivery, getMovementResponseModel),
                 Seq.empty[TimelineEvent],
-                RoleType.fromExciseRegistrationNumber(testErn),
                 testMessageStatistics
               ).toString()
             )

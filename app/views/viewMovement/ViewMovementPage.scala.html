@@ -15,16 +15,14 @@
  *@
 
 @import config.AppConfig
+@import models.NavigationBannerInfo
 @import models.requests.DataRequest
+@import models.response.emcsTfe.GetMessageStatisticsResponse
 @import viewmodels.helpers.TimelineHelper
 @import viewmodels.{Overview, SubNavigationTab, TimelineEvent}
 @import views.html.components._
 @import views.html.components.moj.subNavigation
 @import views.html.templates.Layout
-@import viewmodels.Overview
-@import models.NavigationBannerInfo
-@import models.common.RoleType.RoleType
-@import models.response.emcsTfe.GetMessageStatisticsResponse
 
 @this(
     appConfig: AppConfig,
@@ -46,14 +44,13 @@
     currentSubNavigationTab: SubNavigationTab,
     movementTabBody: Html,
     historyEvents: Seq[TimelineEvent],
-    roleType: RoleType,
     messageStatistics: GetMessageStatisticsResponse
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
     titleNoForm(arc, Some(currentSubNavigationTab.name)),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, roleType, messageStatistics.countOfNewMessages)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, messageStatistics.countOfNewMessages)),
     fullWidthContent = true
 ) {
 

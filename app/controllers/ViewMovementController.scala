@@ -18,7 +18,6 @@ package controllers
 
 import config.ErrorHandler
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
-import models.common.RoleType
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GetMovementService
@@ -80,7 +79,6 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
           historyEvents = movement.eventHistorySummary
             .map(timelineHelper.timeline(_))
             .getOrElse(Seq.empty[TimelineEvent]),
-          roleType = RoleType.fromExciseRegistrationNumber(exciseRegistrationNumber),
           messageStatistics = request.messageStatistics
         ))
       } recover {
