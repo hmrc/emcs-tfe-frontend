@@ -19,9 +19,10 @@ package views
 import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.Messages
+import utils.DateUtils
 import viewmodels.TraderInfo
 
-object ViewUtils {
+object ViewUtils extends DateUtils {
 
   def title(form: Form[_], title: String, section: Option[String] = None)(implicit messages: Messages): String =
     titleNoForm(

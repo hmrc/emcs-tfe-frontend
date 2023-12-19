@@ -16,11 +16,11 @@
 
 @import config.AppConfig
 @import models.requests.DataRequest
-@import viewmodels.SubNavigationTab
+@import viewmodels.helpers.TimelineHelper
+@import viewmodels.{Overview, SubNavigationTab, TimelineEvent}
+@import views.html.components._
 @import views.html.components.moj.subNavigation
-@import views.html.components.{h1, h2, link, spaced_list}
 @import views.html.templates.Layout
-@import viewmodels.Overview
 
 @this(
         appConfig: AppConfig,
@@ -29,7 +29,9 @@
         h2: h2,
         list: spaced_list,
         link: link,
-        subNavigation: subNavigation
+        subNavigation: subNavigation,
+        timeline: timeline,
+        timelineHelper: TimelineHelper
 )
 
 @(
@@ -38,7 +40,8 @@
         isConsignor: Boolean,
         subNavigationTabs: Seq[SubNavigationTab],
         currentSubNavigationTab: SubNavigationTab,
-        movementTabBody: Html
+        movementTabBody: Html,
+        historyEvents: Seq[TimelineEvent]
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(titleNoForm(arc, Some(currentSubNavigationTab.name)), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true) {
@@ -76,6 +79,7 @@
             </div>
             <div class="govuk-grid-column-one-half" id="history">
                @h2(messages("viewMovement.history.heading"), "govuk-heading-l")
+               @timeline(historyEvents)
             </div>
         </div>
     }

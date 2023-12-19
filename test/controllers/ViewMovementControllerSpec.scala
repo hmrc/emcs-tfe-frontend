@@ -20,16 +20,15 @@ import base.SpecBase
 import config.ErrorHandler
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.GetMovementResponseFixtures
-import mocks.connectors.MockEmcsTfeConnector
 import mocks.services.MockGetMovementService
-import models.response.{MovementException, UnexpectedDownstreamResponseError}
+import models.response.MovementException
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.status
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.helpers.ViewMovementHelper
+import viewmodels.helpers.{TimelineHelper, ViewMovementHelper}
 import views.html.viewMovement.ViewMovementPage
 
 import scala.concurrent.Future
@@ -46,7 +45,8 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
     mockGetMovementService,
     app.injector.instanceOf[ViewMovementPage],
     app.injector.instanceOf[ErrorHandler],
-    app.injector.instanceOf[ViewMovementHelper]
+    app.injector.instanceOf[ViewMovementHelper],
+    app.injector.instanceOf[TimelineHelper]
   )
 
   Seq(

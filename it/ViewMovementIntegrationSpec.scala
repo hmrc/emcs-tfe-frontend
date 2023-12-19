@@ -15,7 +15,7 @@
  */
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import fixtures.{BaseFixtures, GetMovementResponseFixtures}
+import fixtures.{BaseFixtures, GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.http.{HeaderNames, Status}
@@ -32,7 +32,8 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
   with BaseFixtures
   with IntegrationPatience
   with OptionValues
-  with GetMovementResponseFixtures {
+  with GetMovementResponseFixtures
+  with GetMovementHistoryEventsResponseFixtures {
 
 
   private trait Test {
@@ -40,6 +41,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
 
     def uri: String = s"/trader/$testErn/movement/$testArc/overview"
     def emcsTfeUri: String = s"/emcs-tfe/movement/$testErn/$testArc"
+    def emcsTfeHistoryEventUri: String = s"/emcs-tfe/movement-history/$testErn/$testArc"
 
     def getTraderKnownFactsUri: String = s"/emcs-tfe-reference-data/oracle/trader-known-facts"
     def getPackagingTypesUri: String = s"/emcs-tfe-reference-data/oracle/packaging-types"
@@ -85,9 +87,11 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeUri, Status.OK, getMovementResponseInputJson)
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
             DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
           }
 
           val response: WSResponse = await(request().get())
@@ -112,6 +116,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
           }
 
           val response: WSResponse = await(request().get())
@@ -128,6 +133,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
           }
 
           val response: WSResponse = await(request().get())
@@ -150,6 +156,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
+            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
           }
 
           val response: WSResponse = await(request().get())

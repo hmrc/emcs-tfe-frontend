@@ -29,6 +29,8 @@ import viewmodels._
 import viewmodels.helpers.ViewMovementHelper
 import views.html.viewMovement.ViewMovementPage
 
+import java.time.LocalDateTime
+
 
 class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with GetMovementResponseFixtures {
 
@@ -44,6 +46,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
     def summaryCardRowKey(i: Int) = s"main div.govuk-summary-card div.govuk-summary-list__row:nth-of-type($i) > dt"
     def summaryCardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"main div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
     def summaryCardTitle(i: Int) = s"main div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
+    def historyTimelineLink(i: Int) = s"main #history > ol > li:nth-child($i) > h2 > a"
   }
 
   "The ViewMovementPageView" when {
@@ -64,7 +67,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 isConsignor = true,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel)
+                helper.movementCard(Overview, getMovementResponseModel),
+                Seq.empty[TimelineEvent]
               ).toString()
             )
 
@@ -96,7 +100,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 isConsignor = true,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel)
+                helper.movementCard(Overview, getMovementResponseModel),
+                Seq.empty[TimelineEvent]
               ).toString()
             )
 
@@ -118,7 +123,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 isConsignor = false,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel)
+                helper.movementCard(Overview, getMovementResponseModel),
+                Seq.empty[TimelineEvent]
               ).toString()
             )
 
@@ -129,6 +135,34 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
               Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess,
               Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
 
+            ))
+          }
+
+          "display history timeline events" when {
+            val view = app.injector.instanceOf[ViewMovementPage]
+
+            val eventDate = LocalDateTime.now()
+
+            implicit val doc: Document = Jsoup.parse(
+              view(
+                testErn,
+                testArc,
+                isConsignor = false,
+                SubNavigationTab.values,
+                Overview,
+                helper.movementCard(Overview, getMovementResponseModel),
+                Seq(
+                  TimelineEvent(eventType = "someEvent1", title = "Movement created", dateTime = eventDate, url = s"event/someEvent1/id/1"),
+                  TimelineEvent(eventType = "someEvent2", title = "Destination changed", dateTime = eventDate, url = s"event/someEvent2/id/2"),
+                  TimelineEvent(eventType = "someEvent3", title = "Report of receipt submitted", dateTime = eventDate, url = s"event/someEvent3/id/3")
+                )
+              ).toString()
+            )
+
+            behave like pageWithExpectedElementsAndMessages(Seq(
+              Selectors.historyTimelineLink(1) -> "Movement created",
+              Selectors.historyTimelineLink(2) -> "Destination changed",
+              Selectors.historyTimelineLink(3) -> "Report of receipt submitted"
             ))
           }
         }
@@ -143,7 +177,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
               isConsignor = false,
               SubNavigationTab.values,
               Movement,
-              helper.movementCard(Movement, getMovementResponseModel)
+              helper.movementCard(Movement, getMovementResponseModel),
+              Seq.empty[TimelineEvent]
             ).toString()
           )
 
@@ -184,7 +219,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 isConsignor = true,
                 SubNavigationTab.values,
                 Delivery,
-                helper.movementCard(Delivery, getMovementResponseModel)
+                helper.movementCard(Delivery, getMovementResponseModel),
+                Seq.empty[TimelineEvent]
               ).toString()
             )
 

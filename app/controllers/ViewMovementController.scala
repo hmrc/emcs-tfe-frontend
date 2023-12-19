@@ -23,7 +23,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GetMovementService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels._
-import viewmodels.helpers.ViewMovementHelper
+import viewmodels.helpers.{TimelineHelper, ViewMovementHelper}
 import views.html.viewMovement.ViewMovementPage
 
 import javax.inject.{Inject, Singleton}
@@ -36,7 +36,8 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        getMovementService: GetMovementService,
                                        viewMovementPage: ViewMovementPage,
                                        errorHandler: ErrorHandler,
-                                       helper: ViewMovementHelper
+                                       helper: ViewMovementHelper,
+                                       timelineHelper: TimelineHelper
                                       )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport with AuthActionHelper {
 
   def viewMovementOverview(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
@@ -74,7 +75,10 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
           isConsignor = exciseRegistrationNumber == movement.consignorTrader.traderExciseNumber,
           subNavigationTabs = SubNavigationTab.values,
           currentSubNavigationTab = currentSubNavigationTab,
-          movementTabBody = helper.movementCard(currentSubNavigationTab, movement)
+          movementTabBody = helper.movementCard(currentSubNavigationTab, movement),
+          historyEvents = movement.eventHistorySummary
+            .map(timelineHelper.timeline(_))
+            .getOrElse(Seq.empty[TimelineEvent])
         ))
       } recover {
         case _ =>

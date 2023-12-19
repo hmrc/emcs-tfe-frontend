@@ -47,3 +47,5 @@ case class CnCodeInformationException(message: String) extends Exception(message
 case class PackagingTypesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class MovementException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class MovementHistoryEventsException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
