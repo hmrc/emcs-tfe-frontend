@@ -135,9 +135,11 @@ viewMovement.items.table.row.item = Item {0}
 viewMovement.items.table.row.quantity = {0} {1}
 viewMovement.items.receiptStatus.notReceipted = Not submitted
 viewMovement.items.receiptStatus.satisfactory = Satisfactory
-viewMovement.items.receiptStatus.unsatisfactory = Unsatisfactory
-viewMovement.items.receiptStatus.refused = Refused
-viewMovement.items.receiptStatus.partiallyRefused = Partially refused
+viewMovement.items.receiptStatus.shortage = Shortage
+viewMovement.items.receiptStatus.excess = Excess
+viewMovement.items.receiptStatus.damaged = Damaged
+viewMovement.items.receiptStatus.brokenSeals = Broken seal(s)
+viewMovement.items.receiptStatus.other = Other
 
 # MOV02 - History events
 movementHistoryEvent.IE801.first.label = Movement created

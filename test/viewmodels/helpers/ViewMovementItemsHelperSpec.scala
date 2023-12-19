@@ -52,90 +52,81 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
 
           "report of receipt has been submitted for the movement" when {
 
-            AcceptMovement.values.foreach { movementStatus =>
+            "return a table of all items from the movement formatted with the correct wording" in {
 
-              s"the movement status is '$movementStatus'" must {
+              val result = helper.constructMovementItems(movementResponseWithReferenceData)
 
-                "return a table of all items from the movement formatted with the correct wording" in {
-
-                  val result = helper.constructMovementItems(movementResponseWithReferenceData.copy(
-                    reportOfReceipt = Some(reportOfReceiptResponse.copy(acceptMovement = movementStatus))
-                  ))
-
-                  val itemStatusMessage = movementStatus match {
-                    case Satisfactory => messagesForLang.itemsReceiptStatusSatisfactory
-                    case Unsatisfactory => messagesForLang.itemsReceiptStatusUnsatisfactory
-                    case Refused => messagesForLang.itemsReceiptStatusRefused
-                    case PartiallyRefused => messagesForLang.itemsReceiptStatusPartiallyRefused
-                  }
-
-                  result mustBe HtmlFormat.fill(Seq(
-                    h2(messagesForLang.itemsH2),
-                    govukTable(Table(
-                      firstCellIsHeader = true,
-                      head = Some(Seq(
-                        HeadCell(Text(messagesForLang.itemsTableItemHeading)),
-                        HeadCell(Text(messagesForLang.itemsTableCommercialDescriptionHeading)),
-                        HeadCell(Text(messagesForLang.itemsTableQuantityHeading)),
-                        HeadCell(Text(messagesForLang.itemsTablePackagingHeading)),
-                        HeadCell(Text(messagesForLang.itemsTableReceiptHeading))
-                      )),
-                      rows = Seq(
-                        Seq(
-                          TableRow(
-                            content = HtmlContent(link(
-                              link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-                              messageKey = messagesForLang.itemsTableItemRow(1)
-                            )),
-                            classes = "white-space-nowrap"
-                          ),
-                          TableRow(
-                            content = Text(item1WithPackagingAndUnitOfMeasure.commercialDescription.get),
-                            classes = "govuk-!-width-one-third"
-                          ),
-                          TableRow(
-                            content = Text(s"${item1WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
-                          ),
-                          TableRow(
-                            content = HtmlContent(list(item1WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
-                              Html(pckg.typeOfPackage)
-                            )))
-                          ),
-                          TableRow(
-                            content = Text(itemStatusMessage),
-                            classes = "white-space-nowrap"
-                          )
-                        ),
-                        Seq(
-                          TableRow(
-                            content = HtmlContent(link(
-                              link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-                              messageKey = messagesForLang.itemsTableItemRow(2)
-                            )),
-                            classes = "white-space-nowrap"
-                          ),
-                          TableRow(
-                            content = Text(item2WithPackagingAndUnitOfMeasure.commercialDescription.get),
-                            classes = "govuk-!-width-one-third"
-                          ),
-                          TableRow(
-                            content = Text(s"${item2WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
-                          ),
-                          TableRow(
-                            content = HtmlContent(list(item2WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
-                              Html(pckg.typeOfPackage)
-                            )))
-                          ),
-                          TableRow(
-                            content = Text(messagesForLang.itemsReceiptStatusSatisfactory),
-                            classes = "white-space-nowrap"
-                          )
-                        )
+              result mustBe HtmlFormat.fill(Seq(
+                h2(messagesForLang.itemsH2),
+                govukTable(Table(
+                  firstCellIsHeader = true,
+                  head = Some(Seq(
+                    HeadCell(Text(messagesForLang.itemsTableItemHeading)),
+                    HeadCell(Text(messagesForLang.itemsTableCommercialDescriptionHeading)),
+                    HeadCell(Text(messagesForLang.itemsTableQuantityHeading)),
+                    HeadCell(Text(messagesForLang.itemsTablePackagingHeading)),
+                    HeadCell(Text(messagesForLang.itemsTableReceiptHeading))
+                  )),
+                  rows = Seq(
+                    Seq(
+                      TableRow(
+                        content = HtmlContent(link(
+                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          messageKey = messagesForLang.itemsTableItemRow(1)
+                        )),
+                        classes = "white-space-nowrap"
+                      ),
+                      TableRow(
+                        content = Text(item1WithPackagingAndUnitOfMeasure.commercialDescription.get),
+                        classes = "govuk-!-width-one-third"
+                      ),
+                      TableRow(
+                        content = Text(s"${item1WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                      ),
+                      TableRow(
+                        content = HtmlContent(list(item1WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
+                          Html(pckg.typeOfPackage)
+                        )))
+                      ),
+                      TableRow(
+                        content = HtmlContent(list(Seq(
+                          Html(messagesForLang.itemsReceiptStatusExcess),
+                          Html(messagesForLang.itemsReceiptStatusShortage),
+                          Html(messagesForLang.itemsReceiptStatusDamaged),
+                          Html(messagesForLang.itemsReceiptStatusBrokenSeals),
+                          Html(messagesForLang.itemsReceiptStatusOther)
+                        ))),
+                        classes = "white-space-nowrap"
                       )
-                    ))
-                  ))
-                }
-              }
+                    ),
+                    Seq(
+                      TableRow(
+                        content = HtmlContent(link(
+                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          messageKey = messagesForLang.itemsTableItemRow(2)
+                        )),
+                        classes = "white-space-nowrap"
+                      ),
+                      TableRow(
+                        content = Text(item2WithPackagingAndUnitOfMeasure.commercialDescription.get),
+                        classes = "govuk-!-width-one-third"
+                      ),
+                      TableRow(
+                        content = Text(s"${item2WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                      ),
+                      TableRow(
+                        content = HtmlContent(list(item2WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
+                          Html(pckg.typeOfPackage)
+                        )))
+                      ),
+                      TableRow(
+                        content = Text(messagesForLang.itemsReceiptStatusSatisfactory),
+                        classes = "white-space-nowrap"
+                      )
+                    )
+                  )
+                ))
+              ))
             }
           }
 

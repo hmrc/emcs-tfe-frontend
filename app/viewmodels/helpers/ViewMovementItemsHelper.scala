@@ -57,10 +57,13 @@ class ViewMovementItemsHelper @Inject()(list: list,
   private[viewmodels] def dataRows(movement: GetMovementResponse)(implicit messages: Messages): Seq[Seq[TableRow]] =
     movement.items.sortBy(_.itemUniqueReference).map { item =>
 
-      val itemReceiptStatus = movement.reportOfReceipt.fold(messages("viewMovement.items.receiptStatus.notReceipted")){ ror =>
+      val itemReceiptStatus = movement.reportOfReceipt.fold(Html(messages("viewMovement.items.receiptStatus.notReceipted"))){ ror =>
         ror.individualItems.find(_.eadBodyUniqueReference == item.itemUniqueReference) match {
-          case Some(_) => messages(s"viewMovement.items.receiptStatus.${ror.acceptMovement}")
-          case _ => messages(s"viewMovement.items.receiptStatus.$Satisfactory")
+          case Some(item) if item.unsatisfactoryReasons.nonEmpty =>
+            list(item.unsatisfactoryReasons.map(reason =>
+              Html(messages(s"viewMovement.items.receiptStatus.${reason.reason}"))
+            ))
+          case _ => Html(messages(s"viewMovement.items.receiptStatus.satisfactory"))
         }
       }
 
@@ -89,7 +92,7 @@ class ViewMovementItemsHelper @Inject()(list: list,
           )))
         ),
         TableRow(
-          content = Text(itemReceiptStatus),
+          content = HtmlContent(itemReceiptStatus),
           classes = "white-space-nowrap"
         )
       )
