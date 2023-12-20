@@ -41,7 +41,7 @@ class NavigationBarSpec extends SpecBase {
 
             prefix + "123"
           }
-          val html = navigation_bar(NavigationBannerInfo(ern, testMessageStatistics.countOfNewMessages))
+          val html = navigation_bar(NavigationBannerInfo(ern, testMessageStatistics.countOfNewMessages), pageTitle = "Movements in")
           val doc = Jsoup.parse(html.toString())
 
           s"Role Type is [${msgs(roleType.descriptionKey)}]" must {
@@ -60,8 +60,13 @@ class NavigationBarSpec extends SpecBase {
                 doc.select("#navigation-drafts-link").size() mustBe 0
               }
             }
+
             "render the Movements link" in {
               doc.select("#navigation-movements-link").text() mustBe messagesForLanguage.movements
+            }
+
+            "show the user which page they are currently on" in {
+              doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
             }
           }
       }
