@@ -33,10 +33,9 @@ class GetMessageStatisticsServiceSpec extends SpecBase with BaseFixtures with Sc
 
   lazy val testService = new GetMessageStatisticsService(mockGetMessageStatisticsConnector)
 
-  ".getTraderKnownFacts(ern)" must {
-    "return TraderKnownFacts" when {
+  ".getMessageStatistics(ern)" must {
+    "return MessageStatistics" when {
       "when Connector returns success from downstream" in {
-
         MockGetMessageStatisticsConnector.getMessageStatistics(testErn).returns(Future.successful(Right(testMessageStatistics)))
         testService.getMessageStatistics(testErn).futureValue mustBe testMessageStatistics
       }
@@ -45,14 +44,12 @@ class GetMessageStatisticsServiceSpec extends SpecBase with BaseFixtures with Sc
     "throw MessageStatisticsException" when {
 
       "when Connector returns json validation failure from downstream with no data" in {
-
         MockGetMessageStatisticsConnector.getMessageStatistics(testErn).returns(Future.successful(Left(JsonValidationError)))
         intercept[MessageStatisticsException](await(testService.getMessageStatistics(testErn))).getMessage mustBe
           s"No message statistics found for trader $testErn"
       }
 
       "when Connector returns any other failure from downstream" in {
-
         MockGetMessageStatisticsConnector.getMessageStatistics(testErn).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
         intercept[MessageStatisticsException](await(testService.getMessageStatistics(testErn))).getMessage mustBe
           s"No message statistics found for trader $testErn"

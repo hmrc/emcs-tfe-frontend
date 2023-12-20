@@ -38,10 +38,10 @@ class GetMessageStatisticsConnector @Inject()(val http: HttpClient,
     get(url)
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[getMessageStatistics] Bad JSON response from emcs-tfe-reference-data: " + errors)
+          logger.warn(s"[getMessageStatistics] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[getMessageStatistics] Unexpected error from reference-data: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[getMessageStatistics] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }
