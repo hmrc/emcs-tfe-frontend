@@ -31,8 +31,11 @@ trait AuthActionHelper {
   private def authorised(ern: String): ActionBuilder[UserRequest, AnyContent] =
     auth(ern)
 
-  def authorisedWithData(ern: String): ActionBuilder[DataRequest, AnyContent] =
+  private def authorisedWithData(ern: String): ActionBuilder[DataRequest, AnyContent] =
     authorised(ern) andThen getData()
+
+  def authorisedDataRequest(ern: String)(block: DataRequest[_] => Result): Action[AnyContent] =
+    authorisedWithData(ern)(block)
 
   def authorisedDataRequestAsync(ern: String)(block: DataRequest[_] => Future[Result]): Action[AnyContent] =
     authorisedWithData(ern).async(block)

@@ -22,7 +22,7 @@
         appConfig: AppConfig
 )
 
-@(navInfo: NavigationBannerInfo)(implicit messages: Messages)
+@(navInfo: NavigationBannerInfo, pageTitle: String = "")(implicit messages: Messages)
 
 @roleType = @{RoleType.fromExciseRegistrationNumber(navInfo.ern)}
 
@@ -36,11 +36,11 @@
 
                 <ul class="moj-primary-navigation__list">
                     <li class="moj-primary-navigation__item">
-                        <a id="navigation-home-link" class="moj-primary-navigation__link" aria-current="page" href="@appConfig.emcsTfeHomeUrl">@messages("navigation.home")</a>
+                        <a id="navigation-home-link" class="moj-primary-navigation__link" @if(pageTitle == messages("viewMovement.title")) { aria-current="page" } href="@appConfig.emcsTfeHomeUrl">@messages("navigation.home")</a>
                     </li>
 
                     <li class="moj-primary-navigation__item">
-                        <a id="navigation-messages-link" class="moj-primary-navigation__link" href="@appConfig.emcsTfeMessagesUrl(navInfo.ern)">@messages("navigation.messages")
+                        <a id="navigation-messages-link" class="moj-primary-navigation__link"  href="@appConfig.emcsTfeMessagesUrl(navInfo.ern)">@messages("navigation.messages")
                         <span class="hmrc-notification-badge govuk-!-margin-left-1">@navInfo.countOfNewMessages</span>
                         </a>
                     </li>
@@ -52,7 +52,7 @@
                     }
 
                     <li class="moj-primary-navigation__item">
-                        <a id="navigation-movements-link" class="moj-primary-navigation__link" href="@appConfig.emcsTfeListMovementsUrl(navInfo.ern)">@messages("navigation.movements")</a>
+                        <a id="navigation-movements-link"  @if(pageTitle == messages("viewMovementList.title")) { aria-current="page" } class="moj-primary-navigation__link" href="@appConfig.emcsTfeListMovementsUrl(navInfo.ern)">@messages("navigation.movements")</a>
                     </li>
                 </ul>
 

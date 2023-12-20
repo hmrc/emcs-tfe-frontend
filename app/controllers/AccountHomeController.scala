@@ -33,7 +33,7 @@ class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def viewAccountHome(exciseRegistrationNumber: String): Action[AnyContent] = {
-    authorisedWithData(exciseRegistrationNumber) { implicit request =>
+    authorisedDataRequest(exciseRegistrationNumber) { implicit request =>
       Ok(
         accountHomePage(
           exciseRegistrationNumber,
