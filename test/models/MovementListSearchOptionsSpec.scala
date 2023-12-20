@@ -107,7 +107,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val expectedResult: Seq[(String, String)] = Seq(
           "search.sortOrder" -> ArcAscending.sortOrder,
           "search.sortField" -> ArcAscending.sortField,
-          "search.startPosition" -> "1",
+          "search.startPosition" -> "0",
           "search.maxRows" -> "10"
         )
 
@@ -121,7 +121,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val expectedResult: Seq[(String, String)] = Seq(
           "search.sortOrder" -> Oldest.sortOrder,
           "search.sortField" -> Oldest.sortField,
-          "search.startPosition" -> "26",
+          "search.startPosition" -> "25",
           "search.maxRows" -> "5"
         )
 
@@ -141,7 +141,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
         "index is 1" in {
 
-          val expectedResult = 1
+          val expectedResult = 0
 
           val actualResult = MovementListSearchOptions(
             index = 1,
@@ -153,7 +153,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
         "index is 2" in {
 
-          val expectedResult = 11
+          val expectedResult = 10
 
           val actualResult = MovementListSearchOptions(
             index = 2,
@@ -165,7 +165,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
         "index is 50" in {
 
-          val expectedResult = 491
+          val expectedResult = 490
 
           val actualResult = MovementListSearchOptions(
             index = 50,
@@ -180,7 +180,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
         "index is 1" in {
 
-          val expectedResult = 1
+          val expectedResult = 0
 
           val actualResult = MovementListSearchOptions(
             index = 1,
@@ -192,7 +192,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
         "index is 2" in {
 
-          val expectedResult = 6
+          val expectedResult = 5
 
           val actualResult = MovementListSearchOptions(
             index = 2,
@@ -204,7 +204,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
         "index is 50" in {
 
-          val expectedResult = 246
+          val expectedResult = 245
 
           val actualResult = MovementListSearchOptions(
             index = 50,
@@ -219,7 +219,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
         "index is 1" in {
 
-          val expectedResult = 1
+          val expectedResult = 0
 
           val actualResult = MovementListSearchOptions(
             index = 1,
@@ -231,7 +231,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
         "index is 2" in {
 
-          val expectedResult = 31
+          val expectedResult = 30
 
           val actualResult = MovementListSearchOptions(
             index = 2,
@@ -243,7 +243,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
         "index is 50" in {
 
-          val expectedResult = 1471
+          val expectedResult = 1470
 
           val actualResult = MovementListSearchOptions(
             index = 50,

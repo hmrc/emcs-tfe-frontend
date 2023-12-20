@@ -17,6 +17,7 @@
 package views
 
 import base.SpecBase
+import models.MovementListSearchOptions
 import models.common.RoleType._
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMessageStatisticsResponse
@@ -84,8 +85,8 @@ class AccountHomePageViewSpec extends SpecBase {
           val movementsLinks = doc.getElementsByTag("ul").get(2).children
 
           movementsLinks.get(0).text mustBe "All movements"
-          //TODO update link location when MOV01 is built
-          movementsLinks.get(0).getElementsByTag("a").attr("href") mustBe controllers.routes.ViewMovementListController.viewMovementList(testErn).url
+
+          movementsLinks.get(0).getElementsByTag("a").attr("href") mustBe controllers.routes.ViewAllMovementsController.onPageLoad(testErn, MovementListSearchOptions()).url
 
           movementsLinks.get(1).text mustBe "Undischarged movements"
           //TODO link location when built

@@ -62,7 +62,6 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
           (movementList.count / DEFAULT_MAX_ROWS) + 1
         else
           movementList.count / DEFAULT_MAX_ROWS
-
         if (searchOptions.index <= 0 || searchOptions.index > pageCount)
           Redirect(routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()))
         else {
