@@ -76,7 +76,7 @@ class NavigationBarSpec extends SpecBase {
       PageSection.values.foreach {
         pageSection =>
           s"When page section is [$pageSection]" must {
-            "must only have one link with an aria-current attribute, where the value is 'page'" in {
+            "only have one link with an aria-current attribute, where the value is 'page'" in {
               val html = navigation_bar(NavigationBannerInfo(testErn, testMessageStatistics.countOfNewMessages, pageSection))
               val doc = Jsoup.parse(html.toString())
 
