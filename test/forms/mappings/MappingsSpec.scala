@@ -32,8 +32,6 @@ object MappingsSpec {
 
 class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mappings {
 
-  import MappingsSpec._
-
   "text" - {
 
     val testForm: Form[String] =

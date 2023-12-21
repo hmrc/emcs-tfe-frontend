@@ -86,8 +86,8 @@ class GetMovementServiceSpec extends SpecBase
               )))
 
             testService.getMovement(testErn, testArc)(hc).futureValue mustBe getMovementResponseModel.copy(items = Seq(
-              item1WithPackagingAndUnitOfMeasure,
-              item2WithPackagingAndUnitOfMeasure
+              item1WithPackagingAndCnCodeInfo,
+              item2WithPackagingAndCnCodeInfo
             ))
           }
         }

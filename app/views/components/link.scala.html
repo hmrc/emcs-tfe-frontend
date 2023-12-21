@@ -27,7 +27,7 @@
         hintKey: Option[String] = None
 )(implicit messages: Messages)
 
-<a href="@link" class="@classes"@id.map(x => s" id=$x")@if(isExternal){target="_blank" rel="noopener noreferrer"}@if(button){role="button" data-module="govuk-button"}>
+<a href="@link" class="@classes"@id.map(x => s" id=$x")@if(isExternal){ target="_blank" rel="noopener noreferrer"}@if(button){role="button" data-module="govuk-button"}>
  @messages(messageKey)@if(isExternal)(" " + messages("base.opensInNewTab"))@hiddenContent.map{content=>
 <span class="govuk-visually-hidden"> @content</span>
  }</a>

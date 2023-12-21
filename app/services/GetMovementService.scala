@@ -38,7 +38,10 @@ class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
           itemsWithPackaging <- getPackagingTypesService.getMovementItemsWithPackagingTypes(movement.items)
           itemsWithCnCodeInfo <- getCnCodeInformationService.getCnCodeInformation(itemsWithPackaging)
           itemsWithPackagingAndCnCodeInfo = itemsWithCnCodeInfo.map {
-            case (item, cnCodeInfo) => item.copy(unitOfMeasure = Some(cnCodeInfo.unitOfMeasure))
+            case (item, cnCodeInfo) => item.copy(
+              unitOfMeasure = Some(cnCodeInfo.unitOfMeasure),
+              productCodeDescription = Some(cnCodeInfo.exciseProductCodeDescription)
+            )
           }
         } yield movement.copy(
           items = itemsWithPackagingAndCnCodeInfo,

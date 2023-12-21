@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package models.response.emcsTfe
+package models.common
 
 import play.api.libs.json.{Json, Reads}
 
-case class Packaging(typeOfPackage: String,
-                     quantity: Option[BigDecimal],
-                     shippingMarks: Option[String],
-                     identityOfCommercialSeal: Option[String],
-                     sealInformation: Option[String])
-object Packaging {
-  implicit val reads: Reads[Packaging] = Json.reads
+case class WineProduct(wineProductCategory: String,
+                       wineGrowingZoneCode: Option[String],
+                       thirdCountryOfOrigin: Option[String],
+                       otherInformation: Option[String],
+                       wineOperations: Option[Seq[String]])
+
+object WineProduct {
+
+  implicit val reads: Reads[WineProduct] = Json.reads
 }

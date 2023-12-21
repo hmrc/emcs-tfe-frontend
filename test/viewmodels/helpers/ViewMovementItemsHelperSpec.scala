@@ -19,8 +19,7 @@ package viewmodels.helpers
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.messages.{UnitOfMeasureMessages, ViewMovementMessages}
-import models.common.AcceptMovement
-import models.common.AcceptMovement.{PartiallyRefused, Refused, Satisfactory, Unsatisfactory}
+import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
@@ -36,9 +35,11 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
   lazy val list = app.injector.instanceOf[list]
   lazy val h2 = app.injector.instanceOf[h2]
 
+  implicit val request = dataRequest(FakeRequest())
+
   val movementResponseWithReferenceData = getMovementResponseModel.copy(items = Seq(
-    item1WithPackagingAndUnitOfMeasure,
-    item2WithPackagingAndUnitOfMeasure
+    item1WithPackagingAndCnCodeInfo,
+    item2WithPackagingAndCnCodeInfo
   ))
 
   ".constructSelectItems" when {
@@ -71,20 +72,20 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
                     Seq(
                       TableRow(
                         content = HtmlContent(link(
-                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          link = controllers.routes.ItemDetailsController.onPageLoad(testErn, testArc, 1).url,
                           messageKey = messagesForLang.itemsTableItemRow(1)
                         )),
                         classes = "white-space-nowrap"
                       ),
                       TableRow(
-                        content = Text(item1WithPackagingAndUnitOfMeasure.commercialDescription.get),
+                        content = Text(item1WithPackagingAndCnCodeInfo.commercialDescription.get),
                         classes = "govuk-!-width-one-third"
                       ),
                       TableRow(
-                        content = Text(s"${item1WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                        content = Text(s"${item1WithPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
                       ),
                       TableRow(
-                        content = HtmlContent(list(item1WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
+                        content = HtmlContent(list(item1WithPackagingAndCnCodeInfo.packaging.map(pckg =>
                           Html(pckg.typeOfPackage)
                         )))
                       ),
@@ -102,20 +103,20 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
                     Seq(
                       TableRow(
                         content = HtmlContent(link(
-                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          link = controllers.routes.ItemDetailsController.onPageLoad(testErn, testArc, 2).url,
                           messageKey = messagesForLang.itemsTableItemRow(2)
                         )),
                         classes = "white-space-nowrap"
                       ),
                       TableRow(
-                        content = Text(item2WithPackagingAndUnitOfMeasure.commercialDescription.get),
+                        content = Text(item2WithPackagingAndCnCodeInfo.commercialDescription.get),
                         classes = "govuk-!-width-one-third"
                       ),
                       TableRow(
-                        content = Text(s"${item2WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                        content = Text(s"${item2WithPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
                       ),
                       TableRow(
-                        content = HtmlContent(list(item2WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
+                        content = HtmlContent(list(item2WithPackagingAndCnCodeInfo.packaging.map(pckg =>
                           Html(pckg.typeOfPackage)
                         )))
                       ),
@@ -153,20 +154,20 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
                     Seq(
                       TableRow(
                         content = HtmlContent(link(
-                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          link = controllers.routes.ItemDetailsController.onPageLoad(testErn, testArc, 1).url,
                           messageKey = messagesForLang.itemsTableItemRow(1)
                         )),
                         classes = "white-space-nowrap"
                       ),
                       TableRow(
-                        content = Text(item1WithPackagingAndUnitOfMeasure.commercialDescription.get),
+                        content = Text(item1WithPackagingAndCnCodeInfo.commercialDescription.get),
                         classes = "govuk-!-width-one-third"
                       ),
                       TableRow(
-                        content = Text(s"${item1WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                        content = Text(s"${item1WithPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
                       ),
                       TableRow(
-                        content = HtmlContent(list(item1WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
+                        content = HtmlContent(list(item1WithPackagingAndCnCodeInfo.packaging.map(pckg =>
                           Html(pckg.typeOfPackage)
                         )))
                       ),
@@ -178,20 +179,20 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
                     Seq(
                       TableRow(
                         content = HtmlContent(link(
-                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          link = controllers.routes.ItemDetailsController.onPageLoad(testErn, testArc, 2).url,
                           messageKey = messagesForLang.itemsTableItemRow(2)
                         )),
                         classes = "white-space-nowrap"
                       ),
                       TableRow(
-                        content = Text(item2WithPackagingAndUnitOfMeasure.commercialDescription.get),
+                        content = Text(item2WithPackagingAndCnCodeInfo.commercialDescription.get),
                         classes = "govuk-!-width-one-third"
                       ),
                       TableRow(
-                        content = Text(s"${item2WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                        content = Text(s"${item2WithPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
                       ),
                       TableRow(
-                        content = HtmlContent(list(item2WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
+                        content = HtmlContent(list(item2WithPackagingAndCnCodeInfo.packaging.map(pckg =>
                           Html(pckg.typeOfPackage)
                         )))
                       ),

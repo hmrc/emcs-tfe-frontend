@@ -44,7 +44,7 @@ trait Formatters {
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter
           .bind(key, data)
-          .right.flatMap {
+          .flatMap {
           case "true"  => Right(true)
           case "false" => Right(false)
           case _       => Left(Seq(FormError(key, invalidKey, args)))
@@ -64,8 +64,8 @@ trait Formatters {
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter
           .bind(key, data)
-          .right.map(_.replace(",", "").replaceAll(" ", ""))
-          .right.flatMap {
+          .map(_.replace(",", "").replaceAll(" ", ""))
+          .flatMap {
           case s if s.matches(decimalRegexp) =>
             Left(Seq(FormError(key, wholeNumberKey, args)))
           case s =>
@@ -109,8 +109,8 @@ trait Formatters {
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter
           .bind(key, data)
-          .right.map(_.replace(",", "").replaceAll(" ", ""))
-          .right.flatMap {
+          .map(_.replace(",", "").replaceAll(" ", ""))
+          .flatMap {
             case s if s.matches(decimalRegexp) =>
               Left(Seq(FormError(key, wholeNumberKey, args)))
             case s =>
