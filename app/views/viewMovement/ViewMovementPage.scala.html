@@ -50,7 +50,7 @@
 @layout(
     titleNoForm(arc, Some(currentSubNavigationTab.name)),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, messageStatistics.countOfNewMessages)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, messageStatistics.countOfNewMessages, Movements)),
     fullWidthContent = true
 ) {
 

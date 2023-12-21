@@ -18,8 +18,9 @@ package views.components
 
 import base.SpecBase
 import fixtures.messages.NavigationBarMessages
-import models.NavigationBannerInfo
+import models.PageSection.Movements
 import models.common.RoleType
+import models.{NavigationBannerInfo, PageSection}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import views.html.components.navigation_bar
@@ -41,7 +42,8 @@ class NavigationBarSpec extends SpecBase {
 
             prefix + "123"
           }
-          val html = navigation_bar(NavigationBannerInfo(ern, testMessageStatistics.countOfNewMessages), pageTitle = "Movements in")
+
+          val html = navigation_bar(NavigationBannerInfo(ern, testMessageStatistics.countOfNewMessages, Movements))
           val doc = Jsoup.parse(html.toString())
 
           s"Role Type is [${msgs(roleType.descriptionKey)}]" must {
@@ -67,6 +69,19 @@ class NavigationBarSpec extends SpecBase {
 
             "show the user which page they are currently on" in {
               doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
+            }
+          }
+      }
+
+      PageSection.values.foreach {
+        pageSection =>
+          s"When page section is [$pageSection]" must {
+            "must only have one link with an aria-current attribute, where the value is 'page'" in {
+              val html = navigation_bar(NavigationBannerInfo(testErn, testMessageStatistics.countOfNewMessages, pageSection))
+              val doc = Jsoup.parse(html.toString())
+
+              doc.select("a[aria-current]").size() mustBe 1
+              doc.select("a[aria-current]").get(0).attr("aria-current") mustBe "page"
             }
           }
       }

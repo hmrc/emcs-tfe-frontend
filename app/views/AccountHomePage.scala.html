@@ -45,7 +45,7 @@
 @layout(
     pageTitle = messages("viewMovement.title"),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, request.messageStatistics.countOfNewMessages)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, request.messageStatistics.countOfNewMessages, Home)),
     fullWidthContent = true,
     showBackLink = false
 ) {

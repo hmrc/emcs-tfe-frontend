@@ -82,7 +82,7 @@
 
 @beforeContent = {
     @{ activeTrader(maybeShowActiveTrader) }
-    @maybeShowNavigationBanner.map(info => navigationBar(info, pageTitle))
+    @maybeShowNavigationBanner.map(info => navigationBar(info))
     @beforeContentBlock.getOrElse(())
     @if(showBackLink) {
         @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible"))

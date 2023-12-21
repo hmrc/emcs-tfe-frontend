@@ -16,4 +16,21 @@
 
 package models
 
-case class NavigationBannerInfo(ern :String, countOfNewMessages: Int, currentSection: PageSection)
+import models.common.{Enumerable, WithName}
+
+sealed trait PageSection
+
+object PageSection extends Enumerable.Implicits {
+
+  case object Home extends WithName("Home") with PageSection
+
+  case object Messages extends WithName("Messages") with PageSection
+
+  case object Drafts extends WithName("Drafts") with PageSection
+
+  case object Movements extends WithName("Movements") with PageSection
+
+  val values: Seq[PageSection] = Seq(
+    Home, Messages, Drafts, Movements
+  )
+}

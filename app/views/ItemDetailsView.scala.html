@@ -33,7 +33,7 @@
 @layout(
     pageTitle = titleNoForm(item.productCodeDescription.getOrElse(messages("itemDetails.heading", item.itemUniqueReference))),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages))
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, Movements))
 ) {
 
         @h1()(Html(item.productCodeDescription.getOrElse(messages("itemDetails.heading", item.itemUniqueReference))))

@@ -92,7 +92,7 @@
 @layout(
     pageTitle = messages("viewAllMovements.title"),
     maybeShowActiveTrader = None,
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, Movements)),
     fullWidthContent = true
 ) {
 
