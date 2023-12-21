@@ -19,6 +19,8 @@ package viewmodels.helpers
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.messages.{UnitOfMeasureMessages, ViewMovementMessages}
+import models.common.AcceptMovement
+import models.common.AcceptMovement.{PartiallyRefused, Refused, Satisfactory, Unsatisfactory}
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
@@ -39,89 +41,171 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
     item2WithPackagingAndUnitOfMeasure
   ))
 
-  ".constructSelectItems" must {
+  ".constructSelectItems" when {
 
     Seq(ViewMovementMessages.English -> UnitOfMeasureMessages.English).foreach {
       case (messagesForLang, unitOfMeasureMessages) =>
 
-      s"when rendering in language code of '${messagesForLang.lang.code}'" must {
+        s"rendering in language code of '${messagesForLang.lang.code}'" when {
 
-        implicit lazy val msgs = messages(Seq(messagesForLang.lang))
+          implicit lazy val msgs = messages(Seq(messagesForLang.lang))
 
-        "return a table of all items from the movement formatted with the correct wording" in {
+          "report of receipt has been submitted for the movement" when {
 
-          val result = helper.constructMovementItems(movementResponseWithReferenceData)
+            "return a table of all items from the movement formatted with the correct wording" in {
 
-          result mustBe HtmlFormat.fill(Seq(
-            h2(messagesForLang.itemsH2),
-            govukTable(Table(
-              firstCellIsHeader = true,
-              head = Some(Seq(
-                HeadCell(Text(messagesForLang.itemsTableItemHeading)),
-                HeadCell(Text(messagesForLang.itemsTableCommercialDescriptionHeading)),
-                HeadCell(Text(messagesForLang.itemsTableQuantityHeading)),
-                HeadCell(Text(messagesForLang.itemsTablePackagingHeading))
-//              TODO: Add in as part of ETFE-2882
-//              HeadCell(Text(messagesForLang.itemsTableReceiptHeading))
-              )),
-              rows = Seq(
-                Seq(
-                  TableRow(
-                    content = HtmlContent(link(
-                      link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-                      messageKey = messagesForLang.itemsTableItemRow(1)
-                    )),
-                    classes = "white-space-nowrap"
-                  ),
-                  TableRow(
-                    content = Text(item1WithPackagingAndUnitOfMeasure.commercialDescription.get),
-                    classes = "govuk-!-width-one-third"
-                  ),
-                  TableRow(
-                    content = Text(s"${item1WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
-                  ),
-                  TableRow(
-                    content = HtmlContent(list(item1WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
-                      Html(pckg.typeOfPackage)
-                    )))
+              val result = helper.constructMovementItems(movementResponseWithReferenceData)
+
+              result mustBe HtmlFormat.fill(Seq(
+                h2(messagesForLang.itemsH2),
+                govukTable(Table(
+                  firstCellIsHeader = true,
+                  head = Some(Seq(
+                    HeadCell(Text(messagesForLang.itemsTableItemHeading)),
+                    HeadCell(Text(messagesForLang.itemsTableCommercialDescriptionHeading)),
+                    HeadCell(Text(messagesForLang.itemsTableQuantityHeading)),
+                    HeadCell(Text(messagesForLang.itemsTablePackagingHeading)),
+                    HeadCell(Text(messagesForLang.itemsTableReceiptHeading))
+                  )),
+                  rows = Seq(
+                    Seq(
+                      TableRow(
+                        content = HtmlContent(link(
+                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          messageKey = messagesForLang.itemsTableItemRow(1)
+                        )),
+                        classes = "white-space-nowrap"
+                      ),
+                      TableRow(
+                        content = Text(item1WithPackagingAndUnitOfMeasure.commercialDescription.get),
+                        classes = "govuk-!-width-one-third"
+                      ),
+                      TableRow(
+                        content = Text(s"${item1WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                      ),
+                      TableRow(
+                        content = HtmlContent(list(item1WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
+                          Html(pckg.typeOfPackage)
+                        )))
+                      ),
+                      TableRow(
+                        content = HtmlContent(list(Seq(
+                          Html(messagesForLang.itemsReceiptStatusExcess),
+                          Html(messagesForLang.itemsReceiptStatusShortage),
+                          Html(messagesForLang.itemsReceiptStatusDamaged),
+                          Html(messagesForLang.itemsReceiptStatusBrokenSeals),
+                          Html(messagesForLang.itemsReceiptStatusOther)
+                        ))),
+                        classes = "white-space-nowrap"
+                      )
+                    ),
+                    Seq(
+                      TableRow(
+                        content = HtmlContent(link(
+                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          messageKey = messagesForLang.itemsTableItemRow(2)
+                        )),
+                        classes = "white-space-nowrap"
+                      ),
+                      TableRow(
+                        content = Text(item2WithPackagingAndUnitOfMeasure.commercialDescription.get),
+                        classes = "govuk-!-width-one-third"
+                      ),
+                      TableRow(
+                        content = Text(s"${item2WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                      ),
+                      TableRow(
+                        content = HtmlContent(list(item2WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
+                          Html(pckg.typeOfPackage)
+                        )))
+                      ),
+                      TableRow(
+                        content = Text(messagesForLang.itemsReceiptStatusSatisfactory),
+                        classes = "white-space-nowrap"
+                      )
+                    )
                   )
-//                TODO: Add in as part of ETFE-2882
-//                TableRow(
-//                  content = HtmlContent(govukTag(TagViewModel(Text(messagesForLang.itemsReceiptStatusNotReceipted)).grey())),
-//                  classes = "white-space-nowrap"
-//                )
-                ),
-                Seq(
-                  TableRow(
-                    content = HtmlContent(link(
-                      link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-                      messageKey = messagesForLang.itemsTableItemRow(2)
-                    )),
-                    classes = "white-space-nowrap"
-                  ),
-                  TableRow(
-                    content = Text(item2WithPackagingAndUnitOfMeasure.commercialDescription.get),
-                    classes = "govuk-!-width-one-third"
-                  ),
-                  TableRow(
-                    content = Text(s"${item2WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
-                  ),
-                  TableRow(
-                    content = HtmlContent(list(item2WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
-                      Html(pckg.typeOfPackage)
-                    )))
+                ))
+              ))
+            }
+          }
+
+          "report of receipt has NOT been submitted for the movement" must {
+
+            "return a table of all items from the movement formatted with the correct wording" in {
+
+              val result = helper.constructMovementItems(movementResponseWithReferenceData.copy(
+                reportOfReceipt = None
+              ))
+
+              result mustBe HtmlFormat.fill(Seq(
+                h2(messagesForLang.itemsH2),
+                govukTable(Table(
+                  firstCellIsHeader = true,
+                  head = Some(Seq(
+                    HeadCell(Text(messagesForLang.itemsTableItemHeading)),
+                    HeadCell(Text(messagesForLang.itemsTableCommercialDescriptionHeading)),
+                    HeadCell(Text(messagesForLang.itemsTableQuantityHeading)),
+                    HeadCell(Text(messagesForLang.itemsTablePackagingHeading)),
+                    HeadCell(Text(messagesForLang.itemsTableReceiptHeading))
+                  )),
+                  rows = Seq(
+                    Seq(
+                      TableRow(
+                        content = HtmlContent(link(
+                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          messageKey = messagesForLang.itemsTableItemRow(1)
+                        )),
+                        classes = "white-space-nowrap"
+                      ),
+                      TableRow(
+                        content = Text(item1WithPackagingAndUnitOfMeasure.commercialDescription.get),
+                        classes = "govuk-!-width-one-third"
+                      ),
+                      TableRow(
+                        content = Text(s"${item1WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                      ),
+                      TableRow(
+                        content = HtmlContent(list(item1WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
+                          Html(pckg.typeOfPackage)
+                        )))
+                      ),
+                      TableRow(
+                        content = Text(messagesForLang.itemsReceiptStatusNotReceipted),
+                        classes = "white-space-nowrap"
+                      )
+                    ),
+                    Seq(
+                      TableRow(
+                        content = HtmlContent(link(
+                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          messageKey = messagesForLang.itemsTableItemRow(2)
+                        )),
+                        classes = "white-space-nowrap"
+                      ),
+                      TableRow(
+                        content = Text(item2WithPackagingAndUnitOfMeasure.commercialDescription.get),
+                        classes = "govuk-!-width-one-third"
+                      ),
+                      TableRow(
+                        content = Text(s"${item2WithPackagingAndUnitOfMeasure.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                      ),
+                      TableRow(
+                        content = HtmlContent(list(item2WithPackagingAndUnitOfMeasure.packaging.map(pckg =>
+                          Html(pckg.typeOfPackage)
+                        )))
+                      ),
+                      TableRow(
+                        content = Text(messagesForLang.itemsReceiptStatusNotReceipted),
+                        classes = "white-space-nowrap"
+                      )
+                    )
                   )
-//                TODO: Add in as part of ETFE-2882
-//                TableRow(
-//                  content = HtmlContent(govukTag(TagViewModel(Text(messagesForLang.itemsReceiptStatusNotReceipted)).grey())),
-//                  classes = "white-space-nowrap"
-//                )
-                )
-              )
-            ))
-          ))
+                ))
+              ))
+            }
+          }
         }
-      }
     }
   }
 }

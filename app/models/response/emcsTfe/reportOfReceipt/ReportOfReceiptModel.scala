@@ -16,7 +16,7 @@
 
 package models.response.emcsTfe.reportOfReceipt
 
-import models.common.TraderModel
+import models.common.{AcceptMovement, TraderModel}
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
@@ -28,7 +28,7 @@ case class ReportOfReceiptModel(arc: String,
                                 deliveryPlaceTrader: Option[TraderModel],
                                 destinationOffice: String,
                                 dateOfArrival: LocalDate,
-                                acceptMovement: String,
+                                acceptMovement: AcceptMovement,
                                 individualItems: Seq[ReceiptedItemsModel],
                                 otherInformation: Option[String])
 

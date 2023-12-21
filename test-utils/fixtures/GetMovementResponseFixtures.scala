@@ -16,8 +16,9 @@
 
 package fixtures
 
+import models.common.AcceptMovement.Unsatisfactory
 import models.common.OriginType.TaxWarehouse
-import models.common.WrongWithMovement.{Excess, Shortage}
+import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Shortage}
 import models.common.{AddressModel, DestinationType, TraderModel, TransportDetailsModel}
 import models.response.emcsTfe.reportOfReceipt.{ReceiptedItemsModel, ReportOfReceiptModel, UnsatisfactoryModel}
 import models.response.emcsTfe.{EadEsadModel, GetMovementResponse}
@@ -37,6 +38,50 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     timeOfDispatch = Some("00:00:00"),
     upstreamArc = None,
     importSadNumber = None
+  )
+
+  val reportOfReceiptResponse = ReportOfReceiptModel(
+    arc = testArc,
+    sequenceNumber = 2,
+    dateAndTimeOfValidationOfReportOfReceiptExport = Some("2021-09-10T11:11:12"),
+    consigneeTrader = Some(TraderModel(
+      traderExciseNumber = "GBRC345GTR145",
+      traderName = "Current 801 Consignee",
+      address = AddressModel(
+        streetNumber = None,
+        street = Some("Main101"),
+        postcode = Some("ZZ78"),
+        city = Some("Zeebrugge")
+      )
+    )),
+    deliveryPlaceTrader = Some(TraderModel(
+      traderExciseNumber = "GBRC345GTR145",
+      traderName = "Current 801 Consignee",
+      address = AddressModel(
+        streetNumber = None,
+        street = Some("Main101"),
+        postcode = Some("ZZ78"),
+        city = Some("Zeebrugge")
+      )
+    )),
+    destinationOffice = "XI004098",
+    dateOfArrival = LocalDate.parse("2008-12-08"),
+    acceptMovement = Unsatisfactory,
+    otherInformation = Some("some great reason"),
+    individualItems = Seq(ReceiptedItemsModel(
+      eadBodyUniqueReference = 1,
+      excessAmount = Some(21),
+      shortageAmount = None,
+      productCode = "W300",
+      refusedAmount = Some(1),
+      unsatisfactoryReasons = Seq(
+        UnsatisfactoryModel(Excess, Some("some info")),
+        UnsatisfactoryModel(Shortage, None),
+        UnsatisfactoryModel(Damaged, None),
+        UnsatisfactoryModel(BrokenSeals, None),
+        UnsatisfactoryModel(Other, None)
+      )
+    ))
   )
 
   val getMovementResponseModel: GetMovementResponse = GetMovementResponse(
@@ -106,48 +151,63 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         sealInformation = None
       )
     ),
-    reportOfReceipt = Some(ReportOfReceiptModel(
-      arc = testArc,
-      sequenceNumber = 2,
-      dateAndTimeOfValidationOfReportOfReceiptExport = Some("2021-09-10T11:11:12"),
-      consigneeTrader = Some(TraderModel(
-        traderExciseNumber = "GBRC345GTR145",
-        traderName = "Current 801 Consignee",
-        address = AddressModel(
-          streetNumber = None,
-          street = Some("Main101"),
-          postcode = Some("ZZ78"),
-          city = Some("Zeebrugge")
-        )
-      )),
-      deliveryPlaceTrader = Some(TraderModel(
-        traderExciseNumber = "GBRC345GTR145",
-        traderName = "Current 801 Consignee",
-        address = AddressModel(
-          streetNumber = None,
-          street = Some("Main101"),
-          postcode = Some("ZZ78"),
-          city = Some("Zeebrugge")
-        )
-      )),
-      destinationOffice = "XI004098",
-      dateOfArrival = LocalDate.parse("2008-12-08"),
-      acceptMovement = "satisfactory",
-      otherInformation = Some("some great reason"),
-      individualItems = Seq(ReceiptedItemsModel(
-        eadBodyUniqueReference = 1,
-        excessAmount = Some(21),
-        shortageAmount = None,
-        productCode = "W300",
-        refusedAmount = Some(1),
-        unsatisfactoryReasons = Seq(
-          UnsatisfactoryModel(Excess, Some("some info")),
-          UnsatisfactoryModel(Shortage, None),
-        )
-      ))
-    )),
+    reportOfReceipt = Some(reportOfReceiptResponse),
     items = Seq(item1, item2),
     eventHistorySummary = Some(getMovementHistoryEventsResponseModel)
+  )
+
+  val reportOfReceiptJson = Json.obj(
+    "arc" -> testArc,
+    "sequenceNumber" -> 2,
+    "dateAndTimeOfValidationOfReportOfReceiptExport" -> "2021-09-10T11:11:12",
+    "consigneeTrader" -> Json.obj(
+      "traderExciseNumber" -> "GBRC345GTR145",
+      "traderName" -> "Current 801 Consignee",
+      "address" -> Json.obj(
+        "street" -> "Main101",
+        "postcode" -> "ZZ78",
+        "city" -> "Zeebrugge"
+      )
+    ),
+    "deliveryPlaceTrader" -> Json.obj(
+      "traderExciseNumber" -> "GBRC345GTR145",
+      "traderName" -> "Current 801 Consignee",
+      "address" -> Json.obj(
+        "street" -> "Main101",
+        "postcode" -> "ZZ78",
+        "city" -> "Zeebrugge"
+      )
+    ),
+    "destinationOffice" -> "XI004098",
+    "dateOfArrival" -> "2008-12-08",
+    "acceptMovement" -> Unsatisfactory.toString,
+    "individualItems" -> Json.arr(
+      Json.obj(
+        "eadBodyUniqueReference" -> 1,
+        "productCode" -> "W300",
+        "excessAmount" -> 21,
+        "refusedAmount" -> 1,
+        "unsatisfactoryReasons" -> Json.arr(
+          Json.obj(
+            "reason" -> "excess",
+            "additionalInformation" -> "some info"
+          ),
+          Json.obj(
+            "reason" -> "shortage"
+          ),
+          Json.obj(
+            "reason" -> "damaged"
+          ),
+          Json.obj(
+            "reason" -> "brokenSeals"
+          ),
+          Json.obj(
+            "reason" -> "other"
+          )
+        )
+      )
+    ),
+    "otherInformation" -> "some great reason"
   )
 
   val getMovementResponseInputJson: JsValue = Json.obj(
@@ -232,50 +292,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "identityOfTransportUnits" -> "AB22 2T4"
       )
     ),
-    "reportOfReceipt" -> Json.obj(
-      "arc" -> testArc,
-      "sequenceNumber" -> 2,
-      "dateAndTimeOfValidationOfReportOfReceiptExport" -> "2021-09-10T11:11:12",
-      "consigneeTrader" -> Json.obj(
-        "traderExciseNumber" -> "GBRC345GTR145",
-        "traderName" -> "Current 801 Consignee",
-        "address" -> Json.obj(
-          "street" -> "Main101",
-          "postcode" -> "ZZ78",
-          "city" -> "Zeebrugge"
-        )
-      ),
-      "deliveryPlaceTrader" -> Json.obj(
-        "traderExciseNumber" -> "GBRC345GTR145",
-        "traderName" -> "Current 801 Consignee",
-        "address" -> Json.obj(
-          "street" -> "Main101",
-          "postcode" -> "ZZ78",
-          "city" -> "Zeebrugge"
-        )
-      ),
-      "destinationOffice" -> "XI004098",
-      "dateOfArrival" -> "2008-12-08",
-      "acceptMovement" -> "satisfactory",
-      "individualItems" -> Json.arr(
-        Json.obj(
-          "eadBodyUniqueReference" -> 1,
-          "productCode" -> "W300",
-          "excessAmount" -> 21,
-          "refusedAmount" -> 1,
-          "unsatisfactoryReasons" -> Json.arr(
-            Json.obj(
-              "reason" -> "excess",
-              "additionalInformation" -> "some info"
-            ),
-            Json.obj(
-              "reason" -> "shortage"
-            )
-          )
-        )
-      ),
-      "otherInformation" -> "some great reason"
-    ),
+    "reportOfReceipt" -> reportOfReceiptJson,
     "items" -> Json.arr(
       item1Json,
       item2Json
