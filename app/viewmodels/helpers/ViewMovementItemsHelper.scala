@@ -16,7 +16,7 @@
 
 package viewmodels.helpers
 
-import models.common.AcceptMovement.Satisfactory
+import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
@@ -35,7 +35,7 @@ class ViewMovementItemsHelper @Inject()(list: list,
                                         govukTable: GovukTable,
                                        ) extends ExpectedDateOfArrival with TagFluency {
 
-  def constructMovementItems(movement: GetMovementResponse)(implicit messages: Messages): Html = {
+  def constructMovementItems(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Html = {
     HtmlFormat.fill(Seq(
       h2(messages("viewMovement.items.h2")),
       govukTable(Table(
@@ -54,7 +54,7 @@ class ViewMovementItemsHelper @Inject()(list: list,
     HeadCell(Text(messages("viewMovement.items.table.heading.receipt")))
   ))
 
-  private[viewmodels] def dataRows(movement: GetMovementResponse)(implicit messages: Messages): Seq[Seq[TableRow]] =
+  private[viewmodels] def dataRows(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Seq[Seq[TableRow]] =
     movement.items.sortBy(_.itemUniqueReference).map { item =>
 
       val itemReceiptStatus = movement.reportOfReceipt.fold(Html(messages("viewMovement.items.receiptStatus.notReceipted"))){ ror =>
@@ -70,7 +70,7 @@ class ViewMovementItemsHelper @Inject()(list: list,
       Seq(
         TableRow(
           content = HtmlContent(link(
-            link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+            link = controllers.routes.ItemDetailsController.onPageLoad(request.ern, movement.arc, item.itemUniqueReference).url,
             messageKey = messages("viewMovement.items.table.row.item", item.itemUniqueReference)
           )),
           classes = "white-space-nowrap"

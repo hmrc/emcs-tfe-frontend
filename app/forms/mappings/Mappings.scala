@@ -19,7 +19,7 @@ package forms.mappings
 import play.api.data.FieldMapping
 import play.api.data.Forms.of
 
-import java.time.{LocalDate, LocalTime}
+import java.time.LocalDate
 
 trait Mappings extends Formatters with Constraints {
 

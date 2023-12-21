@@ -105,4 +105,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
     }
 
   def traderKnownFactsReferenceDataBaseUrl: String = s"$traderKnownFactsReferenceDataService/emcs-tfe-reference-data"
+
+  lazy val tradeTariffCommoditiesUrl: String = configuration.get[String]("urls.tradeTariffCommodities")
+  def getUrlForCommodityCode(code: String): String = s"$tradeTariffCommoditiesUrl/${code}00"
 }

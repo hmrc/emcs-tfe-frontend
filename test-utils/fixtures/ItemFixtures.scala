@@ -17,6 +17,7 @@
 package fixtures
 
 import models.common.UnitOfMeasure.Kilograms
+import models.common.WineProduct
 import models.response.emcsTfe.{MovementItem, Packaging}
 import models.response.referenceData.ItemPackaging
 import play.api.libs.json.{JsObject, Json}
@@ -37,37 +38,108 @@ trait ItemFixtures { _: BaseFixtures =>
     "VA" -> "Vat"
   )
 
+  val aerosolPackage = Packaging(
+    typeOfPackage = "AE",
+    quantity = Some(1),
+    shippingMarks = Some("MARKS"),
+    identityOfCommercialSeal = Some("SEAL456789321"),
+    sealInformation = Some("Red Strip")
+  )
+
+  val bagPackage = Packaging(
+    typeOfPackage = "BG",
+    quantity = Some(1),
+    shippingMarks = None,
+    identityOfCommercialSeal = Some("SEAL77"),
+    sealInformation = Some("Cork")
+  )
+
+  val wineProduct = WineProduct(
+    wineProductCategory = "1",
+    wineGrowingZoneCode = Some("2"),
+    thirdCountryOfOrigin = Some("FJ"),
+    otherInformation = Some("Not available"),
+    wineOperations = Some(Seq("4", "5"))
+  )
+
   val item1 = MovementItem(
     itemUniqueReference = 1,
     productCode = "W200",
     cnCode = "22041011",
     quantity = BigDecimal(500),
+    grossMass = BigDecimal(900),
+    netMass = BigDecimal(375),
+    alcoholicStrength = Some(1.5),
+    degreePlato = Some(1.2),
+    fiscalMark = Some("FM564789 Fiscal Mark"),
+    fiscalMarkUsedFlag = Some(true),
+    designationOfOrigin = Some("Designation of Origin"),
+    sizeOfProducer = Some("20000"),
+    density = Some(880),
     commercialDescription = Some("description 1"),
-    packaging = Seq(Packaging("AE", Some(1))),
-    unitOfMeasure = None
+    brandNameOfProduct = Some("MALAMATINA"),
+    maturationAge = Some("Maturation Period"),
+    packaging = Seq(aerosolPackage),
+    wineProduct = Some(wineProduct),
+    unitOfMeasure = None,
+    productCodeDescription = None
   )
 
-  val item1Json = Json.obj(
+  val item1Json = Json.obj(fields =
     "itemUniqueReference" -> 1,
     "productCode" -> "W200",
     "cnCode" -> "22041011",
-    "quantity" -> BigDecimal(500),
+    "quantity" -> 500,
+    "grossMass" -> 900,
+    "netMass" -> 375,
+    "alcoholicStrength" -> 1.5,
+    "degreePlato" -> 1.2,
+    "fiscalMark" -> "FM564789 Fiscal Mark",
+    "fiscalMarkUsedFlag" -> true,
+    "designationOfOrigin" -> "Designation of Origin",
+    "sizeOfProducer" -> "20000",
+    "density" -> 880,
     "commercialDescription" -> "description 1",
+    "brandNameOfProduct" -> "MALAMATINA",
+    "maturationAge" -> "Maturation Period",
     "packaging" -> Json.arr(
-      Json.obj(
+      Json.obj(fields =
         "typeOfPackage" -> "AE",
-        "quantity" -> 1
+        "quantity" -> 1,
+        "shippingMarks" -> "MARKS",
+        "identityOfCommercialSeal" -> "SEAL456789321",
+        "sealInformation" -> "Red Strip"
       )
     ),
-    "unitOfMeasure" -> None
+    "wineProduct" -> Json.obj(
+      "wineProductCategory" -> "1",
+      "wineGrowingZoneCode" -> "2",
+      "thirdCountryOfOrigin" -> "FJ",
+      "otherInformation" -> "Not available",
+      "wineOperations" -> Json.arr("4", "5")
+    )
   )
 
   val item1WithPackaging = item1.copy(
-    packaging = Seq(Packaging("Aerosol", Some(1)))
+    packaging = Seq(Packaging(
+      typeOfPackage = "Aerosol",
+      quantity = Some(1),
+      shippingMarks = Some("MARKS"),
+      identityOfCommercialSeal = Some("SEAL456789321"),
+      sealInformation = Some("Red Strip")))
   )
 
-  val item1WithPackagingAndUnitOfMeasure = item1WithPackaging.copy(
-    unitOfMeasure = Some(Kilograms)
+  val item1WithPackagingAndCnCodeInfo = item1WithPackaging.copy(
+    unitOfMeasure = Some(Kilograms),
+    productCodeDescription = Some("Fine-cut tobacco for the rolling of cigarettes")
+  )
+
+  val wineProduct2 = WineProduct(
+    wineProductCategory = "3",
+    wineGrowingZoneCode = None,
+    thirdCountryOfOrigin = Some("FJ"),
+    otherInformation = Some("Not available"),
+    wineOperations = Some(Seq("0", "1"))
   )
 
   val item2 = MovementItem(
@@ -75,41 +147,82 @@ trait ItemFixtures { _: BaseFixtures =>
     productCode = "W300",
     cnCode = "22041011",
     quantity = BigDecimal(550),
+    grossMass = BigDecimal(901),
+    netMass = BigDecimal(475),
+    alcoholicStrength = Some(BigDecimal(12.7)),
+    degreePlato = None,
+    fiscalMark = Some("FM564790 Fiscal Mark"),
+    fiscalMarkUsedFlag = Some(true),
+    designationOfOrigin = Some("Designation of Origin"),
+    sizeOfProducer = Some("20000"),
+    density = None,
     commercialDescription = Some("description 2"),
-    packaging = Seq(
-      Packaging("AE", Some(1)),
-      Packaging("BG", Some(1))
-    ),
-    unitOfMeasure = None
+    brandNameOfProduct = Some("BrandName"),
+    maturationAge = None,
+    packaging = Seq(aerosolPackage.copy(shippingMarks = None), bagPackage),
+    wineProduct = Some(wineProduct2),
+    unitOfMeasure = None,
+    productCodeDescription = None
   )
 
-  val item2Json = Json.obj(
+  val item2Json = Json.obj(fields =
     "itemUniqueReference" -> 2,
     "productCode" -> "W300",
     "cnCode" -> "22041011",
-    "quantity" -> BigDecimal(550),
+    "quantity" -> 550,
+    "grossMass" -> 901,
+    "netMass" -> 475,
+    "alcoholicStrength" -> 12.7,
+    "fiscalMark" -> "FM564790 Fiscal Mark",
+    "fiscalMarkUsedFlag" -> true,
+    "designationOfOrigin" -> "Designation of Origin",
+    "sizeOfProducer" -> "20000",
     "commercialDescription" -> "description 2",
+    "brandNameOfProduct" -> "BrandName",
     "packaging" -> Json.arr(
-      Json.obj(
+      Json.obj(fields =
         "typeOfPackage" -> "AE",
-        "quantity" -> 1
+        "quantity" -> 1,
+        "identityOfCommercialSeal" -> "SEAL456789321",
+        "sealInformation" -> "Red Strip"
       ),
-      Json.obj(
+      Json.obj(fields =
         "typeOfPackage" -> "BG",
-        "quantity" -> 1
+        "quantity" -> 1,
+        "identityOfCommercialSeal" -> "SEAL77",
+        "sealInformation" -> "Cork"
       )
+    ),
+    "wineProduct" -> Json.obj(
+      "wineProductCategory" -> "3",
+      "thirdCountryOfOrigin" -> "FJ",
+      "otherInformation" -> "Not available",
+      "wineOperations" -> Json.arr("0", "1")
     )
   )
 
   val item2WithPackaging = item2.copy(
     packaging = Seq(
-      Packaging("Aerosol", Some(1)),
-      Packaging("Bag", Some(1))
+      Packaging(
+        typeOfPackage = "Aerosol",
+        quantity = Some(1),
+        shippingMarks = None,
+        identityOfCommercialSeal = Some("SEAL456789321"),
+        sealInformation = Some("Red Strip")
+      ),
+      Packaging(
+        typeOfPackage = "Bag",
+        quantity = Some(1),
+        shippingMarks = None,
+        identityOfCommercialSeal = Some("SEAL77"),
+        sealInformation = Some("Cork")
+      )
     )
   )
 
-  val item2WithPackagingAndUnitOfMeasure = item2WithPackaging.copy(
-    unitOfMeasure = Some(Kilograms)
+  val item2WithPackagingAndCnCodeInfo = item2WithPackaging.copy(
+    unitOfMeasure = Some(Kilograms),
+    productCodeDescription = Some("Fine-cut tobacco for the rolling of cigarettes")
   )
 
   val testCnCodeResponse = Json.obj(
