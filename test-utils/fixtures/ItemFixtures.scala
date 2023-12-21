@@ -120,7 +120,13 @@ trait ItemFixtures { _: BaseFixtures =>
     )
   )
 
-  val item1WithPackaging = item1.copy(
+  val item1WithWineOperations = item1.copy(
+    wineProduct = Some(wineProduct.copy(
+      wineOperations = Some(Seq("Reason 4", "Reason 5"))
+    ))
+  )
+
+  val item1WithWineAndPackaging = item1WithWineOperations.copy(
     packaging = Seq(Packaging(
       typeOfPackage = "Aerosol",
       quantity = Some(1),
@@ -129,7 +135,7 @@ trait ItemFixtures { _: BaseFixtures =>
       sealInformation = Some("Red Strip")))
   )
 
-  val item1WithPackagingAndCnCodeInfo = item1WithPackaging.copy(
+  val item1WithWineAndPackagingAndCnCodeInfo = item1WithWineAndPackaging.copy(
     unitOfMeasure = Some(Kilograms),
     productCodeDescription = Some("Fine-cut tobacco for the rolling of cigarettes")
   )
@@ -201,7 +207,13 @@ trait ItemFixtures { _: BaseFixtures =>
     )
   )
 
-  val item2WithPackaging = item2.copy(
+  val item2WithWineOperations = item2.copy(
+    wineProduct = Some(wineProduct.copy(
+      wineOperations = Some(Seq("Reason 0", "Reason 1"))
+    ))
+  )
+
+  val item2WithWineAndPackaging = item2WithWineOperations.copy(
     packaging = Seq(
       Packaging(
         typeOfPackage = "Aerosol",
@@ -220,7 +232,7 @@ trait ItemFixtures { _: BaseFixtures =>
     )
   )
 
-  val item2WithPackagingAndCnCodeInfo = item2WithPackaging.copy(
+  val item2WithWineAndPackagingAndCnCodeInfo = item2WithWineAndPackaging.copy(
     unitOfMeasure = Some(Kilograms),
     productCodeDescription = Some("Fine-cut tobacco for the rolling of cigarettes")
   )

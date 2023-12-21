@@ -49,14 +49,14 @@ class ItemDetailsControllerSpec extends SpecBase with FakeAuthAction with MockGe
       "return OK and the correct view for a GET" in {
 
         MockGetMovementService.getMovement(testErn, testArc)
-          .returns(Future.successful(getMovementResponseModel.copy(items = Seq(item1WithPackagingAndCnCodeInfo))))
+          .returns(Future.successful(getMovementResponseModel.copy(items = Seq(item1WithWineAndPackagingAndCnCodeInfo))))
 
         val request = FakeRequest(GET, onPageLoadUrl(idx = 1))
         val result = controller.onPageLoad(testErn, testArc, 1)(request)
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(item1WithPackagingAndCnCodeInfo)(dataRequest(request), messages(request)).toString
+          view(item1WithWineAndPackagingAndCnCodeInfo)(dataRequest(request), messages(request)).toString
       }
 
       s"redirect to ${routes.ViewMovementController.viewMovementItems(testErn, testArc).url}" when {

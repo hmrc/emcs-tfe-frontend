@@ -48,7 +48,7 @@ class ItemDetailsCardHelperSpec extends SpecBase with ItemFixtures {
 
         implicit lazy val msgs = messages(Seq(langMessages.lang))
 
-        val item = item1WithPackaging.copy(unitOfMeasure = Some(Litres15))
+        val item = item1WithWineAndPackaging.copy(unitOfMeasure = Some(Litres15))
 
         "should show the link for CN Code" when {
           "the CN Code is not S500" in {
@@ -167,7 +167,7 @@ class ItemDetailsCardHelperSpec extends SpecBase with ItemFixtures {
           }
 
           "when wineOperations is not empty" in {
-            helper.constructItemDetailsCard(item) mustBe card(Some(wineProduct))
+            helper.constructItemDetailsCard(item) mustBe card(item.wineProduct)
           }
 
           "when wineOperations is empty" in {

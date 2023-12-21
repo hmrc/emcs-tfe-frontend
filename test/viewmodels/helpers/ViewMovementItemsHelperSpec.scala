@@ -38,8 +38,8 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
   implicit val request = dataRequest(FakeRequest())
 
   val movementResponseWithReferenceData = getMovementResponseModel.copy(items = Seq(
-    item1WithPackagingAndCnCodeInfo,
-    item2WithPackagingAndCnCodeInfo
+    item1WithWineAndPackagingAndCnCodeInfo,
+    item2WithWineAndPackagingAndCnCodeInfo
   ))
 
   ".constructSelectItems" when {
@@ -78,14 +78,14 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
                         classes = "white-space-nowrap"
                       ),
                       TableRow(
-                        content = Text(item1WithPackagingAndCnCodeInfo.commercialDescription.get),
+                        content = Text(item1WithWineAndPackagingAndCnCodeInfo.commercialDescription.get),
                         classes = "govuk-!-width-one-third"
                       ),
                       TableRow(
-                        content = Text(s"${item1WithPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                        content = Text(s"${item1WithWineAndPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
                       ),
                       TableRow(
-                        content = HtmlContent(list(item1WithPackagingAndCnCodeInfo.packaging.map(pckg =>
+                        content = HtmlContent(list(item1WithWineAndPackagingAndCnCodeInfo.packaging.map(pckg =>
                           Html(pckg.typeOfPackage)
                         )))
                       ),
@@ -109,14 +109,14 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
                         classes = "white-space-nowrap"
                       ),
                       TableRow(
-                        content = Text(item2WithPackagingAndCnCodeInfo.commercialDescription.get),
+                        content = Text(item2WithWineAndPackagingAndCnCodeInfo.commercialDescription.get),
                         classes = "govuk-!-width-one-third"
                       ),
                       TableRow(
-                        content = Text(s"${item2WithPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                        content = Text(s"${item2WithWineAndPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
                       ),
                       TableRow(
-                        content = HtmlContent(list(item2WithPackagingAndCnCodeInfo.packaging.map(pckg =>
+                        content = HtmlContent(list(item2WithWineAndPackagingAndCnCodeInfo.packaging.map(pckg =>
                           Html(pckg.typeOfPackage)
                         )))
                       ),
@@ -160,14 +160,14 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
                         classes = "white-space-nowrap"
                       ),
                       TableRow(
-                        content = Text(item1WithPackagingAndCnCodeInfo.commercialDescription.get),
+                        content = Text(item1WithWineAndPackagingAndCnCodeInfo.commercialDescription.get),
                         classes = "govuk-!-width-one-third"
                       ),
                       TableRow(
-                        content = Text(s"${item1WithPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                        content = Text(s"${item1WithWineAndPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
                       ),
                       TableRow(
-                        content = HtmlContent(list(item1WithPackagingAndCnCodeInfo.packaging.map(pckg =>
+                        content = HtmlContent(list(item1WithWineAndPackagingAndCnCodeInfo.packaging.map(pckg =>
                           Html(pckg.typeOfPackage)
                         )))
                       ),
@@ -185,14 +185,14 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
                         classes = "white-space-nowrap"
                       ),
                       TableRow(
-                        content = Text(item2WithPackagingAndCnCodeInfo.commercialDescription.get),
+                        content = Text(item2WithWineAndPackagingAndCnCodeInfo.commercialDescription.get),
                         classes = "govuk-!-width-one-third"
                       ),
                       TableRow(
-                        content = Text(s"${item2WithPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
+                        content = Text(s"${item2WithWineAndPackagingAndCnCodeInfo.quantity} ${unitOfMeasureMessages.kilogramsShort}")
                       ),
                       TableRow(
-                        content = HtmlContent(list(item2WithPackagingAndCnCodeInfo.packaging.map(pckg =>
+                        content = HtmlContent(list(item2WithWineAndPackagingAndCnCodeInfo.packaging.map(pckg =>
                           Html(pckg.typeOfPackage)
                         )))
                       ),
