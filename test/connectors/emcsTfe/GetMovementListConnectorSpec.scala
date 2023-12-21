@@ -20,6 +20,7 @@ import base.SpecBase
 import fixtures.MovementListFixtures
 import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
+import models.MovementListSearchOptions
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -41,11 +42,38 @@ class GetMovementListConnectorSpec extends SpecBase with Status with MimeTypes w
 
     "return a successful response" when {
 
-      "downstream call is successful" in new Test {
+      "no search options are given" in new Test {
 
-        MockHttpClient.get(s"$baseUrl/movements/$testErn").returns(Future.successful(getMovementListResponse))
+        MockHttpClient
+          .get(s"$baseUrl/movements/$testErn", Seq.empty)
+          .returns(Future.successful(getMovementListResponse))
 
-        await(connector.getMovementList(exciseRegistrationNumber = testErn)) mustBe getMovementListResponse
+        val expectedResult = getMovementListResponse
+
+        val actualResult = connector.getMovementList(
+          exciseRegistrationNumber = testErn,
+          None
+        )
+
+        await(actualResult) mustBe expectedResult
+      }
+
+      "search options are given" in new Test {
+
+        val searchOptions = MovementListSearchOptions()
+
+        MockHttpClient
+          .get(s"$baseUrl/movements/$testErn", searchOptions.queryParams)
+          .returns(Future.successful(getMovementListResponse))
+
+        val expectedResult = getMovementListResponse
+
+        val actualResult = connector.getMovementList(
+          exciseRegistrationNumber = testErn,
+          Some(searchOptions)
+        )
+
+        await(actualResult) mustBe expectedResult
       }
     }
   }

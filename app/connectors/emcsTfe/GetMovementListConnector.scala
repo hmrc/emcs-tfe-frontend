@@ -16,10 +16,11 @@
 
 package connectors.emcsTfe
 
-import play.api.libs.json.Reads
 import config.AppConfig
+import models.MovementListSearchOptions
 import models.response.ErrorResponse
 import models.response.emcsTfe.GetMovementListResponse
+import play.api.libs.json.Reads
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}
@@ -32,8 +33,8 @@ class GetMovementListConnector @Inject()(val http: HttpClient,
   override implicit val reads: Reads[GetMovementListResponse] = GetMovementListResponse.reads
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
-  def getMovementList(exciseRegistrationNumber: String)
+  def getMovementList(exciseRegistrationNumber: String, search: Option[MovementListSearchOptions] = None)
                      (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, GetMovementListResponse]] =
-    get(s"$baseUrl/movements/$exciseRegistrationNumber")
+    get(s"$baseUrl/movements/$exciseRegistrationNumber", search.map(_.queryParams).getOrElse(Seq.empty))
 
 }

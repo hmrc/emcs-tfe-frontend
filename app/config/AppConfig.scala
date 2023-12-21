@@ -21,6 +21,7 @@ import play.api.Configuration
 import play.api.mvc.RequestHeader
 import controllers.routes
 import featureswitch.core.config._
+import models.MovementListSearchOptions
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -40,8 +41,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   lazy val emcsTfeHomeUrl: String = routes.IndexController.exciseNumber().url
 
-  // TODO: update with new URL when MOV01 is created
-  def emcsTfeListMovementsUrl(ern: String): String = routes.ViewMovementListController.viewMovementList(ern).url
+  def emcsTfeListMovementsUrl(ern: String): String = routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()).url
 
   // TODO: update with new URL when MOV01 filters are created
   def emcsTfeDraftMovementsUrl(@unused ern: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url

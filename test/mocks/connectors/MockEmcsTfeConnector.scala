@@ -17,9 +17,10 @@
 package mocks.connectors
 
 import connectors.emcsTfe.{GetMovementConnector, GetMovementListConnector}
+import models.MovementListSearchOptions
 import models.response.ErrorResponse
 import models.response.emcsTfe.{GetMovementListResponse, GetMovementResponse}
-import org.scalamock.handlers.{CallHandler3, CallHandler4}
+import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -35,8 +36,8 @@ trait MockEmcsTfeConnector extends MockFactory {
         .expects(ern, arc, *, *)
     }
 
-    def getMovementList(ern: String): CallHandler3[String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementListResponse]]] =
-      (mockGetMovementListConnector.getMovementList(_: String)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(ern, *, *)
+    def getMovementList(ern: String, search: Option[MovementListSearchOptions] = None): CallHandler4[String, Option[MovementListSearchOptions], HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementListResponse]]] =
+      (mockGetMovementListConnector.getMovementList(_: String, _: Option[MovementListSearchOptions])(_: HeaderCarrier, _: ExecutionContext))
+        .expects(ern, search, *, *)
   }
 }
