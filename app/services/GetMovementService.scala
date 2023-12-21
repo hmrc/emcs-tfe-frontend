@@ -28,6 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
                                    getPackagingTypesService: GetPackagingTypesService,
                                    getCnCodeInformationService: GetCnCodeInformationService,
+                                   getWineOperationsService: GetWineOperationsService,
                                    getMovementHistoryEventsService: GetMovementHistoryEventsService)(implicit ec: ExecutionContext) {
 
   def getMovement(ern: String, arc: String)(implicit hc: HeaderCarrier): Future[GetMovementResponse] =
@@ -35,16 +36,17 @@ class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
       case Right(movement) =>
         for {
           historyEvents <- getMovementHistoryEventsService.getMovementHistoryEvents(ern, arc)
-          itemsWithPackaging <- getPackagingTypesService.getMovementItemsWithPackagingTypes(movement.items)
-          itemsWithCnCodeInfo <- getCnCodeInformationService.getCnCodeInformation(itemsWithPackaging)
-          itemsWithPackagingAndCnCodeInfo = itemsWithCnCodeInfo.map {
+          itemsWithWineOperations <- getWineOperationsService.getWineOperations(movement.items)
+          itemsWithWineAndPackaging <- getPackagingTypesService.getMovementItemsWithPackagingTypes(itemsWithWineOperations)
+          itemsWithCnCodeInfo <- getCnCodeInformationService.getCnCodeInformation(itemsWithWineAndPackaging)
+          itemsWithWineAndPackagingAndCnCodeInfo = itemsWithCnCodeInfo.map {
             case (item, cnCodeInfo) => item.copy(
               unitOfMeasure = Some(cnCodeInfo.unitOfMeasure),
               productCodeDescription = Some(cnCodeInfo.exciseProductCodeDescription)
             )
           }
         } yield movement.copy(
-          items = itemsWithPackagingAndCnCodeInfo,
+          items = itemsWithWineAndPackagingAndCnCodeInfo,
           eventHistorySummary = Some(historyEvents)
         )
 

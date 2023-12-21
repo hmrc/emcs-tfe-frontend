@@ -42,12 +42,12 @@ class ItemDetailsViewSpec extends ViewSpecBase with ViewBehaviours with ItemFixt
 
         val view = app.injector.instanceOf[ItemDetailsView]
 
-        implicit val doc: Document = Jsoup.parse(view(item2WithPackagingAndCnCodeInfo).toString())
+        implicit val doc: Document = Jsoup.parse(view(item2WithWineAndPackagingAndCnCodeInfo).toString())
 
         behave like pageWithExpectedElementsAndMessages(Seq(
-          Selectors.title -> messagesForLanguage.titleHelper(item2WithPackagingAndCnCodeInfo.productCodeDescription.get),
-          Selectors.h1 -> item2WithPackagingAndCnCodeInfo.productCodeDescription.get,
-          Selectors.id("commodity-code") -> (item2WithPackagingAndCnCodeInfo.cnCode + " " + messagesForLanguage.opensInNewTab),
+          Selectors.title -> messagesForLanguage.titleHelper(item2WithWineAndPackagingAndCnCodeInfo.productCodeDescription.get),
+          Selectors.h1 -> item2WithWineAndPackagingAndCnCodeInfo.productCodeDescription.get,
+          Selectors.id("commodity-code") -> (item2WithWineAndPackagingAndCnCodeInfo.cnCode + " " + messagesForLanguage.opensInNewTab),
           Selectors.cardHeader(1) -> messagesForLanguage.itemDetailsCardHeading,
           Selectors.cardHeader(2) -> messagesForLanguage.packagingCardHeading(1),
           Selectors.cardHeader(3) -> messagesForLanguage.packagingCardHeading(2)

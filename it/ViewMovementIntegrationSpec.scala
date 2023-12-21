@@ -15,7 +15,7 @@
  */
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import fixtures.{BaseFixtures, GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
+import fixtures.{BaseFixtures, GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures, GetWineOperationsResponseFixtures}
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.http.{HeaderNames, Status}
@@ -33,8 +33,8 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
   with IntegrationPatience
   with OptionValues
   with GetMovementResponseFixtures
-  with GetMovementHistoryEventsResponseFixtures {
-
+  with GetMovementHistoryEventsResponseFixtures
+  with GetWineOperationsResponseFixtures {
 
   private trait Test {
     def setupStubs(): StubMapping
@@ -46,6 +46,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
     def getTraderKnownFactsUri: String = s"/emcs-tfe-reference-data/oracle/trader-known-facts"
     def getPackagingTypesUri: String = s"/emcs-tfe-reference-data/oracle/packaging-types"
     def postCnCodeInformationUri: String = s"/emcs-tfe-reference-data/oracle/cn-code-information"
+    def getWineOperationsUri: String = s"/emcs-tfe-reference-data/oracle/wine-operations"
 
     def request(): WSRequest = {
       setupStubs()
@@ -91,7 +92,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             DownstreamStub.onSuccess(DownstreamStub.GET, getTraderKnownFactsUri, Map("exciseRegistrationId" -> testErn), Status.OK, Json.toJson(testMinTraderKnownFacts))
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
-            DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
+            DownstreamStub.onSuccess(DownstreamStub.POST, getWineOperationsUri, Status.OK, wineOperationsJson)
           }
 
           val response: WSResponse = await(request().get())
@@ -117,6 +118,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
+            DownstreamStub.onSuccess(DownstreamStub.POST, getWineOperationsUri, Status.OK, wineOperationsJson)
           }
 
           val response: WSResponse = await(request().get())
@@ -134,6 +136,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
+            DownstreamStub.onSuccess(DownstreamStub.POST, getWineOperationsUri, Status.OK, wineOperationsJson)
           }
 
           val response: WSResponse = await(request().get())
@@ -157,6 +160,7 @@ class ViewMovementIntegrationSpec extends IntegrationBaseSpec
             DownstreamStub.onSuccess(DownstreamStub.POST, postCnCodeInformationUri, Status.OK, Json.toJson(testCnCodeResponse))
             DownstreamStub.onSuccess(DownstreamStub.GET, getPackagingTypesUri, Status.OK, Json.toJson(testItemPackagingTypesJson))
             DownstreamStub.onSuccess(DownstreamStub.GET, emcsTfeHistoryEventUri, Status.OK, getMovementHistoryEventsResponseInputJson)
+            DownstreamStub.onSuccess(DownstreamStub.POST, getWineOperationsUri, Status.OK, wineOperationsJson)
           }
 
           val response: WSResponse = await(request().get())

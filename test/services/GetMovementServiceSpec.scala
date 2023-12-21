@@ -19,11 +19,11 @@ package services
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import mocks.connectors.MockEmcsTfeConnector
-import mocks.services.{MockGetCnCodeInformationService, MockGetMovementHistoryEventsService, MockGetPackagingTypesService}
+import mocks.services.{MockGetCnCodeInformationService, MockGetMovementHistoryEventsService, MockGetPackagingTypesService, MockGetWineOperationsService}
 import models.common.UnitOfMeasure.Kilograms
 import models.response.emcsTfe.MovementItem
 import models.response.referenceData.CnCodeInformation
-import models.response.{CnCodeInformationException, MovementException, MovementHistoryEventsException, PackagingTypesException, UnexpectedDownstreamResponseError}
+import models.response.{CnCodeInformationException, MovementException, MovementHistoryEventsException, PackagingTypesException, UnexpectedDownstreamResponseError, WineOperationsException}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,6 +33,7 @@ class GetMovementServiceSpec extends SpecBase
   with MockGetPackagingTypesService
   with MockGetCnCodeInformationService
   with MockGetMovementHistoryEventsService
+  with MockGetWineOperationsService
   with GetMovementResponseFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -42,93 +43,144 @@ class GetMovementServiceSpec extends SpecBase
     getMovementConnector = mockGetMovementConnector,
     getPackagingTypesService = mockGetPackagingTypesService,
     getCnCodeInformationService = mockGetCnCodeInformationService,
-    getMovementHistoryEventsService = mockGetMovementHistoryEventsService
+    getMovementHistoryEventsService = mockGetMovementHistoryEventsService,
+    getWineOperationsService = mockGetWineOperationsService
   )
 
   val movementItems: Seq[MovementItem] = Seq(item1, item2)
-  val movementItemsWithPackaging: Seq[MovementItem] = Seq(item1WithPackaging, item2WithPackaging)
+  val movementItemsWithWineOperations = Seq(item1WithWineOperations, item2WithWineOperations)
+  val movementItemsWithWineAndPackaging: Seq[MovementItem] = Seq(item1WithWineAndPackaging, item2WithWineAndPackaging)
 
   ".getMovement" when {
 
     "GetMovementConnector returns success from downstream" when {
 
-      "Reference Data returns success for Packaging Types" when {
+      "GetMovementHistoryEventsService returns success from downstream" when {
 
-        "Reference Data returns success for CnCodeInformation" must {
+        "Reference Data returns success for Wine Operations" when {
 
-          "return successful movement with the packaging and unit of measure added to the response" in {
+          "Reference Data returns success for Packaging Types" when {
 
-            MockEmcsTfeConnector.getMovement(testErn, testArc)
-              .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
+            "Reference Data returns success for CnCodeInformation" must {
 
-            MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
-              .returns(Future.successful(getMovementHistoryEventsResponseModel))
+              "return successful movement with the packaging and unit of measure added to the response" in {
 
-            MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItems)
-              .returns(Future.successful(movementItemsWithPackaging))
+                MockEmcsTfeConnector.getMovement(testErn, testArc)
+                  .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
 
-            MockGetCnCodeInformationService.getCnCodeInformation(movementItemsWithPackaging)
-              .returns(Future.successful(Seq(
-                item1WithPackaging -> CnCodeInformation(
-                  cnCode = "T400",
-                  cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
-                  exciseProductCode = "24029000",
-                  exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
-                  unitOfMeasure = Kilograms
-                ),
-                item2WithPackaging -> CnCodeInformation(
-                  cnCode = "T400",
-                  cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
-                  exciseProductCode = "24029000",
-                  exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
-                  unitOfMeasure = Kilograms
-                )
-              )))
+                MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+                  .returns(Future.successful(getMovementHistoryEventsResponseModel))
 
-            testService.getMovement(testErn, testArc)(hc).futureValue mustBe getMovementResponseModel.copy(items = Seq(
-              item1WithPackagingAndCnCodeInfo,
-              item2WithPackagingAndCnCodeInfo
-            ))
+                MockGetWineOperationsService.getWineOperations(movementItems)
+                  .returns(Future.successful(movementItemsWithWineOperations))
+
+                MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItemsWithWineOperations)
+                  .returns(Future.successful(movementItemsWithWineAndPackaging))
+
+                MockGetCnCodeInformationService.getCnCodeInformation(movementItemsWithWineAndPackaging)
+                  .returns(Future.successful(Seq(
+                    item1WithWineAndPackaging -> CnCodeInformation(
+                      cnCode = "T400",
+                      cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+                      exciseProductCode = "24029000",
+                      exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+                      unitOfMeasure = Kilograms
+                    ),
+                    item2WithWineAndPackaging -> CnCodeInformation(
+                      cnCode = "T400",
+                      cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+                      exciseProductCode = "24029000",
+                      exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+                      unitOfMeasure = Kilograms
+                    )
+                  )))
+
+                testService.getMovement(testErn, testArc)(hc).futureValue mustBe getMovementResponseModel.copy(items = Seq(
+                  item1WithWineAndPackagingAndCnCodeInfo,
+                  item2WithWineAndPackagingAndCnCodeInfo
+                ))
+              }
+            }
+
+            "Reference Data returns failure for CnCodeInformation" must {
+
+              "raise a CnCodeInformationException" in {
+
+                MockEmcsTfeConnector.getMovement(testErn, testArc)
+                  .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
+
+                MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+                  .returns(Future.successful(getMovementHistoryEventsResponseModel))
+
+                MockGetWineOperationsService.getWineOperations(movementItems)
+                  .returns(Future.successful(movementItemsWithWineOperations))
+
+                MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItemsWithWineOperations)
+                  .returns(Future.successful(movementItemsWithWineAndPackaging))
+
+                MockGetCnCodeInformationService.getCnCodeInformation(movementItemsWithWineAndPackaging)
+                  .returns(Future.failed(CnCodeInformationException("bang")))
+
+                val result = intercept[CnCodeInformationException](await(testService.getMovement(testErn, testArc)(hc)))
+
+                result.getMessage must include("bang")
+              }
+            }
+          }
+
+          "Reference Data returns failure for Package Types" must {
+
+            "raise a PackagingTypesException" in {
+
+              MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+                .returns(Future.successful(getMovementHistoryEventsResponseModel))
+
+              MockEmcsTfeConnector.getMovement(testErn, testArc)
+                .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
+
+              MockGetWineOperationsService.getWineOperations(movementItems)
+                .returns(Future.successful(movementItemsWithWineOperations))
+
+              MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItemsWithWineOperations)
+                .returns(Future.failed(PackagingTypesException("bang")))
+
+              val result = intercept[PackagingTypesException](await(testService.getMovement(testErn, testArc)(hc)))
+
+              result.getMessage must include("bang")
+            }
           }
         }
 
-        "Reference Data returns failure for CnCodeInformation" must {
+        "Reference Data returns failure for Wine Operations" must {
 
-          "raise a CnCodeInformationException" in {
-
-            MockEmcsTfeConnector.getMovement(testErn, testArc)
-              .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
+          "raise a WineOperationsExcepion" in {
 
             MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
               .returns(Future.successful(getMovementHistoryEventsResponseModel))
 
-            MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItems)
-              .returns(Future.successful(movementItemsWithPackaging))
+            MockEmcsTfeConnector.getMovement(testErn, testArc)
+              .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
 
-            MockGetCnCodeInformationService.getCnCodeInformation(movementItemsWithPackaging)
-              .returns(Future.failed(CnCodeInformationException("bang")))
+            MockGetWineOperationsService.getWineOperations(movementItems)
+              .returns(Future.failed(WineOperationsException("bang")))
 
-            val result = intercept[CnCodeInformationException](await(testService.getMovement(testErn, testArc)(hc)))
+            val result = intercept[WineOperationsException](await(testService.getMovement(testErn, testArc)(hc)))
 
             result.getMessage must include("bang")
           }
         }
       }
 
-      "Reference Data returns failure for Package Types" must {
-
-        "raise a CnCodeInformationException" in {
-
-          MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
-            .returns(Future.successful(getMovementHistoryEventsResponseModel))
+      "GetMovementHistoryEventsService returns failure from downstream" must {
+        "raise a MovementHistoryEventsException" in {
 
           MockEmcsTfeConnector.getMovement(testErn, testArc)
             .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
 
-          MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItems)
-            .returns(Future.failed(PackagingTypesException("bang")))
+          MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+            .returns(Future.failed(MovementHistoryEventsException("bang")))
 
-          val result = intercept[PackagingTypesException](await(testService.getMovement(testErn, testArc)(hc)))
+          val result = intercept[MovementHistoryEventsException](await(testService.getMovement(testErn, testArc)(hc)))
 
           result.getMessage must include("bang")
         }
@@ -136,6 +188,7 @@ class GetMovementServiceSpec extends SpecBase
     }
 
     "GetMovementConnector returns failure from downstream" must {
+
       "raise a MovementException" in {
 
         MockEmcsTfeConnector.getMovement(testErn, testArc)
@@ -144,21 +197,6 @@ class GetMovementServiceSpec extends SpecBase
         val result = intercept[MovementException](await(testService.getMovement(testErn, testArc)(hc)))
 
         result.getMessage must include("Failed to retrieve movement from emcs-tfe")
-      }
-    }
-
-    "GetMovementHistoryEventsService returns failure from downstream" must {
-      "raise a MovementHistoryEventsException" in {
-
-        MockEmcsTfeConnector.getMovement(testErn, testArc)
-          .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
-
-        MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
-          .returns(Future.failed(MovementHistoryEventsException("bang")))
-
-        val result = intercept[MovementHistoryEventsException](await(testService.getMovement(testErn, testArc)(hc)))
-
-        result.getMessage must include("bang")
       }
     }
   }

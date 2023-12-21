@@ -33,7 +33,7 @@ class GetPackagingTypesServiceSpec extends SpecBase with MockGetItemPackagingTyp
 
   lazy val testService = new GetPackagingTypesService(mockGetItemPackagingTypesConnector)
 
-  val movementItems: Seq[MovementItem] = Seq(item1, item2)
+  val movementItems: Seq[MovementItem] = Seq(item1WithWineOperations, item2WithWineOperations)
 
   ".getPackagingTypes" must {
 
@@ -46,8 +46,8 @@ class GetPackagingTypesServiceSpec extends SpecBase with MockGetItemPackagingTyp
         )))
 
         testService.getMovementItemsWithPackagingTypes(movementItems)(hc).futureValue mustBe Seq(
-          item1WithPackaging,
-          item2WithPackaging
+          item1WithWineAndPackaging,
+          item2WithWineAndPackaging
         )
       }
     }
