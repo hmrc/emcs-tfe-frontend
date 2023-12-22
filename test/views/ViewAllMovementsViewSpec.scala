@@ -80,10 +80,10 @@ class ViewAllMovementsViewSpec extends SpecBase with MovementListFixtures {
       document.select(Selectors.h1).text() shouldBe English.heading
 
       document.select(Selectors.label("sortBy")).text() shouldBe English.sortByLabel
-      document.select(Selectors.selectOption(2)).text() shouldBe English.sortArcAscending
-      document.select(Selectors.selectOption(3)).text() shouldBe English.sortArcDescending
-      document.select(Selectors.selectOption(4)).text() shouldBe English.sortNewest
-      document.select(Selectors.selectOption(5)).text() shouldBe English.sortOldest
+      document.select(Selectors.selectOption(1)).text() shouldBe English.sortArcAscending
+      document.select(Selectors.selectOption(2)).text() shouldBe English.sortArcDescending
+      document.select(Selectors.selectOption(3)).text() shouldBe English.sortNewest
+      document.select(Selectors.selectOption(4)).text() shouldBe English.sortOldest
       document.select(Selectors.button).text() shouldBe English.sortByButton
 
       document.select(Selectors.headingLinkRow(1)).text() shouldBe getMovementListResponse.movements(0).arc
@@ -115,10 +115,10 @@ class ViewAllMovementsViewSpec extends SpecBase with MovementListFixtures {
       document.select(Selectors.h1).text() shouldBe English.heading
 
       document.select(Selectors.label("sortBy")).text() shouldBe English.sortByLabel
-      document.select(Selectors.selectOption(2)).text() shouldBe English.sortArcAscending
-      document.select(Selectors.selectOption(3)).text() shouldBe English.sortArcDescending
-      document.select(Selectors.selectOption(4)).text() shouldBe English.sortNewest
-      document.select(Selectors.selectOption(5)).text() shouldBe English.sortOldest
+      document.select(Selectors.selectOption(1)).text() shouldBe English.sortArcAscending
+      document.select(Selectors.selectOption(2)).text() shouldBe English.sortArcDescending
+      document.select(Selectors.selectOption(3)).text() shouldBe English.sortNewest
+      document.select(Selectors.selectOption(4)).text() shouldBe English.sortOldest
       document.select(Selectors.button).text() shouldBe English.sortByButton
 
       document.select(Selectors.headingLinkRow(1)).text() shouldBe getMovementListResponse.movements(0).arc

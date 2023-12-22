@@ -58,7 +58,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
     val errorHandler = app.injector.instanceOf[ErrorHandler]
     val formProvider = app.injector.instanceOf[ViewAllMovementsFormProvider]
 
-    val selectItemList = SelectItemHelper.constructSelectItems(MovementSortingSelectOption.values, "default", None)
+    val selectItemList = SelectItemHelper.constructSelectItems(MovementSortingSelectOption.values, None, None)
 
     val controller: ViewAllMovementsController = new ViewAllMovementsController(
       mcc = app.injector.instanceOf[MessagesControllerComponents],

@@ -22,15 +22,15 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SelectItem
 
 object SelectItemHelper {
 
-  def constructSelectItems(selectOptions: Seq[SelectOptionModel], defaultTextMessageKey: String, existingAnswer: Option[String] = None)
+  def constructSelectItems(selectOptions: Seq[SelectOptionModel], defaultTextMessageKey: Option[String], existingAnswer: Option[String] = None)
                           (implicit messages: Messages): Seq[SelectItem] = {
     Seq(
-      SelectItem(
-        text = messages(defaultTextMessageKey),
+      defaultTextMessageKey.map(default => SelectItem(
+        text = messages(default),
         selected = existingAnswer.isEmpty,
         disabled = true
-      )
-    ) ++ selectOptions.map { option =>
+      ))
+    ).flatten ++ selectOptions.map { option =>
       SelectItem(
         value = Some(option.code),
         text = messages(option.displayName),
