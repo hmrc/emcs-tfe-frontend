@@ -85,7 +85,7 @@
     @maybeShowNavigationBanner.map(info => navigationBar(info))
     @beforeContentBlock.getOrElse(())
     @if(showBackLink) {
-        @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible").withCssClass("emcs-tfe-frontend-back-link"))
+        @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible").withCssClass("govuk-!-margin-top-6"))
     }
 }
 
