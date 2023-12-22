@@ -39,7 +39,8 @@ class ViewMovementHelper @Inject()(
                                     list: list,
                                     p: p,
                                     overviewPartial: overview_partial,
-                                    viewMovementItemsHelper: ViewMovementItemsHelper
+                                    viewMovementItemsHelper: ViewMovementItemsHelper,
+                                    viewMovementTransportHelper: ViewMovementTransportHelper
                                   ) extends ExpectedDateOfArrival {
 
   def movementCard(subNavigationTab: SubNavigationTab, movementResponse: GetMovementResponse)
@@ -49,6 +50,7 @@ class ViewMovementHelper @Inject()(
       case Overview => constructMovementOverview(movementResponse)
       case Movement => constructMovementView(movementResponse)
       case Delivery => constructMovementDelivery(movementResponse)
+      case Transport => viewMovementTransportHelper.constructMovementTransport(movementResponse)
       case Items    => viewMovementItemsHelper.constructMovementItems(movementResponse)
       case _ => Html("")
     }

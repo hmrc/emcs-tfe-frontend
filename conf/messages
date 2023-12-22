@@ -141,6 +141,44 @@ viewMovement.items.receiptStatus.damaged = Damaged
 viewMovement.items.receiptStatus.brokenSeals = Broken seal(s)
 viewMovement.items.receiptStatus.other = Other
 
+# MOV02 - Transport
+viewMovement.transport.h2 = Transport details
+viewMovement.transport.summary.heading = Summary
+viewMovement.transport.summary.transportArranger = Transport arranger
+viewMovement.transport.summary.modeOfTransport = Mode of transport
+viewMovement.transport.summary.journeyTime = Journey time
+viewMovement.transport.firstTransporter.heading = First transporter
+viewMovement.transport.firstTransporter.name = Name
+viewMovement.transport.firstTransporter.address = Address
+viewMovement.transport.firstTransporter.vrn = VAT registration number
+viewMovement.transport.transportUnit.heading = Transport unit {0}
+viewMovement.transport.transportUnit.unitType = Unit type
+viewMovement.transport.transportUnit.identity = Identity
+viewMovement.transport.transportUnit.commercialSeal = Commercial seal
+viewMovement.transport.transportUnit.complementaryInformation = Complementary information
+viewMovement.transport.transportUnit.sealInformation = Seal information
+viewMovement.transport.transportUnit.notProvided = Not provided
+
+transportType.container = Container
+transportType.vehicle = Vehicle
+transportType.trailer = Trailer
+transportType.tractor = Tractor
+transportType.fixedTransport = Fixed transport
+
+transportArrangement.consignor = Consignor
+transportArrangement.consignee = Consignee
+transportArrangement.ownerOfGoods = Owner of goods
+transportArrangement.other = Other
+
+transportMode.airTransport = Air transport
+transportMode.fixedTransportInstallations = Fixed transport installations
+transportMode.inlandWaterwayTransport = Inland waterway transport
+transportMode.postalConsignment = Postal consignment
+transportMode.railTransport = Rail transport
+transportMode.roadTransport = Road transport
+transportMode.seaTransport = Sea transport
+transportMode.other = Other
+
 # MOV02 - History events
 movementHistoryEvent.IE801.first.label = Movement created
 movementHistoryEvent.IE801.further.label = Update to movement

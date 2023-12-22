@@ -16,7 +16,7 @@
 
 package models.response.emcsTfe
 
-import models.common.{DestinationType, TraderModel, TransportDetailsModel}
+import models.common.{DestinationType, TraderModel, TransportDetailsModel, TransportTraderModel}
 import models.response.emcsTfe.getMovementHistoryEvents.GetMovementHistoryEventsResponse
 import models.response.emcsTfe.reportOfReceipt.ReportOfReceiptModel
 import play.api.libs.json.{Json, Reads}
@@ -34,11 +34,14 @@ case class GetMovementResponse(
                                 eadStatus: String,
                                 deliveryPlaceTrader: Option[TraderModel],
                                 placeOfDispatchTrader: Option[TraderModel],
+                                firstTransporterTrader: Option[TransportTraderModel],
                                 deliveryPlaceCustomsOfficeReferenceNumber: Option[String],
                                 consignorTrader: TraderModel,
                                 consigneeTrader: Option[TraderModel],
                                 dateOfDispatch: LocalDate,
                                 journeyTime: String,
+                                headerEadEsad: HeaderEadEsadModel,
+                                transportMode: TransportModeModel,
                                 numberOfItems: Int,
                                 transportDetails: Seq[TransportDetailsModel],
                                 reportOfReceipt: Option[ReportOfReceiptModel],
