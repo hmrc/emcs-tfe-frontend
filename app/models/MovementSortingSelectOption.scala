@@ -69,5 +69,5 @@ object MovementSortingSelectOption {
   }
 
   def constructSelectItems(existingAnswer: Option[String] = None)(implicit messages: Messages): Seq[SelectItem] =
-    SelectItemHelper.constructSelectItems(values, "", existingAnswer)
+    SelectItemHelper.constructSelectItems(values, None, existingAnswer)
 }
