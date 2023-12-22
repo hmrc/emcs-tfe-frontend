@@ -31,7 +31,6 @@ import views.html.viewMovement.ViewMovementPage
 
 import java.time.LocalDateTime
 
-
 class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with GetMovementResponseFixtures {
 
   val page: ViewMovementPage = app.injector.instanceOf[ViewMovementPage]

@@ -255,6 +255,14 @@ site.back = Back
 
 viewAllMovements.title = Movements
 viewAllMovements.heading = Movements
+viewAllMovements.search.heading = Search for a movement
+viewAllMovements.search.p1 = You can search by Administrative Reference Code (ARC), Local Reference Number (LRN), trader Excise Reference Number (ERN) or transporter name.
+viewAllMovements.search.by.hidden = Search by
+viewAllMovements.search.suffix.arc = ARC
+viewAllMovements.search.suffix.lrn = LRN
+viewAllMovements.search.suffix.ern = ERN
+viewAllMovements.search.suffix.transporter = Transporter
+viewAllMovements.search.button = Search
 viewAllMovements.consignor = Consignor: {0}
 viewAllMovements.dateOfDispatch = Date of dispatch: {0}
 viewAllMovements.sort.label = Sort by

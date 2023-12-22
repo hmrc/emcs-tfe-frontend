@@ -20,6 +20,7 @@ import base.SpecBase
 import controllers.routes.ViewAllMovementsController.onPageLoad
 import fixtures.MovementListFixtures
 import models.MovementListSearchOptions
+import models.MovementSearchSelectOption.ARC
 import models.MovementSortingSelectOption.ArcAscending
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
@@ -30,12 +31,12 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
   object Helper extends MovementPaginationHelper()
 
   def createPageItem(index: Int): PaginationItem = PaginationItem(
-    href = onPageLoad(testErn, MovementListSearchOptions(ArcAscending, index, 10)).url,
+    href = onPageLoad(testErn, MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, index, 10)).url,
     number = Some(index.toString)
   )
 
   def createCurrentPageItem(index: Int): PaginationItem = PaginationItem(
-    href = onPageLoad(testErn, MovementListSearchOptions(ArcAscending, index, 10)).url,
+    href = onPageLoad(testErn, MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, index, 10)).url,
     number = Some(index.toString),
     current = Some(true)
   )
@@ -46,7 +47,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
   )
 
   def createPageLink(index: Int): PaginationLink = PaginationLink(
-    href = onPageLoad(testErn, MovementListSearchOptions(ArcAscending, index, 10)).url
+    href = onPageLoad(testErn, MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, index, 10)).url
   )
 
   ".constructPagination" when {
@@ -60,7 +61,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
         val actualResult: Option[Pagination] = Helper.constructPagination(
           pageCount = 1,
           ern = testErn,
-          search = MovementListSearchOptions(ArcAscending, 1, 10)
+          search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 1, 10)
         )
 
         actualResult shouldBe expectedResult
@@ -85,7 +86,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 2,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 1, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 1, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -108,7 +109,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 2,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 2, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 2, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -135,7 +136,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 3,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 1, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 1, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -159,7 +160,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 3,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 2, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 2, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -182,7 +183,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             val actualResult: Option[Pagination] = Helper.constructPagination(
               pageCount = 3,
               ern = testErn,
-              search = MovementListSearchOptions(ArcAscending, 3, 10)
+              search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 3, 10)
             )
 
             actualResult shouldBe expectedResult
@@ -211,7 +212,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 4,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 1, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 1, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -236,7 +237,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 4,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 2, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 2, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -261,7 +262,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 4,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 3, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 3, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -286,7 +287,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 4,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 4, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 4, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -314,7 +315,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 1, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 1, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -340,7 +341,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 2, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 2, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -367,7 +368,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 3, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 3, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -395,7 +396,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 4, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 4, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -423,7 +424,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 5, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 5, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -451,7 +452,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 6, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 6, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -479,7 +480,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 7, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 7, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -506,7 +507,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 8, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 8, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -532,7 +533,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 9, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 9, 10)
           )
 
           actualResult shouldBe expectedResult
@@ -557,7 +558,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
           val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
-            search = MovementListSearchOptions(ArcAscending, 10, 10)
+            search = MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, 10, 10)
           )
 
           actualResult shouldBe expectedResult
