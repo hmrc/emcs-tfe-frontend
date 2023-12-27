@@ -15,7 +15,9 @@
  *@
 
 @import config.AppConfig
+@import models.NavigationBannerInfo
 @import models.requests.DataRequest
+@import models.response.emcsTfe.GetMessageStatisticsResponse
 @import viewmodels.helpers.TimelineHelper
 @import viewmodels.{Overview, SubNavigationTab, TimelineEvent}
 @import views.html.components._
@@ -23,28 +25,34 @@
 @import views.html.templates.Layout
 
 @this(
-        appConfig: AppConfig,
-        layout: Layout,
-        h1: h1,
-        h2: h2,
-        list: spaced_list,
-        link: link,
-        subNavigation: subNavigation,
-        timeline: timeline,
-        timelineHelper: TimelineHelper
+    appConfig: AppConfig,
+    layout: Layout,
+    h1: h1,
+    h2: h2,
+    list: spaced_list,
+    link: link,
+    subNavigation: subNavigation,
+    timeline: timeline,
+    timelineHelper: TimelineHelper
 )
 
 @(
-        ern: String,
-        arc: String,
-        isConsignor: Boolean,
-        subNavigationTabs: Seq[SubNavigationTab],
-        currentSubNavigationTab: SubNavigationTab,
-        movementTabBody: Html,
-        historyEvents: Seq[TimelineEvent]
+    ern: String,
+    arc: String,
+    isConsignor: Boolean,
+    subNavigationTabs: Seq[SubNavigationTab],
+    currentSubNavigationTab: SubNavigationTab,
+    movementTabBody: Html,
+    historyEvents: Seq[TimelineEvent],
+    messageStatistics: GetMessageStatisticsResponse
 )(implicit request: DataRequest[_], messages: Messages)
 
-@layout(titleNoForm(arc, Some(currentSubNavigationTab.name)), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true) {
+@layout(
+    titleNoForm(arc, Some(currentSubNavigationTab.name)),
+    maybeShowActiveTrader = maybeShowActiveTrader(request),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, messageStatistics.countOfNewMessages, Movements)),
+    fullWidthContent = true
+) {
 
     @h2(messages("common.arc"), "govuk-caption-xl")
 

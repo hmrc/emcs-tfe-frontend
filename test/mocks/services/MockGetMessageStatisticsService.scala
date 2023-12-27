@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package models.requests
+package mocks.services
 
-import play.api.mvc.WrappedRequest
-import models.auth.UserRequest
-import models.common.RoleType.RoleType
-import models.common.TraderKnownFacts
 import models.response.emcsTfe.GetMessageStatisticsResponse
+import org.scalamock.scalatest.MockFactory
+import org.scalamock.handlers.CallHandler2
+import services.GetMessageStatisticsService
+import uk.gov.hmrc.http.HeaderCarrier
 
-case class DataRequest[A](request: UserRequest[A],
-                          traderKnownFacts: TraderKnownFacts,
-                          messageStatistics: GetMessageStatisticsResponse) extends WrappedRequest[A](request) {
-  val internalId: String = request.internalId
-  val ern: String = request.ern
-  val isWarehouseKeeper: Boolean = request.isWarehouseKeeper
-  val isRegisteredConsignor: Boolean = request.isRegisteredConsignor
-  val userTypeFromErn: RoleType = request.userTypeFromErn
+import scala.concurrent.Future
+
+trait MockGetMessageStatisticsService extends MockFactory {
+
+  lazy val mockGetMessageStatisticsService: GetMessageStatisticsService = mock[GetMessageStatisticsService]
+
+  object MockGetMessageStatisticsService {
+    def getMessageStatistics(ern: String): CallHandler2[String, HeaderCarrier, Future[GetMessageStatisticsResponse]] =
+      (mockGetMessageStatisticsService.getMessageStatistics(_: String)(_: HeaderCarrier)).expects(ern, *)
+  }
 }

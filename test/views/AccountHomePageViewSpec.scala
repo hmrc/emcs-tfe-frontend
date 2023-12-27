@@ -20,7 +20,6 @@ import base.SpecBase
 import models.MovementListSearchOptions
 import models.common.RoleType._
 import models.requests.DataRequest
-import models.response.emcsTfe.GetMessageStatisticsResponse
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
@@ -31,13 +30,6 @@ class AccountHomePageViewSpec extends SpecBase {
   lazy val page: AccountHomePage = app.injector.instanceOf[AccountHomePage]
   implicit lazy val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
   implicit lazy val messages: Messages = messagesApi.preferred(request)
-  val testBusinessName = "testBusinessName"
-  val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
-    "testDateTime",
-    testErn,
-    1,
-    1
-  )
 
   "The account home page" must {
     Seq(
@@ -53,7 +45,13 @@ class AccountHomePageViewSpec extends SpecBase {
       XIPD -> "Temporary certified consignee located in Northern Ireland"
     ) foreach {
       case (roleType, roleTypeDescription) =>
-        lazy val doc = Jsoup.parse(page(testErn, roleType, testBusinessName, testMessageStatistics).toString())
+        val ern = {
+          val prefix = roleType.descriptionKey.split('.').last // accountHome.roleType.GBWK -> GBWK etc
+
+          prefix + "123"
+        }
+
+        lazy val doc = Jsoup.parse(page(ern, roleType).toString())
 
         s"have the correct navigation links for $roleType" in {
           val navigationLinks = doc.getElementsByTag("ul").get(0).children()
@@ -68,9 +66,9 @@ class AccountHomePageViewSpec extends SpecBase {
         }
         s"have the correct content for $roleType" in {
           doc.getElementsByTag("h2").get(0).text mustBe "This section is Account home"
-          doc.getElementsByTag("h1").text mustBe testBusinessName
+          doc.getElementsByTag("h1").text mustBe testTraderName
           doc.getElementsByTag("p").get(1).text mustBe roleTypeDescription
-          doc.getElementsByTag("p").get(2).text mustBe s"Excise registration number (ERN): $testErn"
+          doc.getElementsByTag("p").get(2).text mustBe s"Excise registration number (ERN): $ern"
 
           doc.getElementsByTag("h2").get(1).text mustBe "Your messages"
 
@@ -86,7 +84,7 @@ class AccountHomePageViewSpec extends SpecBase {
 
           movementsLinks.get(0).text mustBe "All movements"
 
-          movementsLinks.get(0).getElementsByTag("a").attr("href") mustBe controllers.routes.ViewAllMovementsController.onPageLoad(testErn, MovementListSearchOptions()).url
+          movementsLinks.get(0).getElementsByTag("a").attr("href") mustBe controllers.routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()).url
 
           movementsLinks.get(1).text mustBe "Undischarged movements"
           //TODO link location when built
@@ -102,7 +100,7 @@ class AccountHomePageViewSpec extends SpecBase {
 
           if (roleType.isConsignor) {
             doc.getElementsByTag("p").get(3).text mustBe "Create a new movement"
-            doc.getElementsByTag("p").get(3).getElementsByTag("a").get(0).attr("href") mustBe appConfig.emcsTfeCreateMovementUrl(testErn)
+            doc.getElementsByTag("p").get(3).getElementsByTag("a").get(0).attr("href") mustBe appConfig.emcsTfeCreateMovementUrl(ern)
           } else {
             doc.getElementsByTag("p").text mustNot contain("Create a new movement")
           }

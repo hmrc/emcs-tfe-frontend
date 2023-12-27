@@ -18,20 +18,14 @@ package views.components
 
 import base.SpecBase
 import fixtures.messages.NavigationBarMessages
+import models.PageSection.Movements
 import models.common.RoleType
-import models.response.emcsTfe.GetMessageStatisticsResponse
+import models.{NavigationBannerInfo, PageSection}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import views.html.components.navigation_bar
 
 class NavigationBarSpec extends SpecBase {
-
-  val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
-    dateTime = "testDateTime",
-    exciseRegistrationNumber = testErn,
-    countOfAllMessages = 10,
-    countOfNewMessages = 5
-  )
 
   val navigation_bar: navigation_bar = app.injector.instanceOf[navigation_bar]
 
@@ -43,7 +37,13 @@ class NavigationBarSpec extends SpecBase {
 
       RoleType.values.foreach {
         roleType =>
-          val html = navigation_bar(testErn, roleType, testMessageStatistics)
+          val ern = {
+            val prefix = roleType.descriptionKey.split('.').last // accountHome.roleType.GBWK -> GBWK etc
+
+            prefix + "123"
+          }
+
+          val html = navigation_bar(NavigationBannerInfo(ern, testMessageStatistics.countOfNewMessages, Movements))
           val doc = Jsoup.parse(html.toString())
 
           s"Role Type is [${msgs(roleType.descriptionKey)}]" must {
@@ -53,7 +53,7 @@ class NavigationBarSpec extends SpecBase {
             "render the Messages link" in {
               doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(testMessageStatistics.countOfNewMessages)
             }
-            if(roleType.isConsignor) {
+            if (roleType.isConsignor) {
               "render the Drafts link" in {
                 doc.select("#navigation-drafts-link").text() mustBe messagesForLanguage.drafts
               }
@@ -61,9 +61,27 @@ class NavigationBarSpec extends SpecBase {
               "not render the Drafts link" in {
                 doc.select("#navigation-drafts-link").size() mustBe 0
               }
+            }
+
             "render the Movements link" in {
               doc.select("#navigation-movements-link").text() mustBe messagesForLanguage.movements
             }
+
+            "show the user which page they are currently on" in {
+              doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
+            }
+          }
+      }
+
+      PageSection.values.foreach {
+        pageSection =>
+          s"When page section is [$pageSection]" must {
+            "only have one link with an aria-current attribute, where the value is 'page'" in {
+              val html = navigation_bar(NavigationBannerInfo(testErn, testMessageStatistics.countOfNewMessages, pageSection))
+              val doc = Jsoup.parse(html.toString())
+
+              doc.select("a[aria-current]").size() mustBe 1
+              doc.select("a[aria-current]").get(0).attr("aria-current") mustBe "page"
             }
           }
       }

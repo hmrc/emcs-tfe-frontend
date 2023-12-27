@@ -20,6 +20,7 @@
 @import models.response.emcsTfe.GetMessageStatisticsResponse
 @import models.common.RoleType.RoleType
 @import models.requests.DataRequest
+@import models.NavigationBannerInfo
 
 @this(
         layout: Layout,
@@ -32,16 +33,22 @@
 
 @(
         ern: String,
-        roleType: RoleType,
-        businessName: String,
-        messageStatistics: GetMessageStatisticsResponse,
+        roleType: RoleType
 )(implicit request: DataRequest[_], messages: Messages)
 
 @roleTypeDescription = {
     @messages(roleType.descriptionKey)
 }
 
-@layout(pageTitle = messages("viewMovement.title"), maybeShowActiveTrader = maybeShowActiveTrader(request), fullWidthContent = true, showBackLink = false, beforeContentBlock = Some(navigationBar(ern, roleType, messageStatistics))) {
+@businessName = @{request.traderKnownFacts.traderName}
+
+@layout(
+    pageTitle = messages("viewMovement.title"),
+    maybeShowActiveTrader = maybeShowActiveTrader(request),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, request.messageStatistics.countOfNewMessages, Home)),
+    fullWidthContent = true,
+    showBackLink = false
+) {
     <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("base.captionHiddenText") </span>@messages("accountHome.caption")</h2>
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-1">@businessName</h1>
     <p class="govuk-caption-m govuk-!-margin-bottom-1 govuk-!-margin-top-0">@roleTypeDescription</p>

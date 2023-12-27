@@ -18,9 +18,10 @@ package controllers.predicates
 
 import base.SpecBase
 import fixtures.BaseFixtures
-import mocks.services.MockGetTraderKnownFactsService
+import mocks.services.{MockGetMessageStatisticsService, MockGetTraderKnownFactsService}
 import models.auth.UserRequest
 import models.requests.DataRequest
+import models.response.{MessageStatisticsException, TraderKnownFactsException}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.ActionTransformer
 import play.api.test.FakeRequest
@@ -32,21 +33,42 @@ class DataRetrievalActionSpec
   extends SpecBase
     with BaseFixtures
     with ScalaFutures
-    with MockGetTraderKnownFactsService {
+    with MockGetTraderKnownFactsService
+    with MockGetMessageStatisticsService {
 
   lazy val dataRetrievalAction: ActionTransformer[UserRequest, DataRequest] =
-    new DataRetrievalActionImpl(mockGetTraderKnownFactsService).apply()
+    new DataRetrievalActionImpl(mockGetTraderKnownFactsService, mockGetMessageStatisticsService).apply()
 
-  "Data Retrieval Action" when {
+  "Data Retrieval Action" must {
 
-    "there is data in the cache" must {
-      "build a TraderKnownFacts object and add it to the request" in {
+    "return a DataRequest" when {
+      "downstream calls are successful" in {
         MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(testMinTraderKnownFacts))
+        MockGetMessageStatisticsService.getMessageStatistics(testErn).returns(Future.successful(testMessageStatistics))
 
         val result = dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)).futureValue.value
 
+        result mustBe a[DataRequest[_]]
         result.traderKnownFacts mustBe testMinTraderKnownFacts
+        result.messageStatistics mustBe testMessageStatistics
       }
     }
-  }
+
+      "must return a TraderKnownFactsException, given the call to getTraderKnownFacts fails" in {
+        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.failed(TraderKnownFactsException("kaboom")))
+
+        intercept[TraderKnownFactsException] {
+          await(dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)))
+        }
+      }
+
+      "must return a MessageStatisticsException, given the call to getMessageStatistics fails" in {
+        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(testMinTraderKnownFacts))
+        MockGetMessageStatisticsService.getMessageStatistics(testErn).returns(Future.failed(MessageStatisticsException("kablam")))
+
+        intercept[MessageStatisticsException] {
+          await(dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)))
+        }
+      }
+    }
 }

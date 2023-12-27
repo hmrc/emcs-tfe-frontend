@@ -35,7 +35,7 @@ class ItemDetailsControllerSpec extends SpecBase with FakeAuthAction with MockGe
   lazy val controller: ItemDetailsController = new ItemDetailsController(
     mcc = app.injector.instanceOf[MessagesControllerComponents],
     auth = FakeSuccessAuthAction,
-    getData = new FakeDataRetrievalAction(testMinTraderKnownFacts),
+    getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
     view = view,
     movementService = mockGetMovementService
   )

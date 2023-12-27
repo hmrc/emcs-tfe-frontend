@@ -18,12 +18,12 @@ package controllers
 
 import config.ErrorHandler
 import connectors.emcsTfe.GetMovementListConnector
-import controllers.predicates.AuthAction
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import forms.ViewAllMovementsFormProvider
 import models.MovementListSearchOptions.DEFAULT_MAX_ROWS
-import models.auth.UserRequest
+import models.requests.DataRequest
 import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
-import play.api.i18n.Messages
+import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels.MovementPaginationHelper
@@ -37,24 +37,25 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                            connector: GetMovementListConnector,
                                            view: ViewAllMovements,
                                            errorHandler: ErrorHandler,
-                                           authAction: AuthAction,
+                                           val auth: AuthAction,
+                                           val getData: DataRetrievalAction,
                                            paginationHelper: MovementPaginationHelper,
                                            formProvider: ViewAllMovementsFormProvider,
-                                          )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                          )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
   def onPageLoad(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
-    authAction(ern).async { implicit request =>
+    authorisedWithData(ern).async { implicit request =>
       renderView(Ok, ern, searchOptions)
     }
 
   def onSubmit(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
-    authAction(ern).async { implicit request =>
+    authorisedWithData(ern).async { implicit request =>
       formProvider().bindFromRequest().fold(
         _ => renderView(BadRequest, ern, searchOptions),
         value => Future(Redirect(routes.ViewAllMovementsController.onPageLoad(ern, value)))
       )
     }
 
-  private def renderView(status: Status, ern: String, searchOptions: MovementListSearchOptions)(implicit request: UserRequest[_], messages: Messages) = {
+  private def renderView(status: Status, ern: String, searchOptions: MovementListSearchOptions)(implicit request: DataRequest[_]) = {
     connector.getMovementList(ern, Some(searchOptions)).map {
       case Right(movementList) =>
 

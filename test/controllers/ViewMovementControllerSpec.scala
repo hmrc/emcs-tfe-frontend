@@ -41,7 +41,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
   lazy val controller: ViewMovementController = new ViewMovementController(
     app.injector.instanceOf[MessagesControllerComponents],
     FakeSuccessAuthAction,
-    new FakeDataRetrievalAction(testMinTraderKnownFacts),
+    new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
     mockGetMovementService,
     app.injector.instanceOf[ViewMovementPage],
     app.injector.instanceOf[ErrorHandler],
@@ -57,8 +57,8 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
     ".viewMovementTransport" -> (() => controller.viewMovementTransport(testErn, testArc)(fakeRequest)),
     ".viewMovementItems" -> (() => controller.viewMovementItems(testErn, testArc)(fakeRequest)),
     ".viewMovementDocuments" -> (() => controller.viewMovementDocuments(testErn, testArc)(fakeRequest))
-  ).foreach { testNameToMethod =>
-    testNameToMethod._1 should {
+  ).foreach { case (testName, method) =>
+    testName should {
       "return 200" when {
         "connector call is successful" in {
 
@@ -66,7 +66,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
             .getMovement(testErn, testArc)
             .returns(Future.successful(getMovementResponseModel))
 
-          val result: Future[Result] = testNameToMethod._2()
+          val result: Future[Result] = method()
 
           status(result) shouldBe Status.OK
         }
@@ -78,7 +78,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
             .getMovement(testErn, testArc)
             .returns(Future.failed(MovementException("bang")))
 
-          val result: Future[Result] = testNameToMethod._2()
+          val result: Future[Result] = method()
 
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
         }

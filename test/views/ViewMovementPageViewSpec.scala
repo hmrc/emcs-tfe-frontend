@@ -41,10 +41,15 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
 
   object Selectors extends BaseSelectors {
     val subNavigationTabSelected = s"main nav.moj-sub-navigation a[aria-current=page]"
+
     def actionLink(i: Int) = s"main #actions > ul > li:nth-child($i) > a"
+
     def summaryCardRowKey(i: Int) = s"main div.govuk-summary-card div.govuk-summary-list__row:nth-of-type($i) > dt"
+
     def summaryCardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"main div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
+
     def summaryCardTitle(i: Int) = s"main div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
+
     def historyTimelineLink(i: Int) = s"main #history > ol > li:nth-child($i) > h2 > a"
   }
 
@@ -67,7 +72,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel),
-                Seq.empty[TimelineEvent]
+                Seq.empty[TimelineEvent],
+                testMessageStatistics
               ).toString()
             )
 
@@ -100,7 +106,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel),
-                Seq.empty[TimelineEvent]
+                Seq.empty[TimelineEvent],
+                testMessageStatistics
               ).toString()
             )
 
@@ -123,7 +130,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel),
-                Seq.empty[TimelineEvent]
+                Seq.empty[TimelineEvent],
+                testMessageStatistics
               ).toString()
             )
 
@@ -154,7 +162,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                   TimelineEvent(eventType = "someEvent1", title = "Movement created", dateTime = eventDate, url = s"event/someEvent1/id/1"),
                   TimelineEvent(eventType = "someEvent2", title = "Destination changed", dateTime = eventDate, url = s"event/someEvent2/id/2"),
                   TimelineEvent(eventType = "someEvent3", title = "Report of receipt submitted", dateTime = eventDate, url = s"event/someEvent3/id/3")
-                )
+                ),
+                testMessageStatistics
               ).toString()
             )
 
@@ -177,7 +186,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
               SubNavigationTab.values,
               Movement,
               helper.movementCard(Movement, getMovementResponseModel),
-              Seq.empty[TimelineEvent]
+              Seq.empty[TimelineEvent],
+              testMessageStatistics
             ).toString()
           )
 
@@ -219,7 +229,8 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 SubNavigationTab.values,
                 Delivery,
                 helper.movementCard(Delivery, getMovementResponseModel),
-                Seq.empty[TimelineEvent]
+                Seq.empty[TimelineEvent],
+                testMessageStatistics
               ).toString()
             )
 

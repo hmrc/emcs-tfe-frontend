@@ -17,13 +17,14 @@
 package controllers
 
 import base.SpecBase
-import controllers.predicates.FakeAuthAction
+import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.MovementListFixtures
 import fixtures.messages.EN
 import forms.ViewAllMovementsFormProvider
 import mocks.connectors.MockEmcsTfeConnector
 import mocks.viewmodels.MockMovementPaginationHelper
 import models.MovementSortingSelectOption.{ArcAscending, Newest}
+import models.requests.DataRequest
 import models.response.UnexpectedDownstreamResponseError
 import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
 import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
@@ -60,7 +61,8 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
     connector = mockGetMovementListConnector,
     view = view,
     errorHandler = errorHandler,
-    authAction = FakeSuccessAuthAction,
+    auth = FakeSuccessAuthAction,
+    getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
     paginationHelper = mockMovementPaginationHelper,
     formProvider = formProvider
   )
@@ -68,6 +70,8 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
   "GET /" when {
 
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+
+    implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
     "connector call is successful" should {
 
@@ -231,7 +235,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
         val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate
+        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
       }
     }
   }
@@ -239,6 +243,8 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
   "POST /" when {
 
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("POST", "/")
+
+    implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
     "invalid data submitted" when {
 
@@ -418,7 +424,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
 
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate
+          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
         }
       }
     }

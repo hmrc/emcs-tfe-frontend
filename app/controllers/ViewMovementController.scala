@@ -78,7 +78,8 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
           movementTabBody = helper.movementCard(currentSubNavigationTab, movement),
           historyEvents = movement.eventHistorySummary
             .map(timelineHelper.timeline(_))
-            .getOrElse(Seq.empty[TimelineEvent])
+            .getOrElse(Seq.empty[TimelineEvent]),
+          messageStatistics = request.messageStatistics
         ))
       } recover {
         case _ =>
