@@ -84,6 +84,22 @@ object ViewMovementMessages {
     val deliveryCardERN = "Excise registration number (ERN)"
     val deliveryPlaceOfDispatchCardERN = "Excise ID (ERN)"
     val deliveryCardAddress = "Address"
+
+    val transportDetailsHeading = "Transport details"
+    val transportSummaryHeading = "Summary"
+    val transportArranger = "Transport arranger"
+    val transportModeOfTransport = "Mode of transport"
+    val transportJourneyTime = "Journey time"
+    val transportFirstTransporterHeading = "First transporter"
+    val transportFirstTransporterName = "Name"
+    val transportFirstTransporterAddress = "Address"
+    val transportFirstTransporterVatRegistrationNumber = "VAT registration number"
+    def transportUnitHeading(n: Int) = s"Transport unit $n"
+    val transportUnitType = "Unit type"
+    val transportUnitIdentity = "Identity"
+    val transportUnitCommercialSeal = "Commercial seal"
+    val transportUnitComplementaryInformation = "Complementary information"
+    val transportUnitSealInformation = "Seal information"
   }
 
   object English extends ViewMessages with EN

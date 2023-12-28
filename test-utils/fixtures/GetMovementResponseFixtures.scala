@@ -19,9 +19,9 @@ package fixtures
 import models.common.AcceptMovement.Unsatisfactory
 import models.common.OriginType.TaxWarehouse
 import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Shortage}
-import models.common.{AddressModel, DestinationType, TraderModel, TransportDetailsModel}
+import models.common._
 import models.response.emcsTfe.reportOfReceipt.{ReceiptedItemsModel, ReportOfReceiptModel, UnsatisfactoryModel}
-import models.response.emcsTfe.{EadEsadModel, GetMovementResponse}
+import models.response.emcsTfe.{EadEsadModel, GetMovementResponse, HeaderEadEsadModel, TransportModeModel}
 import play.api.libs.json.{JsValue, Json}
 
 import java.time.LocalDate
@@ -153,7 +153,29 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     ),
     reportOfReceipt = Some(reportOfReceiptResponse),
     items = Seq(item1, item2),
-    eventHistorySummary = Some(getMovementHistoryEventsResponseModel)
+    eventHistorySummary = Some(getMovementHistoryEventsResponseModel),
+    firstTransporterTrader = Some(TransportTraderModel(
+      traderName = Some("testFirstTransporterTraderName"),
+      address = Some(AddressModel(
+        streetNumber = None,
+        street = Some("Main101"),
+        postcode = Some("ZZ78"),
+        city = Some("Zeebrugge")
+      )),
+      vatNumber = Some("testVatNumber"),
+      eoriNumber = Some("testEoriNumber"),
+    )),
+    headerEadEsad = HeaderEadEsadModel(
+      sequenceNumber = 1,
+      dateAndTimeOfUpdateValidation = "testDateTime",
+      destinationType = DestinationType.TaxWarehouse,
+      journeyTime = "testJourneyTime",
+      transportArrangement = TransportArrangement.Consignor
+    ),
+    transportMode = TransportModeModel(
+      transportModeCode = TransportMode.AirTransport,
+      complementaryInformation = None
+    )
   )
 
   val reportOfReceiptJson = Json.obj(
@@ -297,6 +319,26 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       item1Json,
       item2Json
     ),
-    "eventHistorySummary" -> getMovementHistoryEventsResponseInputJson
+    "eventHistorySummary" -> getMovementHistoryEventsResponseInputJson,
+    "firstTransporterTrader" -> Json.obj(
+      "traderName" -> "testFirstTransporterTraderName",
+      "address" -> Json.obj(
+        "street" -> "Main101",
+        "postcode" -> "ZZ78",
+        "city" -> "Zeebrugge"
+      ),
+      "vatNumber" -> "testVatNumber",
+      "eoriNumber" -> "testEoriNumber",
+    ),
+    "headerEadEsad" -> Json.obj(
+      "sequenceNumber" -> 1,
+      "dateAndTimeOfUpdateValidation" -> "testDateTime",
+      "destinationType" -> "1",
+      "journeyTime" -> "testJourneyTime",
+      "transportArrangement" -> "1"
+    ),
+    "transportMode" -> Json.obj(
+      "transportModeCode" -> "4"
+    )
   )
 }
