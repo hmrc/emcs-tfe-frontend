@@ -25,7 +25,7 @@ import javax.inject.Singleton
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches: Seq[FeatureSwitch] = Seq(StubGetTraderKnownFacts, ReturnToLegacy)
+  val switches: Seq[FeatureSwitch] = Seq(StubGetTraderKnownFacts, ReturnToLegacy, DenyDutyPaidUsers)
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
@@ -42,4 +42,9 @@ case object StubGetTraderKnownFacts extends FeatureSwitch {
 case object ReturnToLegacy extends FeatureSwitch {
   override val configName: String = "features.returnToLegacy"
   override val displayName: String = "Return the User to the Legacy EMCS service"
+}
+
+case object DenyDutyPaidUsers extends FeatureSwitch {
+  override val configName: String = "features.denyDutyPaidUsers"
+  override val displayName: String = "Deny access to duty paid users"
 }

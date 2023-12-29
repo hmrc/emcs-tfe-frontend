@@ -108,4 +108,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   lazy val tradeTariffCommoditiesUrl: String = configuration.get[String]("urls.tradeTariffCommodities")
   def getUrlForCommodityCode(code: String): String = s"$tradeTariffCommoditiesUrl/${code}00"
+
+  def denyDutyPaidUsers: Boolean = isEnabled(DenyDutyPaidUsers)
 }

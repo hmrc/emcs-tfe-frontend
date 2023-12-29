@@ -31,6 +31,8 @@ trait BaseFixtures {
   val testLrn = "123"
   val testTraderName = "testTraderName"
 
+  val testDutyPaidErn = "XIPATestErn"
+
   val testMinTraderKnownFacts: TraderKnownFacts = TraderKnownFacts(
     traderName = testTraderName,
     addressLine1 = None,
