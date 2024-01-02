@@ -19,6 +19,7 @@ package controllers.predicates
 import com.google.inject.Inject
 import config.{AppConfig, EnrolmentKeys}
 import models.auth.UserRequest
+import models.common.RoleType
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results._
 import play.api.mvc._
@@ -95,10 +96,6 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
                                                 credId: String
                                                )(block: UserRequest[A] => Future[Result])
                                                (implicit request: Request[A]): Future[Result] = {
-
-    def dutyPaidUser: Boolean = ernFromUrl.startsWith("XIPA") || ernFromUrl.startsWith("XIPB")
-
-
     enrolments.enrolments.filter(enrolment => enrolment.key == EnrolmentKeys.EMCS_ENROLMENT) match {
       case emcsEnrolments if emcsEnrolments.isEmpty =>
         logger.debug(s"[checkOrganisationEMCSEnrolment] No ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found")
@@ -106,7 +103,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
       case emcsEnrolments =>
         emcsEnrolments.find(_.identifiers.exists(ident => ident.key == EnrolmentKeys.ERN && ident.value == ernFromUrl)) match {
           case Some(enrolment) if enrolment.isActivated =>
-            if (config.denyDutyPaidUsers && dutyPaidUser) {
+            if (config.denyDutyPaidUsers && RoleType.fromExciseRegistrationNumber(ernFromUrl).isDutyPaid) {
               Future.successful(Redirect(controllers.errors.routes.DutyPaidUnauthorisedController.unauthorised()))
             } else {
               block(UserRequest(request, ernFromUrl, internalId, credId, emcsEnrolments.size > 1))
