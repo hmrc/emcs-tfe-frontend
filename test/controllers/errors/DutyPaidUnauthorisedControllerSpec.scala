@@ -22,7 +22,6 @@ import fixtures.messages.DutyPaidUnauthorisedMessages
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.auth.errors.DutyPaidUserUnauthorisedAccessView
 
@@ -56,7 +55,7 @@ class DutyPaidUnauthorisedControllerSpec extends SpecBase with FakeAuthAction {
 
           status(result) mustBe UNAUTHORIZED
 
-          Html(contentAsString(result)) mustBe view()(fakeRequest, messages(fakeRequest))
+          contentAsString(result) mustBe view()(fakeRequest, messages(fakeRequest)).toString()
         }
       }
     }
