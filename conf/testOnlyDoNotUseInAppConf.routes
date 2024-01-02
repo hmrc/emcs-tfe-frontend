@@ -11,6 +11,13 @@
 
 # Add all the application routes to the prod.routes file
 
-GET        /emcs/create-movement/test-only/construction        testOnly.controllers.UnderConstructionController.onPageLoad()
+GET        /emcs/account/test-only/construction             testOnly.controllers.UnderConstructionController.onPageLoad()
+
+GET        /emcs/account/test-only/feature-switches         featureswitch.frontend.controllers.FeatureSwitchFrontendController.show()
+POST       /emcs/account/test-only/feature-switches         featureswitch.frontend.controllers.FeatureSwitchFrontendController.submit()
+GET        /emcs/account/test-only/api/feature-switches     featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
++ nocsrf
+POST       /emcs/account/test-only/api/feature-switches     featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
+
 
 ->         /                                                   prod.Routes

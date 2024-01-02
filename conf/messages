@@ -253,6 +253,12 @@ errors.unauthorised.title = Unauthorised
 errors.unauthorised.heading = Unauthorised
 errors.unauthorised.message = You are not authorised to access this service
 
+errors.unauthorised.dutypaiduser.title = There is a problem
+errors.unauthorised.dutypaiduser.heading = There is a problem
+errors.unauthorised.dutypaiduser.p1 = Duty paid traders cannot yet use the Excise Movement and Control System (EMCS).
+errors.unauthorised.dutypaiduser.p2 = HMRC will notify you when you are able to use the service.
+errors.unauthorised.dutypaiduser.p3 = If you think you have signed in with the wrong details, sign out and check the details you have are correct.
+
 exciseNumbers.title = Select a trader Excise Registration Number to use for EMCS
 exciseNumbers.heading = Select a trader Excise Registration Number to use for EMCS
 exciseNumbers.p1 = There are multiple EMCS Excise Registration Numbers associated with this login.

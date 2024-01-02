@@ -44,6 +44,7 @@ object RoleType extends Logging {
     val isNorthernIreland: Boolean
     val isGreatBritain: Boolean
     val isConsignor: Boolean
+    val isDutyPaid: Boolean
   }
 
   case object GBWK extends RoleType {
@@ -52,6 +53,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = false
     override val isGreatBritain: Boolean = true
     override val isConsignor: Boolean = true
+    override val isDutyPaid: Boolean = false
   }
 
   case object XIWK extends RoleType {
@@ -60,6 +62,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = true
+    override val isDutyPaid: Boolean = false
   }
 
   case object GBRC extends RoleType {
@@ -68,7 +71,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = false
     override val isGreatBritain: Boolean = true
     override val isConsignor: Boolean = true
-
+    override val isDutyPaid: Boolean = false
   }
 
   case object XIRC extends RoleType {
@@ -77,6 +80,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = true
+    override val isDutyPaid: Boolean = false
   }
 
   case object XI00 extends RoleType {
@@ -85,6 +89,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = false
+    override val isDutyPaid: Boolean = false
   }
 
   case object XITC extends RoleType {
@@ -93,6 +98,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = false
+    override val isDutyPaid: Boolean = false
   }
 
   case object XIPA extends RoleType {
@@ -101,6 +107,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = true
+    override val isDutyPaid: Boolean = true
   }
 
   case object XIPB extends RoleType {
@@ -109,6 +116,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = false
+    override val isDutyPaid: Boolean = true
   }
 
   case object XIPC extends RoleType {
@@ -117,6 +125,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = true
+    override val isDutyPaid: Boolean = true
   }
 
   case object XIPD extends RoleType {
@@ -125,6 +134,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
     override val isConsignor: Boolean = false
+    override val isDutyPaid: Boolean = true
   }
 
   val values: Seq[RoleType] = Seq(
