@@ -18,7 +18,6 @@ package controllers.predicates
 
 import com.google.inject.Inject
 import config.{AppConfig, EnrolmentKeys}
-import featureswitch.core.config.{DenyDutyPaidUsers, FeatureSwitching}
 import models.auth.UserRequest
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results._
