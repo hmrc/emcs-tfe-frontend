@@ -26,6 +26,7 @@ import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSo
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logging
 import viewmodels.MovementPaginationHelper
 import views.html.viewAllMovements.ViewAllMovements
 
@@ -41,7 +42,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                            val getData: DataRetrievalAction,
                                            paginationHelper: MovementPaginationHelper,
                                            formProvider: ViewAllMovementsFormProvider,
-                                          )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                          )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport with Logging {
   def onPageLoad(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
     authorisedWithData(ern).async { implicit request =>
       renderView(Ok, ern, searchOptions)
@@ -59,6 +60,8 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
     connector.getMovementList(ern, Some(searchOptions)).map {
       case Right(movementList) =>
 
+        logger.debug(s"Search for movements with query parameters $searchOptions returned $movementList")
+
         val pageCount = {
           if (movementList.count == 0)
             1
@@ -67,6 +70,9 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
           else
             movementList.count / DEFAULT_MAX_ROWS
         }
+
+        logger.debug(s"movementList.count: ${movementList.count}, Page count: $pageCount")
+
         if (searchOptions.index <= 0 || searchOptions.index > pageCount)
           Redirect(routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()))
         else {
