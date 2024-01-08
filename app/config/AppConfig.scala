@@ -22,9 +22,10 @@ import play.api.mvc.RequestHeader
 import controllers.routes
 import featureswitch.core.config._
 import models.MovementListSearchOptions
-import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
+import models.messages.MessagesSearchOptions
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.net.URLEncoder
 import scala.annotation.unused
 
 @Singleton
@@ -46,8 +47,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   // TODO: update with new URL when MOV01 filters are created
   def emcsTfeDraftMovementsUrl(@unused ern: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
 
-  // TODO: update with new URL when MOV01 filters are created
-  def emcsTfeMessagesUrl(@unused ern: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+  def emcsTfeMessagesUrl(ern: String): String = controllers.messages.routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).url
 
   // TODO: update with new URL when MOV01 filters are created
   def emcsTfeUndischargedMovementsUrl(@unused ern: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
@@ -57,7 +57,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def getFeatureSwitchValue(feature: String): Boolean = configuration.get[Boolean](feature)
 
   def betaBannerFeedbackUrl(implicit request: RequestHeader): String =
-    s"$contactHost/contact/beta-feedback?service=$deskproName&backUrl=${SafeRedirectUrl(host + request.uri).encodedUrl}"
+    s"$contactHost/contact/beta-feedback?service=$deskproName&backUrl=${URLEncoder.encode(host + request.uri, "UTF-8")}"
 
   private lazy val feedbackFrontendHost: String = configuration.get[String]("feedback-frontend.host")
 

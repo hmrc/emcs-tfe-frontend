@@ -24,3 +24,5 @@ GET        /trader/:exciseRegistrationNumber/account                        cont
 
 GET        /trader/:ern/movements                                           controllers.ViewAllMovementsController.onPageLoad(ern: String, search: MovementListSearchOptions)
 POST       /trader/:ern/movements                                           controllers.ViewAllMovementsController.onSubmit(ern: String, search: MovementListSearchOptions)
+
+GET        /trader/:ern/messages                                            controllers.messages.ViewAllMessagesController.onPageLoad(ern: String, search: models.messages.MessagesSearchOptions)
