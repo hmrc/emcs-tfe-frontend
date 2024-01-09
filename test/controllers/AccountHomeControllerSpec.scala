@@ -24,7 +24,7 @@ import models.common.RoleType.GBWK
 import models.requests.DataRequest
 import org.scalamock.scalatest.MockFactory
 import play.api.http.Status
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -39,7 +39,7 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
     implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"))
-    implicit val messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest)
+    implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest)
 
     lazy val accountHomePage: AccountHomePage = app.injector.instanceOf[AccountHomePage]
     lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]

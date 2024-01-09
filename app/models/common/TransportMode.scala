@@ -16,10 +16,6 @@
 
 package models.common
 
-import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
-
 sealed trait TransportMode {
   val messageKey: String
 }

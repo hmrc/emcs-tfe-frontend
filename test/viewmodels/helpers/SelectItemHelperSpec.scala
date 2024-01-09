@@ -18,12 +18,13 @@ package viewmodels.helpers
 
 import base.SpecBase
 import fixtures.MemberStatesFixtures
+import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.Aliases.SelectItem
 
 class SelectItemHelperSpec extends SpecBase
   with MemberStatesFixtures {
-  implicit lazy val msgs = messages(FakeRequest())
+  implicit lazy val msgs: Messages = messages(FakeRequest())
 
   ".constructSelectItems" must {
 

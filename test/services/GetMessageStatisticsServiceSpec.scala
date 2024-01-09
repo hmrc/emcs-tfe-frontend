@@ -28,8 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class GetMessageStatisticsServiceSpec extends SpecBase with BaseFixtures with ScalaFutures with MockAppConfig with MockGetMessageStatisticsConnector {
 
-  implicit val hc = HeaderCarrier()
-  implicit val ec = ExecutionContext.global
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   lazy val testService = new GetMessageStatisticsService(mockGetMessageStatisticsConnector)
 

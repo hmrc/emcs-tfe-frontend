@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait FakeSelectExciseNumbersAuthAction extends StubBodyParserFactory with BaseFixtures { _: SpecBase =>
 
-  implicit lazy val ec = app.injector.instanceOf[ExecutionContext]
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   class FakeSuccessSelectExciseNumbersAuthAction(enrolments: Set[Enrolment]) extends SelectExciseNumberAuthAction {
 

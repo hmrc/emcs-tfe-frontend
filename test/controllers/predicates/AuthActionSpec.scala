@@ -20,7 +20,7 @@ import base.SpecBase
 import config.EnrolmentKeys
 import featureswitch.core.config._
 import fixtures.BaseFixtures
-import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
+import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, BodyParsers, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Organisation}
@@ -32,11 +32,11 @@ import scala.concurrent.ExecutionContext
 class AuthActionSpec extends SpecBase with BaseFixtures with FeatureSwitching {
 
   lazy val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
-  implicit lazy val ec = app.injector.instanceOf[ExecutionContext]
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   type AuthRetrieval = ~[~[~[Option[AffinityGroup], Enrolments], Option[String]], Option[Credentials]]
 
-  implicit val fakeRequest = FakeRequest()
+  implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   lazy val config = appConfig
 

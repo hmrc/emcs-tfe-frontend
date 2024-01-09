@@ -19,6 +19,8 @@ package viewmodels.helpers
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.messages.{UnitOfMeasureMessages, ViewMovementMessages}
+import models.requests.DataRequest
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, HtmlContent, Text}
@@ -35,7 +37,7 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
   lazy val list = app.injector.instanceOf[list]
   lazy val h2 = app.injector.instanceOf[h2]
 
-  implicit val request = dataRequest(FakeRequest())
+  implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
 
   val movementResponseWithReferenceData = getMovementResponseModel.copy(items = Seq(
     item1WithWineAndPackagingAndCnCodeInfo,

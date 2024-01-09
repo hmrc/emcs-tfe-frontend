@@ -26,6 +26,7 @@ import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSo
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
 import viewmodels.MovementsListTableHelper
@@ -57,7 +58,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     def hiddenInputSearchSelectOption(value: String) = s"#searchKey > option[value=$value]"
   }
 
-  implicit val fakeRequest = FakeRequest("GET", "/movements")
+  implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/movements")
 
   implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
