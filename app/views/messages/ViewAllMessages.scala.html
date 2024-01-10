@@ -28,6 +28,7 @@
         appConfig: AppConfig,
         govukSelect: GovukSelect,
         govukPagination : GovukPagination,
+        govukButton: GovukButton,
         tableHelper: ViewAllMessagesTableHelper
 )
 
@@ -64,6 +65,12 @@
                 ),
                 classes = "govuk-!-display-inline"
             ))
+
+            @govukButton(
+                ButtonViewModel(Text(messages("viewAllMessages.sort.button")))
+                        .withCssClass("govuk-!-margin-left-2")
+                        .withId("sortBySubmit")
+            )
 
             <input type="hidden" name="index" value="@pageIndex"/>
         </form>
