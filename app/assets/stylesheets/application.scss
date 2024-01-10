@@ -39,3 +39,10 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
 .white-space-nowrap {
   white-space: nowrap;
 }
+
+.inbox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+

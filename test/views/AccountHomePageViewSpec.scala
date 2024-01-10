@@ -19,6 +19,7 @@ package views
 import base.SpecBase
 import models.MovementListSearchOptions
 import models.common.RoleType._
+import models.messages.MessagesSearchOptions
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -76,7 +77,7 @@ class AccountHomePageViewSpec extends SpecBase {
 
           messagesLinks.get(0).text mustBe "All messages"
           //TODO update link location when built
-          messagesLinks.get(0).getElementsByTag("a").attr("href") mustBe testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+          messagesLinks.get(0).getElementsByTag("a").attr("href") mustBe controllers.messages.routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).url
 
           doc.getElementsByTag("h2").get(2).text mustBe "Your movements"
 
