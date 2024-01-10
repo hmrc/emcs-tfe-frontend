@@ -1,8 +1,27 @@
+/*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package viewmodels.helpers.messages
 
 import base.SpecBase
 import fixtures.MessagesFixtures
 import fixtures.messages.ViewAllMessagesMessages
+import models.requests.DataRequest
+import play.api.i18n.Messages
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.html.components.{GovukTable, GovukTag}
@@ -14,13 +33,13 @@ import views.html.components.link
 
 class ViewAllMessagesTableHelperSpec extends SpecBase with MessagesFixtures with TagFluency {
 
-  implicit lazy val msgs = messages(Seq(ViewAllMessagesMessages.English.lang))
+  implicit lazy val msgs: Messages = messages(Seq(ViewAllMessagesMessages.English.lang))
 
-  implicit val request = dataRequest(FakeRequest())
+  implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
 
-  lazy val helper = app.injector.instanceOf[ViewAllMessagesTableHelper]
-  lazy val govukTable = app.injector.instanceOf[GovukTable]
-  lazy val link = app.injector.instanceOf[link]
+  lazy val helper: ViewAllMessagesTableHelper = app.injector.instanceOf[ViewAllMessagesTableHelper]
+  lazy val govukTable: GovukTable = app.injector.instanceOf[GovukTable]
+  lazy val link: link = app.injector.instanceOf[link]
 
   ".constructTable" when {
 

@@ -23,7 +23,6 @@
 
 @this(
         layout: templates.Layout,
-        formHelper: FormWithCSRF,
         h1: h1,
         p: p,
         appConfig: AppConfig,
@@ -32,10 +31,10 @@
         tableHelper: ViewAllMessagesTableHelper
 )
 
-
 @(
     sortSelectItems: Seq[SelectItem],
-    allMessages: Seq[Message]
+    allMessages: Seq[Message],
+    pageIndex: Int
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
@@ -54,17 +53,21 @@
              @messages("viewAllMessages.totalNumberOfMessages", request.messageStatistics.countOfNewMessages)
          }
 
-         @govukSelect(Select(
-             items = sortSelectItems,
-             name = "sortBy",
-             id = "sortBy",
-             label = Label(
-                 content = Text(messages("viewAllMessages.sort.label")),
-                 classes = "govuk-!-display-inline govuk-!-padding-right-2"
-             ),
-             classes = "govuk-!-display-inline"
-         ))
-     </div>
+        <form>
+            @govukSelect(Select(
+                items = sortSelectItems,
+                name = "sortBy",
+                id = "sortBy",
+                label = Label(
+                    content = Text(messages("viewAllMessages.sort.label")),
+                    classes = "govuk-!-display-inline govuk-!-padding-right-2"
+                ),
+                classes = "govuk-!-display-inline"
+            ))
+
+            <input type="hidden" name="index" value="@pageIndex"/>
+        </form>
+    </div>
 
     @tableHelper.constructTable(allMessages)
 }

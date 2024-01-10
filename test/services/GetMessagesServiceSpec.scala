@@ -25,12 +25,12 @@ import models.response.{JsonValidationError, MessagesException, UnexpectedDownst
 import org.scalatest.concurrent.ScalaFutures
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 
 class GetMessagesServiceSpec extends SpecBase with BaseFixtures with ScalaFutures with MockAppConfig with MockGetMessagesConnector with MessagesFixtures {
 
-  implicit val hc = HeaderCarrier()
-  implicit val ec = ExecutionContext.global
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val ec: ExecutionContextExecutor = ExecutionContext.global
 
   lazy val testService = new GetMessagesService(mockGetMessagesConnector)
 
