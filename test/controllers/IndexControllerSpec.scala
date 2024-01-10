@@ -22,7 +22,7 @@ import controllers.predicates.FakeSelectExciseNumbersAuthAction
 import fixtures.messages.EN
 import mocks.connectors.MockEmcsTfeConnector
 import play.api.http.Status
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -53,7 +53,7 @@ class IndexControllerSpec extends SpecBase with FakeSelectExciseNumbersAuthActio
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
-    implicit val messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
+    implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
 
     val view = app.injector.instanceOf[ExciseNumbersPage]
     val fakeAuthSuccess = new FakeSuccessSelectExciseNumbersAuthAction(enrolments)

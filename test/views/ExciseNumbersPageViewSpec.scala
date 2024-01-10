@@ -22,6 +22,7 @@ import fixtures.messages.ExciseNumbersMessages
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import views.html.ExciseNumbersPage
@@ -29,7 +30,7 @@ import views.html.components.link
 
 class ExciseNumbersPageViewSpec extends SpecBase with MovementListFixtures {
 
-  implicit val fakeRequest = FakeRequest("GET", "/excise-numbers")
+  implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/excise-numbers")
 
   lazy val page: ExciseNumbersPage = app.injector.instanceOf[ExciseNumbersPage]
   lazy val link: link = app.injector.instanceOf[link]

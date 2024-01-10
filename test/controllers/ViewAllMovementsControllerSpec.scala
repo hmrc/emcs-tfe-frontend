@@ -30,7 +30,7 @@ import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
 import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.http.Status
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -49,7 +49,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  implicit val messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
 
   lazy val view = app.injector.instanceOf[ViewAllMovements]
   lazy val formProvider = app.injector.instanceOf[ViewAllMovementsFormProvider]

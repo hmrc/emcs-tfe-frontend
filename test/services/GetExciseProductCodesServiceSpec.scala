@@ -26,8 +26,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class GetExciseProductCodesServiceSpec extends SpecBase with MockGetExciseProductCodesConnector with ExciseProductCodeFixtures {
 
-  implicit val hc = HeaderCarrier()
-  implicit val ec = ExecutionContext.global
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   lazy val testService = new GetExciseProductCodesService(mockGetExciseProductCodesConnector)
 

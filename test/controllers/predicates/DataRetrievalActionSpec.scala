@@ -46,7 +46,7 @@ class DataRetrievalActionSpec
         MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(testMinTraderKnownFacts))
         MockGetMessageStatisticsService.getMessageStatistics(testErn).returns(Future.successful(testMessageStatistics))
 
-        val result = dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)).futureValue.value
+        val result = dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)).futureValue.toOption.get
 
         result mustBe a[DataRequest[_]]
         result.traderKnownFacts mustBe testMinTraderKnownFacts

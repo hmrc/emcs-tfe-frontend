@@ -18,13 +18,14 @@ package viewmodels.helpers
 
 import base.SpecBase
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
+import play.api.i18n.Messages
 import play.api.test.FakeRequest
 
 import java.time.{LocalDate, LocalDateTime}
 
 class TimelineHelperSpec extends SpecBase {
 
-  implicit lazy val msgs = messages(FakeRequest())
+  implicit lazy val msgs: Messages = messages(FakeRequest())
 
   val helper = app.injector.instanceOf[TimelineHelper]
 

@@ -21,16 +21,16 @@ import fixtures.ItemFixtures
 import mocks.connectors.MockGetCnCodeInformationConnector
 import models.common.UnitOfMeasure.Kilograms
 import models.requests.{CnCodeInformationItem, CnCodeInformationRequest}
-import models.response.{CnCodeInformationException, UnexpectedDownstreamResponseError}
 import models.response.referenceData.{CnCodeInformation, CnCodeInformationResponse}
+import models.response.{CnCodeInformationException, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class GetCnCodeInformationServiceSpec extends SpecBase with ItemFixtures with MockGetCnCodeInformationConnector {
 
-  implicit val hc = HeaderCarrier()
-  implicit val ec = ExecutionContext.global
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val ec: ExecutionContext = ExecutionContext.global
 
   lazy val testService = new GetCnCodeInformationService(mockGetCnCodeInformationConnector)
 

@@ -20,7 +20,7 @@ import base.SpecBase
 import fixtures.messages.{BaseEnglish, BaseMessages}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Messages, MessagesApi}
 import play.twirl.api.Html
 import views.html.components.link
 
@@ -39,7 +39,7 @@ class LinkSpec extends SpecBase {
     lazy val link: link = app.injector.instanceOf[link]
     lazy val messagesApi = app.injector.instanceOf[MessagesApi]
 
-    implicit lazy val messages = messagesApi.preferred(Seq(baseMessages.lang))
+    implicit lazy val messages: Messages = messagesApi.preferred(Seq(baseMessages.lang))
 
     lazy val html: Html = link(
       url,

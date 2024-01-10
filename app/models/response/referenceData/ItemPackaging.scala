@@ -26,7 +26,7 @@ case class ItemPackaging(packagingType: String, description: String) extends Sel
 
 object ItemPackaging {
 
-  implicit val format = Json.format[ItemPackaging]
+  implicit val format: OFormat[ItemPackaging] = Json.format[ItemPackaging]
 
   implicit val seqReads: Reads[Seq[ItemPackaging]] = {
     case JsObject(underlying) => JsSuccess(underlying.map {
