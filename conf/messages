@@ -317,7 +317,7 @@ viewAllMovements.sort.newest = Dispatched (newest)
 viewAllMovements.sort.oldest = Dispatched (oldest)
 
 viewAllMessages.title = Messages
-viewAllMessages.heading = Messages({0})
+viewAllMessages.heading = Messages ({0})
 viewAllMessages.totalNumberOfMessages = You have {0} unread messages.
 viewAllMessages.sort.label = Sort by
 viewAllMessages.sort.messageTypeA = Message (A - Z)
