@@ -31,6 +31,7 @@ object ViewAllMessagesMessages {
     val sortArcD = "Arc (Z - A)"
     val sortReadIndicatorA = "Read indicator (A - Z)"
     val sortReadIndicatorD = "Read indicator (Z - A)"
+    val sortByButton = "Sort messages"
 
     val tableMessageHeading = "Message"
     val tableMessageStatus = "Status"

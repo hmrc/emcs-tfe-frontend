@@ -55,24 +55,26 @@
          }
 
         <form>
-            @govukSelect(Select(
-                items = sortSelectItems,
-                name = "sortBy",
-                id = "sortBy",
-                label = Label(
-                    content = Text(messages("viewAllMessages.sort.label")),
-                    classes = "govuk-!-display-inline govuk-!-padding-right-2"
-                ),
-                classes = "govuk-!-display-inline"
-            ))
+            <div style="display: inline-flex; align-items: flex-end;">
+                @govukSelect(Select(
+                    items = sortSelectItems,
+                    name = "sortBy",
+                    id = "sortBy",
+                    label = Label(
+                        content = Text(messages("viewAllMessages.sort.label")),
+                        classes = "govuk-!-display-inline govuk-!-padding-right-2"
+                    ),
+                    classes = "govuk-!-display-inline"
+                ))
 
-            @govukButton(
-                ButtonViewModel(Text(messages("viewAllMessages.sort.button")))
-                        .withCssClass("govuk-!-margin-left-2")
-                        .withId("sortBySubmit")
-            )
+                @govukButton(
+                    ButtonViewModel(Text(messages("viewAllMessages.sort.button")))
+                            .withCssClass("govuk-!-margin-left-2")
+                            .withId("sortBySubmit")
+                )
 
-            <input type="hidden" name="index" value="@pageIndex"/>
+                <input type="hidden" name="index" value="@pageIndex"/>
+            </div>
         </form>
     </div>
 

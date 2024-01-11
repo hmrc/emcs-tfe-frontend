@@ -35,6 +35,7 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
 
   object Selectors extends BaseSelectors {
     val sortBySelectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
+    val sortButton = "#sortBySubmit"
 
     val messageRow = (i: Int) => s"#main-content > div > div > table > tbody > tr:nth-child($i) > th > a"
     val messageHintRow = (i: Int) => s"#main-content > div > div > table > tbody > tr:nth-child($i) > th > p"
@@ -79,6 +80,7 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
         Selectors.sortBySelectOption(6) -> English.sortArcD,
         Selectors.sortBySelectOption(7) -> English.sortReadIndicatorA,
         Selectors.sortBySelectOption(8) -> English.sortReadIndicatorD,
+        Selectors.sortButton -> English.sortByButton,
         Selectors.messageRow(1) -> "Report of receipt successful submission",
         Selectors.messageHintRow(1) -> "ARC1001",
         Selectors.statusRow(1) -> "UNREAD",
