@@ -68,13 +68,13 @@ object MessagesSortingSelectOption {
 
   case object ReadIndicatorA extends WithName("readIndicatorA") with MessagesSortingSelectOption {
     override val displayName = "viewAllMessages.sort.readIndicatorA"
-    override val sortOrder: String = "A"
+    override val sortOrder: String = "D" // readindicator is a boolean, 0=unread & 1=read, so flip sort order
     override val sortField: String = "readindicator"
   }
 
   case object ReadIndicatorD extends WithName("readIndicatorD") with MessagesSortingSelectOption {
     override val displayName: String = "viewAllMessages.sort.readIndicatorD"
-    override val sortOrder: String = "D"
+    override val sortOrder: String = "A" // readindicator is a boolean, 0=unread & 1=read, so flip sort order
     override val sortField: String = "readindicator"
   }
 
