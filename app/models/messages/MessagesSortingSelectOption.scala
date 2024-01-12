@@ -54,14 +54,14 @@ object MessagesSortingSelectOption {
     override val sortField: String = "datereceived"
   }
 
-  case object ArcA extends WithName("arcA") with MessagesSortingSelectOption {
-    override val displayName = "viewAllMessages.sort.arcA"
+  case object IdentifierA extends WithName("identifierA") with MessagesSortingSelectOption {
+    override val displayName = "viewAllMessages.sort.identifierA"
     override val sortOrder: String = "A"
     override val sortField: String = "arc"
   }
 
-  case object ArcD extends WithName("arcD") with MessagesSortingSelectOption {
-    override val displayName: String = "viewAllMessages.sort.arcD"
+  case object IdentifierD extends WithName("identifierD") with MessagesSortingSelectOption {
+    override val displayName: String = "viewAllMessages.sort.identifierD"
     override val sortOrder: String = "D"
     override val sortField: String = "arc"
   }
@@ -83,8 +83,8 @@ object MessagesSortingSelectOption {
     MessageTypeD,
     DateReceivedA,
     DateReceivedD,
-    ArcA,
-    ArcD,
+    IdentifierA,
+    IdentifierD,
     ReadIndicatorA,
     ReadIndicatorD
   )
@@ -94,8 +94,8 @@ object MessagesSortingSelectOption {
     case MessageTypeD.code => MessageTypeD
     case DateReceivedA.code => DateReceivedA
     case DateReceivedD.code => DateReceivedD
-    case ArcA.code => ArcA
-    case ArcD.code => ArcD
+    case IdentifierA.code => IdentifierA
+    case IdentifierD.code => IdentifierD
     case ReadIndicatorA.code => ReadIndicatorA
     case ReadIndicatorD.code => ReadIndicatorD
 

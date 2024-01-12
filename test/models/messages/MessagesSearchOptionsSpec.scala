@@ -17,7 +17,7 @@
 package models.messages
 
 import base.SpecBase
-import models.messages.MessagesSortingSelectOption.{ArcA, DateReceivedD}
+import models.messages.MessagesSortingSelectOption._
 
 class MessagesSearchOptionsSpec extends SpecBase {
 
@@ -49,13 +49,13 @@ class MessagesSearchOptionsSpec extends SpecBase {
       "all query parameters are supplied" in {
 
         val expectedResult = Some(Right(MessagesSearchOptions(
-          sortBy = ArcA,
+          sortBy = IdentifierA,
           index = 5,
           maxRows = MessagesSearchOptions.DEFAULT_MAX_ROWS
         )))
 
         val actualResult = MessagesSearchOptions.queryStringBinder.bind("search", Map(
-          "sortBy" -> Seq(ArcA.code),
+          "sortBy" -> Seq(IdentifierA.code),
           "index" -> Seq("5")
         ))
 
@@ -81,9 +81,9 @@ class MessagesSearchOptionsSpec extends SpecBase {
 
     "unbind QueryString to URL format" in {
 
-      val expectedResult = s"sortBy=${ArcA.code}&index=1"
+      val expectedResult = s"sortBy=${IdentifierA.code}&index=1"
 
-      val actualResult = MessagesSearchOptions.queryStringBinder.unbind("search", MessagesSearchOptions(ArcA, 1, 10))
+      val actualResult = MessagesSearchOptions.queryStringBinder.unbind("search", MessagesSearchOptions(IdentifierA, 1, 10))
 
       actualResult mustBe expectedResult
     }
@@ -126,12 +126,12 @@ class MessagesSearchOptionsSpec extends SpecBase {
       "return a valid MessagesSearchOptions" in {
 
         val expectedResult = MessagesSearchOptions(
-          sortBy = ArcA,
+          sortBy = IdentifierA,
           index = 1,
           maxRows = 10
         )
 
-        val actualResult = MessagesSearchOptions.apply(ArcA.code)
+        val actualResult = MessagesSearchOptions.apply(IdentifierA.code)
 
         actualResult mustBe expectedResult
       }
@@ -141,11 +141,11 @@ class MessagesSearchOptionsSpec extends SpecBase {
 
       "return the string values for MessagesSearchOptions" in {
 
-        val expectedResult = Some("arcA")
+        val expectedResult = Some("identifierA")
 
         val actualResult = MessagesSearchOptions.unapply(
           MessagesSearchOptions(
-            sortBy = ArcA,
+            sortBy = IdentifierA,
             index = 1,
             maxRows = 10
           )
