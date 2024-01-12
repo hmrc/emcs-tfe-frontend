@@ -32,8 +32,8 @@ class MessagesSortingSelectOptionSpec extends SpecBase with GuiceOneAppPerSuite 
       MessagesSortingSelectOption.apply("messageTypeD") mustBe MessageTypeD
       MessagesSortingSelectOption.apply("dateReceivedA") mustBe DateReceivedA
       MessagesSortingSelectOption.apply("dateReceivedD") mustBe DateReceivedD
-      MessagesSortingSelectOption.apply("arcA") mustBe ArcA
-      MessagesSortingSelectOption.apply("arcD") mustBe ArcD
+      MessagesSortingSelectOption.apply("identifierA") mustBe IdentifierA
+      MessagesSortingSelectOption.apply("identifierD") mustBe IdentifierD
       MessagesSortingSelectOption.apply("readIndicatorA") mustBe ReadIndicatorA
       MessagesSortingSelectOption.apply("readIndicatorD") mustBe ReadIndicatorD
     }
@@ -67,14 +67,14 @@ class MessagesSortingSelectOptionSpec extends SpecBase with GuiceOneAppPerSuite 
         msgs(DateReceivedD.displayName) mustBe English.sortDateReceivedD
       }
 
-      "output the correct messages for ArcA" in {
+      "output the correct messages for IdentifierA" in {
 
-        msgs(ArcA.displayName) mustBe English.sortArcA
+        msgs(IdentifierA.displayName) mustBe English.sortIdentifierA
       }
 
-      "output the correct messages for ArcD" in {
+      "output the correct messages for IdentifierD" in {
 
-        msgs(ArcD.displayName) mustBe English.sortArcD
+        msgs(IdentifierD.displayName) mustBe English.sortIdentifierD
       }
 
       "output the correct messages for ReadIndicatorA" in {

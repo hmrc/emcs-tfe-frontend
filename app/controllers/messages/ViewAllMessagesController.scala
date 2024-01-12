@@ -47,8 +47,9 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
     getMessagesService.getMessages(ern, Some(search)).map { allMessages =>
       status(
         view(
-          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(None),
-          allMessages = allMessages.messagesData.messages
+          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
+          allMessages = allMessages.messagesData.messages,
+          pageIndex = search.index
         )
       )
     } recover {

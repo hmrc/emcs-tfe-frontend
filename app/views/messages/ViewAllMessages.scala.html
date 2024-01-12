@@ -23,19 +23,19 @@
 
 @this(
         layout: templates.Layout,
-        formHelper: FormWithCSRF,
         h1: h1,
         p: p,
         appConfig: AppConfig,
         govukSelect: GovukSelect,
         govukPagination : GovukPagination,
+        govukButton: GovukButton,
         tableHelper: ViewAllMessagesTableHelper
 )
 
-
 @(
     sortSelectItems: Seq[SelectItem],
-    allMessages: Seq[Message]
+    allMessages: Seq[Message],
+    pageIndex: Int
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
@@ -54,17 +54,29 @@
              @messages("viewAllMessages.totalNumberOfMessages", request.messageStatistics.countOfNewMessages)
          }
 
-         @govukSelect(Select(
-             items = sortSelectItems,
-             name = "sortBy",
-             id = "sortBy",
-             label = Label(
-                 content = Text(messages("viewAllMessages.sort.label")),
-                 classes = "govuk-!-display-inline govuk-!-padding-right-2"
-             ),
-             classes = "govuk-!-display-inline"
-         ))
-     </div>
+        <form>
+            <div style="display: inline-flex; align-items: flex-end;">
+                @govukSelect(Select(
+                    items = sortSelectItems,
+                    name = "sortBy",
+                    id = "sortBy",
+                    label = Label(
+                        content = Text(messages("viewAllMessages.sort.label")),
+                        classes = "govuk-!-display-inline govuk-!-padding-right-2"
+                    ),
+                    classes = "govuk-!-display-inline"
+                ))
+
+                @govukButton(
+                    ButtonViewModel(Text(messages("viewAllMessages.sort.button")))
+                            .withCssClass("govuk-!-margin-left-2")
+                            .withId("sortBySubmit")
+                )
+
+                <input type="hidden" name="index" value="@pageIndex"/>
+            </div>
+        </form>
+    </div>
 
     @tableHelper.constructTable(allMessages)
 }
