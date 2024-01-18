@@ -41,17 +41,29 @@ trait CheckboxFluency {
         form = form,
         name = name,
         items = items,
-        fieldset = FieldsetViewModel(legend)
+        fieldset = Some(FieldsetViewModel(legend))
       )
 
     def apply(
                form: Form[_],
                name: String,
                items: Seq[CheckboxItem],
-               fieldset: Fieldset
+             )(implicit messages: Messages): Checkboxes =
+      apply(
+        form = form,
+        name = name,
+        items = items,
+        fieldset = None
+      )
+
+    def apply(
+               form: Form[_],
+               name: String,
+               items: Seq[CheckboxItem],
+               fieldset: Option[Fieldset]
              )(implicit messages: Messages): Checkboxes =
       Checkboxes(
-        fieldset     = Some(fieldset),
+        fieldset     = fieldset,
         name         = name,
         errorMessage = errorMessage(form("value")),
         items        = items.map {
@@ -68,6 +80,9 @@ trait CheckboxFluency {
 
     def withHint(hint: Hint): Checkboxes =
       checkboxes copy (hint = Some(hint))
+
+    def withClasses(classes: Seq[String]): Checkboxes =
+      checkboxes copy (classes = s"${checkboxes.classes} ${classes.mkString(" ")}")
   }
 
   object CheckboxItemViewModel {

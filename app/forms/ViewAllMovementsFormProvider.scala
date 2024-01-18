@@ -17,9 +17,9 @@
 package forms
 
 import forms.mappings.Mappings
-import models.MovementListSearchOptions
+import models.{MovementListDirectionOption, MovementListSearchOptions}
 import play.api.data.Form
-import play.api.data.Forms.{mapping, optional}
+import play.api.data.Forms.{mapping, optional, set}
 
 import javax.inject.Inject
 
@@ -30,7 +30,8 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
       mapping(
         ViewAllMovementsFormProvider.searchKey -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllMovementsFormProvider.searchValue -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
-        ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity)
+        ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
+        ViewAllMovementsFormProvider.traderRole -> set(enumerable[MovementListDirectionOption]()),
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
     )
 
@@ -43,7 +44,12 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
 
 object ViewAllMovementsFormProvider {
 
+  // search input
   val sortByKey = "sortBy"
   val searchKey = "searchKey"
   val searchValue = "searchValue"
+
+  // filters
+  val traderRole = "traderRole"
+
 }

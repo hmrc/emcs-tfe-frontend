@@ -23,10 +23,11 @@ import play.api.mvc.QueryStringBindable
 case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOption] = None,
                                      searchValue: Option[String] = None,
                                      sortBy: MovementSortingSelectOption = ArcAscending,
+                                     traderRole: Option[MovementListDirectionOption] = None,
                                      index: Int = DEFAULT_INDEX,
                                      maxRows: Int = DEFAULT_MAX_ROWS) {
 
-  val startingPosition: Int = (index-1) * maxRows
+  val startingPosition: Int = (index - 1) * maxRows
 
   def getSearchFields: Option[(String, String)] = {
     (searchKey, searchValue) match {
@@ -35,8 +36,18 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     }
   }
 
+  def getTraderRole: Option[(String, String)] = {
+    val key = "search.traderRole"
+    traderRole.flatMap {
+      case MovementListDirectionOption.GoodsIn => Some(key -> MovementListDirectionOption.GoodsIn.toString)
+      case MovementListDirectionOption.GoodsOut => Some(key -> MovementListDirectionOption.GoodsOut.toString)
+      case _ => None
+    }
+  }
+
   val queryParams: Seq[(String, String)] = Seq(
     getSearchFields,
+    getTraderRole,
     Some("search.sortOrder" -> sortBy.sortOrder),
     Some("search.sortField" -> sortBy.sortField),
     Some("search.startPosition" -> startingPosition.toString),
@@ -54,34 +65,62 @@ object MovementListSearchOptions {
                                  stringBinder: QueryStringBindable[String]): QueryStringBindable[MovementListSearchOptions] =
     new QueryStringBindable[MovementListSearchOptions] {
 
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, MovementListSearchOptions]] =
+      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, MovementListSearchOptions]] = {
         Some(for {
           sortOrder <- stringBinder.bind("sortBy", params).getOrElse(Right(ArcAscending.code))
           index <- intBinder.bind("index", params).getOrElse(Right(DEFAULT_INDEX))
           searchKey <- stringBinder.bind("searchKey", params).map(_.map(Some(_))).getOrElse(Right(None))
           searchValue <- stringBinder.bind("searchValue", params).map(_.map(Some(_))).getOrElse(Right(None))
+          traderRole <- stringBinder.bind("traderRole", params).map(_.map(Some(_))).getOrElse(Right(None))
         } yield {
-          MovementListSearchOptions(searchKey.map(MovementSearchSelectOption(_)), searchValue, MovementSortingSelectOption(sortOrder), index, DEFAULT_MAX_ROWS)
+          MovementListSearchOptions(
+            searchKey = searchKey.map(MovementSearchSelectOption(_)),
+            searchValue = searchValue,
+            sortBy = MovementSortingSelectOption(sortOrder),
+            traderRole = traderRole.map(MovementListDirectionOption(_)),
+            index = index,
+            maxRows = DEFAULT_MAX_ROWS
+          )
         })
+      }
 
       override def unbind(key: String, searchOptions: MovementListSearchOptions): String =
         Seq(
           searchOptions.searchKey.map(field => stringBinder.unbind("searchKey", field.code)),
           searchOptions.searchValue.map(field => stringBinder.unbind("searchValue", field)),
           Some(stringBinder.unbind("sortBy", searchOptions.sortBy.code)),
-          Some(intBinder.unbind("index", searchOptions.index))
+          Some(intBinder.unbind("index", searchOptions.index)),
+          searchOptions.traderRole.map(field => stringBinder.unbind("traderRole", field.code))
         ).flatten.mkString("&")
     }
 
-  def apply(searchKey: Option[String], searchValue: Option[String], sortBy: String): MovementListSearchOptions =
+  def apply(searchKey: Option[String], searchValue: Option[String], sortBy: String, traderRoleOptions: Set[MovementListDirectionOption]): MovementListSearchOptions = {
+
+    val traderRole: Option[MovementListDirectionOption] = {
+      (traderRoleOptions.contains(MovementListDirectionOption.GoodsIn), traderRoleOptions.contains(MovementListDirectionOption.GoodsOut)) match {
+        case (true, true) => Some(MovementListDirectionOption.Both)
+        case (true, _) => Some(MovementListDirectionOption.GoodsIn)
+        case (_, true) => Some(MovementListDirectionOption.GoodsOut)
+        case _ => None
+      }
+    }
+
     MovementListSearchOptions(
       searchKey = searchKey.map(MovementSearchSelectOption(_)),
       searchValue = searchValue,
-      sortBy = MovementSortingSelectOption(sortBy)
+      sortBy = MovementSortingSelectOption(sortBy),
+      traderRole = traderRole
     )
+  }
 
-  def unapply(options: MovementListSearchOptions): Option[(Option[String], Option[String], String)] =
-    Some((options.searchKey.map(_.code), options.searchValue, options.sortBy.code))
+  def unapply(options: MovementListSearchOptions): Option[(Option[String], Option[String], String, Set[MovementListDirectionOption])] = {
+    Some((
+      options.searchKey.map(_.code),
+      options.searchValue,
+      options.sortBy.code,
+      options.traderRole.map(MovementListDirectionOption.toOptions).getOrElse(Set())
+    ))
+  }
 
 }
 
