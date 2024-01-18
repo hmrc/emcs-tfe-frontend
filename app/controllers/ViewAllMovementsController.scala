@@ -42,16 +42,18 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                            paginationHelper: MovementPaginationHelper,
                                            formProvider: ViewAllMovementsFormProvider
                                           )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
-  def onPageLoad(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
+  def onPageLoad(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] = {
     authorisedWithData(ern).async { implicit request =>
       renderView(Ok, ern, searchOptions)
     }
+  }
 
   def onSubmit(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
     authorisedWithData(ern).async { implicit request =>
       formProvider().bindFromRequest().fold(
         _ => renderView(BadRequest, ern, searchOptions),
-        value => Future(Redirect(routes.ViewAllMovementsController.onPageLoad(ern, value)))
+        value =>
+          Future(Redirect(routes.ViewAllMovementsController.onPageLoad(ern, value)))
       )
     }
 

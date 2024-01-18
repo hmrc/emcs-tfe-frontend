@@ -38,6 +38,7 @@
         govukInput: GovukInput,
         govukButton: GovukButton,
         govukFieldset: GovukFieldset,
+        govukCheckboxes: GovukCheckboxes,
         movementList: MovementsList,
         helper: ViewAllMovementsTableHelper
 )
@@ -116,7 +117,21 @@
             @* TODO: placeholder for filter component *@
             <aside style="border: 1px solid #b1b4b6;
                 padding: 15px">
-            @h2("Filters", "govuk-heading-m")
+                @h2("Filters", "govuk-heading-m")
+                @govukCheckboxes(
+                    CheckboxesViewModel(
+                        form = form,
+                        name = "traderRole",
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                content = Text(messages("viewAllMovements.filters.direction.heading")),
+                                classes = "govuk-fieldset__legend--s",
+                                isPageHeading = false
+                            ))
+                        )),
+                        items = MovementListDirectionOption.checkboxItems
+                    ).withClasses(Seq("govuk-checkboxes--small"))
+                )
             </aside>
         </div>
 

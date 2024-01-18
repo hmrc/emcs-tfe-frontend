@@ -338,6 +338,9 @@ viewAllMovements.sort.arcAscending = ARC (A-Z)
 viewAllMovements.sort.arcDescending = ARC (Z-A)
 viewAllMovements.sort.newest = Dispatched (newest)
 viewAllMovements.sort.oldest = Dispatched (oldest)
+viewAllMovements.filters.direction.heading = Direction
+viewAllMovements.filters.direction.consignee = Goods in
+viewAllMovements.filters.direction.consignor = Goods out
 
 viewAllMessages.title = Messages ({0})
 viewAllMessages.heading = Messages ({0})
