@@ -37,6 +37,8 @@ object ViewAllMessagesMessages {
     val tableMessageStatus = "Status"
     val tableMessageDate = "Date"
     val tableMessageAction = "Action"
+
+    val next: String = "Next"
   }
 
   object English extends ViewMessages with EN

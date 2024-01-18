@@ -18,6 +18,7 @@ package controllers.messages
 
 import config.ErrorHandler
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
+import models.messages.MessagesSearchOptions.DEFAULT_MAX_ROWS
 import models.messages.{MessagesSearchOptions, MessagesSortingSelectOption}
 import models.requests.DataRequest
 import play.api.i18n.I18nSupport
@@ -40,21 +41,47 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
 
   def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] =
     authorisedWithData(ern).async { implicit request =>
-      renderView(Ok, ern, search)
+      if (search.index <= 0)
+        Future.successful(
+          Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
+        )
+      else
+        renderView(Ok, ern, search)
     }
 
-  private def renderView(status: Status, ern: String, search: MessagesSearchOptions)(implicit request: DataRequest[_]): Future[Result] =
+  private def renderView(status: Status, ern: String, search: MessagesSearchOptions)(implicit request: DataRequest[_]): Future[Result] = {
+
     getMessagesService.getMessages(ern, Some(search)).map { allMessages =>
-      status(
-        view(
-          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = allMessages.messagesData.messages,
-          pageIndex = search.index
+
+      val totalNumberOfPages : Int = calculatePageCount(
+          allMessages.messagesData.totalNumberOfMessagesAvailable.toInt,
+          DEFAULT_MAX_ROWS
         )
-      )
+
+      if (search.index > totalNumberOfPages)
+        Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
+      else {
+        status(
+          view(
+            sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
+            allMessages = allMessages.messagesData.messages,
+            totalNumberOfPages = totalNumberOfPages,
+            searchOptions = search
+          )
+        )
+      }
     } recover {
       case _ =>
         InternalServerError(errorHandler.standardErrorTemplate())
     }
+  }
 
+  private def calculatePageCount(totalNumberOfMessagesAvailable: Int, maximumRowsPerPage: Int): Int = {
+    if (totalNumberOfMessagesAvailable == 0)
+      1
+    else if (totalNumberOfMessagesAvailable % maximumRowsPerPage != 0)
+      (totalNumberOfMessagesAvailable / maximumRowsPerPage) + 1
+    else
+      totalNumberOfMessagesAvailable / maximumRowsPerPage
+  }
 }

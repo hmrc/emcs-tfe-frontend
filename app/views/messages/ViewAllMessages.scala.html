@@ -15,9 +15,10 @@
  *@
 
 @import config.AppConfig
+@import models.messages.MessagesSearchOptions
 @import models.requests.DataRequest
 @import models.response.emcsTfe.messages.Message
-@import viewmodels.helpers.messages.ViewAllMessagesTableHelper
+@import viewmodels.helpers.messages.{MessagesPaginationHelper, ViewAllMessagesTableHelper}
 @import views.html._
 @import views.html.components._
 
@@ -29,13 +30,15 @@
         govukSelect: GovukSelect,
         govukPagination : GovukPagination,
         govukButton: GovukButton,
-        tableHelper: ViewAllMessagesTableHelper
+        tableHelper: ViewAllMessagesTableHelper,
+        paginationHelper: MessagesPaginationHelper
 )
 
 @(
     sortSelectItems: Seq[SelectItem],
     allMessages: Seq[Message],
-    pageIndex: Int
+    totalNumberOfPages: Int,
+    searchOptions: MessagesSearchOptions
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
@@ -73,12 +76,17 @@
                             .withId("sortBySubmit")
                 )
 
-                <input type="hidden" name="index" value="@pageIndex"/>
+                <input type="hidden" name="index" value="@{searchOptions.index}"/>
             </div>
         </form>
     </div>
 
     @tableHelper.constructTable(allMessages)
+
+    @govukPagination(
+        paginationHelper.constructPagination(totalNumberOfPages, request.ern, searchOptions)
+    )
+
 }
 
 @{

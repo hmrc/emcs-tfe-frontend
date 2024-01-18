@@ -94,8 +94,8 @@ class ViewAllMessagesTableHelperSpec extends SpecBase with MessagesFixtures with
                     TableRow(
                       content = HtmlContent(link(
                         link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-                        messageKey = "Report of receipt",
-                        hintKey = Some("LRN1002")
+                        messageKey = "Error with report of receipt",
+                        hintKey = Some("LRN1001")
                       ))
                     ),
                     TableRow(
