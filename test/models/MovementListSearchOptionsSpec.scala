@@ -267,7 +267,8 @@ class MovementListSearchOptionsSpec extends SpecBase {
           searchKey = Some(ARC),
           searchValue = Some("ARC123"),
           sortBy = Oldest,
-          traderRole = Some(MovementListDirectionOption.GoodsIn),
+          traderRole = Some(MovementFilterDirectionOption.GoodsIn),
+          undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
           index = 1,
           maxRows = 10
         )
@@ -276,7 +277,8 @@ class MovementListSearchOptionsSpec extends SpecBase {
           searchKey = Some(ARC.code),
           searchValue = Some("ARC123"),
           sortBy = Oldest.code,
-          traderRoleOptions = Set(MovementListDirectionOption.GoodsIn)
+          traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
+          undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged)
         )
 
         actualResult mustBe expectedResult
@@ -287,14 +289,15 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
       "return the string values for MovementListSearchOptions" in {
 
-        val expectedResult = Some((Some("otherTraderId"), Some("ERN123456"), Oldest.code, Set(MovementListDirectionOption.GoodsOut)))
+        val expectedResult = Some((Some("otherTraderId"), Some("ERN123456"), Oldest.code, Set(MovementFilterDirectionOption.GoodsOut), Set(MovementFilterUndischargedOption.Undischarged)))
 
         val actualResult = MovementListSearchOptions.unapply(
           MovementListSearchOptions(
             searchKey = Some(ERN),
             searchValue = Some("ERN123456"),
             sortBy = Oldest,
-            traderRole = Some(MovementListDirectionOption.GoodsOut),
+            traderRole = Some(MovementFilterDirectionOption.GoodsOut),
+            undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
             index = 1,
             maxRows = 10
           )

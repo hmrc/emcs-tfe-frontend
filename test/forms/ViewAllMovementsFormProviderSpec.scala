@@ -17,7 +17,7 @@
 package forms
 
 import base.SpecBase
-import models.MovementListDirectionOption._
+import models.MovementFilterDirectionOption._
 import models.MovementListSearchOptions
 import models.MovementSearchSelectOption.ARC
 import models.MovementSortingSelectOption.ArcAscending

@@ -44,6 +44,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                           )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
   def onPageLoad(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] = {
     authorisedWithData(ern).async { implicit request =>
+      println(scala.Console.YELLOW + "query string in onPageLoad = " + request.queryString + scala.Console.RESET)
       renderView(Ok, ern, searchOptions)
     }
   }
@@ -52,8 +53,11 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
     authorisedWithData(ern).async { implicit request =>
       formProvider().bindFromRequest().fold(
         _ => renderView(BadRequest, ern, searchOptions),
-        value =>
+        value => {
+          println(scala.Console.YELLOW + "value in onSubmit = " + value + scala.Console.RESET)
+
           Future(Redirect(routes.ViewAllMovementsController.onPageLoad(ern, value)))
+        }
       )
     }
 
