@@ -27,9 +27,7 @@ import models.response.InvalidUserTypeException
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Text, Value}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import views.BaseSelectors
 
 class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
@@ -41,35 +39,18 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
   object Selectors extends BaseSelectors {
     val cardTitle = ".govuk-summary-card__title"
+
     def cardRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
+
     def cardRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
 
     def cardAtIndexTitle(i: Int) = s"div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
+
     def cardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
+
     def cardAtIndexRowValue(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dd"
   }
 
-  "constructMovementOverview" should {
-    "output the correct rows" in {
-      val result = helper.constructMovementOverview(getMovementResponseModel)
-      val card = Jsoup.parse(result.toString())
-      card.select(Selectors.cardTitle).text() mustBe "Overview"
-      card.select(Selectors.cardRowKey(1)).text() mustBe "Local Reference Number (LRN)"
-      card.select(Selectors.cardRowValue(1)).text() mustBe testLrn
-      card.select(Selectors.cardRowKey(2)).text() mustBe "Electronic administrative document (eAD) status"
-      card.select(Selectors.cardRowValue(2)).text() mustBe "Accepted"
-      card.select(Selectors.cardRowKey(3)).text() mustBe "Date of dispatch"
-      card.select(Selectors.cardRowValue(3)).text() mustBe "20 November 2008"
-      card.select(Selectors.cardRowKey(4)).text() mustBe "Expected date of arrival"
-      card.select(Selectors.cardRowValue(4)).text() mustBe "10 December 2008"
-      card.select(Selectors.cardRowKey(5)).text() mustBe "Consignor"
-      card.select(Selectors.cardRowValue(5)).text() mustBe "GBRC345GTR145"
-      card.select(Selectors.cardRowKey(6)).text() mustBe "Number of items"
-      card.select(Selectors.cardRowValue(6)).text() mustBe "2"
-      card.select(Selectors.cardRowKey(7)).text() mustBe "Transporting vehicle(s)"
-      card.select(Selectors.cardRowValue(7)).text() mustBe "AB11 1T4 AB22 2T4"
-    }
-  }
 
   "constructMovementView" should {
     "output the correct cards" when {
@@ -150,7 +131,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         s"when the eAD status is ${statusToExplanation._1} - show the correct status and explanation" in {
           val result = helper.constructMovementView(getMovementResponseModel.copy(eadStatus = statusToExplanation._1))
           val card = Jsoup.parse(result.toString())
-          if(statusToExplanation._1 == "None") {
+          if (statusToExplanation._1 == "None") {
             card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Receipt status"
           } else {
             card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "eAD status"
@@ -159,202 +140,6 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         }
 
       }
-    }
-  }
-
-  ".constructMovementDelivery" should {
-    "output the correct cards" when {
-
-      "consignor, place of dispatch, consignee and place of destination are present" in {
-        val result = helper.constructMovementDelivery(getMovementResponseModel)
-        val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-
-        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Place of dispatch"
-        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-
-        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
-        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-
-        card.select(Selectors.cardAtIndexTitle(4)).text() mustBe "Place of destination"
-        card.select(Selectors.cardAtIndexRowKey(4, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(4, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(4, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(4, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(4, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(4, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-      }
-
-      "consignor, consignee and place of destination are present" in {
-        val result = helper.constructMovementDelivery(getMovementResponseModel.copy(placeOfDispatchTrader = None))
-        val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-
-        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Consignee"
-        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GB12345GTR144"
-        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-
-        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Place of destination"
-        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-      }
-
-      "consignor, place of dispatch and place of destination are present" in {
-        val result = helper.constructMovementDelivery(getMovementResponseModel.copy(consigneeTrader = None))
-        val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-
-        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Place of dispatch"
-        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-
-        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Place of destination"
-        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-      }
-
-      "consignor, place of dispatch and consignee are present" in {
-        val result = helper.constructMovementDelivery(getMovementResponseModel.copy(deliveryPlaceTrader = None))
-        val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-
-        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Place of dispatch"
-        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-
-        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
-        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
-      }
-    }
-  }
-
-  "summaryListRowBuilder" should {
-  "construct a key value summary list row (when value is a string)" in {
-    val result = helper.summaryListRowBuilder("random.key", "random.value")
-    result mustBe SummaryListRow(
-      key = Key(Text(value = "random.key")),
-      value = Value(Text(value = "random.value")),
-      classes = "govuk-summary-list__row"
-    )
-  }
-
-  "construct a key value summary list row (when value is HTML)" in {
-    val result = helper.summaryListRowBuilder("random.key", Html("some html value"))
-    result mustBe SummaryListRow(
-      key = Key(Text(value = "random.key")),
-      value = Value(HtmlContent(Html("some html value"))),
-      classes = "govuk-summary-list__row"
-    )
-  }
-}
-
-  ".renderAddress" should {
-
-    "render street number and street when provided" in {
-      val addressModel: AddressModel = AddressModel(
-        Some("1"), Some("Street Street"), Some("POST CODE"), Some("City City")
-      )
-      helper.renderAddress(addressModel) mustBe Html("1 Street Street <br>City City <br>POST CODE")
-    }
-
-    "render just street when no street number provided" in {
-      val addressModel: AddressModel = AddressModel(
-        None, Some("Street Street"), Some("POST CODE"), Some("City City")
-      )
-      helper.renderAddress(addressModel) mustBe Html("Street Street <br>City City <br>POST CODE")
-    }
-
-    "render nothing when all fields are undefined" in {
-      val addressModel: AddressModel = AddressModel(
-        None, None, None, None
-      )
-      helper.renderAddress(addressModel) mustBe Html("")
-    }
-
-    "render all rows when all fields are defined" in {
-      val addressModel: AddressModel = AddressModel(
-        Some("1"), Some("Street Street"), Some("POST CODE"), Some("City City")
-      )
-      helper.renderAddress(addressModel) mustBe Html("1 Street Street <br>City City <br>POST CODE")
-    }
-  }
-
-  ".summaryListRowBuilder" should {
-    "construct a key value summary list row (when value is a string)" in {
-      val result = helper.summaryListRowBuilder("random.key", "random.value")
-      result mustBe SummaryListRow(
-        key = Key(Text(value = "random.key")),
-        value = Value(Text(value = "random.value")),
-        classes = "govuk-summary-list__row"
-      )
-    }
-
-    "construct a key value summary list row (when value is HTML)" in {
-      val result = helper.summaryListRowBuilder("random.key", Html("some html value"))
-      result mustBe SummaryListRow(
-        key = Key(Text(value = "random.key")),
-        value = Value(HtmlContent(Html("some html value"))),
-        classes = "govuk-summary-list__row"
-      )
     }
   }
 
@@ -372,7 +157,8 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
               street = Some("Main101"),
               postcode = Some("ZZ78"),
               city = Some("Zeebrugge")
-            )
+            ),
+            vatNumber = Some("GB123456789")
           ))
         ))
 
@@ -391,7 +177,8 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
               street = Some("Main101"),
               postcode = Some("ZZ78"),
               city = Some("Zeebrugge")
-            )
+            ),
+            vatNumber = Some("GB123456789")
           ))
         ))
 
@@ -420,7 +207,8 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              )
+              ),
+              vatNumber = Some("GB123456789")
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
@@ -451,7 +239,8 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              )
+              ),
+              vatNumber = Some("GB123456789")
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 

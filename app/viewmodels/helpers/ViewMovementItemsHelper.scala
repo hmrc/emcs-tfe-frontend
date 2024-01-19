@@ -27,12 +27,13 @@ import utils.ExpectedDateOfArrival
 import viewmodels.govuk.TagFluency
 import views.html.components.{h2, link, list}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class ViewMovementItemsHelper @Inject()(list: list,
                                         link: link,
                                         h2: h2,
-                                        govukTable: GovukTable,
+                                        govukTable: GovukTable
                                        ) extends ExpectedDateOfArrival with TagFluency {
 
   def constructMovementItems(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Html = {

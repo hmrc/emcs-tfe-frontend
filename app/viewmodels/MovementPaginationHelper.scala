@@ -27,25 +27,25 @@ class MovementPaginationHelper @Inject()() extends DateUtils {
 
   def constructPagination(pageCount: Int, ern: String, search: MovementListSearchOptions): Option[Pagination] = {
 
-    if(pageCount == 1) None else {
+    if (pageCount == 1) None else {
 
       val previousLink: Option[PaginationLink] = if (search.index == 1) None else Some(PaginationLink(
         href = routes.ViewAllMovementsController.onPageLoad(ern, search.copy(index = search.index - 1)).url
       ))
 
-      val firstItem: Option[PaginationItem] = if(search.index <= 1) None else Some(PaginationItem(
+      val firstItem: Option[PaginationItem] = if (search.index <= 1) None else Some(PaginationItem(
         href = routes.ViewAllMovementsController.onPageLoad(ern, search.copy(index = 1)).url,
         number = Some("1")
       ))
 
-      val previousEllipses: Option[PaginationItem] = if(search.index <= 3) None else Some(PaginationItem(
+      val previousEllipses: Option[PaginationItem] = if (search.index <= 3) None else Some(PaginationItem(
         href = "",
         ellipsis = Some(true)
       ))
 
-      val previousItem: Option[PaginationItem] = if(search.index <= 2) None else Some(PaginationItem(
-        href = routes.ViewAllMovementsController.onPageLoad(ern, search.copy(index = search.index-1)).url,
-        number = Some((search.index-1).toString)
+      val previousItem: Option[PaginationItem] = if (search.index <= 2) None else Some(PaginationItem(
+        href = routes.ViewAllMovementsController.onPageLoad(ern, search.copy(index = search.index - 1)).url,
+        number = Some((search.index - 1).toString)
       ))
 
       val currentItem: Option[PaginationItem] = Some(PaginationItem(
@@ -54,17 +54,17 @@ class MovementPaginationHelper @Inject()() extends DateUtils {
         current = Some(true)
       ))
 
-      val nextItem: Option[PaginationItem] = if((pageCount - search.index) <= 1) None else Some(PaginationItem(
-        href = routes.ViewAllMovementsController.onPageLoad(ern, search.copy(index = search.index+1)).url,
-        number = Some((search.index+1).toString)
+      val nextItem: Option[PaginationItem] = if ((pageCount - search.index) <= 1) None else Some(PaginationItem(
+        href = routes.ViewAllMovementsController.onPageLoad(ern, search.copy(index = search.index + 1)).url,
+        number = Some((search.index + 1).toString)
       ))
 
-      val nextEllipses: Option[PaginationItem] = if((pageCount - search.index) <= 2) None else Some(PaginationItem(
+      val nextEllipses: Option[PaginationItem] = if ((pageCount - search.index) <= 2) None else Some(PaginationItem(
         href = "",
         ellipsis = Some(true)
       ))
 
-      val lastItem: Option[PaginationItem] = if(search.index >= pageCount) None else Some(PaginationItem(
+      val lastItem: Option[PaginationItem] = if (search.index >= pageCount) None else Some(PaginationItem(
         href = routes.ViewAllMovementsController.onPageLoad(ern, search.copy(index = pageCount)).url,
         number = Some(pageCount.toString)
       ))

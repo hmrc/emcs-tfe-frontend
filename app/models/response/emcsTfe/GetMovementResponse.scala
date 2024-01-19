@@ -16,7 +16,7 @@
 
 package models.response.emcsTfe
 
-import models.common.{DestinationType, TraderModel, TransportDetailsModel, TransportTraderModel}
+import models.common.{DestinationType, MovementGuaranteeModel, TraderModel, TransportDetailsModel, TransportTraderModel}
 import models.response.emcsTfe.getMovementHistoryEvents.GetMovementHistoryEventsResponse
 import models.response.emcsTfe.reportOfReceipt.ReportOfReceiptModel
 import play.api.libs.json.{Json, Reads}
@@ -46,6 +46,7 @@ case class GetMovementResponse(
                                 transportDetails: Seq[TransportDetailsModel],
                                 reportOfReceipt: Option[ReportOfReceiptModel],
                                 items: Seq[MovementItem],
+                                movementGuarantee: MovementGuaranteeModel,
                                 eventHistorySummary: Option[GetMovementHistoryEventsResponse]
                               ) extends DateUtils with ExpectedDateOfArrival {
   def formattedDateOfDispatch: String = dateOfDispatch.formatDateForUIOutput()

@@ -81,7 +81,8 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              )
+              ),
+              vatNumber = Some("GB123456789")
             )),
             destinationType = TaxWarehouse
           )) mustBe GbTaxWarehouse
@@ -97,7 +98,8 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              )
+              ),
+              vatNumber = Some("XI123456789")
             )),
             destinationType = TaxWarehouse
           )) mustBe GbTaxWarehouse
@@ -115,7 +117,8 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              )
+              ),
+              vatNumber = Some("FR123456789")
             )),
             destinationType = TaxWarehouse
           )) mustBe EuTaxWarehouse

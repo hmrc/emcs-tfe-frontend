@@ -29,7 +29,7 @@ import scala.concurrent.ExecutionContext
 class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
                                       accountHomePage: AccountHomePage,
                                       val auth: AuthAction,
-                                      val getData: DataRetrievalAction,
+                                      val getData: DataRetrievalAction
                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def viewAccountHome(exciseRegistrationNumber: String): Action[AnyContent] = {

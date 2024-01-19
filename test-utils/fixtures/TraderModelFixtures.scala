@@ -25,7 +25,8 @@ trait TraderModelFixtures extends AddressModelFixtures {
   val maxTraderModel: TraderModel = TraderModel(
     traderExciseNumber = traderExciseNumber,
     traderName = "name",
-    address = maxAddressModel
+    address = maxAddressModel,
+    vatNumber = Some("GB123456789")
   )
 
 

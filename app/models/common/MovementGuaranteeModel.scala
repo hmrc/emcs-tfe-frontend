@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package models.common
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Json, OFormat}
 
-case class DocumentCertificateModel (
-                                      documentType: Option[String],
-                                      documentReference: Option[String],
-                                      documentDescription: Option[String],
-                                      referenceOfDocument: Option[String]
-                                    )
-object DocumentCertificateModel {
-  implicit val fmt: Format[DocumentCertificateModel] = Json.format
+case class MovementGuaranteeModel(
+                                   guarantorTypeCode: GuarantorType,
+                                   guarantorTrader: Option[Seq[TraderModel]]
+                                 )
+
+object MovementGuaranteeModel {
+  implicit val fmt: OFormat[MovementGuaranteeModel] = Json.format
 }

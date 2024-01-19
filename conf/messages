@@ -179,6 +179,21 @@ transportMode.roadTransport = Road transport
 transportMode.seaTransport = Sea transport
 transportMode.other = Other
 
+# MOV02 - Guarantor
+viewMovement.guarantor.title = Guarantor details
+viewMovement.guarantor.summary = Summary
+viewMovement.guarantor.summary.guarantorArranger = Guarantor arranger
+viewMovement.guarantor.summary.noGuarantor = No guarantor required for this movement.
+viewMovement.guarantor.summary.type = Type
+viewMovement.guarantor.summary.type.1 = Consignor
+viewMovement.guarantor.summary.type.2 = Transporter
+viewMovement.guarantor.summary.type.3 = Owner of goods
+viewMovement.guarantor.summary.type.4 = Consignee
+viewMovement.guarantor.summary.businessName = Business name
+viewMovement.guarantor.summary.ern = Excise registration number (ERN)
+viewMovement.guarantor.summary.address = Address
+viewMovement.guarantor.summary.vatRegistrationNumber = VAT registration number
+
 # MOV02 - History events
 movementHistoryEvent.IE801.first.label = Movement created
 movementHistoryEvent.IE801.further.label = Update to movement
