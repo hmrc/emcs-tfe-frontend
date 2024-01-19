@@ -32,7 +32,8 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
         ViewAllMovementsFormProvider.searchValue -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
         ViewAllMovementsFormProvider.traderRole -> set(enumerable[MovementFilterDirectionOption]()),
-        ViewAllMovementsFormProvider.undischarged -> set(enumerable[MovementFilterUndischargedOption]())
+        ViewAllMovementsFormProvider.undischarged -> set(enumerable[MovementFilterUndischargedOption]()),
+        ViewAllMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity)
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
     )
 
@@ -53,5 +54,6 @@ object ViewAllMovementsFormProvider {
   // filters
   val traderRole = "traderRole"
   val undischarged = "undischargedMovements"
+  val exciseProductCode = "exciseProductCode"
 
 }

@@ -16,17 +16,21 @@
 
 package controllers
 
+import cats.data.EitherT
 import config.ErrorHandler
 import connectors.emcsTfe.GetMovementListConnector
+import connectors.referenceData.GetExciseProductCodesConnector
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import forms.ViewAllMovementsFormProvider
 import models.MovementListSearchOptions.DEFAULT_MAX_ROWS
 import models.requests.DataRequest
+import models.response.ErrorResponse
 import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels.MovementPaginationHelper
+import viewmodels.helpers.SelectItemHelper
 import views.html.viewAllMovements.ViewAllMovements
 
 import javax.inject.{Inject, Singleton}
@@ -34,7 +38,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
-                                           connector: GetMovementListConnector,
+                                           getMovementListConnector: GetMovementListConnector,
+                                           getExciseProductCodesConnector: GetExciseProductCodesConnector,
                                            view: ViewAllMovements,
                                            errorHandler: ErrorHandler,
                                            val auth: AuthAction,
@@ -62,8 +67,11 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
     }
 
   private def renderView(status: Status, ern: String, searchOptions: MovementListSearchOptions)(implicit request: DataRequest[_]) = {
-    connector.getMovementList(ern, Some(searchOptions)).map {
-      case Right(movementList) =>
+    val result: EitherT[Future, ErrorResponse, Result] = for {
+      movementList <- EitherT(getMovementListConnector.getMovementList(ern, Some(searchOptions)))
+      epcs <- EitherT(getExciseProductCodesConnector.getExciseProductCodes())
+      exciseProductCodeOptions = MovementListSearchOptions.CHOOSE_PRODUCT_CODE +: epcs
+    } yield {
 
         val pageCount = {
           if (movementList.count == 0) {
@@ -84,12 +92,15 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
             movements = movementList.movements,
             sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(searchOptions.sortBy.code)),
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(searchOptions.searchKey.map(_.code)),
+            exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(exciseProductCodeOptions, None, searchOptions.exciseProductCode),
             pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions)
           ))
         }
 
-      case Left(_) =>
-        InternalServerError(errorHandler.internalServerErrorTemplate)
     }
+
+    result.leftMap {
+      _ => InternalServerError(errorHandler.internalServerErrorTemplate)
+    }.merge
   }
 }
