@@ -98,7 +98,7 @@ object MovementListSearchOptions {
 
     val traderRole: Option[MovementListDirectionOption] = {
       (traderRoleOptions.contains(MovementListDirectionOption.GoodsIn), traderRoleOptions.contains(MovementListDirectionOption.GoodsOut)) match {
-        case (true, true) => Some(MovementListDirectionOption.Both)
+        case (true, true) => Some(MovementListDirectionOption.All)
         case (true, _) => Some(MovementListDirectionOption.GoodsIn)
         case (_, true) => Some(MovementListDirectionOption.GoodsOut)
         case _ => None

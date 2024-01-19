@@ -114,10 +114,13 @@
         ))
 
         <div class="govuk-grid-column-one-third govuk-!-padding-0">
-            @* TODO: placeholder for filter component *@
             <aside style="border: 1px solid #b1b4b6;
                 padding: 15px">
                 @h2("Filters", "govuk-heading-m")
+                @govukButton(
+                    ButtonViewModel(Text(messages("viewAllMovements.filters.button")))
+                    .withId("filtersButton")
+                )
                 @govukCheckboxes(
                     CheckboxesViewModel(
                         form = form,

@@ -22,7 +22,7 @@ import mocks.connectors.MockGetMemberStatesConnector
 import models.response.{MemberStatesException, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 class GetMemberStatesServiceSpec extends SpecBase with MockGetMemberStatesConnector with MemberStatesFixtures {
 
