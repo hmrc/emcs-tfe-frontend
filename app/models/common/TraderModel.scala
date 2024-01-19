@@ -20,7 +20,8 @@ import play.api.libs.json.{Json, OFormat}
 
 case class TraderModel(traderExciseNumber: String,
                        traderName: String,
-                       address: AddressModel) {
+                       address: AddressModel,
+                       vatNumber: Option[String]) {
 }
 
 object TraderModel {

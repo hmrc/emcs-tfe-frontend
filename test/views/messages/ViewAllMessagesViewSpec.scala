@@ -24,6 +24,7 @@ import models.requests.DataRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import viewmodels.helpers.messages.ViewAllMessagesTableHelper
 import views.html.components.table
@@ -44,7 +45,7 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
     val actionRow = (i: Int) => s"#main-content > div > div > table > tbody > tr:nth-child($i) > td:nth-child(4) > a"
   }
 
-  implicit val fakeRequest = FakeRequest("GET", "/messages")
+  implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/messages")
 
   implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 

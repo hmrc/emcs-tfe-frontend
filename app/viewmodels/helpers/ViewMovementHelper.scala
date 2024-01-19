@@ -16,8 +16,9 @@
 
 package viewmodels.helpers
 
-import models.common.{AddressModel, RoleType}
+import models.common.GuarantorType._
 import models.common.RoleType.{GBRC, GBWK, XIRC, XIWK}
+import models.common.{AddressModel, RoleType}
 import models.movementScenario.MovementScenario
 import models.movementScenario.MovementScenario._
 import models.requests.DataRequest
@@ -30,7 +31,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 import utils.ExpectedDateOfArrival
 import viewmodels._
-import views.html.components.{list, p}
+import views.html.components.{h2, list, p}
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.Inject
@@ -38,6 +39,7 @@ import javax.inject.Inject
 class ViewMovementHelper @Inject()(
                                     list: list,
                                     p: p,
+                                    h2: h2,
                                     overviewPartial: overview_partial,
                                     viewMovementItemsHelper: ViewMovementItemsHelper,
                                     viewMovementTransportHelper: ViewMovementTransportHelper
@@ -51,7 +53,8 @@ class ViewMovementHelper @Inject()(
       case Movement => constructMovementView(movementResponse)
       case Delivery => constructMovementDelivery(movementResponse)
       case Transport => viewMovementTransportHelper.constructMovementTransport(movementResponse)
-      case Items    => viewMovementItemsHelper.constructMovementItems(movementResponse)
+      case Items => viewMovementItemsHelper.constructMovementItems(movementResponse)
+      case Guarantor => constructMovementGuarantor(movementResponse)
       case _ => Html("")
     }
 
@@ -98,18 +101,18 @@ class ViewMovementHelper @Inject()(
     }
 
     overviewPartial(
-        headingMessageKey = Some("viewMovement.overview.title"),
-        cardTitleMessageKey = "viewMovement.overview.title",
-        summaryListRows = Seq(
-          localReferenceNumber,
-          eadStatus,
-          dateOfDispatch,
-          expectedDate,
-          consignor,
-          itemCount,
-          transportingVehicles
-        )
+      headingMessageKey = Some("viewMovement.overview.title"),
+      cardTitleMessageKey = "viewMovement.overview.title",
+      summaryListRows = Seq(
+        localReferenceNumber,
+        eadStatus,
+        dateOfDispatch,
+        expectedDate,
+        consignor,
+        itemCount,
+        transportingVehicles
       )
+    )
 
   }
 
@@ -132,10 +135,10 @@ class ViewMovementHelper @Inject()(
         p()(Text(movementResponse.eadStatus).asHtml),
         p(classes = "govuk-hint govuk-!-margin-top-0")(Text(eadStatusExplanation).asHtml)
       )
-    )))
+      )))
     val receiptStatus = optReceiptStatusMessage.map(statusMessage => summaryListRowBuilder("viewMovement.movement.summary.receiptStatus", statusMessage))
     val movementType = summaryListRowBuilder("viewMovement.movement.summary.type", movementTypeValue)
-    val movementDirection = summaryListRowBuilder("viewMovement.movement.summary.direction", if(userRole.isConsignor) "viewMovement.movement.summary.direction.out" else "viewMovement.movement.summary.direction.in")
+    val movementDirection = summaryListRowBuilder("viewMovement.movement.summary.direction", if (userRole.isConsignor) "viewMovement.movement.summary.direction.out" else "viewMovement.movement.summary.direction.in")
     //Summary section - end
 
     //Time and data section - start
@@ -151,37 +154,37 @@ class ViewMovementHelper @Inject()(
 
 
     HtmlFormat.fill(
-        Seq(
-          overviewPartial(
-            headingMessageKey = Some("viewMovement.movement.title"),
-            cardTitleMessageKey = "viewMovement.movement.summary",
-            summaryListRows = Seq(
-              Some(localReferenceNumber),
-              eadStatus,
-              receiptStatus,
-              Some(movementType),
-              Some(movementDirection)
-            ).flatten
-          ),
-          overviewPartial(
-            headingMessageKey = None,
-            cardTitleMessageKey = "viewMovement.movement.timeAndDate",
-            summaryListRows = Seq(
-              Some(dateOfDispatch),
-              timeOfDispatch,
-              Some(dateOfArrival)
-            ).flatten
-          ),
-          overviewPartial(
-            headingMessageKey = None,
-            cardTitleMessageKey = "viewMovement.movement.invoice",
-            summaryListRows = Seq(
-              Some(invoiceNumber),
-              invoiceDateOfIssue
-            ).flatten
-          )
+      Seq(
+        overviewPartial(
+          headingMessageKey = Some("viewMovement.movement.title"),
+          cardTitleMessageKey = "viewMovement.movement.summary",
+          summaryListRows = Seq(
+            Some(localReferenceNumber),
+            eadStatus,
+            receiptStatus,
+            Some(movementType),
+            Some(movementDirection)
+          ).flatten
+        ),
+        overviewPartial(
+          headingMessageKey = None,
+          cardTitleMessageKey = "viewMovement.movement.timeAndDate",
+          summaryListRows = Seq(
+            Some(dateOfDispatch),
+            timeOfDispatch,
+            Some(dateOfArrival)
+          ).flatten
+        ),
+        overviewPartial(
+          headingMessageKey = None,
+          cardTitleMessageKey = "viewMovement.movement.invoice",
+          summaryListRows = Seq(
+            Some(invoiceNumber),
+            invoiceDateOfIssue
+          ).flatten
         )
       )
+    )
   }
 
   private[helpers] def getDateOfArrivalRow(movementResponse: GetMovementResponse)(implicit messages: Messages) = {
@@ -217,38 +220,38 @@ class ViewMovementHelper @Inject()(
     }
   }
 
-private[helpers] def constructMovementDelivery(movementResponse: GetMovementResponse)(implicit messages: Messages): Html = {
-  val consignorSummaryCards = Seq(
-    summaryListRowBuilder("viewMovement.delivery.consignor.name", movementResponse.consignorTrader.traderName),
-    summaryListRowBuilder("viewMovement.delivery.consignor.ern", movementResponse.consignorTrader.traderExciseNumber),
-    summaryListRowBuilder("viewMovement.delivery.consignor.address", renderAddress(movementResponse.consignorTrader.address))
-  )
-
-  val optPlaceOfDispatchSummaryCards = movementResponse.placeOfDispatchTrader.map { placeOfDispatch =>
-    Seq(
-      summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.name", placeOfDispatch.traderName),
-      summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.ern", placeOfDispatch.traderExciseNumber),
-      summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.address", renderAddress(placeOfDispatch.address))
+  private[helpers] def constructMovementDelivery(movementResponse: GetMovementResponse)(implicit messages: Messages): Html = {
+    val consignorSummaryCards = Seq(
+      summaryListRowBuilder("viewMovement.delivery.consignor.name", movementResponse.consignorTrader.traderName),
+      summaryListRowBuilder("viewMovement.delivery.consignor.ern", movementResponse.consignorTrader.traderExciseNumber),
+      summaryListRowBuilder("viewMovement.delivery.consignor.address", renderAddress(movementResponse.consignorTrader.address))
     )
-  }
 
-  val optConsigneeSummaryCards = movementResponse.consigneeTrader.map { consigneeTrader =>
-    Seq(
-      summaryListRowBuilder("viewMovement.delivery.consignee.name", consigneeTrader.traderName),
-      summaryListRowBuilder("viewMovement.delivery.consignee.ern", consigneeTrader.traderExciseNumber),
-      summaryListRowBuilder("viewMovement.delivery.consignee.address", renderAddress(consigneeTrader.address))
-    )
-  }
+    val optPlaceOfDispatchSummaryCards = movementResponse.placeOfDispatchTrader.map { placeOfDispatch =>
+      Seq(
+        summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.name", placeOfDispatch.traderName),
+        summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.ern", placeOfDispatch.traderExciseNumber),
+        summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.address", renderAddress(placeOfDispatch.address))
+      )
+    }
 
-  val optPlaceOfDestinationCards = movementResponse.deliveryPlaceTrader.map { deliverPlaceTrader =>
-    Seq(
-      summaryListRowBuilder("viewMovement.delivery.placeOfDestination.name", deliverPlaceTrader.traderName),
-      summaryListRowBuilder("viewMovement.delivery.placeOfDestination.ern", deliverPlaceTrader.traderExciseNumber),
-      summaryListRowBuilder("viewMovement.delivery.placeOfDestination.address", renderAddress(deliverPlaceTrader.address))
-    )
-  }
+    val optConsigneeSummaryCards = movementResponse.consigneeTrader.map { consigneeTrader =>
+      Seq(
+        summaryListRowBuilder("viewMovement.delivery.consignee.name", consigneeTrader.traderName),
+        summaryListRowBuilder("viewMovement.delivery.consignee.ern", consigneeTrader.traderExciseNumber),
+        summaryListRowBuilder("viewMovement.delivery.consignee.address", renderAddress(consigneeTrader.address))
+      )
+    }
 
-  HtmlFormat.fill(Seq(
+    val optPlaceOfDestinationCards = movementResponse.deliveryPlaceTrader.map { deliverPlaceTrader =>
+      Seq(
+        summaryListRowBuilder("viewMovement.delivery.placeOfDestination.name", deliverPlaceTrader.traderName),
+        summaryListRowBuilder("viewMovement.delivery.placeOfDestination.ern", deliverPlaceTrader.traderExciseNumber),
+        summaryListRowBuilder("viewMovement.delivery.placeOfDestination.address", renderAddress(deliverPlaceTrader.address))
+      )
+    }
+
+    HtmlFormat.fill(Seq(
       overviewPartial(
         headingMessageKey = Some("viewMovement.delivery.title"),
         cardTitleMessageKey = "viewMovement.delivery.consignor",
@@ -276,23 +279,58 @@ private[helpers] def constructMovementDelivery(movementResponse: GetMovementResp
         )
       }.getOrElse(Html(""))
     ))
-}
-
-private[helpers] def renderAddress(address: AddressModel): Html = {
-  val firstLineOfAddress = (address.streetNumber, address.street) match {
-    case (Some(propertyNumber), Some(street)) => Html(s"$propertyNumber $street <br>")
-    case (Some(number), None) => Html(s"$number <br>")
-    case (None, Some(street)) => Html(s"$street <br>")
-    case _ => Html("")
   }
-  val city = address.city.fold(Html(""))(city => Html(s"$city <br>"))
-  val postCode = address.postcode.fold(Html(""))(postcode => Html(s"$postcode"))
+
+  private[helpers] def constructMovementGuarantor(movementResponse: GetMovementResponse)(implicit messages: Messages): Html = {
+    val guarantor = movementResponse.movementGuarantee
+    lazy val optFirstGuarantor = guarantor.guarantorTrader.flatMap(_.headOption)
+    lazy val guarantorArranger = summaryListRowBuilder("viewMovement.guarantor.summary.type", messages(s"viewMovement.guarantor.summary.type.${guarantor.guarantorTypeCode}"))
+    lazy val guarantorBusinessName = optFirstGuarantor.map(firstGuarantor => summaryListRowBuilder("viewMovement.guarantor.summary.businessName", firstGuarantor.traderName))
+    lazy val guarantorErn = optFirstGuarantor.map(firstGuarantor => summaryListRowBuilder("viewMovement.guarantor.summary.ern", firstGuarantor.traderExciseNumber))
+    lazy val guarantorAddress = optFirstGuarantor.map(firstGuarantor => summaryListRowBuilder("viewMovement.guarantor.summary.address", renderAddress(firstGuarantor.address)))
+    lazy val guarantorVatNumber = optFirstGuarantor.flatMap(_.vatNumber.map(firstGuarantorVatNumber => summaryListRowBuilder("viewMovement.guarantor.summary.vatRegistrationNumber", firstGuarantorVatNumber)))
+
+    guarantor.guarantorTypeCode match {
+      // Guarantor Type = 0 or 5 then no guarantor needed
+      case GuarantorNotRequired | NoGuarantor => HtmlFormat.fill(Seq(
+        h2(messages("viewMovement.guarantor.title")),
+        p()(Html(messages("viewMovement.guarantor.summary.noGuarantor")))
+      ))
+      // Guarantor Type is single digit (not 0 or 5), then only one guarantor
+      case Consignor | Transporter | Owner | Consignee => HtmlFormat.fill(Seq(
+        overviewPartial(
+          headingMessageKey = Some("viewMovement.guarantor.title"),
+          cardTitleMessageKey = "viewMovement.guarantor.summary",
+          summaryListRows = Seq(
+            Some(guarantorArranger),
+            guarantorBusinessName,
+            guarantorErn,
+            guarantorAddress,
+            guarantorVatNumber
+          ).flatten
+        )
+      ))
+      // Guarantor Type is > 1 digit, then there is 2 guarantors
+      //TODO: alignment needed to show 2 guarantors when the guarantorType is > 1 digit
+      case _ => HtmlFormat.fill(Seq())
+    }
+  }
+
+  private[helpers] def renderAddress(address: AddressModel): Html = {
+    val firstLineOfAddress = (address.streetNumber, address.street) match {
+      case (Some(propertyNumber), Some(street)) => Html(s"$propertyNumber $street <br>")
+      case (Some(number), None) => Html(s"$number <br>")
+      case (None, Some(street)) => Html(s"$street <br>")
+      case _ => Html("")
+    }
+    val city = address.city.fold(Html(""))(city => Html(s"$city <br>"))
+    val postCode = address.postcode.fold(Html(""))(postcode => Html(s"$postcode"))
 
     HtmlFormat.fill(Seq(
       firstLineOfAddress,
       city,
       postCode
     ))
-}
+  }
 
 }

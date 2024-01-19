@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package fixtures
+package models.common
 
-import models.common.TraderModel
+import play.api.libs.json.{Json, OFormat}
 
-trait TraderModelFixtures extends AddressModelFixtures {
+case class MovementGuaranteeModel(
+                                   guarantorTypeCode: GuarantorType,
+                                   guarantorTrader: Option[Seq[TraderModel]]
+                                 )
 
-  val traderExciseNumber = "GB0000000012346"
-
-  val maxTraderModel: TraderModel = TraderModel(
-    traderExciseNumber = traderExciseNumber,
-    traderName = "name",
-    address = maxAddressModel,
-    vatNumber = Some("GB123456789")
-  )
-
-
+object MovementGuaranteeModel {
+  implicit val fmt: OFormat[MovementGuaranteeModel] = Json.format
 }

@@ -17,6 +17,7 @@
 package fixtures
 
 import models.common.AcceptMovement.Unsatisfactory
+import models.common.GuarantorType.Consignee
 import models.common.OriginType.TaxWarehouse
 import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Shortage}
 import models.common._
@@ -52,7 +53,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      )
+      ),
+      vatNumber = Some("GB123456789")
     )),
     deliveryPlaceTrader = Some(TraderModel(
       traderExciseNumber = "GBRC345GTR145",
@@ -62,7 +64,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      )
+      ),
+      vatNumber = Some("GB123456789")
     )),
     destinationOffice = "XI004098",
     dateOfArrival = LocalDate.parse("2008-12-08"),
@@ -99,7 +102,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      )
+      ),
+      vatNumber = Some("GB123456789")
     ),
     deliveryPlaceTrader = Some(TraderModel(
       traderExciseNumber = "GBRC345GTR145",
@@ -109,7 +113,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      )
+      ),
+      vatNumber = Some("GB123456789")
     )),
     placeOfDispatchTrader = Some(TraderModel(
       traderExciseNumber = "GBRC345GTR145",
@@ -119,7 +124,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      )
+      ),
+      vatNumber = Some("GB123456789")
     )),
     consigneeTrader = Some(TraderModel(
       traderExciseNumber = "GB12345GTR144",
@@ -129,7 +135,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      )
+      ),
+      vatNumber = Some("GB123456789")
     )),
     deliveryPlaceCustomsOfficeReferenceNumber = Some("FR000003"),
     dateOfDispatch = LocalDate.parse("2008-11-20"),
@@ -175,6 +182,20 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     transportMode = TransportModeModel(
       transportModeCode = TransportMode.AirTransport,
       complementaryInformation = None
+    ),
+    movementGuarantee = MovementGuaranteeModel(
+      guarantorTypeCode = Consignee,
+      guarantorTrader = Some(Seq(TraderModel(
+        traderExciseNumber = "GB12345GTR144",
+        traderName = "Current 801 Guarantor",
+        address = AddressModel(
+          streetNumber = None,
+          street = Some("Main101"),
+          postcode = Some("ZZ78"),
+          city = Some("Zeebrugge")
+        ),
+        vatNumber = Some("GB123456789")
+      )))
     )
   )
 
@@ -189,7 +210,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "street" -> "Main101",
         "postcode" -> "ZZ78",
         "city" -> "Zeebrugge"
-      )
+      ),
+      "vatNumber" -> "GB123456789"
     ),
     "deliveryPlaceTrader" -> Json.obj(
       "traderExciseNumber" -> "GBRC345GTR145",
@@ -198,7 +220,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "street" -> "Main101",
         "postcode" -> "ZZ78",
         "city" -> "Zeebrugge"
-      )
+      ),
+      "vatNumber" -> "GB123456789"
     ),
     "destinationOffice" -> "XI004098",
     "dateOfArrival" -> "2008-12-08",
@@ -253,7 +276,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "street" -> "Main101",
         "postcode" -> "ZZ78",
         "city" -> "Zeebrugge"
-      )
+      ),
+      "vatNumber" -> "GB123456789"
     ),
     "consigneeTrader" -> Json.obj(
       "traderExciseNumber" -> "GB12345GTR144",
@@ -262,7 +286,21 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "street" -> "Main101",
         "postcode" -> "ZZ78",
         "city" -> "Zeebrugge"
-      )
+      ),
+      "vatNumber" -> "GB123456789"
+    ),
+    "movementGuarantee" -> Json.obj(
+      "guarantorTypeCode" -> "4",
+      "guarantorTrader" -> Json.arr(Json.obj(
+        "traderExciseNumber" -> "GB12345GTR144",
+        "traderName" -> "Current 801 Guarantor",
+        "address" -> Json.obj(
+          "street" -> "Main101",
+          "postcode" -> "ZZ78",
+          "city" -> "Zeebrugge"
+        ),
+        "vatNumber" -> "GB123456789"
+      ))
     ),
     "placeOfDispatchTrader" -> Json.obj(
       "traderExciseNumber" -> "GBRC345GTR145",
@@ -271,16 +309,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "street" -> "Main101",
         "postcode" -> "ZZ78",
         "city" -> "Zeebrugge"
-      )
-    ),
-    "deliveryPlaceTrader" -> Json.obj(
-      "traderExciseNumber" -> "GB12345GTR144",
-      "traderName" -> "Current 801 Consignee",
-      "address" -> Json.obj(
-        "street" -> "Main101",
-        "postcode" -> "ZZ78",
-        "city" -> "Zeebrugge"
-      )
+      ),
+      "vatNumber" -> "GB123456789"
     ),
     "deliveryPlaceTrader" -> Json.obj(
       "traderExciseNumber" -> "GBRC345GTR145",
@@ -289,7 +319,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "street" -> "Main101",
         "postcode" -> "ZZ78",
         "city" -> "Zeebrugge"
-      )
+      ),
+      "vatNumber" -> "GB123456789"
     ),
     "placeOfDispatchTrader" -> Json.obj(
       "traderExciseNumber" -> "GBRC345GTR145",
@@ -298,7 +329,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "street" -> "Main101",
         "postcode" -> "ZZ78",
         "city" -> "Zeebrugge"
-      )
+      ),
+      "vatNumber" -> "GB123456789"
     ),
     "deliveryPlaceCustomsOfficeReferenceNumber" -> "FR000003",
     "dateOfDispatch" -> "2008-11-20",

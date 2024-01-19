@@ -19,8 +19,9 @@ package viewmodels.helpers
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import models.common.DestinationType._
+import models.common.GuarantorType._
 import models.common.RoleType.GBWK
-import models.common.{AddressModel, TraderModel}
+import models.common.{AddressModel, GuarantorType, MovementGuaranteeModel, TraderModel}
 import models.movementScenario.MovementScenario.EuTaxWarehouse
 import models.requests.DataRequest
 import models.response.InvalidUserTypeException
@@ -41,11 +42,15 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
   object Selectors extends BaseSelectors {
     val cardTitle = ".govuk-summary-card__title"
+
     def cardRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
+
     def cardRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
 
     def cardAtIndexTitle(i: Int) = s"div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
+
     def cardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
+
     def cardAtIndexRowValue(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dd"
   }
 
@@ -150,7 +155,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         s"when the eAD status is ${statusToExplanation._1} - show the correct status and explanation" in {
           val result = helper.constructMovementView(getMovementResponseModel.copy(eadStatus = statusToExplanation._1))
           val card = Jsoup.parse(result.toString())
-          if(statusToExplanation._1 == "None") {
+          if (statusToExplanation._1 == "None") {
             card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Receipt status"
           } else {
             card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "eAD status"
@@ -287,25 +292,102 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
     }
   }
 
-  "summaryListRowBuilder" should {
-  "construct a key value summary list row (when value is a string)" in {
-    val result = helper.summaryListRowBuilder("random.key", "random.value")
-    result mustBe SummaryListRow(
-      key = Key(Text(value = "random.key")),
-      value = Value(Text(value = "random.value")),
-      classes = "govuk-summary-list__row"
-    )
+  ".constructMovementGuarantor" should {
+
+    Seq(GuarantorNotRequired, NoGuarantor).foreach { guarantorType =>
+      s"render no summary rows when the guarantor type is $guarantorType" in {
+        val result = helper.constructMovementGuarantor(getMovementResponseModel.copy(movementGuarantee = MovementGuaranteeModel(guarantorType, None)))
+        val body = Jsoup.parse(result.toString())
+        body.select("h2").text() mustBe "Guarantor details"
+        body.select("p").text() mustBe "No guarantor required for this movement."
+      }
+    }
+
+    Seq(
+      Consignor -> "Consignor of goods",
+      Transporter -> "Transporter of goods",
+      Owner -> "Owner of goods",
+      Consignee -> "Consignee of goods",
+    ).foreach { guarantorType =>
+      s"render 1 summary card when the guarantor type is ${guarantorType._1}" in {
+        val result = helper.constructMovementGuarantor(getMovementResponseModel.copy(movementGuarantee = MovementGuaranteeModel(guarantorType._1, Some(Seq(
+          TraderModel(
+            traderExciseNumber = "GBRC345GTR145",
+            traderName = "Current 801 Consignor",
+            address = AddressModel(
+              streetNumber = None,
+              street = Some("Main101"),
+              postcode = Some("ZZ78"),
+              city = Some("Zeebrugge")
+            ),
+            vatNumber = Some("GB123456789")
+          )
+        )))))
+        val card = Jsoup.parse(result.toString())
+        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Summary"
+        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Type"
+        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe guarantorType._2
+        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Business name"
+        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "Current 801 Consignor"
+        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "GBRC345GTR145"
+        card.select(Selectors.cardAtIndexRowKey(1, 4)).text() mustBe "Address"
+        card.select(Selectors.cardAtIndexRowValue(1, 4)).text() mustBe "Main101 Zeebrugge ZZ78"
+        card.select(Selectors.cardAtIndexRowKey(1, 5)).text() mustBe "VAT registration number"
+        card.select(Selectors.cardAtIndexRowValue(1, 5)).text() mustBe "GB123456789"
+      }
+    }
+
+    GuarantorType.values.diff(Seq(GuarantorNotRequired, NoGuarantor, Consignor, Transporter, Owner, Consignee)).foreach { guarantorType =>
+      s"render 2 summary cards when the guarantor type is $guarantorType" in {
+        //TODO: add this test when the ticket to handle multiple guarantors is being played
+        val result = helper.constructMovementGuarantor(getMovementResponseModel.copy(movementGuarantee = MovementGuaranteeModel(guarantorType, Some(Seq(
+          TraderModel(
+            traderExciseNumber = "GBRC345GTR145",
+            traderName = "Current 801 Consignor 1",
+            address = AddressModel(
+              streetNumber = None,
+              street = Some("Main101"),
+              postcode = Some("ZZ78"),
+              city = Some("Zeebrugge")
+            ),
+            vatNumber = Some("GB123456789")
+          ),
+          TraderModel(
+            traderExciseNumber = "GBRC345GTR146",
+            traderName = "Current 801 Consignor 2",
+            address = AddressModel(
+              streetNumber = None,
+              street = Some("Main102"),
+              postcode = Some("ZZ79"),
+              city = Some("Zeebrugge")
+            ),
+            vatNumber = Some("GB123456790")
+          )
+        )))))
+      }
+    }
   }
 
-  "construct a key value summary list row (when value is HTML)" in {
-    val result = helper.summaryListRowBuilder("random.key", Html("some html value"))
-    result mustBe SummaryListRow(
-      key = Key(Text(value = "random.key")),
-      value = Value(HtmlContent(Html("some html value"))),
-      classes = "govuk-summary-list__row"
-    )
+  "summaryListRowBuilder" should {
+    "construct a key value summary list row (when value is a string)" in {
+      val result = helper.summaryListRowBuilder("random.key", "random.value")
+      result mustBe SummaryListRow(
+        key = Key(Text(value = "random.key")),
+        value = Value(Text(value = "random.value")),
+        classes = "govuk-summary-list__row"
+      )
+    }
+
+    "construct a key value summary list row (when value is HTML)" in {
+      val result = helper.summaryListRowBuilder("random.key", Html("some html value"))
+      result mustBe SummaryListRow(
+        key = Key(Text(value = "random.key")),
+        value = Value(HtmlContent(Html("some html value"))),
+        classes = "govuk-summary-list__row"
+      )
+    }
   }
-}
 
   ".renderAddress" should {
 
@@ -372,7 +454,8 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
               street = Some("Main101"),
               postcode = Some("ZZ78"),
               city = Some("Zeebrugge")
-            )
+            ),
+            vatNumber = Some("GB123456789")
           ))
         ))
 
@@ -391,7 +474,8 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
               street = Some("Main101"),
               postcode = Some("ZZ78"),
               city = Some("Zeebrugge")
-            )
+            ),
+            vatNumber = Some("GB123456789")
           ))
         ))
 
@@ -420,7 +504,8 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              )
+              ),
+              vatNumber = Some("GB123456789")
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
@@ -451,7 +536,8 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              )
+              ),
+              vatNumber = Some("GB123456789")
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
