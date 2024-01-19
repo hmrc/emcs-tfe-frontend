@@ -56,6 +56,37 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     val searchButton = "#searchButton"
 
     def hiddenInputSearchSelectOption(value: String) = s"#searchKey > option[value=$value]"
+
+    private val filtersSection = "aside"
+    val filtersHeading: String = s"$filtersSection h2"
+    val filtersButton: String = s"$filtersSection button"
+    val filtersDirection: String = s"$filtersSection fieldset:nth-of-type(1) legend"
+    val filtersDirectionOption1: String = s"$filtersSection fieldset:nth-of-type(1) .govuk-checkboxes__item:nth-of-type(1) label"
+    val filtersDirectionOption2: String = s"$filtersSection fieldset:nth-of-type(1) .govuk-checkboxes__item:nth-of-type(2) label"
+    val filtersUndischarged: String = s"$filtersSection fieldset:nth-of-type(2) legend"
+    val filtersUndischargedOption1: String = s"$filtersSection fieldset:nth-of-type(2) .govuk-checkboxes__item:nth-of-type(1) label"
+    val filtersStatus: String = s"$filtersSection fieldset:nth-of-type(3) legend"
+    val filtersStatusChoose: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(1)"
+    val filtersStatusActive: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(2)"
+    val filtersStatusCancelled: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(3)"
+    val filtersStatusDeemedExported: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(4)"
+    val filtersStatusDelivered: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(5)"
+    val filtersStatusDiverted: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(6)"
+    val filtersStatusExporting: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(7)"
+    val filtersStatusManuallyClosed: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(8)"
+    val filtersStatusPartiallyRefused: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(9)"
+    val filtersStatusRefused: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(10)"
+    val filtersStatusReplaced: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(11)"
+    val filtersStatusRejected: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(12)"
+    val filtersStatusStopped: String = s"$filtersSection fieldset:nth-of-type(3) ul li:nth-of-type(13)"
+    val filtersEpc: String = s"$filtersSection fieldset:nth-of-type(4) legend"
+    val filtersEpcChoose: String = s"$filtersSection fieldset:nth-of-type(4) ul li:nth-of-type(1)"
+    val filtersCountry: String = s"$filtersSection fieldset:nth-of-type(5) legend"
+    val filtersCountryChoose: String = s"$filtersSection fieldset:nth-of-type(5) ul li:nth-of-type(1)"
+    val filtersDispatchedFrom: String = s"$filtersSection fieldset:nth-of-type(6) legend"
+    val filtersDispatchedTo: String = s"$filtersSection fieldset:nth-of-type(7) legend"
+    val filtersReceiptedFrom: String = s"$filtersSection fieldset:nth-of-type(8) legend"
+    val filtersReceiptedTo: String = s"$filtersSection fieldset:nth-of-type(9) legend"
   }
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/movements")
@@ -90,6 +121,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
       behave like pageWithExpectedElementsAndMessages(Seq(
         Selectors.title -> English.title,
         Selectors.h1 -> English.heading,
+
         Selectors.searchHeading -> English.searchHeading,
         Selectors.searchText -> English.searchText,
         Selectors.hiddenSearchBoxLabel -> English.searchInputHiddenLabel,
@@ -99,6 +131,37 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.hiddenInputSearchSelectOption("otherTraderId") -> English.searchSelectERN,
         Selectors.hiddenInputSearchSelectOption("transporterTraderName") -> English.searchSelectTransporter,
         Selectors.searchButton -> English.searchButton,
+
+        Selectors.filtersHeading -> English.filtersHeading,
+        Selectors.filtersButton -> English.filtersButton,
+        Selectors.filtersDirection -> English.filtersDirection,
+        Selectors.filtersDirectionOption1 -> English.filtersDirectionOption1,
+        Selectors.filtersDirectionOption2 -> English.filtersDirectionOption2,
+        Selectors.filtersUndischarged -> English.filtersUndischarged,
+        Selectors.filtersUndischargedOption1 -> English.filtersUndischargedOption1,
+        Selectors.filtersStatus -> English.filtersStatus,
+        Selectors.filtersStatusChoose -> English.filtersStatusChoose,
+        Selectors.filtersStatusActive -> English.filtersStatusActive,
+        Selectors.filtersStatusCancelled -> English.filtersStatusCancelled,
+        Selectors.filtersStatusDeemedExported -> English.filtersStatusDeemedExported,
+        Selectors.filtersStatusDelivered -> English.filtersStatusDelivered,
+        Selectors.filtersStatusDiverted -> English.filtersStatusDiverted,
+        Selectors.filtersStatusExporting -> English.filtersStatusExporting,
+        Selectors.filtersStatusManuallyClosed -> English.filtersStatusManuallyClosed,
+        Selectors.filtersStatusPartiallyRefused -> English.filtersStatusPartiallyRefused,
+        Selectors.filtersStatusRefused -> English.filtersStatusRefused,
+        Selectors.filtersStatusReplaced -> English.filtersStatusReplaced,
+        Selectors.filtersStatusRejected -> English.filtersStatusRejected,
+        Selectors.filtersStatusStopped -> English.filtersStatusStopped,
+        Selectors.filtersEpc -> English.filtersEpc,
+        Selectors.filtersEpcChoose -> English.filtersEpcChoose,
+        Selectors.filtersCountry -> English.filtersCountry,
+        Selectors.filtersCountryChoose -> English.filtersCountryChoose,
+        Selectors.filtersDispatchedFrom -> English.filtersDispatchedFrom,
+        Selectors.filtersDispatchedTo -> English.filtersDispatchedTo,
+        Selectors.filtersReceiptedFrom -> English.filtersReceiptedFrom,
+        Selectors.filtersReceiptedTo -> English.filtersReceiptedTo,
+
         Selectors.label("sortBy") -> English.sortByLabel,
         Selectors.sortBySelectOption(1) -> English.sortArcAscending,
         Selectors.sortBySelectOption(2) -> English.sortArcDescending,

@@ -23,6 +23,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import viewmodels.govuk.checkbox._
 
+// TODO: ChRIS requires sentence-case, not lowercase (EIS requires lowercase)
 sealed trait MovementListDirectionOption extends SelectOptionModel {
   override val code: String = this.toString
 }
@@ -34,11 +35,11 @@ object MovementListDirectionOption extends Enumerable.Implicits {
   case object GoodsOut extends WithName("consignor") with MovementListDirectionOption {
     override val displayName = "viewAllMovements.filters.consignor"
   }
-  case object Both extends WithName("both") with MovementListDirectionOption {
-    override val displayName = "viewAllMovements.filters.both"
+  case object All extends WithName("all") with MovementListDirectionOption {
+    override val displayName = "viewAllMovements.filters.all"
   }
 
-  val values: Seq[MovementListDirectionOption] = Seq(GoodsIn, GoodsOut, Both)
+  val values: Seq[MovementListDirectionOption] = Seq(GoodsIn, GoodsOut, All)
   private val displayValues: Seq[MovementListDirectionOption] = Seq(GoodsIn, GoodsOut)
 
   def checkboxItems(implicit messages: Messages): Seq[CheckboxItem] =
@@ -55,14 +56,14 @@ object MovementListDirectionOption extends Enumerable.Implicits {
   def apply(code: String): MovementListDirectionOption = code match {
     case GoodsIn.code => GoodsIn
     case GoodsOut.code => GoodsOut
-    case Both.code => Both
+    case All.code => All
     case invalid => throw new IllegalArgumentException(s"Invalid argument of '$invalid' received which can not be mapped to a MovementListDirectionOptions")
   }
 
   def toOptions(option: MovementListDirectionOption): Set[MovementListDirectionOption] = option match {
     case GoodsIn => Set(GoodsIn)
     case GoodsOut => Set(GoodsOut)
-    case Both => Set(GoodsOut, GoodsIn)
+    case All => Set(GoodsOut, GoodsIn)
   }
 
   implicit val enumerable: Enumerable[MovementListDirectionOption] =
