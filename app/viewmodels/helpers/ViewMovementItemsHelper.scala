@@ -27,8 +27,9 @@ import utils.ExpectedDateOfArrival
 import viewmodels.govuk.TagFluency
 import views.html.components.{h2, link, list}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class ViewMovementItemsHelper @Inject()(list: list,
                                         link: link,
                                         h2: h2,

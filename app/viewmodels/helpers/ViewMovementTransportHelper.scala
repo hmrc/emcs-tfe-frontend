@@ -17,19 +17,20 @@
 package viewmodels.helpers
 
 import models.TransportUnitType
-import models.common.{AddressModel, Enumerable}
+import models.common.Enumerable
 import models.response.emcsTfe.GetMovementResponse
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import utils.ExpectedDateOfArrival
 import viewmodels.govuk.TagFluency
+import viewmodels.helpers.SummaryListHelper._
 import views.html.components.{h2, summaryCard}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class ViewMovementTransportHelper @Inject()(h2: h2,
                                             summaryCard: summaryCard
                                            ) extends ExpectedDateOfArrival with TagFluency {
@@ -111,32 +112,4 @@ class ViewMovementTransportHelper @Inject()(h2: h2,
     )
   }
 
-  private def summaryListRowBuilder(key: String, value: String)(implicit messages: Messages) = SummaryListRow(
-    key = Key(Text(value = messages(key))),
-    value = Value(Text(value = messages(value))),
-    classes = "govuk-summary-list__row"
-  )
-
-  private def summaryListRowBuilder(key: String, value: Html)(implicit messages: Messages) = SummaryListRow(
-    key = Key(Text(value = messages(key))),
-    value = Value(HtmlContent(value)),
-    classes = "govuk-summary-list__row"
-  )
-
-  private def renderAddress(address: AddressModel): Html = {
-    val firstLineOfAddress = (address.streetNumber, address.street) match {
-      case (Some(propertyNumber), Some(street)) => Html(s"$propertyNumber $street <br>")
-      case (Some(number), None) => Html(s"$number <br>")
-      case (None, Some(street)) => Html(s"$street <br>")
-      case _ => Html("")
-    }
-    val city = address.city.fold(Html(""))(city => Html(s"$city <br>"))
-    val postCode = address.postcode.fold(Html(""))(postcode => Html(s"$postcode"))
-
-    HtmlFormat.fill(Seq(
-      firstLineOfAddress,
-      city,
-      postCode
-    ))
-  }
 }

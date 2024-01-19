@@ -16,9 +16,8 @@
 
 package viewmodels.helpers
 
-import models.common.GuarantorType._
+import models.common.RoleType
 import models.common.RoleType.{GBRC, GBWK, XIRC, XIWK}
-import models.common.{AddressModel, RoleType}
 import models.movementScenario.MovementScenario
 import models.movementScenario.MovementScenario._
 import models.requests.DataRequest
@@ -26,95 +25,39 @@ import models.response.emcsTfe.GetMovementResponse
 import models.response.{InvalidUserTypeException, MissingDispatchPlaceTraderException}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.govukfrontend.views.Aliases.{HtmlContent, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 import utils.ExpectedDateOfArrival
 import viewmodels._
-import views.html.components.{h2, list, p}
+import viewmodels.helpers.SummaryListHelper._
+import views.html.components.{list, p}
 import views.html.viewMovement.partials.overview_partial
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class ViewMovementHelper @Inject()(
                                     list: list,
                                     p: p,
-                                    h2: h2,
                                     overviewPartial: overview_partial,
                                     viewMovementItemsHelper: ViewMovementItemsHelper,
-                                    viewMovementTransportHelper: ViewMovementTransportHelper
+                                    viewMovementTransportHelper: ViewMovementTransportHelper,
+                                    viewMovementGuarantorHelper: ViewMovementGuarantorHelper,
+                                    viewMovementOverviewHelper: ViewMovementOverviewHelper,
+                                    viewMovementDeliveryHelper: ViewMovementDeliveryHelper
                                   ) extends ExpectedDateOfArrival {
 
   def movementCard(subNavigationTab: SubNavigationTab, movementResponse: GetMovementResponse)
                   (implicit request: DataRequest[_], messages: Messages): Html =
 
     subNavigationTab match {
-      case Overview => constructMovementOverview(movementResponse)
+      case Overview => viewMovementOverviewHelper.constructMovementOverview(movementResponse)
       case Movement => constructMovementView(movementResponse)
-      case Delivery => constructMovementDelivery(movementResponse)
+      case Delivery => viewMovementDeliveryHelper.constructMovementDelivery(movementResponse)
       case Transport => viewMovementTransportHelper.constructMovementTransport(movementResponse)
       case Items => viewMovementItemsHelper.constructMovementItems(movementResponse)
-      case Guarantor => constructMovementGuarantor(movementResponse)
+      case Guarantor => viewMovementGuarantorHelper.constructMovementGuarantor(movementResponse)
       case _ => Html("")
     }
-
-  private[helpers] def summaryListRowBuilder(key: String, value: String)(implicit messages: Messages) = SummaryListRow(
-    key = Key(Text(value = messages(key))),
-    value = Value(Text(value = messages(value))),
-    classes = "govuk-summary-list__row"
-  )
-
-  private[helpers] def summaryListRowBuilder(key: String, value: Html)(implicit messages: Messages) = SummaryListRow(
-    key = Key(Text(value = messages(key))),
-    value = Value(HtmlContent(value)),
-    classes = "govuk-summary-list__row"
-  )
-
-  private[helpers] def constructMovementOverview(movementResponse: GetMovementResponse)
-                                                (implicit messages: Messages): Html = {
-
-    val localReferenceNumber = summaryListRowBuilder("viewMovement.overview.lrn", movementResponse.localReferenceNumber)
-
-    val eadStatus = summaryListRowBuilder("viewMovement.overview.eadStatus", movementResponse.eadStatus)
-
-    val dateOfDispatch = summaryListRowBuilder("viewMovement.overview.dateOfDispatch", movementResponse.formattedDateOfDispatch)
-
-    val expectedDate = summaryListRowBuilder("viewMovement.overview.journeyTime", movementResponse.formattedExpectedDateOfArrival)
-
-    val consignor = summaryListRowBuilder("viewMovement.overview.consignor", movementResponse.consignorTrader.traderExciseNumber)
-
-    val itemCount = summaryListRowBuilder("viewMovement.overview.numberOfItems", movementResponse.numberOfItems.toString)
-
-    val transportingVehicles = {
-      SummaryListRow(
-        Key(Text(messages("viewMovement.overview.transporting"))),
-        Value(
-          HtmlContent(
-            list(
-              movementResponse.transportDetails
-                .filter(_.identityOfTransportUnits.isDefined)
-                .map(transport => Html(transport.identityOfTransportUnits))
-            )
-          )
-        )
-      )
-    }
-
-    overviewPartial(
-      headingMessageKey = Some("viewMovement.overview.title"),
-      cardTitleMessageKey = "viewMovement.overview.title",
-      summaryListRows = Seq(
-        localReferenceNumber,
-        eadStatus,
-        dateOfDispatch,
-        expectedDate,
-        consignor,
-        itemCount,
-        transportingVehicles
-      )
-    )
-
-  }
 
   private[helpers] def constructMovementView(movementResponse: GetMovementResponse)
                                             (implicit request: DataRequest[_], messages: Messages): Html = {
@@ -218,119 +161,6 @@ class ViewMovementHelper @Inject()(
         logger.error(s"[constructMovementView] invalid UserType and movement scenario combination for MOV journey: $userType | $destinationType")
         throw InvalidUserTypeException(s"[ViewMovementHelper][constructMovementView][getMovementTypeForMovementView] invalid UserType and movement scenario combination for MOV journey: $userType | $destinationType")
     }
-  }
-
-  private[helpers] def constructMovementDelivery(movementResponse: GetMovementResponse)(implicit messages: Messages): Html = {
-    val consignorSummaryCards = Seq(
-      summaryListRowBuilder("viewMovement.delivery.consignor.name", movementResponse.consignorTrader.traderName),
-      summaryListRowBuilder("viewMovement.delivery.consignor.ern", movementResponse.consignorTrader.traderExciseNumber),
-      summaryListRowBuilder("viewMovement.delivery.consignor.address", renderAddress(movementResponse.consignorTrader.address))
-    )
-
-    val optPlaceOfDispatchSummaryCards = movementResponse.placeOfDispatchTrader.map { placeOfDispatch =>
-      Seq(
-        summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.name", placeOfDispatch.traderName),
-        summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.ern", placeOfDispatch.traderExciseNumber),
-        summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.address", renderAddress(placeOfDispatch.address))
-      )
-    }
-
-    val optConsigneeSummaryCards = movementResponse.consigneeTrader.map { consigneeTrader =>
-      Seq(
-        summaryListRowBuilder("viewMovement.delivery.consignee.name", consigneeTrader.traderName),
-        summaryListRowBuilder("viewMovement.delivery.consignee.ern", consigneeTrader.traderExciseNumber),
-        summaryListRowBuilder("viewMovement.delivery.consignee.address", renderAddress(consigneeTrader.address))
-      )
-    }
-
-    val optPlaceOfDestinationCards = movementResponse.deliveryPlaceTrader.map { deliverPlaceTrader =>
-      Seq(
-        summaryListRowBuilder("viewMovement.delivery.placeOfDestination.name", deliverPlaceTrader.traderName),
-        summaryListRowBuilder("viewMovement.delivery.placeOfDestination.ern", deliverPlaceTrader.traderExciseNumber),
-        summaryListRowBuilder("viewMovement.delivery.placeOfDestination.address", renderAddress(deliverPlaceTrader.address))
-      )
-    }
-
-    HtmlFormat.fill(Seq(
-      overviewPartial(
-        headingMessageKey = Some("viewMovement.delivery.title"),
-        cardTitleMessageKey = "viewMovement.delivery.consignor",
-        consignorSummaryCards
-      ),
-      optPlaceOfDispatchSummaryCards.map { placeOfDispatchSummaryCards =>
-        overviewPartial(
-          headingMessageKey = None,
-          cardTitleMessageKey = "viewMovement.delivery.placeOfDispatch",
-          placeOfDispatchSummaryCards
-        )
-      }.getOrElse(Html("")),
-      optConsigneeSummaryCards.map { consigneeSummaryCards =>
-        overviewPartial(
-          headingMessageKey = None,
-          cardTitleMessageKey = "viewMovement.delivery.consignee",
-          consigneeSummaryCards
-        )
-      }.getOrElse(Html("")),
-      optPlaceOfDestinationCards.map { placeOfDestinationCards =>
-        overviewPartial(
-          headingMessageKey = None,
-          cardTitleMessageKey = "viewMovement.delivery.placeOfDestination",
-          placeOfDestinationCards
-        )
-      }.getOrElse(Html(""))
-    ))
-  }
-
-  private[helpers] def constructMovementGuarantor(movementResponse: GetMovementResponse)(implicit messages: Messages): Html = {
-    val guarantor = movementResponse.movementGuarantee
-    lazy val optFirstGuarantor = guarantor.guarantorTrader.flatMap(_.headOption)
-    lazy val guarantorArranger = summaryListRowBuilder("viewMovement.guarantor.summary.type", messages(s"viewMovement.guarantor.summary.type.${guarantor.guarantorTypeCode}"))
-    lazy val guarantorBusinessName = optFirstGuarantor.map(firstGuarantor => summaryListRowBuilder("viewMovement.guarantor.summary.businessName", firstGuarantor.traderName))
-    lazy val guarantorErn = optFirstGuarantor.map(firstGuarantor => summaryListRowBuilder("viewMovement.guarantor.summary.ern", firstGuarantor.traderExciseNumber))
-    lazy val guarantorAddress = optFirstGuarantor.map(firstGuarantor => summaryListRowBuilder("viewMovement.guarantor.summary.address", renderAddress(firstGuarantor.address)))
-    lazy val guarantorVatNumber = optFirstGuarantor.flatMap(_.vatNumber.map(firstGuarantorVatNumber => summaryListRowBuilder("viewMovement.guarantor.summary.vatRegistrationNumber", firstGuarantorVatNumber)))
-
-    guarantor.guarantorTypeCode match {
-      // Guarantor Type = 0 or 5 then no guarantor needed
-      case GuarantorNotRequired | NoGuarantor => HtmlFormat.fill(Seq(
-        h2(messages("viewMovement.guarantor.title")),
-        p()(Html(messages("viewMovement.guarantor.summary.noGuarantor")))
-      ))
-      // Guarantor Type is single digit (not 0 or 5), then only one guarantor
-      case Consignor | Transporter | Owner | Consignee => HtmlFormat.fill(Seq(
-        overviewPartial(
-          headingMessageKey = Some("viewMovement.guarantor.title"),
-          cardTitleMessageKey = "viewMovement.guarantor.summary",
-          summaryListRows = Seq(
-            Some(guarantorArranger),
-            guarantorBusinessName,
-            guarantorErn,
-            guarantorAddress,
-            guarantorVatNumber
-          ).flatten
-        )
-      ))
-      // Guarantor Type is > 1 digit, then there is 2 guarantors
-      //TODO: alignment needed to show 2 guarantors when the guarantorType is > 1 digit
-      case _ => HtmlFormat.fill(Seq())
-    }
-  }
-
-  private[helpers] def renderAddress(address: AddressModel): Html = {
-    val firstLineOfAddress = (address.streetNumber, address.street) match {
-      case (Some(propertyNumber), Some(street)) => Html(s"$propertyNumber $street <br>")
-      case (Some(number), None) => Html(s"$number <br>")
-      case (None, Some(street)) => Html(s"$street <br>")
-      case _ => Html("")
-    }
-    val city = address.city.fold(Html(""))(city => Html(s"$city <br>"))
-    val postCode = address.postcode.fold(Html(""))(postcode => Html(s"$postcode"))
-
-    HtmlFormat.fill(Seq(
-      firstLineOfAddress,
-      city,
-      postCode
-    ))
   }
 
 }
