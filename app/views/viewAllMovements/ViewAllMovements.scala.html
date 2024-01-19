@@ -132,9 +132,32 @@
                                 isPageHeading = false
                             ))
                         )),
-                        items = MovementListDirectionOption.checkboxItems
+                        items = MovementFilterDirectionOption.checkboxItems
                     ).withClasses(Seq("govuk-checkboxes--small"))
                 )
+                @* TODO: placeholder for undischarged filter *@
+                @govukCheckboxes(
+                    CheckboxesViewModel(
+                        form = form,
+                        name = "traderRole",
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                content = Text(messages("viewAllMovements.filters.undischarged.heading")),
+                                classes = "govuk-fieldset__legend--s",
+                                isPageHeading = false
+                            ))
+                        )),
+                        items = MovementFilterUndischargedOption.checkboxItems
+                    ).withClasses(Seq("govuk-checkboxes--small"))
+                )
+                @govukSelect(Select(
+                    items = MovementFilterStatusOption.selectItems,
+                    name = "status",
+                    id = "status",
+                    label = LabelViewModel(
+                        content = Text(messages("viewAllMovements.filters.status"))
+                    ).withCssClass("govuk-label--s")
+                ))
             </aside>
         </div>
 

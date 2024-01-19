@@ -24,48 +24,48 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import viewmodels.govuk.checkbox._
 
 // TODO: ChRIS requires sentence-case, not lowercase (EIS requires lowercase)
-sealed trait MovementListDirectionOption extends SelectOptionModel {
+sealed trait MovementFilterDirectionOption extends SelectOptionModel {
   override val code: String = this.toString
 }
 
-object MovementListDirectionOption extends Enumerable.Implicits {
-  case object GoodsIn extends WithName("consignee") with MovementListDirectionOption {
-    override val displayName = "viewAllMovements.filters.consignee"
+object MovementFilterDirectionOption extends Enumerable.Implicits {
+  case object GoodsIn extends WithName("consignee") with MovementFilterDirectionOption {
+    override val displayName = "viewAllMovements.filters.direction.consignee"
   }
-  case object GoodsOut extends WithName("consignor") with MovementListDirectionOption {
-    override val displayName = "viewAllMovements.filters.consignor"
+  case object GoodsOut extends WithName("consignor") with MovementFilterDirectionOption {
+    override val displayName = "viewAllMovements.filters.direction.consignor"
   }
-  case object All extends WithName("all") with MovementListDirectionOption {
-    override val displayName = "viewAllMovements.filters.all"
+  case object All extends WithName("all") with MovementFilterDirectionOption {
+    override val displayName = "viewAllMovements.filters.direction.all"
   }
 
-  val values: Seq[MovementListDirectionOption] = Seq(GoodsIn, GoodsOut, All)
-  private val displayValues: Seq[MovementListDirectionOption] = Seq(GoodsIn, GoodsOut)
+  val values: Seq[MovementFilterDirectionOption] = Seq(GoodsIn, GoodsOut, All)
+  private val displayValues: Seq[MovementFilterDirectionOption] = Seq(GoodsIn, GoodsOut)
 
   def checkboxItems(implicit messages: Messages): Seq[CheckboxItem] =
     displayValues.zipWithIndex.map {
       case (value, index) =>
         CheckboxItemViewModel(
-          content = Text(messages(s"viewAllMovements.filters.direction.${value.toString}")),
+          content = Text(messages(value.displayName)),
           fieldId = "traderRole",
           index   = index,
           value   = value.toString
         )
     }
 
-  def apply(code: String): MovementListDirectionOption = code match {
+  def apply(code: String): MovementFilterDirectionOption = code match {
     case GoodsIn.code => GoodsIn
     case GoodsOut.code => GoodsOut
     case All.code => All
     case invalid => throw new IllegalArgumentException(s"Invalid argument of '$invalid' received which can not be mapped to a MovementListDirectionOptions")
   }
 
-  def toOptions(option: MovementListDirectionOption): Set[MovementListDirectionOption] = option match {
+  def toOptions(option: MovementFilterDirectionOption): Set[MovementFilterDirectionOption] = option match {
     case GoodsIn => Set(GoodsIn)
     case GoodsOut => Set(GoodsOut)
     case All => Set(GoodsOut, GoodsIn)
   }
 
-  implicit val enumerable: Enumerable[MovementListDirectionOption] =
+  implicit val enumerable: Enumerable[MovementFilterDirectionOption] =
     Enumerable(values.map(v => v.toString -> v): _*)
 }

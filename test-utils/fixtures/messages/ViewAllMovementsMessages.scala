@@ -71,6 +71,9 @@ object ViewAllMovementsMessages {
     val filtersDispatchedTo = "Dispatched to"
     val filtersReceiptedFrom = "Receipted from"
     val filtersReceiptedTo = "Receipted to"
+    val filtersDay = "Day"
+    val filtersMonth = "Month"
+    val filtersYear = "Year"
 
   }
 
