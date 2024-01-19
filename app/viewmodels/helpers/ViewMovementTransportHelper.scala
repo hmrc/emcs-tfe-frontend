@@ -31,9 +31,8 @@ import views.html.components.{h2, summaryCard}
 import javax.inject.Inject
 
 class ViewMovementTransportHelper @Inject()(h2: h2,
-                                            summaryCard: summaryCard,
+                                            summaryCard: summaryCard
                                            ) extends ExpectedDateOfArrival with TagFluency {
-
 
   def constructMovementTransport(movement: GetMovementResponse)(implicit messages: Messages): Html = {
     val notProvidedMessage = messages("viewMovement.transport.transportUnit.notProvided")
@@ -42,7 +41,7 @@ class ViewMovementTransportHelper @Inject()(h2: h2,
       h2(messages("viewMovement.transport.h2")),
       summaryCard(
         Card(
-          Some(CardTitle(Text(messages("viewMovement.transport.summary.heading")))),
+          Some(CardTitle(Text(messages("viewMovement.transport.summary.heading"))))
         ),
         Seq(
           summaryListRowBuilder(
@@ -53,12 +52,12 @@ class ViewMovementTransportHelper @Inject()(h2: h2,
             "viewMovement.transport.summary.modeOfTransport",
             movement.transportMode.transportModeCode.messageKey
           ),
-          summaryListRowBuilder("viewMovement.transport.summary.journeyTime", movement.journeyTime),
+          summaryListRowBuilder("viewMovement.transport.summary.journeyTime", movement.journeyTime)
         )
       ),
       summaryCard(
         Card(
-          Some(CardTitle(Text(messages("viewMovement.transport.firstTransporter.heading")))),
+          Some(CardTitle(Text(messages("viewMovement.transport.firstTransporter.heading"))))
         ),
         Seq(
           summaryListRowBuilder(
@@ -72,8 +71,7 @@ class ViewMovementTransportHelper @Inject()(h2: h2,
           summaryListRowBuilder(
             "viewMovement.transport.firstTransporter.vrn",
             movement.firstTransporterTrader.flatMap(_.vatNumber).getOrElse(notProvidedMessage)
-
-          ),
+          )
         )
       )
     ) ++
@@ -81,7 +79,7 @@ class ViewMovementTransportHelper @Inject()(h2: h2,
         case(transport, index) =>
           summaryCard(
             card = Card(
-              Some(CardTitle(Text(messages("viewMovement.transport.transportUnit.heading", index + 1)))),
+              Some(CardTitle(Text(messages("viewMovement.transport.transportUnit.heading", index + 1))))
             ),
             summaryListRows = Seq(
               summaryListRowBuilder(
@@ -106,7 +104,7 @@ class ViewMovementTransportHelper @Inject()(h2: h2,
               summaryListRowBuilder(
                 "viewMovement.transport.transportUnit.sealInformation",
                 transport.sealInformation.getOrElse(messages("viewMovement.transport.transportUnit.notProvided"))
-              ),
+              )
             )
           )
       }

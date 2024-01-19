@@ -32,7 +32,7 @@ import javax.inject.Inject
 class ViewMovementItemsHelper @Inject()(list: list,
                                         link: link,
                                         h2: h2,
-                                        govukTable: GovukTable,
+                                        govukTable: GovukTable
                                        ) extends ExpectedDateOfArrival with TagFluency {
 
   def constructMovementItems(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Html = {

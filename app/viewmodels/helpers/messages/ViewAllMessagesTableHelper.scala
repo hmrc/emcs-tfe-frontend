@@ -74,7 +74,7 @@ class ViewAllMessagesTableHelper @Inject()(link: link,
           HeadCell(content = Text(messages("viewAllMessages.table.column.message.label"))),
           HeadCell(content = Text(messages("viewAllMessages.table.column.status.label"))),
           HeadCell(content = Text(messages("viewAllMessages.table.column.date.label"))),
-          HeadCell(content = Text(messages("viewAllMessages.table.column.action.label"))),
+          HeadCell(content = Text(messages("viewAllMessages.table.column.action.label")))
         )),
         rows = dataRows(allMessages)
       )

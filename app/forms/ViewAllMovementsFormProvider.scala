@@ -30,7 +30,7 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
       mapping(
         ViewAllMovementsFormProvider.searchKey -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllMovementsFormProvider.searchValue -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
-        ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
+        ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity)
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
     )
 

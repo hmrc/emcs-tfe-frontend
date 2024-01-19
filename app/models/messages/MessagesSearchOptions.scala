@@ -27,7 +27,7 @@ case class MessagesSearchOptions(sortBy: MessagesSortingSelectOption = DateRecei
   val queryParams: Seq[(String, String)] = Seq(
     Some("sortField" -> sortBy.sortField),
     Some("sortOrder" -> sortBy.sortOrder),
-    Some("page" -> index.toString),
+    Some("page" -> index.toString)
   ).flatten
 
 }

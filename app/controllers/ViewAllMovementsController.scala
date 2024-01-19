@@ -40,7 +40,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                            val auth: AuthAction,
                                            val getData: DataRetrievalAction,
                                            paginationHelper: MovementPaginationHelper,
-                                           formProvider: ViewAllMovementsFormProvider,
+                                           formProvider: ViewAllMovementsFormProvider
                                           )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
   def onPageLoad(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
     authorisedWithData(ern).async { implicit request =>
@@ -60,16 +60,17 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
       case Right(movementList) =>
 
         val pageCount = {
-          if (movementList.count == 0)
+          if (movementList.count == 0) {
             1
-          else if (movementList.count % DEFAULT_MAX_ROWS != 0)
+          } else if (movementList.count % DEFAULT_MAX_ROWS != 0) {
             (movementList.count / DEFAULT_MAX_ROWS) + 1
-          else
+          } else {
             movementList.count / DEFAULT_MAX_ROWS
+          }
         }
-        if (searchOptions.index <= 0 || searchOptions.index > pageCount)
+        if (searchOptions.index <= 0 || searchOptions.index > pageCount) {
           Redirect(routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()))
-        else {
+        } else {
           status(view(
             form = formProvider().fill(searchOptions),
             action = routes.ViewAllMovementsController.onSubmit(ern, searchOptions),
