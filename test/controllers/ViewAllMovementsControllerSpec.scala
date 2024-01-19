@@ -58,7 +58,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
 
   lazy val controller: ViewAllMovementsController = new ViewAllMovementsController(
     mcc = app.injector.instanceOf[MessagesControllerComponents],
-    connector = mockGetMovementListConnector,
+    getMovementListConnector = mockGetMovementListConnector,
     view = view,
     errorHandler = errorHandler,
     auth = FakeSuccessAuthAction,

@@ -28,6 +28,8 @@ trait MovementFilterUndischargedOption extends SelectOptionModel {
 }
 
 object MovementFilterUndischargedOption extends Enumerable.Implicits {
+
+  // TODO: stub doesn't like this
   case object Undischarged extends WithName("Y") with MovementFilterUndischargedOption {
     override val displayName = "viewAllMovements.filters.undischarged.undischarged"
   }

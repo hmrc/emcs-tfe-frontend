@@ -50,6 +50,7 @@
         movements: Seq[GetMovementListItem],
         sortSelectItems: Seq[SelectItem],
         searchSelectItems: Seq[SelectItem],
+        exciseProductCodeSelectItems: Seq[SelectItem],
         pagination: Option[Pagination]
 )(implicit request: DataRequest[_], messages: Messages)
 
@@ -156,6 +157,14 @@
                     id = "status",
                     label = LabelViewModel(
                         content = Text(messages("viewAllMovements.filters.status"))
+                    ).withCssClass("govuk-label--s")
+                ))
+                @govukSelect(Select(
+                    items = exciseProductCodeSelectItems,
+                    name = "exciseProductCode",
+                    id = "exciseProductCode",
+                    label = LabelViewModel(
+                        content = Text(messages("viewAllMovements.filters.exciseProductCode"))
                     ).withCssClass("govuk-label--s")
                 ))
             </aside>
