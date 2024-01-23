@@ -17,6 +17,7 @@
 package models
 
 import base.SpecBase
+import models.MovementListSearchOptions.CHOOSE_PRODUCT_CODE
 import models.MovementSearchSelectOption.{ARC, ERN, Transporter}
 import models.MovementSortingSelectOption.{ArcAscending, ArcDescending, Oldest}
 
@@ -269,6 +270,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
           sortBy = Oldest,
           traderRole = Some(MovementFilterDirectionOption.GoodsIn),
           undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
+          exciseProductCode = Some("abc"),
           index = 1,
           maxRows = 10
         )
@@ -278,7 +280,32 @@ class MovementListSearchOptionsSpec extends SpecBase {
           searchValue = Some("ARC123"),
           sortBy = Oldest.code,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
-          undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged)
+          undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
+          exciseProductCodeOption = Some("abc")
+        )
+
+        actualResult mustBe expectedResult
+      }
+
+      "filter out CHOOSE_PRODUCT_CODE" in {
+        val expectedResult = MovementListSearchOptions(
+          searchKey = Some(ARC),
+          searchValue = Some("ARC123"),
+          sortBy = Oldest,
+          traderRole = Some(MovementFilterDirectionOption.GoodsIn),
+          undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
+          exciseProductCode = None,
+          index = 1,
+          maxRows = 10
+        )
+
+        val actualResult = MovementListSearchOptions.apply(
+          searchKey = Some(ARC.code),
+          searchValue = Some("ARC123"),
+          sortBy = Oldest.code,
+          traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
+          undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
+          exciseProductCodeOption = Some(CHOOSE_PRODUCT_CODE.code)
         )
 
         actualResult mustBe expectedResult
@@ -289,7 +316,14 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
       "return the string values for MovementListSearchOptions" in {
 
-        val expectedResult = Some((Some("otherTraderId"), Some("ERN123456"), Oldest.code, Set(MovementFilterDirectionOption.GoodsOut), Set(MovementFilterUndischargedOption.Undischarged)))
+        val expectedResult = Some((
+          Some("otherTraderId"),
+          Some("ERN123456"),
+          Oldest.code,
+          Set(MovementFilterDirectionOption.GoodsOut),
+          Set(MovementFilterUndischargedOption.Undischarged),
+          Some("abc")
+        ))
 
         val actualResult = MovementListSearchOptions.unapply(
           MovementListSearchOptions(
@@ -298,6 +332,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
             sortBy = Oldest,
             traderRole = Some(MovementFilterDirectionOption.GoodsOut),
             undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
+            exciseProductCode = Some("abc"),
             index = 1,
             maxRows = 10
           )
