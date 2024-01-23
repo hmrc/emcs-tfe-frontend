@@ -25,17 +25,20 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels._
 import viewmodels.helpers.ViewMovementHelper
 import views.html.viewMovement.ViewMovementPage
 
 import java.time.LocalDateTime
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with GetMovementResponseFixtures {
 
   val page: ViewMovementPage = app.injector.instanceOf[ViewMovementPage]
   val helper: ViewMovementHelper = app.injector.instanceOf[ViewMovementHelper]
 
+  implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"), ern = "GBRC123456789")
   implicit val messages: Messages = messages(fakeRequest)
 
@@ -71,7 +74,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 isConsignor = true,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel),
+                helper.movementCard(Overview, getMovementResponseModel).futureValue,
                 Seq.empty[TimelineEvent],
                 testMessageStatistics
               ).toString()
@@ -105,7 +108,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 isConsignor = true,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel),
+                helper.movementCard(Overview, getMovementResponseModel).futureValue,
                 Seq.empty[TimelineEvent],
                 testMessageStatistics
               ).toString()
@@ -129,7 +132,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 isConsignor = false,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel),
+                helper.movementCard(Overview, getMovementResponseModel).futureValue,
                 Seq.empty[TimelineEvent],
                 testMessageStatistics
               ).toString()
@@ -157,7 +160,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 isConsignor = false,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel),
+                helper.movementCard(Overview, getMovementResponseModel).futureValue,
                 Seq(
                   TimelineEvent(eventType = "someEvent1", title = "Movement created", dateTime = eventDate, url = s"event/someEvent1/id/1"),
                   TimelineEvent(eventType = "someEvent2", title = "Destination changed", dateTime = eventDate, url = s"event/someEvent2/id/2"),
@@ -185,7 +188,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
               isConsignor = false,
               SubNavigationTab.values,
               Movement,
-              helper.movementCard(Movement, getMovementResponseModel),
+              helper.movementCard(Movement, getMovementResponseModel).futureValue,
               Seq.empty[TimelineEvent],
               testMessageStatistics
             ).toString()
@@ -228,7 +231,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
                 isConsignor = true,
                 SubNavigationTab.values,
                 Delivery,
-                helper.movementCard(Delivery, getMovementResponseModel),
+                helper.movementCard(Delivery, getMovementResponseModel).futureValue,
                 Seq.empty[TimelineEvent],
                 testMessageStatistics
               ).toString()

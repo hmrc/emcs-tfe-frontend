@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,55 +19,57 @@ package viewmodels.helpers
 import models.response.emcsTfe.GetMovementResponse
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
+import services.GetDocumentTypesService
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import utils.ExpectedDateOfArrival
-import viewmodels.govuk.TagFluency
+import uk.gov.hmrc.http.HeaderCarrier
+import viewmodels.helpers.SummaryListHelper.summaryListRowBuilder
 import views.html.components.{h2, summaryCard}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class ViewMovementDocumentHelper @Inject()(h2: h2,
                                            summaryCard: summaryCard,
-                                          ) extends ExpectedDateOfArrival with TagFluency {
+                                           getDocumentTypesService: GetDocumentTypesService
+                                          ) {
 
 
-  def constructMovementDocument(movement: GetMovementResponse)(implicit messages: Messages): Html = {
-    val notProvidedMessage = messages("viewMovement.transport.transportUnit.notProvided")
-    HtmlFormat.fill(
-      movement.documentCertificate match {
-        case Some(value) => value.zipWithIndex.map {
-            case (document, index) =>
-              summaryCard(
-                card = Card(
-                  Some(CardTitle(Text(messages("viewMovement.document.heading", index + 1)))),
-                ),
-                summaryListRows = Seq(
-                  summaryListRowBuilder(
-                    "viewMovement.document.documentReference",
-                    document.documentReference.getOrElse(notProvidedMessage)
+  def constructMovementDocument(movement: GetMovementResponse)(implicit messages: Messages, hc: HeaderCarrier, ec: ExecutionContext): Future[Html] = {
+    val notProvidedMessage = messages("viewMovement.document.notProvided")
+    getDocumentTypesService.getDocumentTypes().map {
+      sequenceOfDocuments =>
+        HtmlFormat.fill(Seq(h2(messages("viewMovement.document.details"))) ++
+          (movement.documentCertificate match {
+            case Some(value) => value.zipWithIndex.map {
+              case (document, index) =>
+                val documentTypeDescription = document.documentType.flatMap(documentType => sequenceOfDocuments.find(_.code == documentType).map(_.description)).getOrElse(notProvidedMessage)
+                summaryCard(
+                  card = Card(
+                    Some(CardTitle(Text(messages("viewMovement.document.heading", index + 1)))),
                   ),
-                  summaryListRowBuilder(
-                    "viewMovement.document.documentType",
-                    document.documentType.getOrElse(notProvidedMessage)
-                  ),
-                  summaryListRowBuilder(
-                    "viewMovement.document.documentDescription",
-                    document.documentDescription.getOrElse(notProvidedMessage)
-                  ),
+                  summaryListRows = Seq(
+                    summaryListRowBuilder(
+                      "viewMovement.document.documentType",
+                      documentTypeDescription
+                    ),
+                    summaryListRowBuilder(
+                      "viewMovement.document.documentReference",
+                      document.documentReference.getOrElse(notProvidedMessage)
+                    ),
+                    summaryListRowBuilder(
+                      "viewMovement.document.documentDescription",
+                      document.documentDescription.getOrElse(notProvidedMessage)
+                    ),
+                  )
                 )
-              )
-        }
-        case _ => Seq.empty
-      }
-    )
-  }
+            }
+            case _ => Seq.empty
+          }
+            ))
+    }
 
-  private def summaryListRowBuilder(key: String, value: String)(implicit messages: Messages) = SummaryListRow(
-    key = Key(Text(value = messages(key))),
-    value = Value(Text(value = messages(value))),
-    classes = "govuk-summary-list__row"
-  )
+  }
 
 }

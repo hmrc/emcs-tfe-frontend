@@ -68,19 +68,21 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                           ): Action[AnyContent] =
 
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
-      getMovementService.getMovement(exciseRegistrationNumber, arc).map { movement =>
-        Ok(viewMovementPage(
-          ern = exciseRegistrationNumber,
-          arc = arc,
-          isConsignor = exciseRegistrationNumber == movement.consignorTrader.traderExciseNumber,
-          subNavigationTabs = SubNavigationTab.values,
-          currentSubNavigationTab = currentSubNavigationTab,
-          movementTabBody = helper.movementCard(currentSubNavigationTab, movement),
-          historyEvents = movement.eventHistorySummary
-            .map(timelineHelper.timeline(_))
-            .getOrElse(Seq.empty[TimelineEvent]),
-          messageStatistics = request.messageStatistics
-        ))
+      getMovementService.getMovement(exciseRegistrationNumber, arc).flatMap { movement =>
+        helper.movementCard(currentSubNavigationTab, movement).map { movementCard =>
+          Ok(viewMovementPage(
+            ern = exciseRegistrationNumber,
+            arc = arc,
+            isConsignor = exciseRegistrationNumber == movement.consignorTrader.traderExciseNumber,
+            subNavigationTabs = SubNavigationTab.values,
+            currentSubNavigationTab = currentSubNavigationTab,
+            movementTabBody = movementCard,
+            historyEvents = movement.eventHistorySummary
+              .map(timelineHelper.timeline(_))
+              .getOrElse(Seq.empty[TimelineEvent]),
+            messageStatistics = request.messageStatistics
+          ))
+        }
       } recover {
         case _ =>
           InternalServerError(errorHandler.standardErrorTemplate())

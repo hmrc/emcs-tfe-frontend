@@ -25,7 +25,7 @@ import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import models.response.emcsTfe.GetMovementResponse
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
-import play.api.libs.json.{JsSuccess, Json}
+import play.api.libs.json.Json
 
 
 class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures {
@@ -33,7 +33,10 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
   "GetMovementResponse" should {
 
     "read from json" in {
-      Json.fromJson[GetMovementResponse](getMovementResponseInputJson) shouldBe JsSuccess(getMovementResponseModel)
+      val result = Json.fromJson[GetMovementResponse](getMovementResponseInputJson)
+
+      result.isSuccess shouldBe true
+      result.get shouldBe getMovementResponseModel
     }
 
     ".formattedDateOfDispatch" in {

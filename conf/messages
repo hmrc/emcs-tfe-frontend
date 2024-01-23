@@ -216,6 +216,14 @@ movementHistoryEvent.IE871.label = Explanation for a shortage or excess
 movementHistoryEvent.IE881.label = Manual closure response
 movementHistoryEvent.IE905.label = Manual closure response of a movement
 
+# MOV02 - Documents
+viewMovement.document.details = Document details
+viewMovement.document.heading = Document {0}
+viewMovement.document.documentType = Type
+viewMovement.document.documentReference = Reference
+viewMovement.document.documentDescription = Description
+viewMovement.document.notProvided = Not provided
+
 itemDetails.itemDetailsCardTitle = Item details
 itemDetails.packagingTypeCardTitle = Packaging type {0}
 itemDetails.key.commodityCode = Commodity code

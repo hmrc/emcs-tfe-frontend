@@ -16,11 +16,12 @@
 
 package models.response.emcsTfe
 
-import models.common.{DestinationType, MovementGuaranteeModel, TraderModel, TransportDetailsModel, TransportTraderModel}
+import models.common.{DestinationType, DocumentCertificateModel, MovementGuaranteeModel, TraderModel, TransportDetailsModel, TransportTraderModel}
 import models.response.emcsTfe.getMovementHistoryEvents.GetMovementHistoryEventsResponse
 import models.response.emcsTfe.reportOfReceipt.ReportOfReceiptModel
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.Reads
 import utils.{DateUtils, ExpectedDateOfArrival}
+import play.api.libs.json._
 
 import java.time.{LocalDate, LocalTime}
 
@@ -40,6 +41,7 @@ case class GetMovementResponse(
                                 consigneeTrader: Option[TraderModel],
                                 dateOfDispatch: LocalDate,
                                 journeyTime: String,
+                                documentCertificate: Option[Seq[DocumentCertificateModel]],
                                 headerEadEsad: HeaderEadEsadModel,
                                 transportMode: TransportModeModel,
                                 numberOfItems: Int,
@@ -56,7 +58,9 @@ case class GetMovementResponse(
   def formattedExpectedDateOfArrival: String = {
     calculateExpectedDate(
       dateOfDispatch,
-      eadEsad.timeOfDispatch.map{ _.split(":")}.getOrElse(Array("0","0","0")) match {
+      eadEsad.timeOfDispatch.map {
+        _.split(":")
+      }.getOrElse(Array("0", "0", "0")) match {
         case Array(h, m, s) => LocalTime.of(h.toInt, m.toInt, s.toInt)
       },
       journeyTime
@@ -66,5 +70,56 @@ case class GetMovementResponse(
 }
 
 object GetMovementResponse {
-  implicit val reads: Reads[GetMovementResponse] = Json.reads
+
+  implicit lazy val reads: Reads[GetMovementResponse] = for {
+    arc <- (__ \ "arc").read[String]
+    sequenceNumber <- (__ \ "sequenceNumber").read[Int]
+    destinationType <- (__ \ "destinationType").read[DestinationType]
+    consignorTrader <- (__ \ "consignorTrader").read[TraderModel]
+    consigneeTrader <- (__ \ "consigneeTrader").readNullable[TraderModel]
+    deliveryPlaceTrader <- (__ \ "deliveryPlaceTrader").readNullable[TraderModel]
+    placeOfDispatchTrader <- (__ \ "placeOfDispatchTrader").readNullable[TraderModel]
+    firstTransporterTrader <- (__ \ "firstTransporterTrader").readNullable[TransportTraderModel]
+    deliveryPlaceCustomsOfficeReferenceNumber <- (__ \ "deliveryPlaceCustomsOfficeReferenceNumber").readNullable[String]
+    localReferenceNumber <- (__ \ "localReferenceNumber").read[String]
+    eadStatus <- (__ \ "eadStatus").read[String]
+    dateOfDispatch <- (__ \ "dateOfDispatch").read[LocalDate]
+    journeyTime <- (__ \ "journeyTime").read[String]
+    documentCertificate <- (__ \ "documentCertificate").readNullable[Seq[DocumentCertificateModel]]
+    eadEsad <- (__ \ "eadEsad").read[EadEsadModel]
+    headerEadEsad <- (__ \ "headerEadEsad").read[HeaderEadEsadModel]
+    transportMode <- (__ \ "transportMode").read[TransportModeModel]
+    movementGuarantee <- (__ \ "movementGuarantee").read[MovementGuaranteeModel]
+    transportDetails <- (__ \ "transportDetails").read[Seq[TransportDetailsModel]]
+    numberOfItems <- (__ \ "numberOfItems").read[Int]
+    reportOfReceipt <- (__ \ "reportOfReceipt").readNullable[ReportOfReceiptModel]
+    items <- (__ \ "items").read[Seq[MovementItem]]
+    eventHistorySummary <- (__ \ "eventHistorySummary").readNullable[GetMovementHistoryEventsResponse]
+  } yield {
+    GetMovementResponse(
+      arc = arc,
+      sequenceNumber = sequenceNumber,
+      destinationType = destinationType,
+      consignorTrader = consignorTrader,
+      consigneeTrader = consigneeTrader,
+      deliveryPlaceTrader = deliveryPlaceTrader,
+      placeOfDispatchTrader = placeOfDispatchTrader,
+      firstTransporterTrader = firstTransporterTrader,
+      deliveryPlaceCustomsOfficeReferenceNumber = deliveryPlaceCustomsOfficeReferenceNumber,
+      localReferenceNumber = localReferenceNumber,
+      eadStatus = eadStatus,
+      dateOfDispatch = dateOfDispatch,
+      journeyTime = journeyTime,
+      documentCertificate = documentCertificate,
+      eadEsad = eadEsad,
+      headerEadEsad = headerEadEsad,
+      transportMode = transportMode,
+      movementGuarantee = movementGuarantee,
+      transportDetails = transportDetails,
+      numberOfItems = numberOfItems,
+      reportOfReceipt = reportOfReceipt,
+      items = items,
+      eventHistorySummary = eventHistorySummary
+    )
+  }
 }

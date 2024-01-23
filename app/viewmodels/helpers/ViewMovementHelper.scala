@@ -26,6 +26,7 @@ import models.response.{InvalidUserTypeException, MissingDispatchPlaceTraderExce
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.ExpectedDateOfArrival
 import viewmodels._
 import viewmodels.helpers.SummaryListHelper._
@@ -33,6 +34,7 @@ import views.html.components.{list, p}
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ViewMovementHelper @Inject()(
@@ -43,20 +45,22 @@ class ViewMovementHelper @Inject()(
                                     viewMovementTransportHelper: ViewMovementTransportHelper,
                                     viewMovementGuarantorHelper: ViewMovementGuarantorHelper,
                                     viewMovementOverviewHelper: ViewMovementOverviewHelper,
-                                    viewMovementDeliveryHelper: ViewMovementDeliveryHelper
+                                    viewMovementDeliveryHelper: ViewMovementDeliveryHelper,
+                                    viewMovementDocumentHelper: ViewMovementDocumentHelper
                                   ) extends ExpectedDateOfArrival {
 
   def movementCard(subNavigationTab: SubNavigationTab, movementResponse: GetMovementResponse)
-                  (implicit request: DataRequest[_], messages: Messages): Html =
+                  (implicit request: DataRequest[_], messages: Messages, hc: HeaderCarrier, ec: ExecutionContext): Future[Html] =
 
     subNavigationTab match {
-      case Overview => viewMovementOverviewHelper.constructMovementOverview(movementResponse)
-      case Movement => constructMovementView(movementResponse)
-      case Delivery => viewMovementDeliveryHelper.constructMovementDelivery(movementResponse)
-      case Transport => viewMovementTransportHelper.constructMovementTransport(movementResponse)
-      case Items => viewMovementItemsHelper.constructMovementItems(movementResponse)
-      case Guarantor => viewMovementGuarantorHelper.constructMovementGuarantor(movementResponse)
-      case _ => Html("")
+      case Overview => Future(viewMovementOverviewHelper.constructMovementOverview(movementResponse))
+      case Movement => Future(constructMovementView(movementResponse))
+      case Delivery => Future(viewMovementDeliveryHelper.constructMovementDelivery(movementResponse))
+      case Transport => Future(viewMovementTransportHelper.constructMovementTransport(movementResponse))
+      case Items => Future(viewMovementItemsHelper.constructMovementItems(movementResponse))
+      case Guarantor => Future(viewMovementGuarantorHelper.constructMovementGuarantor(movementResponse))
+      case Documents => viewMovementDocumentHelper.constructMovementDocument(movementResponse)
+      case _ => Future(Html(""))
     }
 
   private[helpers] def constructMovementView(movementResponse: GetMovementResponse)
