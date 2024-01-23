@@ -25,6 +25,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
                                      sortBy: MovementSortingSelectOption = ArcAscending,
                                      traderRole: Option[MovementFilterDirectionOption] = None,
                                      undischargedMovements: Option[MovementFilterUndischargedOption] = None,
+                                     movementStatus: Option[MovementFilterStatusOption] = None,
                                      exciseProductCode: Option[String] = None,
                                      index: Int = DEFAULT_INDEX,
                                      maxRows: Int = DEFAULT_MAX_ROWS) {
@@ -55,6 +56,14 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     }
   }
 
+  private def getMovementStatus: Option[(String, String)] = {
+    val key = "search.movementStatus"
+    movementStatus match {
+      case Some(value) if value != MovementFilterStatusOption.ChooseStatus => Some(key -> value.toString)
+      case _ => None
+    }
+  }
+
   private def getEpc: Option[(String, String)] = {
     val key = "search.exciseProductCode"
     exciseProductCode match {
@@ -67,6 +76,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     getSearchFields,
     getTraderRole,
     getUndischargedMovementsFlag,
+    getMovementStatus,
     getEpc,
     Some("search.sortOrder" -> sortBy.sortOrder),
     Some("search.sortField" -> sortBy.sortField),
@@ -99,6 +109,7 @@ object MovementListSearchOptions {
           searchValue <- stringBinder.bind("searchValue", params).map(_.map(Some(_))).getOrElse(Right(None))
           traderRole <- stringBinder.bind("traderRole", params).map(_.map(Some(_))).getOrElse(Right(None))
           undischargedMovements <- stringBinder.bind("undischargedMovements", params).map(_.map(Some(_))).getOrElse(Right(None))
+          movementStatus <- stringBinder.bind("movementStatus", params).map(_.map(Some(_))).getOrElse(Right(None))
           exciseProductCode <- stringBinder.bind("exciseProductCode", params).map(_.map(Some(_))).getOrElse(Right(None))
         } yield {
           MovementListSearchOptions(
@@ -107,6 +118,7 @@ object MovementListSearchOptions {
             sortBy = MovementSortingSelectOption(sortOrder),
             traderRole = traderRole.map(MovementFilterDirectionOption(_)),
             undischargedMovements = undischargedMovements.map(MovementFilterUndischargedOption(_)),
+            movementStatus = movementStatus.map(MovementFilterStatusOption(_)),
             exciseProductCode = exciseProductCode,
             index = index,
             maxRows = DEFAULT_MAX_ROWS
@@ -122,16 +134,19 @@ object MovementListSearchOptions {
           Some(intBinder.unbind("index", searchOptions.index)),
           searchOptions.traderRole.map(field => stringBinder.unbind("traderRole", field.code)),
           searchOptions.undischargedMovements.map(field => stringBinder.unbind("undischargedMovements", field.code)),
+          searchOptions.movementStatus.map(field => stringBinder.unbind("movementStatus", field.code)),
           searchOptions.exciseProductCode.map(field => stringBinder.unbind("exciseProductCode", field)),
         ).flatten.mkString("&")
     }
 
+  //noinspection ScalaStyle
   def apply(
              searchKey: Option[String],
              searchValue: Option[String],
              sortBy: String,
              traderRoleOptions: Set[MovementFilterDirectionOption],
              undischargedMovementsOptions: Set[MovementFilterUndischargedOption],
+             movementStatusOption: Option[MovementFilterStatusOption],
              exciseProductCodeOption: Option[String]
            ): MovementListSearchOptions = {
 
@@ -154,12 +169,18 @@ object MovementListSearchOptions {
       case value => value
     }
 
+    val movementStatus = movementStatusOption match {
+      case Some(value) if value == MovementFilterStatusOption.ChooseStatus => None
+      case value => value
+    }
+
     MovementListSearchOptions(
       searchKey = searchKey.map(MovementSearchSelectOption(_)),
       searchValue = searchValue,
       sortBy = MovementSortingSelectOption(sortBy),
       traderRole = traderRole,
       undischargedMovements = undischargedMovements,
+      movementStatus = movementStatus,
       exciseProductCode = exciseProductCode
     )
   }
@@ -170,6 +191,7 @@ object MovementListSearchOptions {
       String,
       Set[MovementFilterDirectionOption],
       Set[MovementFilterUndischargedOption],
+      Option[MovementFilterStatusOption],
       Option[String]
     )] = {
     println(scala.Console.YELLOW + "options in unapply = " + options + scala.Console.RESET)
@@ -180,6 +202,7 @@ object MovementListSearchOptions {
       options.sortBy.code,
       options.traderRole.map(MovementFilterDirectionOption.toOptions).getOrElse(Set()),
       options.undischargedMovements.map(Set(_)).getOrElse(Set()),
+      options.movementStatus,
       options.exciseProductCode
     ))
   }

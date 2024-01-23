@@ -25,7 +25,7 @@ import forms.ViewAllMovementsFormProvider
 import models.MovementListSearchOptions.DEFAULT_MAX_ROWS
 import models.requests.DataRequest
 import models.response.ErrorResponse
-import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
+import models.{MovementFilterStatusOption, MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -85,6 +85,8 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
         if (searchOptions.index <= 0 || searchOptions.index > pageCount) {
           Redirect(routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()))
         } else {
+          val movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus)
+
           status(view(
             form = formProvider().fill(searchOptions),
             action = routes.ViewAllMovementsController.onSubmit(ern, searchOptions),
@@ -92,6 +94,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
             movements = movementList.movements,
             sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(searchOptions.sortBy.code)),
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(searchOptions.searchKey.map(_.code)),
+            movementStatusItems = movementStatusItems,
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(exciseProductCodeOptions, None, searchOptions.exciseProductCode),
             pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions)
           ))

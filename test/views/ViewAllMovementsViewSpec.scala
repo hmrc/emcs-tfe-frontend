@@ -30,6 +30,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
 import viewmodels.MovementsListTableHelper
+import viewmodels.helpers.SelectItemHelper
 import views.html.components.table
 import views.html.viewAllMovements.ViewAllMovements
 
@@ -79,8 +80,8 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     val filtersStatusReplaced: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(11)"
     val filtersStatusRejected: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(12)"
     val filtersStatusStopped: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(13)"
-    val filtersEpc: String = s"$filtersSection .govuk-form-group:nth-of-type(4) legend"
-    val filtersEpcChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(4) ul li:nth-of-type(1)"
+    val filtersEpc: String = s"$filtersSection .govuk-form-group:nth-of-type(4) label"
+    val filtersEpcChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(4) select option:nth-of-type(1)"
     val filtersCountry: String = s"$filtersSection .govuk-form-group:nth-of-type(5) legend"
     val filtersCountryChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(5) ul li:nth-of-type(1)"
     val filtersDispatchedFrom: String = s"$filtersSection .govuk-form-group:nth-of-type(6) legend"
@@ -120,6 +121,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     movements = getMovementListResponse.movements,
     sortSelectItems = MovementSortingSelectOption.constructSelectItems(),
     searchSelectItems = MovementSearchSelectOption.constructSelectItems(),
+    exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_PRODUCT_CODE), None),
     pagination = pagination
   ).toString())
 

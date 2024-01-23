@@ -17,7 +17,7 @@
 package forms
 
 import forms.mappings.Mappings
-import models.{MovementFilterDirectionOption, MovementFilterUndischargedOption, MovementListSearchOptions}
+import models._
 import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, set}
 
@@ -33,6 +33,7 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
         ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
         ViewAllMovementsFormProvider.traderRole -> set(enumerable[MovementFilterDirectionOption]()),
         ViewAllMovementsFormProvider.undischarged -> set(enumerable[MovementFilterUndischargedOption]()),
+        ViewAllMovementsFormProvider.status -> optional(enumerable[MovementFilterStatusOption]()),
         ViewAllMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity)
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
     )
@@ -54,6 +55,7 @@ object ViewAllMovementsFormProvider {
   // filters
   val traderRole = "traderRole"
   val undischarged = "undischargedMovements"
+  val status = "movementStatus"
   val exciseProductCode = "exciseProductCode"
 
 }
