@@ -270,6 +270,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
           sortBy = Oldest,
           traderRole = Some(MovementFilterDirectionOption.GoodsIn),
           undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
+          movementStatus = Some(MovementFilterStatusOption.Active),
           exciseProductCode = Some("abc"),
           index = 1,
           maxRows = 10
@@ -281,6 +282,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
           sortBy = Oldest.code,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
           undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
+          movementStatusOption = Some(MovementFilterStatusOption.Active),
           exciseProductCodeOption = Some("abc")
         )
 
@@ -294,6 +296,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
           sortBy = Oldest,
           traderRole = Some(MovementFilterDirectionOption.GoodsIn),
           undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
+          movementStatus = Some(MovementFilterStatusOption.Active),
           exciseProductCode = None,
           index = 1,
           maxRows = 10
@@ -305,7 +308,34 @@ class MovementListSearchOptionsSpec extends SpecBase {
           sortBy = Oldest.code,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
           undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
+          movementStatusOption = Some(MovementFilterStatusOption.Active),
           exciseProductCodeOption = Some(CHOOSE_PRODUCT_CODE.code)
+        )
+
+        actualResult mustBe expectedResult
+      }
+
+      "filter out Choose status" in {
+        val expectedResult = MovementListSearchOptions(
+          searchKey = Some(ARC),
+          searchValue = Some("ARC123"),
+          sortBy = Oldest,
+          traderRole = Some(MovementFilterDirectionOption.GoodsIn),
+          undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
+          movementStatus = None,
+          exciseProductCode = Some("abc"),
+          index = 1,
+          maxRows = 10
+        )
+
+        val actualResult = MovementListSearchOptions.apply(
+          searchKey = Some(ARC.code),
+          searchValue = Some("ARC123"),
+          sortBy = Oldest.code,
+          traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
+          undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
+          movementStatusOption = Some(MovementFilterStatusOption.ChooseStatus),
+          exciseProductCodeOption = Some("abc")
         )
 
         actualResult mustBe expectedResult
@@ -322,6 +352,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
           Oldest.code,
           Set(MovementFilterDirectionOption.GoodsOut),
           Set(MovementFilterUndischargedOption.Undischarged),
+          Some(MovementFilterStatusOption.Active),
           Some("abc")
         ))
 
@@ -332,6 +363,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
             sortBy = Oldest,
             traderRole = Some(MovementFilterDirectionOption.GoodsOut),
             undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
+            movementStatus = Some(MovementFilterStatusOption.Active),
             exciseProductCode = Some("abc"),
             index = 1,
             maxRows = 10

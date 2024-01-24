@@ -17,7 +17,7 @@
 package connectors.emcsTfe
 
 import connectors.BaseConnectorUtils
-import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
+import models.response.{ErrorConstants, ErrorResponse, JsonValidationError, NotFoundError, UnexpectedDownstreamResponseError}
 import play.api.http.Status.OK
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 
@@ -37,7 +37,12 @@ trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
         }
         case status =>
           logger.warn(s"[read] Unexpected status from emcs-tfe: $status")
-          Left(UnexpectedDownstreamResponseError)
+          logger.debug(s"[read] error body from emcs-tfe: ${response.body}")
+          if (response.body.contains(ErrorConstants.NOT_FOUND_MESSAGE)) {
+            Left(NotFoundError)
+          } else {
+            Left(UnexpectedDownstreamResponseError)
+          }
       }
     }
   }

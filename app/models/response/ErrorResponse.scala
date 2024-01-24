@@ -26,8 +26,16 @@ case object UnexpectedDownstreamResponseError extends ErrorResponse {
   val message = "Unexpected downstream response status"
 }
 
+case object NotFoundError extends ErrorResponse {
+  val message = "No data found"
+}
+
 case object JsonValidationError extends ErrorResponse {
   val message = "JSON validation error"
+}
+
+object ErrorConstants {
+  val NOT_FOUND_MESSAGE = "No data found for requested search data"
 }
 
 case class ExciseProductCodesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
