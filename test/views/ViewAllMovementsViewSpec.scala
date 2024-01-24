@@ -22,7 +22,7 @@ import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
 import forms.ViewAllMovementsFormProvider
 import models.requests.DataRequest
-import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
+import models.{MovementFilterStatusOption, MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
@@ -121,6 +121,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     movements = getMovementListResponse.movements,
     sortSelectItems = MovementSortingSelectOption.constructSelectItems(),
     searchSelectItems = MovementSearchSelectOption.constructSelectItems(),
+    movementStatusItems = MovementFilterStatusOption.selectItems(None),
     exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_PRODUCT_CODE), None),
     pagination = pagination
   ).toString())

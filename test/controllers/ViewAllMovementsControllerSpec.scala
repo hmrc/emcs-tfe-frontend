@@ -25,9 +25,9 @@ import mocks.connectors.{MockEmcsTfeConnector, MockGetExciseProductCodesConnecto
 import mocks.viewmodels.MockMovementPaginationHelper
 import models.MovementSortingSelectOption.{ArcAscending, Newest}
 import models.requests.DataRequest
-import models.response.UnexpectedDownstreamResponseError
+import models.response.{NotFoundError, UnexpectedDownstreamResponseError}
 import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
-import models.{ExciseProductCode, MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption, SelectOptionModel}
+import models._
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
@@ -61,7 +61,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
   lazy val formProvider = app.injector.instanceOf[ViewAllMovementsFormProvider]
 
   val selectItemList = SelectItemHelper.constructSelectItems(MovementSortingSelectOption.values, None, None)
-  
+
   val epcsListConnectorResult: Seq[ExciseProductCode] = Seq(beerExciseProductCode, wineExciseProductCode)
   val epcsListForView: Seq[SelectOptionModel] = MovementListSearchOptions.CHOOSE_PRODUCT_CODE +: epcsListConnectorResult
 
@@ -92,7 +92,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
         MockEmcsTfeConnector
           .getMovementList(testErn, Some(searchOptions))
           .returns(Future.successful(Right(threePageMovementListResponse)))
-        
+
         MockGetExciseProductCodesConnector
           .getExciseProductCodes()
           .returns(Future.successful(Right(epcsListConnectorResult)))
@@ -127,6 +127,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           movements = movements,
           sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+          movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
           pagination = None
         )
@@ -156,6 +157,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           movements = movements,
           sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+          movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
           pagination = None
         )
@@ -185,6 +187,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           movements = movements,
           sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+          movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
           pagination = None
         )
@@ -232,6 +235,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           movements = movements,
           sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+          movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
           pagination = None
         )
@@ -261,24 +265,45 @@ class ViewAllMovementsControllerSpec extends SpecBase
           movements = movements,
           sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+          movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
           pagination = None
         )
       }
     }
 
-    "get movement connector call is unsuccessful" should {
+    "get movement connector call is unsuccessful" when {
 
-      "return 500" in {
+      "not found" should {
+        "return the view" in {
+          MockEmcsTfeConnector
+            .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+            .returns(Future.successful(Left(NotFoundError)))
 
-        MockEmcsTfeConnector
-          .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
-          .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
 
-        val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+          MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 1)(None)
 
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+
+          status(result) shouldBe Status.OK
+        }
+      }
+
+      "any other error message" should {
+        "return 500" in {
+
+          MockEmcsTfeConnector
+            .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+            .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+        }
       }
     }
 
@@ -358,6 +383,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             movements = movements,
             sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+            movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
             pagination = None
           )
@@ -389,6 +415,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             movements = movements,
             sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+            movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
             pagination = None
           )
@@ -420,6 +447,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             movements = movements,
             sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+            movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
             pagination = None
           )
@@ -471,6 +499,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             movements = movements,
             sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+            movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
             pagination = None
           )
@@ -502,24 +531,50 @@ class ViewAllMovementsControllerSpec extends SpecBase
             movements = movements,
             sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+            movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
             pagination = None
           )
         }
       }
 
-      "get movement connector call is unsuccessful" should {
+      "get movement connector call is unsuccessful" when {
 
-        "return 500" in {
+        "not found" should {
+          "return the view" in {
+            val searchOptions = MovementListSearchOptions(index = 1)
 
-          MockEmcsTfeConnector
-            .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
-            .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+            MockEmcsTfeConnector
+              .getMovementList(testErn, Some(searchOptions))
+              .returns(Future.successful(Left(NotFoundError)))
 
-          val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+            MockGetExciseProductCodesConnector
+              .getExciseProductCodes()
+              .returns(Future.successful(Right(epcsListConnectorResult)))
 
-          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+            MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 1)(None)
+
+            val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
+              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+            )
+
+            status(result) shouldBe Status.BAD_REQUEST
+          }
+        }
+
+        "any other error message" should {
+
+          "return 500" in {
+
+            MockEmcsTfeConnector
+              .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+              .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+            val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+
+            status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+            Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+          }
         }
       }
 
