@@ -82,8 +82,8 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     val filtersStatusStopped: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(13)"
     val filtersEpc: String = s"$filtersSection .govuk-form-group:nth-of-type(4) label"
     val filtersEpcChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(4) select option:nth-of-type(1)"
-    val filtersCountry: String = s"$filtersSection .govuk-form-group:nth-of-type(5) legend"
-    val filtersCountryChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(5) ul li:nth-of-type(1)"
+    val filtersCountry: String = s"$filtersSection .govuk-form-group:nth-of-type(5) label"
+    val filtersCountryChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(5) select option:nth-of-type(1)"
     val filtersDispatchedFrom: String = s"$filtersSection .govuk-form-group:nth-of-type(6) legend"
     val filtersDispatchedFromDay: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label:nth-of-type(1)"
     val filtersDispatchedFromMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label:nth-of-type(2)"
@@ -123,6 +123,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     searchSelectItems = MovementSearchSelectOption.constructSelectItems(),
     movementStatusItems = MovementFilterStatusOption.selectItems(None),
     exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_PRODUCT_CODE), None),
+    countrySelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_COUNTRY), None),
     pagination = pagination
   ).toString())
 

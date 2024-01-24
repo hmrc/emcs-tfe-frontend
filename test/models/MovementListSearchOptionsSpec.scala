@@ -272,6 +272,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
           undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
           movementStatus = Some(MovementFilterStatusOption.Active),
           exciseProductCode = Some("abc"),
+          countryOfOrigin = Some("GB"),
           index = 1,
           maxRows = 10
         )
@@ -283,7 +284,8 @@ class MovementListSearchOptionsSpec extends SpecBase {
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
           undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
           movementStatusOption = Some(MovementFilterStatusOption.Active),
-          exciseProductCodeOption = Some("abc")
+          exciseProductCodeOption = Some("abc"),
+          countryOfOriginOption = Some("GB")
         )
 
         actualResult mustBe expectedResult
@@ -298,6 +300,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
           undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
           movementStatus = Some(MovementFilterStatusOption.Active),
           exciseProductCode = None,
+          countryOfOrigin = Some("GB"),
           index = 1,
           maxRows = 10
         )
@@ -309,7 +312,8 @@ class MovementListSearchOptionsSpec extends SpecBase {
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
           undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
           movementStatusOption = Some(MovementFilterStatusOption.Active),
-          exciseProductCodeOption = Some(CHOOSE_PRODUCT_CODE.code)
+          exciseProductCodeOption = Some(CHOOSE_PRODUCT_CODE.code),
+          countryOfOriginOption = Some("GB")
         )
 
         actualResult mustBe expectedResult
@@ -324,6 +328,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
           undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
           movementStatus = None,
           exciseProductCode = Some("abc"),
+          countryOfOrigin = Some("GB"),
           index = 1,
           maxRows = 10
         )
@@ -335,7 +340,36 @@ class MovementListSearchOptionsSpec extends SpecBase {
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
           undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
           movementStatusOption = Some(MovementFilterStatusOption.ChooseStatus),
-          exciseProductCodeOption = Some("abc")
+          exciseProductCodeOption = Some("abc"),
+          countryOfOriginOption = Some("GB")
+        )
+
+        actualResult mustBe expectedResult
+      }
+
+      "filter out Choose country" in {
+        val expectedResult = MovementListSearchOptions(
+          searchKey = Some(ARC),
+          searchValue = Some("ARC123"),
+          sortBy = Oldest,
+          traderRole = Some(MovementFilterDirectionOption.GoodsIn),
+          undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
+          movementStatus = Some(MovementFilterStatusOption.Active),
+          exciseProductCode = Some("abc"),
+          countryOfOrigin = None,
+          index = 1,
+          maxRows = 10
+        )
+
+        val actualResult = MovementListSearchOptions.apply(
+          searchKey = Some(ARC.code),
+          searchValue = Some("ARC123"),
+          sortBy = Oldest.code,
+          traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
+          undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
+          movementStatusOption = Some(MovementFilterStatusOption.Active),
+          exciseProductCodeOption = Some("abc"),
+          countryOfOriginOption = Some(MovementListSearchOptions.CHOOSE_COUNTRY.code)
         )
 
         actualResult mustBe expectedResult
@@ -353,7 +387,8 @@ class MovementListSearchOptionsSpec extends SpecBase {
           Set(MovementFilterDirectionOption.GoodsOut),
           Set(MovementFilterUndischargedOption.Undischarged),
           Some(MovementFilterStatusOption.Active),
-          Some("abc")
+          Some("abc"),
+          Some("GB")
         ))
 
         val actualResult = MovementListSearchOptions.unapply(
@@ -365,6 +400,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
             undischargedMovements = Some(MovementFilterUndischargedOption.Undischarged),
             movementStatus = Some(MovementFilterStatusOption.Active),
             exciseProductCode = Some("abc"),
+            countryOfOrigin = Some("GB"),
             index = 1,
             maxRows = 10
           )

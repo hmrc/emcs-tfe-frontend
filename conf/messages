@@ -360,6 +360,8 @@ viewAllMovements.filters.status.rejected = Rejected
 viewAllMovements.filters.status.stopped = Stopped
 viewAllMovements.filters.exciseProductCode = Excise product code
 viewAllMovements.filters.exciseProductCode.chooseProductCode = Choose item
+viewAllMovements.filters.countryOfOrigin = Country of origin
+viewAllMovements.filters.countryOfOrigin.chooseCountry = Choose country
 
 viewAllMessages.title = Messages ({0})
 viewAllMessages.heading = Messages ({0})

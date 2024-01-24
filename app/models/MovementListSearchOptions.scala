@@ -27,6 +27,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
                                      undischargedMovements: Option[MovementFilterUndischargedOption] = None,
                                      movementStatus: Option[MovementFilterStatusOption] = None,
                                      exciseProductCode: Option[String] = None,
+                                     countryOfOrigin: Option[String] = None,
                                      index: Int = DEFAULT_INDEX,
                                      maxRows: Int = DEFAULT_MAX_ROWS) {
 
@@ -72,12 +73,21 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     }
   }
 
+  private def getCountryOfOrigin: Option[(String, String)] = {
+    val key = "search.countryOfOrigin"
+    countryOfOrigin match {
+      case Some(value) if value != MovementListSearchOptions.CHOOSE_COUNTRY.code => Some(key -> value)
+      case _ => None
+    }
+  }
+
   def queryParams: Seq[(String, String)] = Seq(
     getSearchFields,
     getTraderRole,
     getUndischargedMovementsFlag,
     getMovementStatus,
     getEpc,
+    getCountryOfOrigin,
     Some("search.sortOrder" -> sortBy.sortOrder),
     Some("search.sortField" -> sortBy.sortField),
     Some("search.startPosition" -> startingPosition.toString),
@@ -96,6 +106,11 @@ object MovementListSearchOptions {
     override val displayName: String = "viewAllMovements.filters.exciseProductCode.chooseProductCode"
   }
 
+  object CHOOSE_COUNTRY extends SelectOptionModel {
+    override val code: String = "chooseCountry"
+    override val displayName: String = "viewAllMovements.filters.countryOfOrigin.chooseCountry"
+  }
+
   implicit def queryStringBinder(implicit intBinder: QueryStringBindable[Int],
                                  stringBinder: QueryStringBindable[String]
                                 ): QueryStringBindable[MovementListSearchOptions] =
@@ -111,6 +126,7 @@ object MovementListSearchOptions {
           undischargedMovements <- stringBinder.bind("undischargedMovements", params).map(_.map(Some(_))).getOrElse(Right(None))
           movementStatus <- stringBinder.bind("movementStatus", params).map(_.map(Some(_))).getOrElse(Right(None))
           exciseProductCode <- stringBinder.bind("exciseProductCode", params).map(_.map(Some(_))).getOrElse(Right(None))
+          countryOfOrigin <- stringBinder.bind("countryOfOrigin", params).map(_.map(Some(_))).getOrElse(Right(None))
         } yield {
           MovementListSearchOptions(
             searchKey = searchKey.map(MovementSearchSelectOption(_)),
@@ -120,6 +136,7 @@ object MovementListSearchOptions {
             undischargedMovements = undischargedMovements.map(MovementFilterUndischargedOption(_)),
             movementStatus = movementStatus.map(MovementFilterStatusOption(_)),
             exciseProductCode = exciseProductCode,
+            countryOfOrigin = countryOfOrigin,
             index = index,
             maxRows = DEFAULT_MAX_ROWS
           )
@@ -136,6 +153,7 @@ object MovementListSearchOptions {
           searchOptions.undischargedMovements.map(field => stringBinder.unbind("undischargedMovements", field.code)),
           searchOptions.movementStatus.map(field => stringBinder.unbind("movementStatus", field.code)),
           searchOptions.exciseProductCode.map(field => stringBinder.unbind("exciseProductCode", field)),
+          searchOptions.countryOfOrigin.map(field => stringBinder.unbind("countryOfOrigin", field)),
         ).flatten.mkString("&")
     }
 
@@ -147,7 +165,8 @@ object MovementListSearchOptions {
              traderRoleOptions: Set[MovementFilterDirectionOption],
              undischargedMovementsOptions: Set[MovementFilterUndischargedOption],
              movementStatusOption: Option[MovementFilterStatusOption],
-             exciseProductCodeOption: Option[String]
+             exciseProductCodeOption: Option[String],
+             countryOfOriginOption: Option[String]
            ): MovementListSearchOptions = {
 
     val traderRole: Option[MovementFilterDirectionOption] = {
@@ -164,13 +183,18 @@ object MovementListSearchOptions {
       case _ => None
     }
 
+    val movementStatus = movementStatusOption match {
+      case Some(value) if value == MovementFilterStatusOption.ChooseStatus => None
+      case value => value
+    }
+
     val exciseProductCode = exciseProductCodeOption match {
       case Some(value) if value == CHOOSE_PRODUCT_CODE.code => None
       case value => value
     }
 
-    val movementStatus = movementStatusOption match {
-      case Some(value) if value == MovementFilterStatusOption.ChooseStatus => None
+    val countryOfOrigin = countryOfOriginOption match {
+      case Some(value) if value == CHOOSE_COUNTRY.code => None
       case value => value
     }
 
@@ -181,7 +205,8 @@ object MovementListSearchOptions {
       traderRole = traderRole,
       undischargedMovements = undischargedMovements,
       movementStatus = movementStatus,
-      exciseProductCode = exciseProductCode
+      exciseProductCode = exciseProductCode,
+      countryOfOrigin = countryOfOrigin
     )
   }
 
@@ -192,6 +217,7 @@ object MovementListSearchOptions {
       Set[MovementFilterDirectionOption],
       Set[MovementFilterUndischargedOption],
       Option[MovementFilterStatusOption],
+      Option[String],
       Option[String]
     )] = {
     println(scala.Console.YELLOW + "options in unapply = " + options + scala.Console.RESET)
@@ -203,7 +229,8 @@ object MovementListSearchOptions {
       options.traderRole.map(MovementFilterDirectionOption.toOptions).getOrElse(Set()),
       options.undischargedMovements.map(Set(_)).getOrElse(Set()),
       options.movementStatus,
-      options.exciseProductCode
+      options.exciseProductCode,
+      options.countryOfOrigin
     ))
   }
 

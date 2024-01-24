@@ -19,14 +19,14 @@ package controllers
 import cats.data.EitherT
 import config.ErrorHandler
 import connectors.emcsTfe.GetMovementListConnector
-import connectors.referenceData.GetExciseProductCodesConnector
+import connectors.referenceData.{GetExciseProductCodesConnector, GetMemberStatesConnector}
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import forms.ViewAllMovementsFormProvider
 import models.MovementListSearchOptions.DEFAULT_MAX_ROWS
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementListResponse
 import models.response.{ErrorResponse, NotFoundError}
-import models.{ExciseProductCode, MovementFilterStatusOption, MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
+import models.{MovementFilterStatusOption, MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -41,6 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                            getMovementListConnector: GetMovementListConnector,
                                            getExciseProductCodesConnector: GetExciseProductCodesConnector,
+                                           getMemberStatesConnector: GetMemberStatesConnector,
                                            view: ViewAllMovements,
                                            errorHandler: ErrorHandler,
                                            val auth: AuthAction,
@@ -74,8 +75,12 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
         case Left(NotFoundError) => Right(GetMovementListResponse(Seq(), 0))
         case value => value
       })
+
       epcs <- EitherT(getExciseProductCodesConnector.getExciseProductCodes())
       exciseProductCodeOptions = MovementListSearchOptions.CHOOSE_PRODUCT_CODE +: epcs
+
+      countries <- EitherT(getMemberStatesConnector.getMemberStates())
+      sortedCountries = MovementListSearchOptions.CHOOSE_COUNTRY +: countries.sortBy(_.displayName)
     } yield {
 
       val pageCount = {
@@ -101,6 +106,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(searchOptions.searchKey.map(_.code)),
           movementStatusItems = movementStatusItems,
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(exciseProductCodeOptions, None, searchOptions.exciseProductCode),
+          countrySelectItems = SelectItemHelper.constructSelectItems(sortedCountries, None, searchOptions.countryOfOrigin),
           pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions)
         ))
       }
