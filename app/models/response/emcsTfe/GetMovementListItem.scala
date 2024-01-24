@@ -35,14 +35,14 @@ case class GetMovementListItem(arc: String,
 
   val formattedDateOfDispatch: String = dateOfDispatch.toLocalDate.formatDateForUIOutput()
 
-  val statusTag: Tag = (movementStatus match {
-    case "Accepted" =>
+  val statusTag: Tag = (movementStatus.toLowerCase match {
+    case "accepted" =>
       TagViewModel(Text(movementStatus)).blue()
-    case "Deemed exported" | "Diverted" | "Exporting" =>
+    case "deemed exported" | "diverted" | "exporting" =>
       TagViewModel(Text(movementStatus)).green()
-    case "Partially refused" | "Refused" | "Rejected" =>
+    case "partially refused" | "refused" | "rejected" =>
       TagViewModel(Text(movementStatus)).orange()
-    case "Cancelled" | "Manually closed" | "Replaced" | "Stopped" =>
+    case "cancelled" | "manually closed" | "e-ad manually closed" | "replaced" | "stopped" =>
       TagViewModel(Text(movementStatus)).purple()
     case _ =>
       TagViewModel(Text(movementStatus))

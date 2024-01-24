@@ -52,6 +52,7 @@
         searchSelectItems: Seq[SelectItem],
         movementStatusItems: Seq[SelectItem],
         exciseProductCodeSelectItems: Seq[SelectItem],
+        countrySelectItems: Seq[SelectItem],
         pagination: Option[Pagination]
 )(implicit request: DataRequest[_], messages: Messages)
 
@@ -165,6 +166,14 @@
                     id = "exciseProductCode",
                     label = LabelViewModel(
                         content = Text(messages("viewAllMovements.filters.exciseProductCode"))
+                    ).withCssClass("govuk-label--s")
+                ))
+                @govukSelect(Select(
+                    items = countrySelectItems,
+                    name = "countryOfOrigin",
+                    id = "countryOfOrigin",
+                    label = LabelViewModel(
+                        content = Text(messages("viewAllMovements.filters.countryOfOrigin"))
                     ).withCssClass("govuk-label--s")
                 ))
             </aside>

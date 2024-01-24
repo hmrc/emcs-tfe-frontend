@@ -19,9 +19,9 @@ package controllers
 import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
-import fixtures.{ExciseProductCodeFixtures, MovementListFixtures}
+import fixtures.{ExciseProductCodeFixtures, MemberStatesFixtures, MovementListFixtures}
 import forms.ViewAllMovementsFormProvider
-import mocks.connectors.{MockEmcsTfeConnector, MockGetExciseProductCodesConnector}
+import mocks.connectors.{MockEmcsTfeConnector, MockGetExciseProductCodesConnector, MockGetMemberStatesConnector}
 import mocks.viewmodels.MockMovementPaginationHelper
 import models.MovementSortingSelectOption.{ArcAscending, Newest}
 import models.requests.DataRequest
@@ -47,6 +47,8 @@ class ViewAllMovementsControllerSpec extends SpecBase
   with MockMovementPaginationHelper
   with MockGetExciseProductCodesConnector
   with ExciseProductCodeFixtures
+  with MockGetMemberStatesConnector
+  with MemberStatesFixtures
   with MockEmcsTfeConnector {
 
   val movements: Seq[GetMovementListItem] = Seq.fill(10)(movement1)
@@ -65,10 +67,14 @@ class ViewAllMovementsControllerSpec extends SpecBase
   val epcsListConnectorResult: Seq[ExciseProductCode] = Seq(beerExciseProductCode, wineExciseProductCode)
   val epcsListForView: Seq[SelectOptionModel] = MovementListSearchOptions.CHOOSE_PRODUCT_CODE +: epcsListConnectorResult
 
+  val countryListConnectorResult: Seq[MemberState] = Seq(memberStateAT, memberStateBE)
+  val countryListForView: Seq[SelectOptionModel] = MovementListSearchOptions.CHOOSE_COUNTRY +: countryListConnectorResult
+
   lazy val controller: ViewAllMovementsController = new ViewAllMovementsController(
     mcc = app.injector.instanceOf[MessagesControllerComponents],
     getMovementListConnector = mockGetMovementListConnector,
     getExciseProductCodesConnector = mockGetExciseProductCodesConnector,
+    getMemberStatesConnector = mockGetMemberStatesConnector,
     view = view,
     errorHandler = errorHandler,
     auth = FakeSuccessAuthAction,
@@ -97,6 +103,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getExciseProductCodes()
           .returns(Future.successful(Right(epcsListConnectorResult)))
 
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.SEE_OTHER
@@ -115,6 +125,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getExciseProductCodes()
           .returns(Future.successful(Right(epcsListConnectorResult)))
 
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 3)(None)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
@@ -129,6 +143,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
           movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+          countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
           pagination = None
         )
       }
@@ -145,6 +160,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getExciseProductCodes()
           .returns(Future.successful(Right(epcsListConnectorResult)))
 
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         MockMovementPaginationHelper.constructPagination(index = 2, pageCount = 3)(None)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
@@ -159,6 +178,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
           movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+          countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
           pagination = None
         )
       }
@@ -175,6 +195,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getExciseProductCodes()
           .returns(Future.successful(Right(epcsListConnectorResult)))
 
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 3)(None)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
@@ -189,6 +213,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
           movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+          countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
           pagination = None
         )
       }
@@ -204,6 +229,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
         MockGetExciseProductCodesConnector
           .getExciseProductCodes()
           .returns(Future.successful(Right(epcsListConnectorResult)))
+
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -223,6 +252,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getExciseProductCodes()
           .returns(Future.successful(Right(epcsListConnectorResult)))
 
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
@@ -237,6 +270,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
           movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+          countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
           pagination = None
         )
       }
@@ -253,6 +287,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getExciseProductCodes()
           .returns(Future.successful(Right(epcsListConnectorResult)))
 
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
@@ -267,6 +305,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
           movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+          countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
           pagination = None
         )
       }
@@ -283,6 +322,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           MockGetExciseProductCodesConnector
             .getExciseProductCodes()
             .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
 
           MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 1)(None)
 
@@ -325,6 +368,29 @@ class ViewAllMovementsControllerSpec extends SpecBase
         Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
       }
     }
+
+    "get countries connector call is unsuccessful" should {
+
+      "return 500" in {
+
+        MockEmcsTfeConnector
+          .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+          .returns(Future.successful(Right(GetMovementListResponse(movements, 39))))
+
+        MockGetExciseProductCodesConnector
+          .getExciseProductCodes()
+          .returns(Future.successful(Right(epcsListConnectorResult)))
+
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+        val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+      }
+    }
   }
 
   "POST /" when {
@@ -349,6 +415,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getExciseProductCodes()
             .returns(Future.successful(Right(epcsListConnectorResult)))
 
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
             fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
           )
@@ -369,6 +439,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getExciseProductCodes()
             .returns(Future.successful(Right(epcsListConnectorResult)))
 
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
           MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 3)(None)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
@@ -385,6 +459,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
             movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+            countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
             pagination = None
           )
         }
@@ -400,6 +475,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           MockGetExciseProductCodesConnector
             .getExciseProductCodes()
             .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
 
           MockMovementPaginationHelper.constructPagination(index = 2, pageCount = 3)(None)
 
@@ -417,6 +496,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
             movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+            countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
             pagination = None
           )
         }
@@ -432,6 +512,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           MockGetExciseProductCodesConnector
             .getExciseProductCodes()
             .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
 
           MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 3)(None)
 
@@ -449,6 +533,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
             movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+            countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
             pagination = None
           )
         }
@@ -464,6 +549,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           MockGetExciseProductCodesConnector
             .getExciseProductCodes()
             .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
             fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
@@ -485,6 +574,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getExciseProductCodes()
             .returns(Future.successful(Right(epcsListConnectorResult)))
 
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
           MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
@@ -501,6 +594,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
             movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+            countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
             pagination = None
           )
         }
@@ -517,6 +611,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getExciseProductCodes()
             .returns(Future.successful(Right(epcsListConnectorResult)))
 
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
           MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
@@ -533,6 +631,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
             movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
             exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+            countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
             pagination = None
           )
         }
@@ -551,6 +650,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
             MockGetExciseProductCodesConnector
               .getExciseProductCodes()
               .returns(Future.successful(Right(epcsListConnectorResult)))
+
+            MockGetMemberStatesConnector
+              .getMemberStates()
+              .returns(Future.successful(Right(countryListConnectorResult)))
 
             MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 1)(None)
 
@@ -588,6 +691,29 @@ class ViewAllMovementsControllerSpec extends SpecBase
 
           MockGetExciseProductCodesConnector
             .getExciseProductCodes()
+            .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+          val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+        }
+      }
+
+      "get countries connector call is unsuccessful" should {
+
+        "return 500" in {
+
+          MockEmcsTfeConnector
+            .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+            .returns(Future.successful(Right(GetMovementListResponse(movements, 39))))
+
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
             .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
           val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
