@@ -39,22 +39,34 @@ trait MessagesFixtures extends BaseFixtures {
     uniqueMessageIdentifier = 1002L,
     dateCreatedOnCore = LocalDateTime.of(2024, 1, 6, 0, 0, 0, 0),
     arc = None,
-    messageType = "IE818",
-    relatedMessageType = None,
+    messageType = "IE704",
+    relatedMessageType = Some("IE818"),
     sequenceNumber = Some(1),
     readIndicator = true,
-    lrn = Some("LRN1002"),
+    lrn = Some("LRN1001"),
     messageRole = 0,
-    submittedByRequestingTrader = false
+    submittedByRequestingTrader = true
   )
 
   lazy val getMessageResponse: GetMessagesResponse = GetMessagesResponse(
     dateTime = "",
     exciseRegistrationNumber = testErn,
     messagesData = MessagesData(
-      messages = Seq(message1, message2), totalNumberOfMessagesAvailable = 2
+      messages = Seq(message1, message2), totalNumberOfMessagesAvailable = 3
     )
   )
+
+  def constructMessageResponse(numberOfMessages: Int): GetMessagesResponse = {
+    GetMessagesResponse(
+      dateTime = "",
+      exciseRegistrationNumber = testErn,
+      messagesData = MessagesData(
+        messages = Seq.fill(numberOfMessages)(message1), totalNumberOfMessagesAvailable = numberOfMessages
+      )
+    )
+
+
+  }
 
 
 }
