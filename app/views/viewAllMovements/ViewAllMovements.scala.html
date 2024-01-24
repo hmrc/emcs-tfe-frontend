@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
 @import models.requests.DataRequest
 @import models.response.emcsTfe.GetMovementListItem
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
@@ -28,14 +27,14 @@
 @this(
         layout: templates.Layout,
         formHelper: FormWithCSRF,
-        table: table,
         h1: h1,
         h2: h2,
         p: p,
-        appConfig: AppConfig,
         govukPagination: GovukPagination,
         govukSelect: GovukSelect,
         govukInput: GovukInput,
+        govukErrorSummary: GovukErrorSummary,
+        govukDateInput: GovukDateInput,
         govukButton: GovukButton,
         govukFieldset: GovukFieldset,
         govukCheckboxes: GovukCheckboxes,
@@ -102,84 +101,114 @@
 
     @formHelper(action) {
 
-        @h1() {
-            @messages("viewAllMovements.heading")
+        @defining(form.errors.headOption.map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
+
+            @if(form.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> s"value.${erroredFields.headOption.getOrElse("dateOfDispatchFrom.day")}")))
+            }
+
+            @h1() {
+                @messages("viewAllMovements.heading")
+            }
+
+            @govukFieldset(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("viewAllMovements.search.heading")),
+                    classes = "govuk-fieldset__legend--m",
+                    isPageHeading = false
+                )),
+                classes = "govuk-!-margin-bottom-2",
+                html = searchFields
+            ))
+
+            <div class="govuk-grid-column-one-third govuk-!-padding-0">
+                <aside style="border: 1px solid #b1b4b6;
+                    padding: 15px">
+                    @h2("Filters", "govuk-heading-m")
+                    @govukButton(
+                        ButtonViewModel(Text(messages("viewAllMovements.filters.button")))
+                        .withId("filtersButton")
+                    )
+
+                    @* Direction *@
+                    @govukCheckboxes(
+                        CheckboxesViewModel(
+                            form = form,
+                            name = "traderRole",
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    content = Text(messages("viewAllMovements.filters.direction.heading")),
+                                    classes = "govuk-fieldset__legend--s",
+                                    isPageHeading = false
+                                ))
+                            )),
+                            items = MovementFilterDirectionOption.checkboxItems
+                        ).withClasses(Seq("govuk-checkboxes--small"))
+                    )
+
+                    @* Undischarged *@
+                    @govukCheckboxes(
+                        CheckboxesViewModel(
+                            form = form,
+                            name = "traderRole",
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    content = Text(messages("viewAllMovements.filters.undischarged.heading")),
+                                    classes = "govuk-fieldset__legend--s",
+                                    isPageHeading = false
+                                ))
+                            )),
+                            items = MovementFilterUndischargedOption.checkboxItems
+                        ).withClasses(Seq("govuk-checkboxes--small"))
+                    )
+
+                    @* Status *@
+                    @govukSelect(Select(
+                        items = movementStatusItems,
+                        name = "movementStatus",
+                        id = "movementStatus",
+                        label = LabelViewModel(
+                            content = Text(messages("viewAllMovements.filters.status"))
+                        ).withCssClass("govuk-label--s")
+                    ))
+
+                    @* Excise product code *@
+                    @govukSelect(Select(
+                        items = exciseProductCodeSelectItems,
+                        name = "exciseProductCode",
+                        id = "exciseProductCode",
+                        label = LabelViewModel(
+                            content = Text(messages("viewAllMovements.filters.exciseProductCode"))
+                        ).withCssClass("govuk-label--s")
+                    ))
+
+                    @* Country of origin *@
+                    @govukSelect(Select(
+                        items = countrySelectItems,
+                        name = "countryOfOrigin",
+                        id = "countryOfOrigin",
+                        label = LabelViewModel(
+                            content = Text(messages("viewAllMovements.filters.countryOfOrigin"))
+                        ).withCssClass("govuk-label--s")
+                    ))
+
+                    @* Dispatched from *@
+                    @govukDateInput(
+                        DateViewModel(
+                            field = form("dateOfDispatchFrom"),
+                            legend = Legend(
+                                content = Text(messages("viewAllMovements.filters.dateOfDispatchFrom.heading")),
+                                classes = "govuk-fieldset__legend--s",
+                                isPageHeading = false
+                            ),
+                            fieldsWithErrors = erroredFields
+                        )
+                    )
+                </aside>
+            </div>
+
+            @movementList(ern, movements, sortSelectItems, pagination)
         }
-
-        @govukFieldset(Fieldset(
-            legend = Some(Legend(
-                content = Text(messages("viewAllMovements.search.heading")),
-                classes = "govuk-fieldset__legend--m",
-                isPageHeading = false
-            )),
-            classes = "govuk-!-margin-bottom-2",
-            html = searchFields
-        ))
-
-        <div class="govuk-grid-column-one-third govuk-!-padding-0">
-            <aside style="border: 1px solid #b1b4b6;
-                padding: 15px">
-                @h2("Filters", "govuk-heading-m")
-                @govukButton(
-                    ButtonViewModel(Text(messages("viewAllMovements.filters.button")))
-                    .withId("filtersButton")
-                )
-                @govukCheckboxes(
-                    CheckboxesViewModel(
-                        form = form,
-                        name = "traderRole",
-                        fieldset = Some(Fieldset(
-                            legend = Some(Legend(
-                                content = Text(messages("viewAllMovements.filters.direction.heading")),
-                                classes = "govuk-fieldset__legend--s",
-                                isPageHeading = false
-                            ))
-                        )),
-                        items = MovementFilterDirectionOption.checkboxItems
-                    ).withClasses(Seq("govuk-checkboxes--small"))
-                )
-                @govukCheckboxes(
-                    CheckboxesViewModel(
-                        form = form,
-                        name = "traderRole",
-                        fieldset = Some(Fieldset(
-                            legend = Some(Legend(
-                                content = Text(messages("viewAllMovements.filters.undischarged.heading")),
-                                classes = "govuk-fieldset__legend--s",
-                                isPageHeading = false
-                            ))
-                        )),
-                        items = MovementFilterUndischargedOption.checkboxItems
-                    ).withClasses(Seq("govuk-checkboxes--small"))
-                )
-                @govukSelect(Select(
-                    items = movementStatusItems,
-                    name = "movementStatus",
-                    id = "movementStatus",
-                    label = LabelViewModel(
-                        content = Text(messages("viewAllMovements.filters.status"))
-                    ).withCssClass("govuk-label--s")
-                ))
-                @govukSelect(Select(
-                    items = exciseProductCodeSelectItems,
-                    name = "exciseProductCode",
-                    id = "exciseProductCode",
-                    label = LabelViewModel(
-                        content = Text(messages("viewAllMovements.filters.exciseProductCode"))
-                    ).withCssClass("govuk-label--s")
-                ))
-                @govukSelect(Select(
-                    items = countrySelectItems,
-                    name = "countryOfOrigin",
-                    id = "countryOfOrigin",
-                    label = LabelViewModel(
-                        content = Text(messages("viewAllMovements.filters.countryOfOrigin"))
-                    ).withCssClass("govuk-label--s")
-                ))
-            </aside>
-        </div>
-
-        @movementList(ern, movements, sortSelectItems, pagination)
     }
 }
 
