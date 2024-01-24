@@ -20,6 +20,9 @@ import models.MovementListSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS}
 import models.MovementSortingSelectOption.ArcAscending
 import play.api.mvc.QueryStringBindable
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOption] = None,
                                      searchValue: Option[String] = None,
                                      sortBy: MovementSortingSelectOption = ArcAscending,
@@ -28,6 +31,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
                                      movementStatus: Option[MovementFilterStatusOption] = None,
                                      exciseProductCode: Option[String] = None,
                                      countryOfOrigin: Option[String] = None,
+                                     dateOfDispatchFrom: Option[LocalDate] = None,
                                      index: Int = DEFAULT_INDEX,
                                      maxRows: Int = DEFAULT_MAX_ROWS) {
 
@@ -88,6 +92,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     getMovementStatus,
     getEpc,
     getCountryOfOrigin,
+    dateOfDispatchFrom.map(date => "search.dateOfDispatchFrom" -> MovementListSearchOptions.localDateToString(date)),
     Some("search.sortOrder" -> sortBy.sortOrder),
     Some("search.sortField" -> sortBy.sortField),
     Some("search.startPosition" -> startingPosition.toString),
@@ -97,6 +102,12 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
 }
 
 object MovementListSearchOptions {
+
+  private def localDateToString(ld: LocalDate): String =
+    s"${f"${ld.getDayOfMonth}%02d"}/${f"${ld.getMonthValue}%02d"}/${ld.getYear}" // pad day and month with leading zeros as needed
+
+  private def stringToLocalDate(s: String): LocalDate =
+    LocalDate.parse(s, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
 
   val DEFAULT_INDEX: Int = 1
   val DEFAULT_MAX_ROWS: Int = 10
@@ -127,6 +138,7 @@ object MovementListSearchOptions {
           movementStatus <- stringBinder.bind("movementStatus", params).map(_.map(Some(_))).getOrElse(Right(None))
           exciseProductCode <- stringBinder.bind("exciseProductCode", params).map(_.map(Some(_))).getOrElse(Right(None))
           countryOfOrigin <- stringBinder.bind("countryOfOrigin", params).map(_.map(Some(_))).getOrElse(Right(None))
+          dateOfDispatchFrom <- stringBinder.bind("dateOfDispatchFrom", params).map(_.map(Some(_))).getOrElse(Right(None))
         } yield {
           MovementListSearchOptions(
             searchKey = searchKey.map(MovementSearchSelectOption(_)),
@@ -137,6 +149,7 @@ object MovementListSearchOptions {
             movementStatus = movementStatus.map(MovementFilterStatusOption(_)),
             exciseProductCode = exciseProductCode,
             countryOfOrigin = countryOfOrigin,
+            dateOfDispatchFrom = dateOfDispatchFrom.map(stringToLocalDate),
             index = index,
             maxRows = DEFAULT_MAX_ROWS
           )
@@ -154,6 +167,7 @@ object MovementListSearchOptions {
           searchOptions.movementStatus.map(field => stringBinder.unbind("movementStatus", field.code)),
           searchOptions.exciseProductCode.map(field => stringBinder.unbind("exciseProductCode", field)),
           searchOptions.countryOfOrigin.map(field => stringBinder.unbind("countryOfOrigin", field)),
+          searchOptions.dateOfDispatchFrom.map(field => stringBinder.unbind("dateOfDispatchFrom", localDateToString(field))),
         ).flatten.mkString("&")
     }
 
@@ -166,7 +180,8 @@ object MovementListSearchOptions {
              undischargedMovementsOptions: Set[MovementFilterUndischargedOption],
              movementStatusOption: Option[MovementFilterStatusOption],
              exciseProductCodeOption: Option[String],
-             countryOfOriginOption: Option[String]
+             countryOfOriginOption: Option[String],
+             dateOfDispatchFrom: Option[LocalDate]
            ): MovementListSearchOptions = {
 
     val traderRole: Option[MovementFilterDirectionOption] = {
@@ -206,7 +221,8 @@ object MovementListSearchOptions {
       undischargedMovements = undischargedMovements,
       movementStatus = movementStatus,
       exciseProductCode = exciseProductCode,
-      countryOfOrigin = countryOfOrigin
+      countryOfOrigin = countryOfOrigin,
+      dateOfDispatchFrom = dateOfDispatchFrom
     )
   }
 
@@ -218,7 +234,8 @@ object MovementListSearchOptions {
       Set[MovementFilterUndischargedOption],
       Option[MovementFilterStatusOption],
       Option[String],
-      Option[String]
+      Option[String],
+      Option[LocalDate]
     )] = {
     println(scala.Console.YELLOW + "options in unapply = " + options + scala.Console.RESET)
 
@@ -230,7 +247,8 @@ object MovementListSearchOptions {
       options.undischargedMovements.map(Set(_)).getOrElse(Set()),
       options.movementStatus,
       options.exciseProductCode,
-      options.countryOfOrigin
+      options.countryOfOrigin,
+      options.dateOfDispatchFrom
     ))
   }
 

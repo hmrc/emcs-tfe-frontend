@@ -23,6 +23,10 @@ unitOfMeasure.litres20.long = litres (temperature of 20°C)
 unitOfMeasure.thousands.short = x1000
 unitOfMeasure.thousands.long = x1000 items
 
+date.day = Day
+date.month = Month
+date.year = Year
+
 # MOV02 - Links
 viewMovement.title = Movement details
 viewMovement.reportAReceipt = Submit report of receipt
@@ -362,6 +366,7 @@ viewAllMovements.filters.exciseProductCode = Excise product code
 viewAllMovements.filters.exciseProductCode.chooseProductCode = Choose item
 viewAllMovements.filters.countryOfOrigin = Country of origin
 viewAllMovements.filters.countryOfOrigin.chooseCountry = Choose country
+viewAllMovements.filters.dateOfDispatchFrom.heading = Dispatched from
 
 viewAllMessages.title = Messages ({0})
 viewAllMessages.heading = Messages ({0})
