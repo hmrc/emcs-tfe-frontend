@@ -20,6 +20,7 @@ import forms.mappings.Mappings
 import models._
 import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, set}
+import uk.gov.voa.play.form.ConditionalMappings
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -38,12 +39,12 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
         ViewAllMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllMovementsFormProvider.countryOfOrigin -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         // TODO: why is this getting ignored when an invalid date is supplied?
-        ViewAllMovementsFormProvider.dateOfDispatchFrom -> optional(localDate(
+        ViewAllMovementsFormProvider.dateOfDispatchFrom -> optionalLocalDate(
           invalidKey     = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid",
           allRequiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required.all",
           twoRequiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required.two",
           requiredKey    = "viewAllMovements.filters.dateOfDispatchFrom.error.required"
-        ))
+        )
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
     )
 

@@ -59,7 +59,10 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
   def onSubmit(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
     authorisedWithData(ern).async { implicit request =>
       formProvider().bindFromRequest().fold(
-        _ => renderView(BadRequest, ern, searchOptions),
+        _ => {
+          println(scala.Console.RED + "failed" + scala.Console.RESET)
+          renderView(BadRequest, ern, searchOptions)
+        },
         value => {
           println(scala.Console.YELLOW + "value in onSubmit = " + value + scala.Console.RESET)
 

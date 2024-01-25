@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,14 @@ trait Mappings extends Formatters with Constraints {
                            requiredKey: String,
                            args: Seq[String] = Seq.empty): FieldMapping[LocalDate] =
     of(new LocalDateFormatter(invalidKey, allRequiredKey, twoRequiredKey, requiredKey, args))
+
+  protected def optionalLocalDate(
+                           invalidKey: String,
+                           allRequiredKey: String,
+                           twoRequiredKey: String,
+                           requiredKey: String,
+                           args: Seq[String] = Seq.empty): FieldMapping[Option[LocalDate]] =
+    of(new OptionalLocalDateFormatter(invalidKey, allRequiredKey, twoRequiredKey, requiredKey, args))
 
   protected def enumerable[A](requiredKey: String = "error.required",
                               invalidKey: String = "error.invalid",
