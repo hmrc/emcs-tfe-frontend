@@ -367,6 +367,9 @@ viewAllMovements.filters.exciseProductCode.chooseProductCode = Choose item
 viewAllMovements.filters.countryOfOrigin = Country of origin
 viewAllMovements.filters.countryOfOrigin.chooseCountry = Choose country
 viewAllMovements.filters.dateOfDispatchFrom.heading = Dispatched from
+viewAllMovements.filters.dateOfDispatchFrom.error.required.two = The Dispatched from date must include a {0} and {1}
+viewAllMovements.filters.dateOfDispatchFrom.error.required = The Dispatched from date must include a {0}
+viewAllMovements.filters.dateOfDispatchFrom.error.invalid = The Dispatched from date must be a real date
 
 viewAllMessages.title = Messages ({0})
 viewAllMessages.heading = Messages ({0})

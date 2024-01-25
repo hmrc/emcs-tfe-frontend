@@ -27,6 +27,7 @@ import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementListResponse
 import models.response.{ErrorResponse, NotFoundError}
 import models.{MovementFilterStatusOption, MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -59,7 +60,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
   def onSubmit(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
     authorisedWithData(ern).async { implicit request =>
       formProvider().bindFromRequest().fold(
-        _ => renderView(BadRequest, ern, searchOptions),
+        formWithErrors => renderView(BadRequest, ern, searchOptions, formWithErrors),
         value => {
           println(scala.Console.YELLOW + "value in onSubmit = " + value + scala.Console.RESET)
 
@@ -68,7 +69,12 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
       )
     }
 
-  private def renderView(status: Status, ern: String, searchOptions: MovementListSearchOptions)(implicit request: DataRequest[_]): Future[Result] = {
+  private def renderView(
+                          status: Status,
+                          ern: String,
+                          searchOptions: MovementListSearchOptions,
+                          form: Form[MovementListSearchOptions] = formProvider()
+                        )(implicit request: DataRequest[_]): Future[Result] = {
 
     val result: EitherT[Future, ErrorResponse, Result] = for {
       movementList <- EitherT(getMovementListConnector.getMovementList(ern, Some(searchOptions)).map {
@@ -83,22 +89,16 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
       sortedCountries = MovementListSearchOptions.CHOOSE_COUNTRY +: countries.sortBy(_.displayName)
     } yield {
 
-      val pageCount = {
-        if (movementList.count == 0) {
-          1
-        } else if (movementList.count % DEFAULT_MAX_ROWS != 0) {
-          (movementList.count / DEFAULT_MAX_ROWS) + 1
-        } else {
-          movementList.count / DEFAULT_MAX_ROWS
-        }
-      }
+      val pageCount: Int = calculatePageCount(movementList)
+
       if (searchOptions.index <= 0 || searchOptions.index > pageCount) {
         Redirect(routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()))
       } else {
         val movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus)
+        val formToRender = if (form.hasErrors) form else form.fill(searchOptions)
 
         status(view(
-          form = formProvider().fill(searchOptions),
+          form = formToRender,
           action = routes.ViewAllMovementsController.onSubmit(ern, searchOptions),
           ern = ern,
           movements = movementList.movements,
@@ -116,5 +116,15 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
     result.leftMap {
       _ => InternalServerError(errorHandler.internalServerErrorTemplate)
     }.merge
+  }
+
+  private def calculatePageCount(movementList: GetMovementListResponse): Int = {
+    if (movementList.count == 0) {
+      1
+    } else if (movementList.count % DEFAULT_MAX_ROWS != 0) {
+      (movementList.count / DEFAULT_MAX_ROWS) + 1
+    } else {
+      movementList.count / DEFAULT_MAX_ROWS
+    }
   }
 }

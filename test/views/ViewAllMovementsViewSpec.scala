@@ -85,21 +85,21 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     val filtersCountry: String = s"$filtersSection .govuk-form-group:nth-of-type(5) label"
     val filtersCountryChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(5) select option:nth-of-type(1)"
     val filtersDispatchedFrom: String = s"$filtersSection .govuk-form-group:nth-of-type(6) legend"
-    val filtersDispatchedFromDay: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label:nth-of-type(1)"
-    val filtersDispatchedFromMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label:nth-of-type(2)"
-    val filtersDispatchedFromYear: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label:nth-of-type(3)"
+    val filtersDispatchedFromDay: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label[for$$=day]"
+    val filtersDispatchedFromMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label[for$$=month]"
+    val filtersDispatchedFromYear: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label[for$$=year]"
     val filtersDispatchedTo: String = s"$filtersSection .govuk-form-group:nth-of-type(7) legend"
-    val filtersDispatchedToDay: String = s"$filtersSection .govuk-form-group:nth-of-type(7) label:nth-of-type(1)"
-    val filtersDispatchedToMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(7) label:nth-of-type(2)"
-    val filtersDispatchedToYear: String = s"$filtersSection .govuk-form-group:nth-of-type(7) label:nth-of-type(3)"
+    val filtersDispatchedToDay: String = s"$filtersSection .govuk-form-group:nth-of-type(7) label[for$$=day]"
+    val filtersDispatchedToMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(7) label[for$$=month]"
+    val filtersDispatchedToYear: String = s"$filtersSection .govuk-form-group:nth-of-type(7) label[for$$=year]"
     val filtersReceiptedFrom: String = s"$filtersSection .govuk-form-group:nth-of-type(8) legend"
-    val filtersReceiptedFromDay: String = s"$filtersSection .govuk-form-group:nth-of-type(8) label:nth-of-type(1)"
-    val filtersReceiptedFromMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(8) label:nth-of-type(2)"
-    val filtersReceiptedFromYear: String = s"$filtersSection .govuk-form-group:nth-of-type(8) label:nth-of-type(3)"
+    val filtersReceiptedFromDay: String = s"$filtersSection .govuk-form-group:nth-of-type(8) label[for$$=day]"
+    val filtersReceiptedFromMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(8) label[for$$=month]"
+    val filtersReceiptedFromYear: String = s"$filtersSection .govuk-form-group:nth-of-type(8) label[for$$=year]"
     val filtersReceiptedTo: String = s"$filtersSection .govuk-form-group:nth-of-type(9) legend"
-    val filtersReceiptedToDay: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label:nth-of-type(1)"
-    val filtersReceiptedToMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label:nth-of-type(2)"
-    val filtersReceiptedToYear: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label:nth-of-type(3)"
+    val filtersReceiptedToDay: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label[for$$=day]"
+    val filtersReceiptedToMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label[for$$=month]"
+    val filtersReceiptedToYear: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label[for$$=year]"
   }
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/movements")
@@ -174,9 +174,21 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.filtersCountry -> English.filtersCountry,
         Selectors.filtersCountryChoose -> English.filtersCountryChoose,
         Selectors.filtersDispatchedFrom -> English.filtersDispatchedFrom,
+        Selectors.filtersDispatchedFromDay -> English.filtersDay,
+        Selectors.filtersDispatchedFromMonth -> English.filtersMonth,
+        Selectors.filtersDispatchedFromYear -> English.filtersYear,
         Selectors.filtersDispatchedTo -> English.filtersDispatchedTo,
+        Selectors.filtersDispatchedToDay -> English.filtersDay,
+        Selectors.filtersDispatchedToMonth -> English.filtersMonth,
+        Selectors.filtersDispatchedToYear -> English.filtersYear,
         Selectors.filtersReceiptedFrom -> English.filtersReceiptedFrom,
+        Selectors.filtersReceiptedFromDay -> English.filtersDay,
+        Selectors.filtersReceiptedFromMonth -> English.filtersMonth,
+        Selectors.filtersReceiptedFromYear -> English.filtersYear,
         Selectors.filtersReceiptedTo -> English.filtersReceiptedTo,
+        Selectors.filtersReceiptedToDay -> English.filtersDay,
+        Selectors.filtersReceiptedToMonth -> English.filtersMonth,
+        Selectors.filtersReceiptedToYear -> English.filtersYear,
 
         Selectors.label("sortBy") -> English.sortByLabel,
         Selectors.sortBySelectOption(1) -> English.sortArcAscending,
