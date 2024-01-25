@@ -260,10 +260,8 @@ object MovementListSearchOptions {
       Option[LocalDate],
       Option[LocalDate],
       Option[LocalDate]
-    )] = {
-    println(scala.Console.YELLOW + "options in unapply = " + options + scala.Console.RESET)
-
-    Some((
+    )] = Some(
+    (
       options.searchKey.map(_.code),
       options.searchValue,
       options.sortBy.code,
@@ -276,8 +274,8 @@ object MovementListSearchOptions {
       options.dateOfDispatchTo,
       options.dateOfReceiptFrom,
       options.dateOfReceiptTo
-    ))
-  }
+    )
+  )
 
 }
 
