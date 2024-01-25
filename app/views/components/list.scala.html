@@ -16,9 +16,9 @@
 
 @this()
 
-@(content: Seq[Html])
+@(content: Seq[Html], extraClasses: Option[String] = None)
 
-<ul class="govuk-list">
+<ul class="govuk-list @extraClasses.getOrElse("")">
     @content.map { bullet =>
         <li>@bullet</li>
     }

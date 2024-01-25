@@ -29,7 +29,7 @@
     layout: Layout,
     h1: h1,
     h2: h2,
-    list: spaced_list,
+    list: list,
     link: link,
     subNavigation: subNavigation,
     timeline: timeline,
@@ -74,7 +74,7 @@
                         link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "viewMovement.explainDelay", Some("explain-a-delay"), hintKey = Some("viewMovement.explainDelay.info")),
                         link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "viewMovement.explainShortageOrExcess", Some("explain-shortage-or-excess"), hintKey = Some("viewMovement.explainShortageOrExcess.info")),
                         link("print", "viewMovement.printOrSaveEad", Some("print-or-save-ead"), hintKey = Some("viewMovement.printOrSaveEad.info"))
-                    ))
+                    ), extraClasses = Some("govuk-list--spaced"))
                 } else {
                     @list(Seq(
                         link(appConfig.emcsTfeAlertOrRejectionUrl(ern, arc), "viewMovement.alertOrRejection", Some("submit-alert-or-rejection"), hintKey = Some("viewMovement.alertOrRejection.info")),
@@ -82,7 +82,7 @@
                         link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "viewMovement.explainDelay", Some("explain-a-delay"), hintKey = Some("viewMovement.explainDelay.info")),
                         link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "viewMovement.explainShortageOrExcess", Some("explain-shortage-or-excess"), hintKey = Some("viewMovement.explainShortageOrExcess.info")),
                         link("print", "viewMovement.printOrSaveEad", Some("print-or-save-ead"), hintKey = Some("viewMovement.printOrSaveEad.info"))
-                    ))
+                    ), extraClasses = Some("govuk-list--spaced"))
                 }
             </div>
             <div class="govuk-grid-column-one-half" id="history">

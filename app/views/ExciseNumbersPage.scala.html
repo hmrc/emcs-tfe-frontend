@@ -26,7 +26,7 @@
 )
 @(exciseNumbers: Set[String])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = messages("exciseNumbers.title"), maybeShowActiveTrader = None, maybeShowNavigationBanner = None) {
+@layout(pageTitle = titleNoForm(messages("exciseNumbers.title")), maybeShowActiveTrader = None, maybeShowNavigationBanner = None) {
 
     @h1(classes = "govuk-heading-l") {
         @messages("exciseNumbers.heading")

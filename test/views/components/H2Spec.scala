@@ -19,10 +19,14 @@ package views.components
 import base.SpecBase
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.i18n.Messages
+import play.api.test.FakeRequest
 import play.twirl.api.Html
 import views.html.components.h2
 
 class H2Spec extends SpecBase {
+
+  implicit val msgs: Messages = messages(FakeRequest())
 
   trait Test {
     def id: Option[String] = None

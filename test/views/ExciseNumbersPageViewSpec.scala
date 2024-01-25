@@ -16,10 +16,8 @@
 
 package views
 
-import base.SpecBase
-import fixtures.MovementListFixtures
+import base.ViewSpecBase
 import fixtures.messages.ExciseNumbersMessages
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
@@ -28,17 +26,17 @@ import play.twirl.api.Html
 import views.html.ExciseNumbersPage
 import views.html.components.link
 
-class ExciseNumbersPageViewSpec extends SpecBase with MovementListFixtures {
+class ExciseNumbersPageViewSpec extends ViewSpecBase with ViewBehaviours {
+
+  object Selectors extends BaseSelectors {
+    val multipleErnsText = "#multiple-emcs-numbers"
+    val selectANumberText = "#select-a-number"
+  }
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/excise-numbers")
 
   lazy val page: ExciseNumbersPage = app.injector.instanceOf[ExciseNumbersPage]
   lazy val link: link = app.injector.instanceOf[link]
-
-  abstract class TestFixture(implicit messages: Messages) {
-    lazy val html: Html = page(Set("ern1", "ern2", "ern3"))
-    lazy val document: Document = Jsoup.parse(html.toString)
-  }
 
   "The ExciseNumbersPage view" when {
 
@@ -48,21 +46,16 @@ class ExciseNumbersPageViewSpec extends SpecBase with MovementListFixtures {
 
       s"being rendered for ${viewMessages.lang.code}" must {
 
-        s"have the correct title" in new TestFixture {
-          document.title mustBe viewMessages.title
-        }
+        lazy val html: Html = page(Set("ern1", "ern2", "ern3"))
+        implicit lazy val document: Document = asDocument(html)
 
-        s"have the correct h1" in new TestFixture {
-          document.select("h1").text() mustBe viewMessages.heading
-        }
+        behave like pageWithExpectedElementsAndMessages(Seq(
+          Selectors.title -> viewMessages.title,
+          Selectors.h1 -> viewMessages.heading,
+          Selectors.multipleErnsText -> viewMessages.p1,
+          Selectors.selectANumberText -> viewMessages.p2
+        ))
 
-        "have the correct p1" in new TestFixture {
-          document.select("#multiple-emcs-numbers").text() mustBe viewMessages.p1
-        }
-
-        "have the correct p2" in new TestFixture {
-          document.select("#select-a-number").text() mustBe viewMessages.p2
-        }
       }
     }
   }
