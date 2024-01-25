@@ -90,7 +90,7 @@
 }
 
 @layout(
-    pageTitle = messages("viewAllMovements.title"),
+    pageTitle = title(form, messages("viewAllMovements.title")),
     maybeShowActiveTrader = None,
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, Movements)),
     fullWidthContent = true

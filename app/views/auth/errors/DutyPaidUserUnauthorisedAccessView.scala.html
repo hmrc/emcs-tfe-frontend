@@ -24,7 +24,7 @@
 )
 @()(implicit request: Request[_], messages: Messages)
 @layout(
-    pageTitle = messages("errors.unauthorised.dutypaiduser.title"),
+    pageTitle = titleNoForm(messages("errors.unauthorised.dutypaiduser.title")),
     maybeShowActiveTrader = None,
     maybeShowNavigationBanner = None,
     showBackLink = false

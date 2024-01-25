@@ -42,7 +42,7 @@
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
-    pageTitle = messages("viewAllMessages.title"),
+    pageTitle = titleNoForm(messages("viewAllMessages.title", request.messageStatistics.countOfAllMessages)),
     maybeShowActiveTrader = None,
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, models.PageSection.Messages)),
     fullWidthContent = true
