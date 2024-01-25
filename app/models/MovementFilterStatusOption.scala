@@ -21,7 +21,6 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.emcstfefrontend.models.WithName
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 
-// TODO: there are outstanding queries about this - remember to double check after call with downstream teams
 trait MovementFilterStatusOption extends SelectOptionModel {
   override val code: String = this.toString
 }

@@ -130,7 +130,7 @@ trait Formatters {
       private val baseFormatter = stringFormatter(requiredKey, args)
 
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], A] =
-        baseFormatter.bind(key, data).right.flatMap {
+        baseFormatter.bind(key, data).flatMap {
           str =>
             ev.withName(str)
               .map(Right.apply)

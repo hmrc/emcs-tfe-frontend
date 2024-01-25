@@ -76,6 +76,8 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                           form: Form[MovementListSearchOptions] = formProvider()
                         )(implicit request: DataRequest[_]): Future[Result] = {
 
+    println(scala.Console.YELLOW + form.errors + scala.Console.RESET)
+
     val result: EitherT[Future, ErrorResponse, Result] = for {
       movementList <- EitherT(getMovementListConnector.getMovementList(ern, Some(searchOptions)).map {
         case Left(NotFoundError) => Right(GetMovementListResponse(Seq(), 0))

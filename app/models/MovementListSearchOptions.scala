@@ -32,19 +32,22 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
                                      exciseProductCode: Option[String] = None,
                                      countryOfOrigin: Option[String] = None,
                                      dateOfDispatchFrom: Option[LocalDate] = None,
+                                     dateOfDispatchTo: Option[LocalDate] = None,
+                                     dateOfReceiptFrom: Option[LocalDate] = None,
+                                     dateOfReceiptTo: Option[LocalDate] = None,
                                      index: Int = DEFAULT_INDEX,
                                      maxRows: Int = DEFAULT_MAX_ROWS) {
 
   val startingPosition: Int = (index - 1) * maxRows
 
-  private def getSearchFields: Option[(String, String)] = {
+  private[models] def getSearchFields: Option[(String, String)] = {
     (searchKey, searchValue) match {
       case (Some(key), Some(value)) => Some(s"search.$key" -> value)
       case _ => None
     }
   }
 
-  private def getTraderRole: Option[(String, String)] = {
+  private[models] def getTraderRole: Option[(String, String)] = {
     val key = "search.traderRole"
     traderRole.flatMap {
       case MovementFilterDirectionOption.GoodsIn => Some(key -> MovementFilterDirectionOption.GoodsIn.toString)
@@ -53,7 +56,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     }
   }
 
-  private def getUndischargedMovementsFlag: Option[(String, String)] = {
+  private[models] def getUndischargedMovementsFlag: Option[(String, String)] = {
     val key = "search.undischargedMovements"
     undischargedMovements match {
       case Some(MovementFilterUndischargedOption.Undischarged) => Some(key -> MovementFilterUndischargedOption.Undischarged.toString)
@@ -61,7 +64,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     }
   }
 
-  private def getMovementStatus: Option[(String, String)] = {
+  private[models] def getMovementStatus: Option[(String, String)] = {
     val key = "search.movementStatus"
     movementStatus match {
       case Some(value) if value != MovementFilterStatusOption.ChooseStatus => Some(key -> value.toString)
@@ -69,7 +72,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     }
   }
 
-  private def getEpc: Option[(String, String)] = {
+  private[models] def getEpc: Option[(String, String)] = {
     val key = "search.exciseProductCode"
     exciseProductCode match {
       case Some(value) if value != MovementListSearchOptions.CHOOSE_PRODUCT_CODE.code => Some(key -> value)
@@ -77,7 +80,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     }
   }
 
-  private def getCountryOfOrigin: Option[(String, String)] = {
+  private[models] def getCountryOfOrigin: Option[(String, String)] = {
     val key = "search.countryOfOrigin"
     countryOfOrigin match {
       case Some(value) if value != MovementListSearchOptions.CHOOSE_COUNTRY.code => Some(key -> value)
@@ -93,6 +96,9 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     getEpc,
     getCountryOfOrigin,
     dateOfDispatchFrom.map(date => "search.dateOfDispatchFrom" -> MovementListSearchOptions.localDateToString(date)),
+    dateOfDispatchTo.map(date => "search.dateOfDispatchTo" -> MovementListSearchOptions.localDateToString(date)),
+    dateOfReceiptFrom.map(date => "search.dateOfReceiptFrom" -> MovementListSearchOptions.localDateToString(date)),
+    dateOfReceiptTo.map(date => "search.dateOfReceiptTo" -> MovementListSearchOptions.localDateToString(date)),
     Some("search.sortOrder" -> sortBy.sortOrder),
     Some("search.sortField" -> sortBy.sortField),
     Some("search.startPosition" -> startingPosition.toString),
@@ -103,10 +109,10 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
 
 object MovementListSearchOptions {
 
-  private def localDateToString(ld: LocalDate): String =
+  private[models] def localDateToString(ld: LocalDate): String =
     s"${f"${ld.getDayOfMonth}%02d"}/${f"${ld.getMonthValue}%02d"}/${ld.getYear}" // pad day and month with leading zeros as needed
 
-  private def stringToLocalDate(s: String): LocalDate =
+  private[models] def stringToLocalDate(s: String): LocalDate =
     LocalDate.parse(s, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
 
   val DEFAULT_INDEX: Int = 1
@@ -139,6 +145,9 @@ object MovementListSearchOptions {
           exciseProductCode <- stringBinder.bind("exciseProductCode", params).map(_.map(Some(_))).getOrElse(Right(None))
           countryOfOrigin <- stringBinder.bind("countryOfOrigin", params).map(_.map(Some(_))).getOrElse(Right(None))
           dateOfDispatchFrom <- stringBinder.bind("dateOfDispatchFrom", params).map(_.map(Some(_))).getOrElse(Right(None))
+          dateOfDispatchTo <- stringBinder.bind("dateOfDispatchTo", params).map(_.map(Some(_))).getOrElse(Right(None))
+          dateOfReceiptFrom <- stringBinder.bind("dateOfReceiptFrom", params).map(_.map(Some(_))).getOrElse(Right(None))
+          dateOfReceiptTo <- stringBinder.bind("dateOfReceiptTo", params).map(_.map(Some(_))).getOrElse(Right(None))
         } yield {
           MovementListSearchOptions(
             searchKey = searchKey.map(MovementSearchSelectOption(_)),
@@ -150,6 +159,9 @@ object MovementListSearchOptions {
             exciseProductCode = exciseProductCode,
             countryOfOrigin = countryOfOrigin,
             dateOfDispatchFrom = dateOfDispatchFrom.map(stringToLocalDate),
+            dateOfDispatchTo = dateOfDispatchTo.map(stringToLocalDate),
+            dateOfReceiptFrom = dateOfReceiptFrom.map(stringToLocalDate),
+            dateOfReceiptTo = dateOfReceiptTo.map(stringToLocalDate),
             index = index,
             maxRows = DEFAULT_MAX_ROWS
           )
@@ -168,6 +180,9 @@ object MovementListSearchOptions {
           searchOptions.exciseProductCode.map(field => stringBinder.unbind("exciseProductCode", field)),
           searchOptions.countryOfOrigin.map(field => stringBinder.unbind("countryOfOrigin", field)),
           searchOptions.dateOfDispatchFrom.map(field => stringBinder.unbind("dateOfDispatchFrom", localDateToString(field))),
+          searchOptions.dateOfDispatchTo.map(field => stringBinder.unbind("dateOfDispatchTo", localDateToString(field))),
+          searchOptions.dateOfReceiptFrom.map(field => stringBinder.unbind("dateOfReceiptFrom", localDateToString(field))),
+          searchOptions.dateOfReceiptTo.map(field => stringBinder.unbind("dateOfReceiptTo", localDateToString(field)))
         ).flatten.mkString("&")
     }
 
@@ -181,7 +196,10 @@ object MovementListSearchOptions {
              movementStatusOption: Option[MovementFilterStatusOption],
              exciseProductCodeOption: Option[String],
              countryOfOriginOption: Option[String],
-             dateOfDispatchFrom: Option[LocalDate]
+             dateOfDispatchFrom: Option[LocalDate],
+             dateOfDispatchTo: Option[LocalDate],
+             dateOfReceiptFrom: Option[LocalDate],
+             dateOfReceiptTo: Option[LocalDate]
            ): MovementListSearchOptions = {
 
     val traderRole: Option[MovementFilterDirectionOption] = {
@@ -222,7 +240,10 @@ object MovementListSearchOptions {
       movementStatus = movementStatus,
       exciseProductCode = exciseProductCode,
       countryOfOrigin = countryOfOrigin,
-      dateOfDispatchFrom = dateOfDispatchFrom
+      dateOfDispatchFrom = dateOfDispatchFrom,
+      dateOfDispatchTo = dateOfDispatchTo,
+      dateOfReceiptFrom = dateOfReceiptFrom,
+      dateOfReceiptTo = dateOfReceiptTo
     )
   }
 
@@ -235,6 +256,9 @@ object MovementListSearchOptions {
       Option[MovementFilterStatusOption],
       Option[String],
       Option[String],
+      Option[LocalDate],
+      Option[LocalDate],
+      Option[LocalDate],
       Option[LocalDate]
     )] = {
     println(scala.Console.YELLOW + "options in unapply = " + options + scala.Console.RESET)
@@ -248,7 +272,10 @@ object MovementListSearchOptions {
       options.movementStatus,
       options.exciseProductCode,
       options.countryOfOrigin,
-      options.dateOfDispatchFrom
+      options.dateOfDispatchFrom,
+      options.dateOfDispatchTo,
+      options.dateOfReceiptFrom,
+      options.dateOfReceiptTo
     ))
   }
 

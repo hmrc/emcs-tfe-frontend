@@ -101,98 +101,95 @@
 
     @formHelper(action) {
 
-        @defining(form.errors.headOption.map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = {
+                form.errors.map {
+                    case FormError(key, _, args) => key -> s"$key.${args.headOption.getOrElse("day")}"
+                }.toMap
+            }))
+        }
 
-            @if(form.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> s"value.${erroredFields.headOption.getOrElse("dateOfDispatchFrom.day")}")))
-            }
+        @h1() {
+            @messages("viewAllMovements.heading")
+        }
 
-            @h1() {
-                @messages("viewAllMovements.heading")
-            }
+        @govukFieldset(Fieldset(
+            legend = Some(Legend(
+                content = Text(messages("viewAllMovements.search.heading")),
+                classes = "govuk-fieldset__legend--m",
+                isPageHeading = false
+            )),
+            classes = "govuk-!-margin-bottom-2",
+            html = searchFields
+        ))
 
-            @govukFieldset(Fieldset(
-                legend = Some(Legend(
-                    content = Text(messages("viewAllMovements.search.heading")),
-                    classes = "govuk-fieldset__legend--m",
-                    isPageHeading = false
-                )),
-                classes = "govuk-!-margin-bottom-2",
-                html = searchFields
-            ))
-
-            <div class="govuk-grid-column-one-third govuk-!-padding-0">
-                <aside style="border: 1px solid #b1b4b6;
-                    padding: 15px">
-                    @h2("Filters", "govuk-heading-m")
-                    @govukButton(
-                        ButtonViewModel(Text(messages("viewAllMovements.filters.button")))
-                        .withId("filtersButton")
-                    )
-
-                    @* Direction *@
-                    @govukCheckboxes(
-                        CheckboxesViewModel(
-                            form = form,
-                            name = "traderRole",
-                            fieldset = Some(Fieldset(
-                                legend = Some(Legend(
-                                    content = Text(messages("viewAllMovements.filters.direction.heading")),
-                                    classes = "govuk-fieldset__legend--s",
-                                    isPageHeading = false
-                                ))
-                            )),
-                            items = MovementFilterDirectionOption.checkboxItems
-                        ).withClasses(Seq("govuk-checkboxes--small"))
-                    )
-
-                    @* Undischarged *@
-                    @govukCheckboxes(
-                        CheckboxesViewModel(
-                            form = form,
-                            name = "traderRole",
-                            fieldset = Some(Fieldset(
-                                legend = Some(Legend(
-                                    content = Text(messages("viewAllMovements.filters.undischarged.heading")),
-                                    classes = "govuk-fieldset__legend--s",
-                                    isPageHeading = false
-                                ))
-                            )),
-                            items = MovementFilterUndischargedOption.checkboxItems
-                        ).withClasses(Seq("govuk-checkboxes--small"))
-                    )
-
-                    @* Status *@
-                    @govukSelect(Select(
-                        items = movementStatusItems,
-                        name = "movementStatus",
-                        id = "movementStatus",
-                        label = LabelViewModel(
-                            content = Text(messages("viewAllMovements.filters.status"))
-                        ).withCssClass("govuk-label--s")
-                    ))
-
-                    @* Excise product code *@
-                    @govukSelect(Select(
-                        items = exciseProductCodeSelectItems,
-                        name = "exciseProductCode",
-                        id = "exciseProductCode",
-                        label = LabelViewModel(
-                            content = Text(messages("viewAllMovements.filters.exciseProductCode"))
-                        ).withCssClass("govuk-label--s")
-                    ))
-
-                    @* Country of origin *@
-                    @govukSelect(Select(
-                        items = countrySelectItems,
-                        name = "countryOfOrigin",
-                        id = "countryOfOrigin",
-                        label = LabelViewModel(
-                            content = Text(messages("viewAllMovements.filters.countryOfOrigin"))
-                        ).withCssClass("govuk-label--s")
-                    ))
-
-                    @* Dispatched from *@
+        <div class="govuk-grid-column-one-third govuk-!-padding-0">
+            <aside style="border: 1px solid #b1b4b6;
+                padding: 15px">
+                @h2("Filters", "govuk-heading-m")
+                @govukButton(
+                    ButtonViewModel(Text(messages("viewAllMovements.filters.button")))
+                    .withId("filtersButton")
+                )
+                @* Direction *@
+                @govukCheckboxes(
+                    CheckboxesViewModel(
+                        form = form,
+                        name = "traderRole",
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                content = Text(messages("viewAllMovements.filters.direction.heading")),
+                                classes = "govuk-fieldset__legend--s",
+                                isPageHeading = false
+                            ))
+                        )),
+                        items = MovementFilterDirectionOption.checkboxItems
+                    ).withClasses(Seq("govuk-checkboxes--small"))
+                )
+                @* Undischarged *@
+                @govukCheckboxes(
+                    CheckboxesViewModel(
+                        form = form,
+                        name = "traderRole",
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                content = Text(messages("viewAllMovements.filters.undischarged.heading")),
+                                classes = "govuk-fieldset__legend--s",
+                                isPageHeading = false
+                            ))
+                        )),
+                        items = MovementFilterUndischargedOption.checkboxItems
+                    ).withClasses(Seq("govuk-checkboxes--small"))
+                )
+                @* Status *@
+                @govukSelect(Select(
+                    items = movementStatusItems,
+                    name = "movementStatus",
+                    id = "movementStatus",
+                    label = LabelViewModel(
+                        content = Text(messages("viewAllMovements.filters.status"))
+                    ).withCssClass("govuk-label--s")
+                ))
+                @* Excise product code *@
+                @govukSelect(Select(
+                    items = exciseProductCodeSelectItems,
+                    name = "exciseProductCode",
+                    id = "exciseProductCode",
+                    label = LabelViewModel(
+                        content = Text(messages("viewAllMovements.filters.exciseProductCode"))
+                    ).withCssClass("govuk-label--s")
+                ))
+                @* Country of origin *@
+                @govukSelect(Select(
+                    items = countrySelectItems,
+                    name = "countryOfOrigin",
+                    id = "countryOfOrigin",
+                    label = LabelViewModel(
+                        content = Text(messages("viewAllMovements.filters.countryOfOrigin"))
+                    ).withCssClass("govuk-label--s")
+                ))
+                @* Dispatched from *@
+                @defining(form.errors.find(_.key == "dateOfDispatchFrom").map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
                     @govukDateInput(
                         DateViewModel(
                             field = form("dateOfDispatchFrom"),
@@ -204,11 +201,53 @@
                             fieldsWithErrors = erroredFields
                         )
                     )
-                </aside>
-            </div>
+                }
+                @* Dispatched to *@
+                @defining(form.errors.find(_.key == "dateOfDispatchTo").map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
+                    @govukDateInput(
+                        DateViewModel(
+                            field = form("dateOfDispatchTo"),
+                            legend = Legend(
+                                content = Text(messages("viewAllMovements.filters.dateOfDispatchTo.heading")),
+                                classes = "govuk-fieldset__legend--s",
+                                isPageHeading = false
+                            ),
+                            fieldsWithErrors = erroredFields
+                        )
+                    )
+                }
+                @* Receipted from *@
+                @defining(form.errors.find(_.key == "dateOfReceiptFrom").map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
+                    @govukDateInput(
+                        DateViewModel(
+                            field = form("dateOfReceiptFrom"),
+                            legend = Legend(
+                                content = Text(messages("viewAllMovements.filters.dateOfReceiptFrom.heading")),
+                                classes = "govuk-fieldset__legend--s",
+                                isPageHeading = false
+                            ),
+                            fieldsWithErrors = erroredFields
+                        )
+                    )
+                }
+                @* Receipted to *@
+                @defining(form.errors.find(_.key == "dateOfReceiptTo").map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
+                    @govukDateInput(
+                        DateViewModel(
+                            field = form("dateOfReceiptTo"),
+                            legend = Legend(
+                                content = Text(messages("viewAllMovements.filters.dateOfReceiptTo.heading")),
+                                classes = "govuk-fieldset__legend--s",
+                                isPageHeading = false
+                            ),
+                            fieldsWithErrors = erroredFields
+                        )
+                    )
+                }
+            </aside>
+        </div>
 
-            @movementList(ern, movements, sortSelectItems, pagination)
-        }
+        @movementList(ern, movements, sortSelectItems, pagination)
     }
 }
 

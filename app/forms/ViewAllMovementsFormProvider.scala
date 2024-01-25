@@ -21,7 +21,6 @@ import models._
 import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, set}
 
-import java.time.LocalDate
 import javax.inject.Inject
 
 class ViewAllMovementsFormProvider @Inject() extends Mappings {
@@ -41,6 +40,21 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
           invalidKey     = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid",
           twoRequiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required.two",
           requiredKey    = "viewAllMovements.filters.dateOfDispatchFrom.error.required"
+        ),
+        ViewAllMovementsFormProvider.dateOfDispatchTo -> optionalLocalDate(
+          invalidKey     = "viewAllMovements.filters.dateOfDispatchTo.error.invalid",
+          twoRequiredKey = "viewAllMovements.filters.dateOfDispatchTo.error.required.two",
+          requiredKey    = "viewAllMovements.filters.dateOfDispatchTo.error.required"
+        ),
+        ViewAllMovementsFormProvider.dateOfReceiptFrom -> optionalLocalDate(
+          invalidKey     = "viewAllMovements.filters.dateOfReceiptFrom.error.invalid",
+          twoRequiredKey = "viewAllMovements.filters.dateOfReceiptFrom.error.required.two",
+          requiredKey    = "viewAllMovements.filters.dateOfReceiptFrom.error.required"
+        ),
+        ViewAllMovementsFormProvider.dateOfReceiptTo -> optionalLocalDate(
+          invalidKey     = "viewAllMovements.filters.dateOfReceiptTo.error.invalid",
+          twoRequiredKey = "viewAllMovements.filters.dateOfReceiptTo.error.required.two",
+          requiredKey    = "viewAllMovements.filters.dateOfReceiptTo.error.required"
         )
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
     )
@@ -66,5 +80,8 @@ object ViewAllMovementsFormProvider {
   val exciseProductCode = "exciseProductCode"
   val countryOfOrigin = "countryOfOrigin"
   val dateOfDispatchFrom = "dateOfDispatchFrom"
+  val dateOfDispatchTo = "dateOfDispatchTo"
+  val dateOfReceiptFrom = "dateOfReceiptFrom"
+  val dateOfReceiptTo = "dateOfReceiptTo"
 
 }

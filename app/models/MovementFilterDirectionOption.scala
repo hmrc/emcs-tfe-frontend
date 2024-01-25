@@ -57,7 +57,7 @@ object MovementFilterDirectionOption extends Enumerable.Implicits {
     case GoodsIn.code => GoodsIn
     case GoodsOut.code => GoodsOut
     case All.code => All
-    case invalid => throw new IllegalArgumentException(s"Invalid argument of '$invalid' received which can not be mapped to a MovementListDirectionOptions")
+    case invalid => throw new IllegalArgumentException(s"Invalid argument of '$invalid' received which can not be mapped to a MovementFilterDirectionOption")
   }
 
   def toOptions(option: MovementFilterDirectionOption): Set[MovementFilterDirectionOption] = option match {
