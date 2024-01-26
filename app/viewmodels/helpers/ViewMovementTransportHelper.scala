@@ -39,7 +39,7 @@ class ViewMovementTransportHelper @Inject()(h2: h2,
     val notProvidedMessage = messages("viewMovement.transport.transportUnit.notProvided")
 
     HtmlFormat.fill(Seq(
-      h2(messages("viewMovement.transport.h2")),
+      h2(messages("viewMovement.transport.h2"), "govuk-heading-l"),
       summaryCard(
         Card(
           Some(CardTitle(Text(messages("viewMovement.transport.summary.heading"))))

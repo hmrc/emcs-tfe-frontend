@@ -38,7 +38,7 @@ class ViewMovementItemsHelper @Inject()(list: list,
 
   def constructMovementItems(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Html = {
     HtmlFormat.fill(Seq(
-      h2(messages("viewMovement.items.h2")),
+      h2(messages("viewMovement.items.h2"), "govuk-heading-l"),
       govukTable(Table(
         firstCellIsHeader = true,
         rows = dataRows(movement),
