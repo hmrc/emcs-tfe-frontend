@@ -32,25 +32,25 @@ object MovementSortingSelectOption {
   case object ArcAscending extends WithName("arcAsc") with MovementSortingSelectOption {
     override val displayName = "viewAllMovements.sort.arcAscending"
     override val sortOrder: String = "A"
-    override val sortField: String = "arc"
+    override val sortField: String = "ARC"
   }
 
   case object ArcDescending extends WithName("arcDesc") with MovementSortingSelectOption {
     override val displayName: String = "viewAllMovements.sort.arcDescending"
     override val sortOrder: String = "D"
-    override val sortField: String = "arc"
+    override val sortField: String = "ARC"
   }
 
   case object Newest extends WithName("newest") with MovementSortingSelectOption {
     override val displayName: String = "viewAllMovements.sort.newest"
     override val sortOrder: String = "D"
-    override val sortField: String = "dateofdispatch"
+    override val sortField: String = "DateOfDispatch"
   }
 
   case object Oldest extends WithName("oldest") with MovementSortingSelectOption {
     override val displayName: String = "viewAllMovements.sort.oldest"
     override val sortOrder: String = "A"
-    override val sortField: String = "dateofdispatch"
+    override val sortField: String = "DateOfDispatch"
   }
 
   val values: Seq[MovementSortingSelectOption] = Seq(
