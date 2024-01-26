@@ -110,7 +110,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
 object MovementListSearchOptions {
 
   private[models] def localDateToString(ld: LocalDate): String =
-    s"${f"${ld.getDayOfMonth}%02d"}/${f"${ld.getMonthValue}%02d"}/${ld.getYear}" // pad day and month with leading zeros as needed
+    s"${f"${ld.getDayOfMonth}%02d"}/${f"${ld.getMonthValue}%02d"}/${f"${ld.getYear}%04d"}" // pad day, month and year with leading zeros as needed
 
   private[models] def stringToLocalDate(s: String): LocalDate =
     LocalDate.parse(s, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
