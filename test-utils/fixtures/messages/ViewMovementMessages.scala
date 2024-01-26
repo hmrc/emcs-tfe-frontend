@@ -100,6 +100,12 @@ object ViewMovementMessages {
     val transportUnitCommercialSeal = "Commercial seal"
     val transportUnitComplementaryInformation = "Complementary information"
     val transportUnitSealInformation = "Seal information"
+
+    val documentDetailsHeading = "Document details"
+    def documentSummaryHeading(n: Int) = s"Document $n"
+    val documentType = "Type"
+    val documentReference = "Reference"
+    val documentDescription = "Description"
   }
 
   object English extends ViewMessages with EN

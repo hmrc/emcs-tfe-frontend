@@ -55,3 +55,5 @@ case class WineOperationsException(message: String) extends Exception(message) w
 case class MessageStatisticsException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class MessagesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class DocumentTypesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse

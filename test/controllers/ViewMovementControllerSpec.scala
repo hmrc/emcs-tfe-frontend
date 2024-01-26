@@ -20,20 +20,24 @@ import base.SpecBase
 import config.ErrorHandler
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.GetMovementResponseFixtures
-import mocks.services.MockGetMovementService
-import models.response.MovementException
+import mocks.services.{MockGetDocumentTypesService, MockGetMovementService}
+import mocks.viewmodels.MockViewMovementHelper
+import models.DocumentType
+import models.response.{DocumentTypesException, MovementException}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
+import play.api.Application
 import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.status
+import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.{TimelineHelper, ViewMovementHelper}
 import views.html.viewMovement.ViewMovementPage
 
 import scala.concurrent.Future
 
-class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMovementResponseFixtures with MockGetMovementService {
+class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMovementResponseFixtures with MockGetMovementService with MockViewMovementHelper {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
@@ -45,7 +49,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
     mockGetMovementService,
     app.injector.instanceOf[ViewMovementPage],
     app.injector.instanceOf[ErrorHandler],
-    app.injector.instanceOf[ViewMovementHelper],
+    mockViewMovementHelper,
     app.injector.instanceOf[TimelineHelper]
   )
 
@@ -61,7 +65,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
     testName should {
       "return 200" when {
         "connector call is successful" in {
-
+          MockViewMovementHelper.movementCard().returns(Future(Html("")))
           MockGetMovementService
             .getMovement(testErn, testArc)
             .returns(Future.successful(getMovementResponseModel))
@@ -72,11 +76,22 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
         }
       }
       "return 500" when {
-        "connector call is unsuccessful" in {
-
+        "movement connector call is unsuccessful" in {
           MockGetMovementService
             .getMovement(testErn, testArc)
             .returns(Future.failed(MovementException("bang")))
+
+          val result: Future[Result] = method()
+
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        }
+
+        "document connector call is unsuccessful" in {
+          MockViewMovementHelper.movementCard().returns(Future.failed(DocumentTypesException("No document types retrieved")))
+          MockGetMovementService
+            .getMovement(testErn, testArc)
+            .returns(Future.successful(getMovementResponseModel))
+
 
           val result: Future[Result] = method()
 

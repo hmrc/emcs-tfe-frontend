@@ -196,6 +196,19 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         ),
         vatNumber = Some("GB123456789")
       )))
+    ),
+    documentCertificate = Some(
+      Seq(DocumentCertificateModel(
+        Some("1"),
+        Some("Document reference"),
+        Some("Document description"),
+        Some("Reference of document")
+      ), DocumentCertificateModel(
+        Some("2"),
+        Some("Document reference 2"),
+        Some("Document description 2"),
+        Some("Reference of document 2")
+      ))
     )
   )
 
@@ -371,6 +384,19 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     ),
     "transportMode" -> Json.obj(
       "transportModeCode" -> "4"
-    )
+    ),
+    "documentCertificate" -> Json.arr(
+      Json.obj(
+        "documentType" -> "1",
+        "documentReference" -> "Document reference",
+        "documentDescription" -> "Document description",
+        "referenceOfDocument" -> "Reference of document"
+    ), Json.obj(
+        "documentType" -> "2",
+        "documentReference" -> "Document reference 2",
+        "documentDescription" -> "Document description 2",
+        "referenceOfDocument" -> "Reference of document 2"
+      ))
+
   )
 }
