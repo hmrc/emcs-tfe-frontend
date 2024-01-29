@@ -60,7 +60,7 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
               val result = helper.constructMovementItems(movementResponseWithReferenceData)
 
               result mustBe HtmlFormat.fill(Seq(
-                h2(messagesForLang.itemsH2),
+                h2(messagesForLang.itemsH2, "govuk-heading-l"),
                 govukTable(Table(
                   firstCellIsHeader = true,
                   head = Some(Seq(
@@ -142,7 +142,7 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
               ))
 
               result mustBe HtmlFormat.fill(Seq(
-                h2(messagesForLang.itemsH2),
+                h2(messagesForLang.itemsH2, "govuk-heading-l"),
                 govukTable(Table(
                   firstCellIsHeader = true,
                   head = Some(Seq(

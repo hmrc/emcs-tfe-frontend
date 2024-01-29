@@ -40,7 +40,7 @@ class ViewMovementDocumentHelper @Inject()(h2: h2,
     val notProvidedMessage = messages("viewMovement.document.notProvided")
     getDocumentTypesService.getDocumentTypes().map {
       sequenceOfDocuments =>
-        HtmlFormat.fill(Seq(h2(messages("viewMovement.document.details"))) ++
+        HtmlFormat.fill(Seq(h2(messages("viewMovement.document.details"), "govuk-heading-l")) ++
           (movement.documentCertificate match {
             case Some(value) => value.zipWithIndex.map {
               case (document, index) =>
@@ -61,7 +61,7 @@ class ViewMovementDocumentHelper @Inject()(h2: h2,
                     summaryListRowBuilder(
                       "viewMovement.document.documentDescription",
                       document.documentDescription.getOrElse(notProvidedMessage)
-                    ),
+                    )
                   )
                 )
             }
