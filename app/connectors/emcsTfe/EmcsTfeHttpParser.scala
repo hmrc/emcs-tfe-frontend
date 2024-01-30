@@ -49,4 +49,7 @@ trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
 
   def get(url: String, queryParams: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
     http.GET[Either[ErrorResponse, A]](url, queryParams)(EmcsTfeReads, hc, ec)
+
+  def putEmpty(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
+    http.PUTString(url, "")
 }

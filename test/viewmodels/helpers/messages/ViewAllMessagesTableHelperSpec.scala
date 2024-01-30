@@ -63,8 +63,8 @@ class ViewAllMessagesTableHelperSpec extends SpecBase with MessagesFixtures with
                   Seq(
                     TableRow(
                       content = HtmlContent(link(
-                        link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-                        messageKey = "Report of receipt successful submission",
+                        link = controllers.messages.routes.ViewMessageController.onPageLoad(testErn, message1.uniqueMessageIdentifier).url,
+                        messageKey = "Alert or rejection received",
                         hintKey = Some("ARC1001")
                       ))
                     ),
@@ -93,7 +93,7 @@ class ViewAllMessagesTableHelperSpec extends SpecBase with MessagesFixtures with
                   Seq(
                     TableRow(
                       content = HtmlContent(link(
-                        link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                        link = controllers.messages.routes.ViewMessageController.onPageLoad(testErn, message2.uniqueMessageIdentifier).url,
                         messageKey = "Error with report of receipt",
                         hintKey = Some("LRN1001")
                       ))

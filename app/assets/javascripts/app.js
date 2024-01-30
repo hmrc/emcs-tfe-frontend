@@ -28,3 +28,17 @@ document.addEventListener('DOMContentLoaded', function(event) {
     });
   }
 });
+
+function printLink() {
+  const printLink = document.getElementById('print-link');
+
+  if (printLink != null && printLink != 'undefined') {
+    printLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      window.print();
+    });
+  }
+}
+document.addEventListener('DOMContentLoaded', function (event){
+  printLink();
+});

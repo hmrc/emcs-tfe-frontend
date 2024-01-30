@@ -403,43 +403,66 @@ viewAllMessages.table.column.status.unread.label = UNREAD
 viewAllMessages.table.column.date.label = Date
 viewAllMessages.table.column.action.label = Action
 viewAllMessages.link.message.delete.label = Delete
-viewAllMessages.IE801.false.0.description = First notification of movement
-viewAllMessages.IE801.true.0.description = New movement successful submission
-viewAllMessages.IE801.true.1.description = First notification of a split movement
-viewAllMessages.IE802.false.1.description = Reminder to change destination
-viewAllMessages.IE802.false.2.description = Reminder for report of receipt
-viewAllMessages.IE802.false.3.description = Reminder to provide a destination
-viewAllMessages.IE803.false.0.description = Diverted movement
-viewAllMessages.IE803.false.1.description = Diverted movement
-viewAllMessages.IE803.true.1.description = Diverted movement
-viewAllMessages.IE803.false.2.description = Diverted movement
-viewAllMessages.IE803.true.2.description = Notification of a split movement
-viewAllMessages.IE807.false.0.description = Movement intercepted
-viewAllMessages.IE810.false.0.description = Cancellation
-viewAllMessages.IE810.true.0.description = Cancellation submitted successfully
-viewAllMessages.IE813.false.0.description = Change of destination
-viewAllMessages.IE813.true.0.description = Change of destination submitted successfully
-viewAllMessages.IE818.false.0.description = Report of receipt
-viewAllMessages.IE818.true.0.description = Report of receipt successful submission
-viewAllMessages.IE819.false.0.description = Alert or rejection received
-viewAllMessages.IE819.false.1.description = Alert or rejection received
-viewAllMessages.IE819.true.0.description = Alert or rejection submitted successfully
-viewAllMessages.IE819.true.1.description = Alert or rejection submitted successfully
-viewAllMessages.IE829.false.0.description = Customs acceptance of movement for export
-viewAllMessages.IE837.true.1.description = Explanation for a delay submitted successfully
-viewAllMessages.IE837.true.2.description = Explanation for a delay submitted successfully
-viewAllMessages.IE839.false.0.description = Customs rejection of movement for export
-viewAllMessages.IE840.false.2.description = Complimentary event report received
-viewAllMessages.IE840.false.3.description = Event report received
-viewAllMessages.IE871.true.0.description = Explanation for a shortage or excess submitted successfully
-viewAllMessages.IE881.false.0.description = Manual closure response
-viewAllMessages.IE905.false.0.description = Manual closure of a movement
-viewAllMessages.IE704.true.IE810.0.description = Error with cancellation
-viewAllMessages.IE704.true.IE813.0.description = Error with change of destination
-viewAllMessages.IE704.true.IE815.0.description = Error with movement submission
-viewAllMessages.IE704.true.IE818.0.description = Error with report of receipt
-viewAllMessages.IE704.true.IE819.0.description = Error with alert or rejection
-viewAllMessages.IE704.true.IE819.1.description = Error with alert or rejection
-viewAllMessages.IE704.true.IE825.0.description = Error with split movement
-viewAllMessages.IE704.true.IE837.0.description = Error with explanation for a delay
-viewAllMessages.IE704.true.IE871.0.description = Error with explanation for a shortage or excess
+
+viewMessage.message.sent = This message was sent to you on the {0}
+viewMessage.table.messageType.label = Message type
+viewMessage.table.arc.label = Administrative reference code
+viewMessage.table.lrn.label = Local reference number
+
+messages.IE801.false.0.description = First notification of movement
+messages.IE801.true.0.description = New movement successful submission
+messages.IE801.true.1.description = First notification of a split movement
+
+messages.IE802.false.1.description = Reminder to change destination
+messages.IE802.false.2.description = Reminder for report of receipt
+messages.IE802.false.3.description = Reminder to provide a destination
+
+messages.IE803.false.0.description = Diverted movement
+messages.IE803.false.1.description = Diverted movement
+messages.IE803.true.1.description = Diverted movement
+messages.IE803.false.2.description = Diverted movement
+messages.IE803.true.2.description = Notification of a split movement
+
+messages.IE807.false.0.description = Movement intercepted
+
+messages.IE810.false.0.description = Cancellation
+messages.IE810.true.0.description = Cancellation submitted successfully
+
+messages.IE813.false.0.description = Change of destination
+messages.IE813.true.0.description = Change of destination submitted successfully
+
+messages.IE818.false.0.description = Report of receipt
+messages.IE818.true.0.description = Report of receipt successful submission
+
+messages.IE819.false.0.description = Alert or rejection received
+messages.IE819.false.0.messageType = Alert received
+messages.IE819.false.1.description = Alert or rejection received
+messages.IE819.false.1.messageType = Rejection received
+messages.IE819.true.0.description = Alert or rejection submitted successfully
+messages.IE819.true.1.description = Alert or rejection submitted successfully
+
+messages.IE829.false.0.description = Customs acceptance of movement for export
+
+messages.IE837.true.1.description = Explanation for a delay submitted successfully
+messages.IE837.true.2.description = Explanation for a delay submitted successfully
+
+messages.IE839.false.0.description = Customs rejection of movement for export
+
+messages.IE840.false.2.description = Complimentary event report received
+messages.IE840.false.3.description = Event report received
+
+messages.IE871.true.0.description = Explanation for a shortage or excess submitted successfully
+
+messages.IE881.false.0.description = Manual closure response
+
+messages.IE905.false.0.description = Manual closure of a movement
+
+messages.IE704.true.IE810.0.description = Error with cancellation
+messages.IE704.true.IE813.0.description = Error with change of destination
+messages.IE704.true.IE815.0.description = Error with movement submission
+messages.IE704.true.IE818.0.description = Error with report of receipt
+messages.IE704.true.IE819.0.description = Error with alert or rejection
+messages.IE704.true.IE819.1.description = Error with alert or rejection
+messages.IE704.true.IE825.0.description = Error with split movement
+messages.IE704.true.IE837.0.description = Error with explanation for a delay
+messages.IE704.true.IE871.0.description = Error with explanation for a shortage or excess

@@ -41,12 +41,13 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
 
   def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] =
     authorisedWithData(ern).async { implicit request =>
-      if (search.index <= 0)
+      if (search.index <= 0) {
         Future.successful(
           Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
         )
-      else
+      } else {
         renderView(Ok, ern, search)
+      }
     }
 
   private def renderView(status: Status, ern: String, search: MessagesSearchOptions)(implicit request: DataRequest[_]): Future[Result] = {
@@ -58,9 +59,9 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
           DEFAULT_MAX_ROWS
         )
 
-      if (search.index > totalNumberOfPages)
+      if (search.index > totalNumberOfPages) {
         Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
-      else {
+      } else {
         status(
           view(
             sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
@@ -77,11 +78,12 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def calculatePageCount(totalNumberOfMessagesAvailable: Int, maximumRowsPerPage: Int): Int = {
-    if (totalNumberOfMessagesAvailable == 0)
+    if (totalNumberOfMessagesAvailable == 0) {
       1
-    else if (totalNumberOfMessagesAvailable % maximumRowsPerPage != 0)
+    } else if (totalNumberOfMessagesAvailable % maximumRowsPerPage != 0) {
       (totalNumberOfMessagesAvailable / maximumRowsPerPage) + 1
-    else
+    } else {
       totalNumberOfMessagesAvailable / maximumRowsPerPage
+    }
   }
 }

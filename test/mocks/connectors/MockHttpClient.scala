@@ -64,6 +64,15 @@ trait MockHttpClient extends MockFactory {
         })
     }
 
+    def putEmpty[T](url: String): CallHandler[Future[T]] = {
+      (mockHttpClient
+        .PUTString[T](_: String, _: String, _: Seq[(String, String)])(_: HttpReads[T], _: HeaderCarrier, _: ExecutionContext))
+        .expects(assertArgs { (actualUrl, _, _, _, _, _) => {
+          actualUrl mustBe url
+        }
+        })
+    }
+
     def delete[T](url: String): CallHandler[Future[T]] = {
       (mockHttpClient
         .DELETE(_: String, _: Seq[(String, String)])(_: HttpReads[T], _: HeaderCarrier, _: ExecutionContext))

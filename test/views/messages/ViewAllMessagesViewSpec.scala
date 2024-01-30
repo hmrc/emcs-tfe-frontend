@@ -32,7 +32,7 @@ import views.html.messages.ViewAllMessages
 import views.{BaseSelectors, ViewBehaviours}
 
 
-class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures {
+  class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures {
 
   object Selectors extends BaseSelectors {
     val sortBySelectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
@@ -89,7 +89,7 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
           Selectors.sortBySelectOption(8) -> English.sortReadIndicatorD,
           Selectors.sortButton -> English.sortByButton,
 
-          Selectors.messageRow(1) -> "Report of receipt successful submission",
+          Selectors.messageRow(1) -> "Alert or rejection received",
           Selectors.messageHintRow(1) -> "ARC1001",
           Selectors.statusRow(1) -> "UNREAD",
           Selectors.dateOfMessageRow(1) -> "5 January 2024",
@@ -125,7 +125,7 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
         Selectors.sortBySelectOption(8) -> English.sortReadIndicatorD,
         Selectors.sortButton -> English.sortByButton,
 
-        Selectors.messageRow(1) -> "Report of receipt successful submission",
+        Selectors.messageRow(1) -> "Alert or rejection received",
         Selectors.messageHintRow(1) -> "ARC1001",
         Selectors.statusRow(1) -> "UNREAD",
         Selectors.dateOfMessageRow(1) -> "5 January 2024",

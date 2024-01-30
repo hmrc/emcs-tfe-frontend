@@ -22,17 +22,31 @@ import java.time.LocalDateTime
 
 trait MessagesFixtures extends BaseFixtures {
 
+  def createMessage(messageType: String) =
+    Message(
+      uniqueMessageIdentifier = 1234L,
+      dateCreatedOnCore = LocalDateTime.of(2024, 1, 5, 0, 0, 0, 0),
+      arc = Some("ARC1001"),
+      messageType = messageType,
+      relatedMessageType = None,
+      sequenceNumber = Some(1),
+      readIndicator = false,
+      lrn = Some("LRN1001"),
+      messageRole = 0,
+      submittedByRequestingTrader = false
+    )
+
   lazy val message1: Message = Message(
     uniqueMessageIdentifier = 1001L,
     dateCreatedOnCore = LocalDateTime.of(2024,1,5,0,0,0,0),
     arc = Some("ARC1001"),
-    messageType = "IE818",
+    messageType = "IE819",
     relatedMessageType = None,
     sequenceNumber = Some(1),
     readIndicator = false,
     lrn = Some("LRN1001"),
     messageRole = 0,
-    submittedByRequestingTrader = true
+    submittedByRequestingTrader = false
   )
 
   lazy val message2: Message = Message(
@@ -62,5 +76,6 @@ trait MessagesFixtures extends BaseFixtures {
 
   }
 
-
+  lazy val ie819AlertReceived = createMessage("IE819").copy(messageRole = 0, submittedByRequestingTrader = false)
+  lazy val ie819RejectReceived = createMessage("IE819").copy(messageRole = 1, submittedByRequestingTrader = false)
 }
