@@ -81,12 +81,13 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
       exciseProductCodeOptions = MovementListSearchOptions.CHOOSE_PRODUCT_CODE +: epcs
 
       countries <- EitherT(getMemberStatesConnector.getMemberStates())
-      sortedCountries = MovementListSearchOptions.CHOOSE_COUNTRY +: countries.sortBy(_.displayName)
+      selectCountryOptions = MovementListSearchOptions.CHOOSE_COUNTRY +: countries.sortBy(_.displayName)
     } yield {
 
       val pageCount: Int = calculatePageCount(movementList)
 
       if (searchOptions.index <= 0 || searchOptions.index > pageCount) {
+        // if page number is invalid - lower than '1' or higher than the calculated max page count
         Redirect(routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()))
       } else {
         val movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus)
@@ -101,7 +102,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
           searchSelectItems = MovementSearchSelectOption.constructSelectItems(searchOptions.searchKey.map(_.code)),
           movementStatusItems = movementStatusItems,
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(exciseProductCodeOptions, None, searchOptions.exciseProductCode),
-          countrySelectItems = SelectItemHelper.constructSelectItems(sortedCountries, None, searchOptions.countryOfOrigin),
+          countrySelectItems = SelectItemHelper.constructSelectItems(selectCountryOptions, None, searchOptions.countryOfOrigin),
           pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions)
         ))
       }
