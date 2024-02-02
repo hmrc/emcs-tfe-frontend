@@ -160,7 +160,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     ),
     reportOfReceipt = Some(reportOfReceiptResponse),
     items = Seq(item1, item2),
-    eventHistorySummary = Some(getMovementHistoryEventsResponseModel),
+    eventHistorySummary = Some(getMovementHistoryEventsModel),
     firstTransporterTrader = Some(TransportTraderModel(
       traderName = Some("testFirstTransporterTraderName"),
       address = Some(AddressModel(

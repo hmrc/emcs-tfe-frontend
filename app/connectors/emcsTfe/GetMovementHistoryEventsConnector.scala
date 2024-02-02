@@ -17,7 +17,7 @@
 package connectors.emcsTfe
 
 import config.AppConfig
-import models.response.emcsTfe.getMovementHistoryEvents.GetMovementHistoryEventsResponse
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -27,12 +27,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class GetMovementHistoryEventsConnector @Inject()(val http: HttpClient,
-                                                  config: AppConfig) extends EmcsTfeHttpParser[GetMovementHistoryEventsResponse] {
+                                                  config: AppConfig) extends EmcsTfeHttpParser[Seq[MovementHistoryEvent]] {
 
-  override implicit val reads: Reads[GetMovementHistoryEventsResponse] = GetMovementHistoryEventsResponse.format
+  override implicit val reads: Reads[Seq[MovementHistoryEvent]] = MovementHistoryEvent.seqReads
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
-  def getMovementHistoryEvents(exciseRegistrationNumber: String, arc: String)(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, GetMovementHistoryEventsResponse]] = {
+  def getMovementHistoryEvents(exciseRegistrationNumber: String, arc: String)(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, Seq[MovementHistoryEvent]]] = {
     def url: String = s"$baseUrl/movement-history/$exciseRegistrationNumber/$arc"
 
     get(url)

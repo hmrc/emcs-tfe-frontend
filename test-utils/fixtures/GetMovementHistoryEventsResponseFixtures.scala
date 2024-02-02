@@ -16,64 +16,56 @@
 
 package fixtures
 
-import models.response.emcsTfe.getMovementHistoryEvents.{GetMovementHistoryEventsResponse, MovementHistoryEvent}
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.libs.json.{JsValue, Json}
 
 trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
-  val getMovementHistoryEventsResponseModel: GetMovementHistoryEventsResponse = GetMovementHistoryEventsResponse(
-    dateTime = "2023-12-12T17:00:00",
-    exciseRegistrationNumber = testErn,
-    movementHistory = Seq[MovementHistoryEvent](
-      MovementHistoryEvent(
-        eventType = "IE813",
-        eventDate = "2023-12-01T15:00:00",
-        sequenceNumber = 1,
-        messageRole = 1,
-        upstreamArc = Some(testArc)
-      ),
-      MovementHistoryEvent(
-        eventType = "IE813",
-        eventDate = "2023-12-02T13:00:00",
-        sequenceNumber = 2,
-        messageRole = 1,
-        upstreamArc = Some(testArc)
-      ),
-      MovementHistoryEvent(
-        eventType = "IE818",
-        eventDate = "2023-12-04T08:00:00",
-        sequenceNumber = 3,
-        messageRole = 1,
-        upstreamArc = Some(testArc)
-      )
+  val getMovementHistoryEventsModel: Seq[MovementHistoryEvent] = Seq(
+    MovementHistoryEvent(
+      eventType = "IE813",
+      eventDate = "2023-12-01T15:00:00",
+      sequenceNumber = 1,
+      messageRole = 1,
+      upstreamArc = Some(testArc)
+    ),
+    MovementHistoryEvent(
+      eventType = "IE813",
+      eventDate = "2023-12-02T13:00:00",
+      sequenceNumber = 2,
+      messageRole = 1,
+      upstreamArc = Some(testArc)
+    ),
+    MovementHistoryEvent(
+      eventType = "IE818",
+      eventDate = "2023-12-04T08:00:00",
+      sequenceNumber = 3,
+      messageRole = 1,
+      upstreamArc = Some(testArc)
     )
   )
 
-  val getMovementHistoryEventsResponseInputJson: JsValue = Json.obj(
-    "dateTime" -> "2023-12-12T17:00:00",
-    "exciseRegistrationNumber" -> testErn,
-    "movementHistory" -> Json.arr(
-      Json.obj(
-        "eventType" -> "IE813",
-        "eventDate" -> "2023-12-01T15:00:00",
-        "sequenceNumber" -> 1,
-        "messageRole" -> 1,
-        "upstreamArc" -> testArc
-      ),
-      Json.obj(
-        "eventType" -> "IE813",
-        "eventDate" -> "2023-12-02T13:00:00",
-        "sequenceNumber" -> 2,
-        "messageRole" -> 1,
-        "upstreamArc" -> testArc
-      ),
-      Json.obj(
-        "eventType" -> "IE818",
-        "eventDate" -> "2023-12-04T08:00:00",
-        "sequenceNumber" -> 3,
-        "messageRole" -> 1,
-        "upstreamArc" -> testArc
-      )
+  val getMovementHistoryEventsResponseInputJson: JsValue = Json.arr(
+    Json.obj(
+      "eventType" -> "IE813",
+      "eventDate" -> "2023-12-01T15:00:00",
+      "sequenceNumber" -> 1,
+      "messageRole" -> 1,
+      "upstreamArc" -> testArc
+    ),
+    Json.obj(
+      "eventType" -> "IE813",
+      "eventDate" -> "2023-12-02T13:00:00",
+      "sequenceNumber" -> 2,
+      "messageRole" -> 1,
+      "upstreamArc" -> testArc
+    ),
+    Json.obj(
+      "eventType" -> "IE818",
+      "eventDate" -> "2023-12-04T08:00:00",
+      "sequenceNumber" -> 3,
+      "messageRole" -> 1,
+      "upstreamArc" -> testArc
     )
   )
 

@@ -16,12 +16,11 @@
 
 package models.response.emcsTfe
 
-import models.common.{DestinationType, DocumentCertificateModel, MovementGuaranteeModel, TraderModel, TransportDetailsModel, TransportTraderModel}
-import models.response.emcsTfe.getMovementHistoryEvents.GetMovementHistoryEventsResponse
+import models.common._
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.ReportOfReceiptModel
-import play.api.libs.json.Reads
-import utils.{DateUtils, ExpectedDateOfArrival}
 import play.api.libs.json._
+import utils.{DateUtils, ExpectedDateOfArrival}
 
 import java.time.{LocalDate, LocalTime}
 
@@ -49,7 +48,7 @@ case class GetMovementResponse(
                                 reportOfReceipt: Option[ReportOfReceiptModel],
                                 items: Seq[MovementItem],
                                 movementGuarantee: MovementGuaranteeModel,
-                                eventHistorySummary: Option[GetMovementHistoryEventsResponse]
+                                eventHistorySummary: Option[Seq[MovementHistoryEvent]]
                               ) extends DateUtils with ExpectedDateOfArrival {
   def formattedDateOfDispatch: String = dateOfDispatch.formatDateForUIOutput()
 
@@ -94,7 +93,7 @@ object GetMovementResponse {
     numberOfItems <- (__ \ "numberOfItems").read[Int]
     reportOfReceipt <- (__ \ "reportOfReceipt").readNullable[ReportOfReceiptModel]
     items <- (__ \ "items").read[Seq[MovementItem]]
-    eventHistorySummary <- (__ \ "eventHistorySummary").readNullable[GetMovementHistoryEventsResponse]
+    eventHistorySummary <- (__ \ "eventHistorySummary").readNullable[Seq[MovementHistoryEvent]]
   } yield {
     GetMovementResponse(
       arc = arc,

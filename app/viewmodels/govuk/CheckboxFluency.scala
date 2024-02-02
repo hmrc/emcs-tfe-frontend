@@ -47,7 +47,7 @@ trait CheckboxFluency {
     def apply(
                form: Form[_],
                name: String,
-               items: Seq[CheckboxItem],
+               items: Seq[CheckboxItem]
              )(implicit messages: Messages): Checkboxes =
       apply(
         form = form,

@@ -39,9 +39,9 @@ class GetMovementHistoryEventsConnectorSpec extends SpecBase
 
       "downstream call is successful" in {
 
-        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement-history/ern/arc").returns(Future.successful(Right(getMovementHistoryEventsResponseModel)))
+        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement-history/ern/arc").returns(Future.successful(Right(getMovementHistoryEventsModel)))
 
-        connector.getMovementHistoryEvents(exciseRegistrationNumber = "ern", arc = "arc").futureValue mustBe Right(getMovementHistoryEventsResponseModel)
+        connector.getMovementHistoryEvents(exciseRegistrationNumber = "ern", arc = "arc").futureValue mustBe Right(getMovementHistoryEventsModel)
       }
     }
 
