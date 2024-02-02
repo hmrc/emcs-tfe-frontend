@@ -132,8 +132,13 @@ object MovementListSearchOptions {
                                              field: String,
                                              stringBinder: QueryStringBindable[String],
                                              params: Map[String, Seq[String]]
-                                           ): Either[String, Option[String]] =
-    stringBinder.bind(field, params).map(_.map(Some(_))).getOrElse(Right(None))
+                                           ): Either[String, Option[String]] = {
+    stringBinder
+      .bind(field, params)    // - takes a key and params and turns them into a None if that key doesn’t exist in the params,
+                              //   or a Some[Either[String, String]] (where it’s Right[String] if the binding worked and Left[String] if not)
+      .map(_.map(Some(_)))    // - maps inside and turns the Right value into Right[Some[String]]
+      .getOrElse(Right(None)) // - unwraps the Option from bind
+  }
 
   //noinspection ScalaStyle
   implicit def queryStringBinder(implicit intBinder: QueryStringBindable[Int],
