@@ -42,8 +42,6 @@ class GetMessageStatisticsConnectorSpec extends SpecBase with Status with MimeTy
     "return a successful response" when {
       "downstream call is successful" in new Test {
         val model: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
-          dateTime = "testDateTime",
-          exciseRegistrationNumber = "testExciseRegistrationNumber",
           countOfAllMessages = 1,
           countOfNewMessages = 1
         )

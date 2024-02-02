@@ -46,8 +46,6 @@ trait BaseFixtures {
   val testTraderKnownFactsJson: JsValue = Json.parse("""{ "traderName": "Trader" }""")
 
   val testMessageStatistics: GetMessageStatisticsResponse = GetMessageStatisticsResponse(
-    dateTime = "testDateTime",
-    exciseRegistrationNumber = testErn,
     countOfAllMessages = 10,
     countOfNewMessages = 5
   )
@@ -55,8 +53,6 @@ trait BaseFixtures {
   val testMessageStatisticsJson: JsValue = Json.parse(
     s"""
        |{
-       |   "dateTime": "2009-01-26T14:11:00",
-       |   "exciseRegistrationNumber": "$testErn",
        |   "countOfAllMessages" : 1,
        |   "countOfNewMessages" : 1
        |}""".stripMargin
