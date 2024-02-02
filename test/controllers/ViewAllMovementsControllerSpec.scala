@@ -18,17 +18,18 @@ package controllers
 
 import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
-import fixtures.MovementListFixtures
 import fixtures.messages.EN
+import fixtures.{ExciseProductCodeFixtures, MemberStatesFixtures, MovementListFixtures}
 import forms.ViewAllMovementsFormProvider
-import mocks.connectors.MockEmcsTfeConnector
+import mocks.connectors.{MockEmcsTfeConnector, MockGetExciseProductCodesConnector, MockGetMemberStatesConnector}
 import mocks.viewmodels.MockMovementPaginationHelper
 import models.MovementSortingSelectOption.{ArcAscending, Newest}
 import models.requests.DataRequest
-import models.response.UnexpectedDownstreamResponseError
+import models.response.{NotFoundError, UnexpectedDownstreamResponseError}
 import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
-import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
+import models._
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
+import play.api.data.{Form, FormError}
 import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
@@ -41,7 +42,15 @@ import views.html.viewAllMovements.ViewAllMovements
 
 import scala.concurrent.Future
 
-class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures with FakeAuthAction with MockMovementPaginationHelper with MockEmcsTfeConnector {
+class ViewAllMovementsControllerSpec extends SpecBase
+  with MovementListFixtures
+  with FakeAuthAction
+  with MockMovementPaginationHelper
+  with MockGetExciseProductCodesConnector
+  with ExciseProductCodeFixtures
+  with MockGetMemberStatesConnector
+  with MemberStatesFixtures
+  with MockEmcsTfeConnector {
 
   val movements: Seq[GetMovementListItem] = Seq.fill(10)(movement1)
   lazy val threePageMovementListResponse: GetMovementListResponse =
@@ -56,9 +65,17 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
 
   val selectItemList = SelectItemHelper.constructSelectItems(MovementSortingSelectOption.values, None, None)
 
+  val epcsListConnectorResult: Seq[ExciseProductCode] = Seq(beerExciseProductCode, wineExciseProductCode)
+  val epcsListForView: Seq[SelectOptionModel] = MovementListSearchOptions.CHOOSE_PRODUCT_CODE +: epcsListConnectorResult
+
+  val countryListConnectorResult: Seq[MemberState] = Seq(memberStateAT, memberStateBE)
+  val countryListForView: Seq[SelectOptionModel] = MovementListSearchOptions.CHOOSE_COUNTRY +: countryListConnectorResult
+
   lazy val controller: ViewAllMovementsController = new ViewAllMovementsController(
     mcc = app.injector.instanceOf[MessagesControllerComponents],
-    connector = mockGetMovementListConnector,
+    getMovementListConnector = mockGetMovementListConnector,
+    getExciseProductCodesConnector = mockGetExciseProductCodesConnector,
+    getMemberStatesConnector = mockGetMemberStatesConnector,
     view = view,
     errorHandler = errorHandler,
     auth = FakeSuccessAuthAction,
@@ -66,6 +83,27 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
     paginationHelper = mockMovementPaginationHelper,
     formProvider = formProvider
   )
+
+  private def buildView(searchOptions: MovementListSearchOptions,
+                        form: Form[MovementListSearchOptions])(implicit request: DataRequest[_]): Html =
+    view(
+      form = form,
+      action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
+      ern = testErn,
+      movements = movements,
+      sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+      searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+      movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
+      exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+      countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
+      pagination = None
+    )
+
+  private def successView(searchOptions: MovementListSearchOptions)(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, formProvider())
+
+  private def viewWithErrors(searchOptions: MovementListSearchOptions)(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, formProvider().withError(FormError("sortBy", Seq("error.required"))))
 
   "GET /" when {
 
@@ -83,6 +121,14 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           .getMovementList(testErn, Some(searchOptions))
           .returns(Future.successful(Right(threePageMovementListResponse)))
 
+        MockGetExciseProductCodesConnector
+          .getExciseProductCodes()
+          .returns(Future.successful(Right(epcsListConnectorResult)))
+
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.SEE_OTHER
@@ -97,20 +143,20 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           .getMovementList(testErn, Some(searchOptions))
           .returns(Future.successful(Right(threePageMovementListResponse)))
 
+        MockGetExciseProductCodesConnector
+          .getExciseProductCodes()
+          .returns(Future.successful(Right(epcsListConnectorResult)))
+
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 3)(None)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(
-          form = formProvider(),
-          action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-          ern = testErn,
-          movements = movements,
-          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-          pagination = None
-        )
+        Html(contentAsString(result)) shouldBe successView(searchOptions)
       }
 
       "show the correct view and pagination with an index of 2" in {
@@ -121,20 +167,20 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           .getMovementList(testErn, Some(searchOptions))
           .returns(Future.successful(Right(threePageMovementListResponse)))
 
+        MockGetExciseProductCodesConnector
+          .getExciseProductCodes()
+          .returns(Future.successful(Right(epcsListConnectorResult)))
+
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         MockMovementPaginationHelper.constructPagination(index = 2, pageCount = 3)(None)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(
-          formProvider(),
-          routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-          ern = testErn,
-          movements = movements,
-          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-          pagination = None
-        )
+        Html(contentAsString(result)) shouldBe successView(searchOptions)
       }
 
       "show the correct view and pagination with an index of 3" in {
@@ -145,20 +191,20 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           .getMovementList(testErn, Some(searchOptions))
           .returns(Future.successful(Right(threePageMovementListResponse)))
 
+        MockGetExciseProductCodesConnector
+          .getExciseProductCodes()
+          .returns(Future.successful(Right(epcsListConnectorResult)))
+
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 3)(None)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(
-          formProvider(),
-          routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-          ern = testErn,
-          movements = movements,
-          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-          pagination = None
-        )
+        Html(contentAsString(result)) shouldBe successView(searchOptions)
       }
 
       "redirect to the index 1 when current index is above the maximum" in {
@@ -168,6 +214,14 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
         MockEmcsTfeConnector
           .getMovementList(testErn, Some(searchOptions))
           .returns(Future.successful(Right(threePageMovementListResponse)))
+
+        MockGetExciseProductCodesConnector
+          .getExciseProductCodes()
+          .returns(Future.successful(Right(epcsListConnectorResult)))
+
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -183,20 +237,20 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           .getMovementList(testErn, Some(searchOptions))
           .returns(Future.successful(Right(GetMovementListResponse(movements, 31))))
 
+        MockGetExciseProductCodesConnector
+          .getExciseProductCodes()
+          .returns(Future.successful(Right(epcsListConnectorResult)))
+
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(
-          formProvider(),
-          routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-          ern = testErn,
-          movements = movements,
-          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-          pagination = None
-        )
+        Html(contentAsString(result)) shouldBe successView(searchOptions)
       }
 
       "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in {
@@ -207,29 +261,95 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           .getMovementList(testErn, Some(searchOptions))
           .returns(Future.successful(Right(GetMovementListResponse(movements, 39))))
 
+        MockGetExciseProductCodesConnector
+          .getExciseProductCodes()
+          .returns(Future.successful(Right(epcsListConnectorResult)))
+
+        MockGetMemberStatesConnector
+          .getMemberStates()
+          .returns(Future.successful(Right(countryListConnectorResult)))
+
         MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(
-          formProvider(),
-          routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-          ern = testErn,
-          movements = movements,
-          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-          pagination = None
-        )
+        Html(contentAsString(result)) shouldBe successView(searchOptions)
       }
     }
 
-    "connector call is unsuccessful" should {
+    "get movement connector call is unsuccessful" when {
+
+      "not found" should {
+        "return the view" in {
+          MockEmcsTfeConnector
+            .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+            .returns(Future.successful(Left(NotFoundError)))
+
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
+          MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 1)(None)
+
+          val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+
+          status(result) shouldBe Status.OK
+        }
+      }
+
+      "any other error message" should {
+        "return 500" in {
+
+          MockEmcsTfeConnector
+            .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+            .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+        }
+      }
+    }
+
+    "get EPCs connector call is unsuccessful" should {
 
       "return 500" in {
 
         MockEmcsTfeConnector
           .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+          .returns(Future.successful(Right(GetMovementListResponse(movements, 39))))
+
+        MockGetExciseProductCodesConnector
+          .getExciseProductCodes()
+          .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+        val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+      }
+    }
+
+    "get countries connector call is unsuccessful" should {
+
+      "return 500" in {
+
+        MockEmcsTfeConnector
+          .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+          .returns(Future.successful(Right(GetMovementListResponse(movements, 39))))
+
+        MockGetExciseProductCodesConnector
+          .getExciseProductCodes()
+          .returns(Future.successful(Right(epcsListConnectorResult)))
+
+        MockGetMemberStatesConnector
+          .getMemberStates()
           .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
         val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
@@ -258,6 +378,14 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             .getMovementList(testErn, Some(searchOptions))
             .returns(Future.successful(Right(threePageMovementListResponse)))
 
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
             fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
           )
@@ -274,6 +402,14 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             .getMovementList(testErn, Some(searchOptions))
             .returns(Future.successful(Right(threePageMovementListResponse)))
 
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
           MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 3)(None)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
@@ -281,15 +417,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           )
 
           status(result) shouldBe Status.BAD_REQUEST
-          Html(contentAsString(result)) shouldBe view(
-            form = formProvider(),
-            action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-            ern = testErn,
-            movements = movements,
-            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-            pagination = None
-          )
+          Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
         }
 
         "show the correct view and pagination with an index of 2" in {
@@ -300,6 +428,14 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             .getMovementList(testErn, Some(searchOptions))
             .returns(Future.successful(Right(threePageMovementListResponse)))
 
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
           MockMovementPaginationHelper.constructPagination(index = 2, pageCount = 3)(None)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
@@ -307,15 +443,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           )
 
           status(result) shouldBe Status.BAD_REQUEST
-          Html(contentAsString(result)) shouldBe view(
-            formProvider(),
-            routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-            ern = testErn,
-            movements = movements,
-            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-            pagination = None
-          )
+          Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
         }
 
         "show the correct view and pagination with an index of 3" in {
@@ -326,6 +454,14 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             .getMovementList(testErn, Some(searchOptions))
             .returns(Future.successful(Right(threePageMovementListResponse)))
 
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
           MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 3)(None)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
@@ -333,15 +469,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           )
 
           status(result) shouldBe Status.BAD_REQUEST
-          Html(contentAsString(result)) shouldBe view(
-            formProvider(),
-            routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-            ern = testErn,
-            movements = movements,
-            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-            pagination = None
-          )
+          Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
         }
 
         "redirect to the index 1 when current index is above the maximum" in {
@@ -351,6 +479,14 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           MockEmcsTfeConnector
             .getMovementList(testErn, Some(searchOptions))
             .returns(Future.successful(Right(threePageMovementListResponse)))
+
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
             fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
@@ -368,6 +504,14 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             .getMovementList(testErn, Some(searchOptions))
             .returns(Future.successful(Right(GetMovementListResponse(movements, 31))))
 
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
           MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
@@ -375,15 +519,7 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           )
 
           status(result) shouldBe Status.BAD_REQUEST
-          Html(contentAsString(result)) shouldBe view(
-            formProvider(),
-            routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-            ern = testErn,
-            movements = movements,
-            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-            pagination = None
-          )
+          Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
         }
 
         "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in {
@@ -394,6 +530,14 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
             .getMovementList(testErn, Some(searchOptions))
             .returns(Future.successful(Right(GetMovementListResponse(movements, 39))))
 
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
           MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
@@ -401,24 +545,87 @@ class ViewAllMovementsControllerSpec extends SpecBase with MovementListFixtures 
           )
 
           status(result) shouldBe Status.BAD_REQUEST
-          Html(contentAsString(result)) shouldBe view(
-            formProvider(),
-            routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-            ern = testErn,
-            movements = movements,
-            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-            pagination = None
-          )
+          Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
         }
       }
 
-      "connector call is unsuccessful" should {
+      "get movement connector call is unsuccessful" when {
+
+        "not found" should {
+          "return the view" in {
+            val searchOptions = MovementListSearchOptions(index = 1)
+
+            MockEmcsTfeConnector
+              .getMovementList(testErn, Some(searchOptions))
+              .returns(Future.successful(Left(NotFoundError)))
+
+            MockGetExciseProductCodesConnector
+              .getExciseProductCodes()
+              .returns(Future.successful(Right(epcsListConnectorResult)))
+
+            MockGetMemberStatesConnector
+              .getMemberStates()
+              .returns(Future.successful(Right(countryListConnectorResult)))
+
+            MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 1)(None)
+
+            val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
+              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+            )
+
+            status(result) shouldBe Status.BAD_REQUEST
+          }
+        }
+
+        "any other error message" should {
+
+          "return 500" in {
+
+            MockEmcsTfeConnector
+              .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+              .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+            val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+
+            status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+            Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+          }
+        }
+      }
+
+      "get EPCs connector call is unsuccessful" should {
 
         "return 500" in {
 
           MockEmcsTfeConnector
             .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+            .returns(Future.successful(Right(GetMovementListResponse(movements, 39))))
+
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+          val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+        }
+      }
+
+      "get countries connector call is unsuccessful" should {
+
+        "return 500" in {
+
+          MockEmcsTfeConnector
+            .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
+            .returns(Future.successful(Right(GetMovementListResponse(movements, 39))))
+
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
             .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
           val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)

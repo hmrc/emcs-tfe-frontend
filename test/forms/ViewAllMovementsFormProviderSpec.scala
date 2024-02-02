@@ -17,19 +17,21 @@
 package forms
 
 import base.SpecBase
+import models.MovementFilterDirectionOption._
 import models.MovementListSearchOptions
 import models.MovementSearchSelectOption.ARC
 import models.MovementSortingSelectOption.ArcAscending
+import play.api.data.FormError
 
 class ViewAllMovementsFormProviderSpec extends SpecBase {
 
   val form = new ViewAllMovementsFormProvider()()
+  val sortByKey = "sortBy"
+  val searchKey = "searchKey"
+  val searchValue = "searchValue"
+  def traderRoleKey(i: Int) = s"traderRole[$i]"
 
   ".sortBy" should {
-
-    val sortByKey = "sortBy"
-    val searchKey = "searchKey"
-    val searchValue = "searchValue"
 
     "bind when the searchKey is present" in {
       val boundForm = form.bind(Map(searchKey -> ARC.code, sortByKey -> ArcAscending.code))
@@ -54,6 +56,46 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
       val boundForm = form.bind(Map(sortByKey -> ArcAscending.code))
       boundForm.errors mustBe Seq.empty
+    }
+  }
+
+  ".traderRole" should {
+
+    "bind when Goods in is present" in {
+      val boundForm = form.bind(Map(
+        sortByKey -> ArcAscending.code,
+        traderRoleKey(0) -> GoodsIn.code
+      ))
+
+      boundForm.get mustBe MovementListSearchOptions(traderRole = Some(GoodsIn))
+    }
+
+    "bind when Goods out is present" in {
+      val boundForm = form.bind(Map(
+        sortByKey -> ArcAscending.code,
+        traderRoleKey(0) -> GoodsOut.code
+      ))
+
+      boundForm.get mustBe MovementListSearchOptions(traderRole = Some(GoodsOut))
+    }
+
+    "bind when both Goods in and Goods out are present" in {
+      val boundForm = form.bind(Map(
+        sortByKey -> ArcAscending.code,
+        traderRoleKey(0) -> GoodsIn.code,
+        traderRoleKey(1) -> GoodsOut.code
+      ))
+
+      boundForm.get mustBe MovementListSearchOptions(traderRole = Some(All))
+    }
+
+    "not bind an invalid value" in {
+      val boundForm = form.bind(Map(
+        sortByKey -> ArcAscending.code,
+        traderRoleKey(0) -> "BEANS"
+      ))
+
+      boundForm.errors mustBe List(FormError(traderRoleKey(0), List("error.invalid")))
     }
   }
 }

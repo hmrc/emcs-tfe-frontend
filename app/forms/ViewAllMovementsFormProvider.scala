@@ -17,9 +17,9 @@
 package forms
 
 import forms.mappings.Mappings
-import models.MovementListSearchOptions
+import models._
 import play.api.data.Form
-import play.api.data.Forms.{mapping, optional}
+import play.api.data.Forms.{mapping, optional, set}
 
 import javax.inject.Inject
 
@@ -30,7 +30,32 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
       mapping(
         ViewAllMovementsFormProvider.searchKey -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllMovementsFormProvider.searchValue -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
-        ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity)
+        ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
+        ViewAllMovementsFormProvider.traderRole -> set(enumerable[MovementFilterDirectionOption]()),
+        ViewAllMovementsFormProvider.undischarged -> set(enumerable[MovementFilterUndischargedOption]()),
+        ViewAllMovementsFormProvider.status -> optional(enumerable[MovementFilterStatusOption]()),
+        ViewAllMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllMovementsFormProvider.countryOfOrigin -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllMovementsFormProvider.dateOfDispatchFrom -> optionalLocalDate(
+          invalidKey     = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid",
+          twoRequiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required.two",
+          requiredKey    = "viewAllMovements.filters.dateOfDispatchFrom.error.required"
+        ),
+        ViewAllMovementsFormProvider.dateOfDispatchTo -> optionalLocalDate(
+          invalidKey     = "viewAllMovements.filters.dateOfDispatchTo.error.invalid",
+          twoRequiredKey = "viewAllMovements.filters.dateOfDispatchTo.error.required.two",
+          requiredKey    = "viewAllMovements.filters.dateOfDispatchTo.error.required"
+        ),
+        ViewAllMovementsFormProvider.dateOfReceiptFrom -> optionalLocalDate(
+          invalidKey     = "viewAllMovements.filters.dateOfReceiptFrom.error.invalid",
+          twoRequiredKey = "viewAllMovements.filters.dateOfReceiptFrom.error.required.two",
+          requiredKey    = "viewAllMovements.filters.dateOfReceiptFrom.error.required"
+        ),
+        ViewAllMovementsFormProvider.dateOfReceiptTo -> optionalLocalDate(
+          invalidKey     = "viewAllMovements.filters.dateOfReceiptTo.error.invalid",
+          twoRequiredKey = "viewAllMovements.filters.dateOfReceiptTo.error.required.two",
+          requiredKey    = "viewAllMovements.filters.dateOfReceiptTo.error.required"
+        )
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
     )
 
@@ -43,7 +68,20 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
 
 object ViewAllMovementsFormProvider {
 
+  // search input
   val sortByKey = "sortBy"
   val searchKey = "searchKey"
   val searchValue = "searchValue"
+
+  // filters
+  val traderRole = "traderRole"
+  val undischarged = "undischargedMovements"
+  val status = "movementStatus"
+  val exciseProductCode = "exciseProductCode"
+  val countryOfOrigin = "countryOfOrigin"
+  val dateOfDispatchFrom = "dateOfDispatchFrom"
+  val dateOfDispatchTo = "dateOfDispatchTo"
+  val dateOfReceiptFrom = "dateOfReceiptFrom"
+  val dateOfReceiptTo = "dateOfReceiptTo"
+
 }

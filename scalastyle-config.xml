@@ -36,11 +36,7 @@
             <parameter name="illegalImports"><![CDATA[sun._,java.awt._]]></parameter>
         </parameters>
     </check>
-    <check level="warning" class="org.scalastyle.scalariform.ParameterNumberChecker" enabled="true">
-        <parameters>
-            <parameter name="maxParameters"><![CDATA[8]]></parameter>
-        </parameters>
-    </check>
+    <check level="warning" class="org.scalastyle.scalariform.ParameterNumberChecker" enabled="false"/>
     <check level="warning" class="org.scalastyle.scalariform.MagicNumberChecker" enabled="true">
         <parameters>
             <parameter name="ignore"><![CDATA[-1,0,1,2,3]]></parameter>

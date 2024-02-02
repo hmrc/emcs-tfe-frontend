@@ -22,7 +22,7 @@ import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
 import forms.ViewAllMovementsFormProvider
 import models.requests.DataRequest
-import models.{MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
+import models.{MovementFilterStatusOption, MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
@@ -30,6 +30,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
 import viewmodels.MovementsListTableHelper
+import viewmodels.helpers.SelectItemHelper
 import views.html.components.table
 import views.html.viewAllMovements.ViewAllMovements
 
@@ -56,6 +57,49 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     val searchButton = "#searchButton"
 
     def hiddenInputSearchSelectOption(value: String) = s"#searchKey > option[value=$value]"
+
+    private val filtersSection = "aside"
+    val filtersHeading: String = s"$filtersSection h2"
+    val filtersButton: String = s"$filtersSection button"
+    val filtersDirection: String = s"$filtersSection .govuk-form-group:nth-of-type(1) legend"
+    val filtersDirectionOption1: String = s"$filtersSection .govuk-form-group:nth-of-type(1) .govuk-checkboxes__item:nth-of-type(1) label"
+    val filtersDirectionOption2: String = s"$filtersSection .govuk-form-group:nth-of-type(1) .govuk-checkboxes__item:nth-of-type(2) label"
+    val filtersUndischarged: String = s"$filtersSection .govuk-form-group:nth-of-type(2) legend"
+    val filtersUndischargedOption1: String = s"$filtersSection .govuk-form-group:nth-of-type(2) .govuk-checkboxes__item:nth-of-type(1) label"
+    val filtersStatus: String = s"$filtersSection .govuk-form-group:nth-of-type(3) label"
+    val filtersStatusChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(1)"
+    val filtersStatusActive: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(2)"
+    val filtersStatusCancelled: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(3)"
+    val filtersStatusDeemedExported: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(4)"
+    val filtersStatusDelivered: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(5)"
+    val filtersStatusDiverted: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(6)"
+    val filtersStatusExporting: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(7)"
+    val filtersStatusManuallyClosed: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(8)"
+    val filtersStatusPartiallyRefused: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(9)"
+    val filtersStatusRefused: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(10)"
+    val filtersStatusReplaced: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(11)"
+    val filtersStatusRejected: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(12)"
+    val filtersStatusStopped: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(13)"
+    val filtersEpc: String = s"$filtersSection .govuk-form-group:nth-of-type(4) label"
+    val filtersEpcChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(4) select option:nth-of-type(1)"
+    val filtersCountry: String = s"$filtersSection .govuk-form-group:nth-of-type(5) label"
+    val filtersCountryChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(5) select option:nth-of-type(1)"
+    val filtersDispatchedFrom: String = s"$filtersSection .govuk-form-group:nth-of-type(6) legend"
+    val filtersDispatchedFromDay: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label[for$$=day]"
+    val filtersDispatchedFromMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label[for$$=month]"
+    val filtersDispatchedFromYear: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label[for$$=year]"
+    val filtersDispatchedTo: String = s"$filtersSection .govuk-form-group:nth-of-type(7) legend"
+    val filtersDispatchedToDay: String = s"$filtersSection .govuk-form-group:nth-of-type(7) label[for$$=day]"
+    val filtersDispatchedToMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(7) label[for$$=month]"
+    val filtersDispatchedToYear: String = s"$filtersSection .govuk-form-group:nth-of-type(7) label[for$$=year]"
+    val filtersReceiptedFrom: String = s"$filtersSection .govuk-form-group:nth-of-type(8) legend"
+    val filtersReceiptedFromDay: String = s"$filtersSection .govuk-form-group:nth-of-type(8) label[for$$=day]"
+    val filtersReceiptedFromMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(8) label[for$$=month]"
+    val filtersReceiptedFromYear: String = s"$filtersSection .govuk-form-group:nth-of-type(8) label[for$$=year]"
+    val filtersReceiptedTo: String = s"$filtersSection .govuk-form-group:nth-of-type(9) legend"
+    val filtersReceiptedToDay: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label[for$$=day]"
+    val filtersReceiptedToMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label[for$$=month]"
+    val filtersReceiptedToYear: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label[for$$=year]"
   }
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/movements")
@@ -77,6 +121,9 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     movements = getMovementListResponse.movements,
     sortSelectItems = MovementSortingSelectOption.constructSelectItems(),
     searchSelectItems = MovementSearchSelectOption.constructSelectItems(),
+    movementStatusItems = MovementFilterStatusOption.selectItems(None),
+    exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_PRODUCT_CODE), None),
+    countrySelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_COUNTRY), None),
     pagination = pagination
   ).toString())
 
@@ -90,6 +137,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
       behave like pageWithExpectedElementsAndMessages(Seq(
         Selectors.title -> English.title,
         Selectors.h1 -> English.heading,
+
         Selectors.searchHeading -> English.searchHeading,
         Selectors.searchText -> English.searchText,
         Selectors.hiddenSearchBoxLabel -> English.searchInputHiddenLabel,
@@ -99,6 +147,49 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.hiddenInputSearchSelectOption("otherTraderId") -> English.searchSelectERN,
         Selectors.hiddenInputSearchSelectOption("transporterTraderName") -> English.searchSelectTransporter,
         Selectors.searchButton -> English.searchButton,
+
+        Selectors.filtersHeading -> English.filtersHeading,
+        Selectors.filtersButton -> English.filtersButton,
+        Selectors.filtersDirection -> English.filtersDirection,
+        Selectors.filtersDirectionOption1 -> English.filtersDirectionOption1,
+        Selectors.filtersDirectionOption2 -> English.filtersDirectionOption2,
+        Selectors.filtersUndischarged -> English.filtersUndischarged,
+        Selectors.filtersUndischargedOption1 -> English.filtersUndischargedOption1,
+        Selectors.filtersStatus -> English.filtersStatus,
+        Selectors.filtersStatusChoose -> English.filtersStatusChoose,
+        Selectors.filtersStatusActive -> English.filtersStatusActive,
+        Selectors.filtersStatusCancelled -> English.filtersStatusCancelled,
+        Selectors.filtersStatusDeemedExported -> English.filtersStatusDeemedExported,
+        Selectors.filtersStatusDelivered -> English.filtersStatusDelivered,
+        Selectors.filtersStatusDiverted -> English.filtersStatusDiverted,
+        Selectors.filtersStatusExporting -> English.filtersStatusExporting,
+        Selectors.filtersStatusManuallyClosed -> English.filtersStatusManuallyClosed,
+        Selectors.filtersStatusPartiallyRefused -> English.filtersStatusPartiallyRefused,
+        Selectors.filtersStatusRefused -> English.filtersStatusRefused,
+        Selectors.filtersStatusReplaced -> English.filtersStatusReplaced,
+        Selectors.filtersStatusRejected -> English.filtersStatusRejected,
+        Selectors.filtersStatusStopped -> English.filtersStatusStopped,
+        Selectors.filtersEpc -> English.filtersEpc,
+        Selectors.filtersEpcChoose -> English.filtersEpcChoose,
+        Selectors.filtersCountry -> English.filtersCountry,
+        Selectors.filtersCountryChoose -> English.filtersCountryChoose,
+        Selectors.filtersDispatchedFrom -> English.filtersDispatchedFrom,
+        Selectors.filtersDispatchedFromDay -> English.filtersDay,
+        Selectors.filtersDispatchedFromMonth -> English.filtersMonth,
+        Selectors.filtersDispatchedFromYear -> English.filtersYear,
+        Selectors.filtersDispatchedTo -> English.filtersDispatchedTo,
+        Selectors.filtersDispatchedToDay -> English.filtersDay,
+        Selectors.filtersDispatchedToMonth -> English.filtersMonth,
+        Selectors.filtersDispatchedToYear -> English.filtersYear,
+        Selectors.filtersReceiptedFrom -> English.filtersReceiptedFrom,
+        Selectors.filtersReceiptedFromDay -> English.filtersDay,
+        Selectors.filtersReceiptedFromMonth -> English.filtersMonth,
+        Selectors.filtersReceiptedFromYear -> English.filtersYear,
+        Selectors.filtersReceiptedTo -> English.filtersReceiptedTo,
+        Selectors.filtersReceiptedToDay -> English.filtersDay,
+        Selectors.filtersReceiptedToMonth -> English.filtersMonth,
+        Selectors.filtersReceiptedToYear -> English.filtersYear,
+
         Selectors.label("sortBy") -> English.sortByLabel,
         Selectors.sortBySelectOption(1) -> English.sortArcAscending,
         Selectors.sortBySelectOption(2) -> English.sortArcDescending,

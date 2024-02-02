@@ -20,19 +20,17 @@ import base.SpecBase
 import config.ErrorHandler
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.GetMovementResponseFixtures
-import mocks.services.{MockGetDocumentTypesService, MockGetMovementService}
+import mocks.services.MockGetMovementService
 import mocks.viewmodels.MockViewMovementHelper
-import models.DocumentType
 import models.response.{DocumentTypesException, MovementException}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
-import play.api.Application
 import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.status
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.helpers.{TimelineHelper, ViewMovementHelper}
+import viewmodels.helpers.TimelineHelper
 import views.html.viewMovement.ViewMovementPage
 
 import scala.concurrent.Future

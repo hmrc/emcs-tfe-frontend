@@ -20,7 +20,7 @@ import base.SpecBase
 import fixtures.MovementListFixtures
 import mocks.connectors.MockHttpClient
 import models.response.emcsTfe.GetMovementListResponse
-import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
+import models.response.{JsonValidationError, NotFoundError, UnexpectedDownstreamResponseError}
 import play.api.http.Status
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.http.{HttpClient, HttpResponse}
@@ -44,6 +44,20 @@ class EmcsTfeHttpParserSpec
         val httpResponse = HttpResponse(Status.OK, getMovementListJson, Map())
 
         httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) mustBe Right(getMovementListResponse)
+      }
+    }
+
+    "return NotFoundError" when {
+
+      s"status is not OK (${Status.OK}) and message contains not found text" in {
+
+        val httpResponse = HttpResponse(
+          Status.INTERNAL_SERVER_ERROR,
+          Json.obj("message" -> "Request not processed returned by EIS, error response: No data found for requested search data"),
+          Map()
+        )
+
+        httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) mustBe Left(NotFoundError)
       }
     }
 
