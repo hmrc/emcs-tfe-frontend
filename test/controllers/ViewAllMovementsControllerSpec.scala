@@ -29,7 +29,7 @@ import models.response.{NotFoundError, UnexpectedDownstreamResponseError}
 import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
 import models._
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
@@ -84,6 +84,27 @@ class ViewAllMovementsControllerSpec extends SpecBase
     formProvider = formProvider
   )
 
+  private def buildView(searchOptions: MovementListSearchOptions,
+                        form: Form[MovementListSearchOptions])(implicit request: DataRequest[_]): Html =
+    view(
+      form = form,
+      action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
+      ern = testErn,
+      movements = movements,
+      sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+      searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+      movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
+      exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
+      countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
+      pagination = None
+    )
+
+  private def successView(searchOptions: MovementListSearchOptions)(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, formProvider())
+
+  private def viewWithErrors(searchOptions: MovementListSearchOptions)(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, formProvider().withError(FormError("sortBy", Seq("error.required"))))
+
   "GET /" when {
 
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
@@ -135,18 +156,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(
-          form = formProvider(),
-          action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-          ern = testErn,
-          movements = movements,
-          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-          movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
-          exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-          countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-          pagination = None
-        )
+        Html(contentAsString(result)) shouldBe successView(searchOptions)
       }
 
       "show the correct view and pagination with an index of 2" in {
@@ -170,18 +180,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(
-          formProvider(),
-          routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-          ern = testErn,
-          movements = movements,
-          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-          movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
-          exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-          countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-          pagination = None
-        )
+        Html(contentAsString(result)) shouldBe successView(searchOptions)
       }
 
       "show the correct view and pagination with an index of 3" in {
@@ -205,18 +204,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(
-          formProvider(),
-          routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-          ern = testErn,
-          movements = movements,
-          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-          movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
-          exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-          countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-          pagination = None
-        )
+        Html(contentAsString(result)) shouldBe successView(searchOptions)
       }
 
       "redirect to the index 1 when current index is above the maximum" in {
@@ -262,18 +250,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(
-          formProvider(),
-          routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-          ern = testErn,
-          movements = movements,
-          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-          movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
-          exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-          countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-          pagination = None
-        )
+        Html(contentAsString(result)) shouldBe successView(searchOptions)
       }
 
       "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in {
@@ -297,18 +274,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe view(
-          formProvider(),
-          routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-          ern = testErn,
-          movements = movements,
-          sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-          movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
-          exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-          countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-          pagination = None
-        )
+        Html(contentAsString(result)) shouldBe successView(searchOptions)
       }
     }
 
@@ -451,18 +417,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           )
 
           status(result) shouldBe Status.BAD_REQUEST
-          Html(contentAsString(result)) shouldBe view(
-            form = formProvider().withError(FormError("sortBy", Seq("error.required"))),
-            action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-            ern = testErn,
-            movements = movements,
-            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-            movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
-            exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-            countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-            pagination = None
-          )
+          Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
         }
 
         "show the correct view and pagination with an index of 2" in {
@@ -488,18 +443,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           )
 
           status(result) shouldBe Status.BAD_REQUEST
-          Html(contentAsString(result)) shouldBe view(
-            formProvider().withError(FormError("sortBy", Seq("error.required"))),
-            routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-            ern = testErn,
-            movements = movements,
-            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-            movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
-            exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-            countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-            pagination = None
-          )
+          Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
         }
 
         "show the correct view and pagination with an index of 3" in {
@@ -525,18 +469,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           )
 
           status(result) shouldBe Status.BAD_REQUEST
-          Html(contentAsString(result)) shouldBe view(
-            formProvider().withError(FormError("sortBy", Seq("error.required"))),
-            routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-            ern = testErn,
-            movements = movements,
-            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-            movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
-            exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-            countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-            pagination = None
-          )
+          Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
         }
 
         "redirect to the index 1 when current index is above the maximum" in {
@@ -586,18 +519,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           )
 
           status(result) shouldBe Status.BAD_REQUEST
-          Html(contentAsString(result)) shouldBe view(
-            formProvider().withError(FormError("sortBy", Seq("error.required"))),
-            routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-            ern = testErn,
-            movements = movements,
-            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-            movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
-            exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-            countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-            pagination = None
-          )
+          Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
         }
 
         "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in {
@@ -623,18 +545,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           )
 
           status(result) shouldBe Status.BAD_REQUEST
-          Html(contentAsString(result)) shouldBe view(
-            formProvider().withError(FormError("sortBy", Seq("error.required"))),
-            routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
-            ern = testErn,
-            movements = movements,
-            sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
-            searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
-            movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
-            exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-            countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-            pagination = None
-          )
+          Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
         }
       }
 

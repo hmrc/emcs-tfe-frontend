@@ -27,7 +27,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
   val testDate: LocalDate = LocalDate.now()
 
-  "GetMovementListSearchOptions" must {
+  "MovementListSearchOptions" must {
 
     "construct with default options" in {
 

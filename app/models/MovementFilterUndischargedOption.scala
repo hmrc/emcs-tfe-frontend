@@ -36,12 +36,12 @@ object MovementFilterUndischargedOption extends Enumerable.Implicits {
   val values: Seq[MovementFilterUndischargedOption] = Seq(Undischarged)
 
   def checkboxItems(implicit messages: Messages): Seq[CheckboxItem] =
-    values.zipWithIndex.map {
-      case (value, index) =>
+    values.map {
+      value =>
         CheckboxItemViewModel(
           content = Text(messages(value.displayName)),
           fieldId = "undischargedMovements",
-          index   = index,
+          index   = 0,
           value   = value.toString
         )
     }

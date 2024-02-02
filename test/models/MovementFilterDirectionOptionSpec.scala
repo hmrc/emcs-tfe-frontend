@@ -60,4 +60,31 @@ class MovementFilterDirectionOptionSpec extends SpecBase {
     }
   }
 
+  "getOptionalValueFromCheckboxes" when {
+    "only GoodsIn" must {
+      "return Some(GoodsIn)" in {
+        MovementFilterDirectionOption.getOptionalValueFromCheckboxes(Set(MovementFilterDirectionOption.GoodsIn)) mustBe
+          Some(MovementFilterDirectionOption.GoodsIn)
+      }
+    }
+    "only GoodsOut" must {
+      "return Some(GoodsOut)" in {
+        MovementFilterDirectionOption.getOptionalValueFromCheckboxes(Set(MovementFilterDirectionOption.GoodsOut)) mustBe
+          Some(MovementFilterDirectionOption.GoodsOut)
+      }
+    }
+    "both GoodsIn and GoodsOut" must {
+      "return Some(All)" in {
+        MovementFilterDirectionOption.getOptionalValueFromCheckboxes(Set(MovementFilterDirectionOption.GoodsIn, MovementFilterDirectionOption.GoodsOut)) mustBe
+          Some(MovementFilterDirectionOption.All)
+      }
+    }
+    "neither GoodsIn nor GoodsOut" must {
+      "return None" in {
+        MovementFilterDirectionOption.getOptionalValueFromCheckboxes(Set(MovementFilterDirectionOption.All)) mustBe None
+        MovementFilterDirectionOption.getOptionalValueFromCheckboxes(Set()) mustBe None
+      }
+    }
+  }
+
 }

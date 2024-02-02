@@ -66,6 +66,15 @@ object MovementFilterDirectionOption extends Enumerable.Implicits {
     case All => Set(GoodsOut, GoodsIn)
   }
 
+  def getOptionalValueFromCheckboxes(set: Set[MovementFilterDirectionOption]): Option[MovementFilterDirectionOption] = {
+    (set.contains(MovementFilterDirectionOption.GoodsIn), set.contains(MovementFilterDirectionOption.GoodsOut)) match {
+      case (true, true) => Some(MovementFilterDirectionOption.All)
+      case (true, _) => Some(MovementFilterDirectionOption.GoodsIn)
+      case (_, true) => Some(MovementFilterDirectionOption.GoodsOut)
+      case _ => None
+    }
+  }
+
   implicit val enumerable: Enumerable[MovementFilterDirectionOption] =
     Enumerable(values.map(v => v.toString -> v): _*)
 }

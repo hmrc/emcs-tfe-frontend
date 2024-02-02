@@ -111,9 +111,9 @@ object MovementFilterStatusOption extends Enumerable.Implicits {
         )
     }
 
-  def toOption(value: MovementFilterStatusOption): Option[MovementFilterStatusOption] = value match {
-    case ChooseStatus => None
-    case value => Some(value)
+  def filterNotChooseStatus(value: Option[MovementFilterStatusOption]): Option[MovementFilterStatusOption] = value match {
+    case Some(ChooseStatus) => None
+    case value => value
   }
 
   implicit val enumerable: Enumerable[MovementFilterStatusOption] =

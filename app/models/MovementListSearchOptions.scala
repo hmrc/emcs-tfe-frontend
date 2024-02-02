@@ -128,6 +128,14 @@ object MovementListSearchOptions {
     override val displayName: String = "viewAllMovements.filters.countryOfOrigin.chooseCountry"
   }
 
+  private[models] def bindStringWithDefault(
+                                             field: String,
+                                             stringBinder: QueryStringBindable[String],
+                                             params: Map[String, Seq[String]]
+                                           ): Either[String, Option[String]] =
+    stringBinder.bind(field, params).map(_.map(Some(_))).getOrElse(Right(None))
+
+  //noinspection ScalaStyle
   implicit def queryStringBinder(implicit intBinder: QueryStringBindable[Int],
                                  stringBinder: QueryStringBindable[String]
                                 ): QueryStringBindable[MovementListSearchOptions] =
@@ -137,17 +145,17 @@ object MovementListSearchOptions {
         Some(for {
           sortOrder <- stringBinder.bind("sortBy", params).getOrElse(Right(ArcAscending.code))
           index <- intBinder.bind("index", params).getOrElse(Right(DEFAULT_INDEX))
-          searchKey <- stringBinder.bind("searchKey", params).map(_.map(Some(_))).getOrElse(Right(None))
-          searchValue <- stringBinder.bind("searchValue", params).map(_.map(Some(_))).getOrElse(Right(None))
-          traderRole <- stringBinder.bind("traderRole", params).map(_.map(Some(_))).getOrElse(Right(None))
-          undischargedMovements <- stringBinder.bind("undischargedMovements", params).map(_.map(Some(_))).getOrElse(Right(None))
-          movementStatus <- stringBinder.bind("movementStatus", params).map(_.map(Some(_))).getOrElse(Right(None))
-          exciseProductCode <- stringBinder.bind("exciseProductCode", params).map(_.map(Some(_))).getOrElse(Right(None))
-          countryOfOrigin <- stringBinder.bind("countryOfOrigin", params).map(_.map(Some(_))).getOrElse(Right(None))
-          dateOfDispatchFrom <- stringBinder.bind("dateOfDispatchFrom", params).map(_.map(Some(_))).getOrElse(Right(None))
-          dateOfDispatchTo <- stringBinder.bind("dateOfDispatchTo", params).map(_.map(Some(_))).getOrElse(Right(None))
-          dateOfReceiptFrom <- stringBinder.bind("dateOfReceiptFrom", params).map(_.map(Some(_))).getOrElse(Right(None))
-          dateOfReceiptTo <- stringBinder.bind("dateOfReceiptTo", params).map(_.map(Some(_))).getOrElse(Right(None))
+          searchKey <- bindStringWithDefault("searchKey", stringBinder, params)
+          searchValue <- bindStringWithDefault("searchValue", stringBinder, params)
+          traderRole <- bindStringWithDefault("traderRole", stringBinder, params)
+          undischargedMovements <- bindStringWithDefault("undischargedMovements", stringBinder, params)
+          movementStatus <- bindStringWithDefault("movementStatus", stringBinder, params)
+          exciseProductCode <- bindStringWithDefault("exciseProductCode", stringBinder, params)
+          countryOfOrigin <- bindStringWithDefault("countryOfOrigin", stringBinder, params)
+          dateOfDispatchFrom <- bindStringWithDefault("dateOfDispatchFrom", stringBinder, params)
+          dateOfDispatchTo <- bindStringWithDefault("dateOfDispatchTo", stringBinder, params)
+          dateOfReceiptFrom <- bindStringWithDefault("dateOfReceiptFrom", stringBinder, params)
+          dateOfReceiptTo <- bindStringWithDefault("dateOfReceiptTo", stringBinder, params)
         } yield {
           MovementListSearchOptions(
             searchKey = searchKey.map(MovementSearchSelectOption(_)),
@@ -186,7 +194,6 @@ object MovementListSearchOptions {
         ).flatten.mkString("&")
     }
 
-  //noinspection ScalaStyle
   def apply(
              searchKey: Option[String],
              searchValue: Option[String],
@@ -202,31 +209,17 @@ object MovementListSearchOptions {
              dateOfReceiptTo: Option[LocalDate]
            ): MovementListSearchOptions = {
 
-    val traderRole: Option[MovementFilterDirectionOption] = {
-      (traderRoleOptions.contains(MovementFilterDirectionOption.GoodsIn), traderRoleOptions.contains(MovementFilterDirectionOption.GoodsOut)) match {
-        case (true, true) => Some(MovementFilterDirectionOption.All)
-        case (true, _) => Some(MovementFilterDirectionOption.GoodsIn)
-        case (_, true) => Some(MovementFilterDirectionOption.GoodsOut)
-        case _ => None
-      }
+    val undischargedMovements: Option[MovementFilterUndischargedOption] = {
+      // if undischargedMovementsOptions contains Undischarged, set to Undischarged, otherwise None (regardless of what else it may contain)
+      Some(MovementFilterUndischargedOption.Undischarged).filter(undischargedMovementsOptions.contains)
     }
 
-    val undischargedMovements = undischargedMovementsOptions.toSeq match {
-      case Seq(MovementFilterUndischargedOption.Undischarged) => Some(MovementFilterUndischargedOption.Undischarged)
-      case _ => None
-    }
-
-    val movementStatus = movementStatusOption match {
-      case Some(value) if value == MovementFilterStatusOption.ChooseStatus => None
-      case value => value
-    }
-
-    val exciseProductCode = exciseProductCodeOption match {
+    val exciseProductCode: Option[String] = exciseProductCodeOption match {
       case Some(value) if value == CHOOSE_PRODUCT_CODE.code => None
       case value => value
     }
 
-    val countryOfOrigin = countryOfOriginOption match {
+    val countryOfOrigin: Option[String] = countryOfOriginOption match {
       case Some(value) if value == CHOOSE_COUNTRY.code => None
       case value => value
     }
@@ -235,9 +228,9 @@ object MovementListSearchOptions {
       searchKey = searchKey.map(MovementSearchSelectOption(_)),
       searchValue = searchValue,
       sortBy = MovementSortingSelectOption(sortBy),
-      traderRole = traderRole,
+      traderRole = MovementFilterDirectionOption.getOptionalValueFromCheckboxes(traderRoleOptions),
       undischargedMovements = undischargedMovements,
-      movementStatus = movementStatus,
+      movementStatus = MovementFilterStatusOption.filterNotChooseStatus(movementStatusOption),
       exciseProductCode = exciseProductCode,
       countryOfOrigin = countryOfOrigin,
       dateOfDispatchFrom = dateOfDispatchFrom,
