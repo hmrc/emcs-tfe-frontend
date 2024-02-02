@@ -54,7 +54,7 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
     getMessagesService.getMessages(ern, Some(search)).map { allMessages =>
 
       val totalNumberOfPages : Int = calculatePageCount(
-          allMessages.messagesData.totalNumberOfMessagesAvailable.toInt,
+          allMessages.totalNumberOfMessagesAvailable.toInt,
           DEFAULT_MAX_ROWS
         )
 
@@ -64,7 +64,7 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
         status(
           view(
             sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-            allMessages = allMessages.messagesData.messages,
+            allMessages = allMessages.messages,
             totalNumberOfPages = totalNumberOfPages,
             searchOptions = search
           )

@@ -62,7 +62,7 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
 
   def asDocument(totalPages: Int)(implicit messages: Messages): Document = Jsoup.parse(view(
     sortSelectItems = MessagesSortingSelectOption.constructSelectItems(),
-    allMessages = getMessageResponse.messagesData.messages,
+    allMessages = getMessageResponse.messages,
     totalNumberOfPages = totalPages,
     searchOptions = MessagesSearchOptions()
   ).toString())

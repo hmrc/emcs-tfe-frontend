@@ -45,7 +45,7 @@ class ViewAllMessagesTableHelperSpec extends SpecBase with MessagesFixtures with
 
     "building the messages HTML table" in {
 
-      val result: Html = helper.constructTable(getMessageResponse.messagesData.messages)
+      val result: Html = helper.constructTable(getMessageResponse.messages)
 
       result mustBe
         HtmlFormat.fill(
