@@ -37,11 +37,11 @@ class GetMovementHistoryEventsServiceSpec extends SpecBase with MockGetMovementH
 
       "when Connector returns success from downstream" in {
 
-        MockGetMovementHistoryEventsConnector.getMovementHistoryEvents(testErn, testArc).returns(Future(Right(getMovementHistoryEventsResponseModel)))
+        MockGetMovementHistoryEventsConnector.getMovementHistoryEvents(testErn, testArc).returns(Future(Right(getMovementHistoryEventsModel)))
 
         val actualResults = testService.getMovementHistoryEvents(testErn, testArc).futureValue
 
-        actualResults mustBe getMovementHistoryEventsResponseModel
+        actualResults mustBe getMovementHistoryEventsModel
       }
     }
 

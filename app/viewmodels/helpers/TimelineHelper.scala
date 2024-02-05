@@ -16,7 +16,7 @@
 
 package viewmodels.helpers
 
-import models.response.emcsTfe.getMovementHistoryEvents.{GetMovementHistoryEventsResponse, MovementHistoryEvent}
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.Messages
 import utils.{DateUtils, Logging}
 import viewmodels.TimelineEvent
@@ -28,8 +28,8 @@ import scala.util.Try
 
 class TimelineHelper @Inject()() extends Logging with DateUtils {
 
-  def timeline(historyEventsResponse: GetMovementHistoryEventsResponse)(implicit messages: Messages): Seq[TimelineEvent] =
-    historyEventsResponse.movementHistory.map { event =>
+  def timeline(historyEvents: Seq[MovementHistoryEvent])(implicit messages: Messages): Seq[TimelineEvent] =
+    historyEvents.map { event =>
       TimelineEvent(
         eventType = event.eventType,
         title = messages(getEventTitleKey(event)),

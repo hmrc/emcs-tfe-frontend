@@ -69,7 +69,7 @@ class GetMovementServiceSpec extends SpecBase
                   .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
 
                 MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
-                  .returns(Future.successful(getMovementHistoryEventsResponseModel))
+                  .returns(Future.successful(getMovementHistoryEventsModel))
 
                 MockGetWineOperationsService.getWineOperations(movementItems)
                   .returns(Future.successful(movementItemsWithWineOperations))
@@ -110,7 +110,7 @@ class GetMovementServiceSpec extends SpecBase
                   .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
 
                 MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
-                  .returns(Future.successful(getMovementHistoryEventsResponseModel))
+                  .returns(Future.successful(getMovementHistoryEventsModel))
 
                 MockGetWineOperationsService.getWineOperations(movementItems)
                   .returns(Future.successful(movementItemsWithWineOperations))
@@ -133,7 +133,7 @@ class GetMovementServiceSpec extends SpecBase
             "raise a PackagingTypesException" in {
 
               MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
-                .returns(Future.successful(getMovementHistoryEventsResponseModel))
+                .returns(Future.successful(getMovementHistoryEventsModel))
 
               MockEmcsTfeConnector.getMovement(testErn, testArc)
                 .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
@@ -156,7 +156,7 @@ class GetMovementServiceSpec extends SpecBase
           "raise a WineOperationsExcepion" in {
 
             MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
-              .returns(Future.successful(getMovementHistoryEventsResponseModel))
+              .returns(Future.successful(getMovementHistoryEventsModel))
 
             MockEmcsTfeConnector.getMovement(testErn, testArc)
               .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))

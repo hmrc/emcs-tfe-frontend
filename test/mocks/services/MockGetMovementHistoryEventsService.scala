@@ -16,7 +16,7 @@
 
 package mocks.services
 
-import models.response.emcsTfe.getMovementHistoryEvents.GetMovementHistoryEventsResponse
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
 import services.GetMovementHistoryEventsService
@@ -29,7 +29,7 @@ trait MockGetMovementHistoryEventsService extends MockFactory {
   lazy val mockGetMovementHistoryEventsService: GetMovementHistoryEventsService = mock[GetMovementHistoryEventsService]
 
   object MockGetMovementHistoryEventsService {
-    def getMovementHistoryEvents(ern: String, arc: String): CallHandler3[String, String, HeaderCarrier, Future[GetMovementHistoryEventsResponse]] =
+    def getMovementHistoryEvents(ern: String, arc: String): CallHandler3[String, String, HeaderCarrier, Future[Seq[MovementHistoryEvent]]] =
       (mockGetMovementHistoryEventsService.getMovementHistoryEvents(_: String, _: String)(_: HeaderCarrier))
         .expects(ern, arc, *)
   }

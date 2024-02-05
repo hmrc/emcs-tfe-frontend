@@ -18,7 +18,7 @@ package services
 
 import connectors.emcsTfe.GetMovementHistoryEventsConnector
 import models.response.MovementHistoryEventsException
-import models.response.emcsTfe.getMovementHistoryEvents.GetMovementHistoryEventsResponse
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class GetMovementHistoryEventsService @Inject()(connector: GetMovementHistoryEventsConnector)
                                                (implicit ec: ExecutionContext) {
 
-  def getMovementHistoryEvents(ern: String, arc: String)(implicit hc: HeaderCarrier): Future[GetMovementHistoryEventsResponse] = {
+  def getMovementHistoryEvents(ern: String, arc: String)(implicit hc: HeaderCarrier): Future[Seq[MovementHistoryEvent]] = {
     connector.getMovementHistoryEvents(ern, arc).map {
       case Left(errorResponse) => throw MovementHistoryEventsException(s"Failed to retrieve movement history events from emcs-tfe: $errorResponse")
       case Right(events) => events

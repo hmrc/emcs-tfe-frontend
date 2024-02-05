@@ -18,7 +18,7 @@ package mocks.connectors
 
 import connectors.emcsTfe.GetMovementHistoryEventsConnector
 import models.response.ErrorResponse
-import models.response.emcsTfe.getMovementHistoryEvents.GetMovementHistoryEventsResponse
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,7 +30,7 @@ trait MockGetMovementHistoryEventsConnector extends MockFactory {
   lazy val mockGetMovementHistoryEventsConnector: GetMovementHistoryEventsConnector = mock[GetMovementHistoryEventsConnector]
 
   object MockGetMovementHistoryEventsConnector {
-    def getMovementHistoryEvents(ern: String, arc: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementHistoryEventsResponse]]]  =
+    def getMovementHistoryEvents(ern: String, arc: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, Seq[MovementHistoryEvent]]]]  =
       (mockGetMovementHistoryEventsConnector.getMovementHistoryEvents(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(ern, arc, *, *)
   }

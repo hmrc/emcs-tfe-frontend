@@ -36,7 +36,7 @@ class GetMovementHistoryEventsConnectorISpec extends IntegrationBaseSpec
           .willReturn(aResponse().withStatus(OK).withBody(Json.stringify(body)))
       )
 
-      connector.getMovementHistoryEvents(testErn, testArc).futureValue mustBe Right(getMovementHistoryEventsResponseModel)
+      connector.getMovementHistoryEvents(testErn, testArc).futureValue mustBe Right(getMovementHistoryEventsModel)
     }
 
     "must return false when the server responds NOT_FOUND" in {
