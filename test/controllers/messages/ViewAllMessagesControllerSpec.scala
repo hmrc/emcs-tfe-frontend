@@ -87,7 +87,7 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
         status(result) shouldBe Status.OK
         contentAsString(result) shouldBe view(
           sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messagesData.messages,
+          allMessages = messagesResponse.messages,
           totalNumberOfPages = 3,
           searchOptions = search
         ).toString()
@@ -109,7 +109,7 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
         status(result) shouldBe Status.OK
         contentAsString(result) shouldBe view(
           sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messagesData.messages,
+          allMessages = messagesResponse.messages,
           totalNumberOfPages = 3,
           searchOptions = search
         ).toString()
@@ -131,7 +131,7 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
         status(result) shouldBe Status.OK
         contentAsString(result) shouldBe view(
           sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messagesData.messages,
+          allMessages = messagesResponse.messages,
           totalNumberOfPages = 3,
           searchOptions = search
         ).toString()
@@ -153,7 +153,7 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
         status(result) shouldBe Status.OK
         contentAsString(result) shouldBe view(
           sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messagesData.messages,
+          allMessages = messagesResponse.messages,
           totalNumberOfPages = 4,
           searchOptions = search
         ).toString()
@@ -175,7 +175,7 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
         status(result) shouldBe Status.OK
         contentAsString(result) shouldBe view(
           sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messagesData.messages,
+          allMessages = messagesResponse.messages,
           totalNumberOfPages = 3,
           searchOptions = search
         ).toString()
@@ -197,7 +197,7 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
         status(result) shouldBe Status.OK
         contentAsString(result) shouldBe view(
           sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messagesData.messages,
+          allMessages = messagesResponse.messages,
           totalNumberOfPages = 1,
           searchOptions = search
         ).toString()

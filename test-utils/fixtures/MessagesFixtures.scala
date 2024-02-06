@@ -16,7 +16,7 @@
 
 package fixtures
 
-import models.response.emcsTfe.messages.{GetMessagesResponse, Message, MessagesData}
+import models.response.emcsTfe.messages.{GetMessagesResponse, Message}
 
 import java.time.LocalDateTime
 
@@ -49,20 +49,14 @@ trait MessagesFixtures extends BaseFixtures {
   )
 
   lazy val getMessageResponse: GetMessagesResponse = GetMessagesResponse(
-    dateTime = "",
-    exciseRegistrationNumber = testErn,
-    messagesData = MessagesData(
-      messages = Seq(message1, message2), totalNumberOfMessagesAvailable = 3
-    )
+    messages = Seq(message1, message2),
+    totalNumberOfMessagesAvailable = 3
   )
 
   def constructMessageResponse(numberOfMessages: Int): GetMessagesResponse = {
     GetMessagesResponse(
-      dateTime = "",
-      exciseRegistrationNumber = testErn,
-      messagesData = MessagesData(
-        messages = Seq.fill(numberOfMessages)(message1), totalNumberOfMessagesAvailable = numberOfMessages
-      )
+      messages = Seq.fill(numberOfMessages)(message1),
+      totalNumberOfMessagesAvailable = numberOfMessages
     )
 
 
