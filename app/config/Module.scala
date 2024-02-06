@@ -19,6 +19,7 @@ package config
 import com.google.inject.AbstractModule
 import connectors.referenceData._
 import controllers.predicates._
+import repositories.{MessageInboxRepository, MessageInboxRepositoryImpl}
 
 class Module extends AbstractModule {
 
@@ -31,5 +32,6 @@ class Module extends AbstractModule {
     bind(classOf[GetCnCodeInformationConnector]).to(classOf[GetCnCodeInformationConnectorImpl]).asEagerSingleton()
     bind(classOf[GetItemPackagingTypesConnector]).to(classOf[GetItemPackagingTypesConnectorImpl]).asEagerSingleton()
     bind(classOf[GetDocumentTypesConnector]).to(classOf[GetDocumentTypesConnectorImpl]).asEagerSingleton()
+    bind(classOf[MessageInboxRepository]).to(classOf[MessageInboxRepositoryImpl]).asEagerSingleton()
   }
 }

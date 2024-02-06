@@ -27,6 +27,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.net.URLEncoder
 import scala.annotation.unused
+import scala.concurrent.duration.Duration
 
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configuration) extends FeatureSwitching {
@@ -110,4 +111,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def getUrlForCommodityCode(code: String): String = s"$tradeTariffCommoditiesUrl/${code}00"
 
   def denyDutyPaidUsers: Boolean = isEnabled(DenyDutyPaidUsers)
+
+  def messagesCacheTtl: Duration = Duration(configuration.get[String]("mongodb.messages.TTL"))
+  def messagesReplaceIndexes(): Boolean = configuration.get[Boolean]("mongodb.messages.replaceIndexes")
 }

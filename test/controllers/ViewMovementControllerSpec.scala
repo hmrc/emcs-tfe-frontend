@@ -62,7 +62,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
   ).foreach { case (testName, method) =>
     testName should {
       "return 200" when {
-        "connector call is successful" in {
+        "messagesConnector call is successful" in {
           MockViewMovementHelper.movementCard().returns(Future(Html("")))
           MockGetMovementService
             .getMovement(testErn, testArc)
@@ -74,7 +74,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
         }
       }
       "return 500" when {
-        "movement connector call is unsuccessful" in {
+        "movement messagesConnector call is unsuccessful" in {
           MockGetMovementService
             .getMovement(testErn, testArc)
             .returns(Future.failed(MovementException("bang")))
@@ -84,7 +84,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
         }
 
-        "document connector call is unsuccessful" in {
+        "document messagesConnector call is unsuccessful" in {
           MockViewMovementHelper.movementCard().returns(Future.failed(DocumentTypesException("No document types retrieved")))
           MockGetMovementService
             .getMovement(testErn, testArc)

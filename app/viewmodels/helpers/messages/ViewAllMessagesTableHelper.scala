@@ -16,6 +16,7 @@
 
 package viewmodels.helpers.messages
 
+import models.requests.DataRequest
 import models.response.emcsTfe.messages.Message
 import play.api.i18n.Messages
 import play.twirl.api.Html
@@ -29,18 +30,20 @@ import views.html.components.link
 
 import javax.inject.Inject
 
-class ViewAllMessagesTableHelper @Inject()(link: link,
-                                           govukTable: GovukTable) extends DateUtils with TagFluency {
+class ViewAllMessagesTableHelper @Inject()(
+                                            messagesHelper: MessagesHelper,
+                                            link: link,
+                                            govukTable: GovukTable) extends DateUtils with TagFluency {
 
   private[viewmodels] def dataRows(allMessages: Seq[Message])
-                                  (implicit messages: Messages): Seq[Seq[TableRow]] =
+                                  (implicit request: DataRequest[_], messages: Messages): Seq[Seq[TableRow]] =
     allMessages.map { aMessage =>
       Seq(
         TableRow(
           content = HtmlContent(
             link(
-              link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-              messageKey = formattedMessageDescription(aMessage),
+              link = controllers.messages.routes.ViewMessageController.onPageLoad(request.ern, aMessage.uniqueMessageIdentifier).url,
+              messageKey = messagesHelper.formattedMessageDescription(aMessage),
               hintKey = aMessage.arc.orElse(aMessage.lrn)
             )
           )
@@ -66,7 +69,7 @@ class ViewAllMessagesTableHelper @Inject()(link: link,
       )
     }
 
-  def constructTable(allMessages: Seq[Message])(implicit messages: Messages): Html = {
+  def constructTable(allMessages: Seq[Message])(implicit request: DataRequest[_], messages: Messages): Html = {
     govukTable(
       Table(
         firstCellIsHeader = true,
@@ -79,14 +82,6 @@ class ViewAllMessagesTableHelper @Inject()(link: link,
         rows = dataRows(allMessages)
       )
     )
-  }
-
-  private def formattedMessageDescription(aMessage: Message)(implicit messages: Messages): String = {
-    if (aMessage.isAnErrorMessage) {
-      messages(s"viewAllMessages.${aMessage.messageType}.${aMessage.submittedByRequestingTrader}.${aMessage.relatedMessageType.get}.${aMessage.messageRole}.description")
-    } else {
-      messages(s"viewAllMessages.${aMessage.messageType}.${aMessage.submittedByRequestingTrader}.${aMessage.messageRole}.description")
-    }
   }
 
   private def statusTag(readIndicator: Boolean)(implicit messages: Messages): Tag = if (readIndicator) {

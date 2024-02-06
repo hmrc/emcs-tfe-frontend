@@ -30,6 +30,7 @@ trait BaseFixtures {
   val testSequenceNumber = 1
   val testLrn = "123"
   val testTraderName = "testTraderName"
+  val testUniqueMessageIdentifier = 1234
 
   val testDutyPaidErn = "XIPATestErn"
 

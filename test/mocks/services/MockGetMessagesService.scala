@@ -16,7 +16,7 @@
 
 package mocks.services
 
-import models.messages.MessagesSearchOptions
+import models.messages.{MessageCache, MessagesSearchOptions}
 import models.response.emcsTfe.messages.GetMessagesResponse
 import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
@@ -34,5 +34,10 @@ trait MockGetMessagesService extends MockFactory {
     def getMessages(ern: String, search: Option[MessagesSearchOptions]): CallHandler3[String, Option[MessagesSearchOptions], HeaderCarrier, Future[GetMessagesResponse]] =
       (mockGetMessagesService.getMessages(_: String, _: Option[MessagesSearchOptions])(_: HeaderCarrier))
         .expects(ern, search, *)
+
+    def getMessage(ern: String, uniqueMessageIdentifier: Long): CallHandler3[String, Long, HeaderCarrier, Future[Option[MessageCache]]] =
+      (mockGetMessagesService.getMessage(_: String, _: Long)(_: HeaderCarrier))
+        .expects(ern, uniqueMessageIdentifier, *)
   }
+
 }
