@@ -36,7 +36,7 @@ class GetMessagesService @Inject()(
   def getMessages(ern: String, search: Option[MessagesSearchOptions])(implicit hc: HeaderCarrier): Future[GetMessagesResponse] = {
     messagesConnector.getMessages(ern, search).map {
       case Right(messages) =>
-        messages.messagesData.messages.foreach { message =>
+        messages.messages.foreach { message =>
           messageInboxRepository.set(MessageCache(ern, message))
         }
         messages

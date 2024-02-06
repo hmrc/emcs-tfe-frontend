@@ -56,8 +56,8 @@ class GetMessagesServiceSpec
 
       "when Connector returns success from downstream" in {
         MockGetMessagesConnector.getMessages(testErn, searchOptions).returns(Future.successful(Right(getMessageResponse)))
-        MockMessageInboxRepository.set(MessageCache(testErn, getMessageResponse.messagesData.messages(0))).returns(Future.successful(true))
-        MockMessageInboxRepository.set(MessageCache(testErn, getMessageResponse.messagesData.messages(1))).returns(Future.successful(true))
+        MockMessageInboxRepository.set(MessageCache(testErn, getMessageResponse.messages(0))).returns(Future.successful(true))
+        MockMessageInboxRepository.set(MessageCache(testErn, getMessageResponse.messages(1))).returns(Future.successful(true))
         testService.getMessages(testErn, searchOptions).futureValue mustBe getMessageResponse
       }
     }

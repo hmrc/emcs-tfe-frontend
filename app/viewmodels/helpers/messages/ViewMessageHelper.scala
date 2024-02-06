@@ -70,33 +70,32 @@ class ViewMessageHelper @Inject()(
       link(
         link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, message.arc.getOrElse("")).url,
         messageKey = "View movement",
-        id = Some("view-movement"),
-        classes = "govuk-!-display-none-print"
+        id = Some("view-movement")
       )
 
     def printMessageLink(): Html =
       link(
         link = "#print-dialogue",
         messageKey = "Print message",
-        id = Some("print-link"),
-        classes = "govuk-!-display-none-print"
+        id = Some("print-link")
       )
 
     def deleteMessageLink(): Html =
       link(
         link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
         messageKey = "Delete message",
-        id = Some("delete-message"),
-        classes = "govuk-!-display-none-print"
+        id = Some("delete-message")
       )
 
     (message.messageType, message.submittedByRequestingTrader) match {
       // both consignor and consignee would have the same actions on an IE819
       case ("IE819", _) => list(
-        Seq(viewMovementLink(), printMessageLink(), deleteMessageLink())
+        content = Seq(viewMovementLink(), printMessageLink(), deleteMessageLink()),
+        extraClasses = Some("govuk-!-display-none-print")
       )
       case (_, _) => list(
-        Seq(printMessageLink(), deleteMessageLink())
+        Seq(printMessageLink(), deleteMessageLink()),
+        extraClasses = Some("govuk-!-display-none-print")
       )
     }
   }

@@ -87,21 +87,22 @@ class ViewMessageTableHelperSpec extends SpecBase with MessagesFixtures {
                     link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
                     messageKey = "View movement",
                     id = Some("view-movement"),
-                    classes = "govuk-!-display-none-print"
+                    classes = "govuk-link"
                   ),
                   link(
                     link = "#print-dialogue",
                     messageKey = "Print message",
                     id = Some("print-link"),
-                    classes = "govuk-!-display-none-print"
+                    classes = "govuk-link"
                   ),
                   link(
                     link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
                     messageKey = "Delete message",
                     id = Some("delete-message"),
-                    classes = "govuk-!-display-none-print"
+                    classes = "govuk-link"
                   )
-                )
+                ),
+                extraClasses = Some("govuk-!-display-none-print")
               )
             )
           )

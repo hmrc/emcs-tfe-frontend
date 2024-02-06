@@ -404,7 +404,7 @@ viewAllMessages.table.column.date.label = Date
 viewAllMessages.table.column.action.label = Action
 viewAllMessages.link.message.delete.label = Delete
 
-viewMessage.message.sent = This message was sent to you on the {0}
+viewMessage.message.sent = This message was sent to you on the {0} at {1}
 viewMessage.table.messageType.label = Message type
 viewMessage.table.arc.label = Administrative reference code
 viewMessage.table.lrn.label = Local reference number
