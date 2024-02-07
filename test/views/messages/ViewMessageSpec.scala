@@ -61,7 +61,7 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
   val ie819ReceivedReject = TestMessage(ie819RejectReceived, "Alert or rejection received", "Rejection received")
   val ie819SubmittedAlert = TestMessage(ie819AlertSubmitted, "Alert or rejection submitted successfully", "Alert successful submission")
   val ie819SubmittedReject = TestMessage(ie819RejectSubmitted, "Alert or rejection submitted successfully", "Rejection successful submission")
-  val ie810ReceivedCancellation = TestMessage(ie810CancellationReceived, "Cancellation", "Cancellation of movement")
+  val ie810ReceivedCancellation = TestMessage(ie810CancellationReceived, "Cancellation received", "Cancellation of movement")
 
 
   Seq(
