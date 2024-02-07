@@ -431,6 +431,7 @@ messages.IE807.false.0.description = Movement intercepted
 messages.IE810.false.0.description = Cancellation received
 messages.IE810.false.0.messageType = Cancellation of movement
 messages.IE810.true.0.description = Cancellation submitted successfully
+messages.IE810.true.0.messageType = Cancellation of movement successful submission
 
 messages.IE813.false.0.description = Change of destination
 messages.IE813.true.0.description = Change of destination submitted successfully

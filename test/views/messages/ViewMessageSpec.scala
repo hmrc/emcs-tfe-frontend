@@ -62,11 +62,11 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
   val ie819SubmittedAlert = TestMessage(ie819AlertSubmitted, "Alert or rejection submitted successfully", "Alert successful submission")
   val ie819SubmittedReject = TestMessage(ie819RejectSubmitted, "Alert or rejection submitted successfully", "Rejection successful submission")
   val ie810ReceivedCancellation = TestMessage(ie810CancellationReceived, "Cancellation received", "Cancellation of movement")
-
+  val ie810SubmittedCancellation = TestMessage(ie810CancellationSubmitted, "Cancellation submitted successfully", "Cancellation of movement successful submission")
 
   Seq(
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
-    ie810ReceivedCancellation
+    ie810ReceivedCancellation, ie810SubmittedCancellation
   ).foreach{ msg =>
 
     s"when being rendered with a ${msg.message.messageType} ${msg.messageSubTitle} msg" should {

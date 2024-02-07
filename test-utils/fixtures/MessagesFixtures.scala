@@ -81,4 +81,5 @@ trait MessagesFixtures extends BaseFixtures {
   lazy val ie819AlertSubmitted = createMessage("IE819").copy(messageRole = 0, submittedByRequestingTrader = true)
   lazy val ie819RejectSubmitted = createMessage("IE819").copy(messageRole = 1, submittedByRequestingTrader = true)
   lazy val ie810CancellationReceived = createMessage("IE810").copy(messageRole = 0, submittedByRequestingTrader = false)
+  lazy val ie810CancellationSubmitted = createMessage("IE810").copy(messageRole = 0, submittedByRequestingTrader = true)
 }
