@@ -87,14 +87,10 @@ class ViewMessageHelper @Inject()(
         id = Some("delete-message")
       )
 
+    // there may be some messages that have different actions, until then they are all same
     (message.messageType, message.submittedByRequestingTrader) match {
-      // both consignor and consignee would have the same actions on an IE819
-      case ("IE819", _) => list(
-        content = Seq(viewMovementLink(), printMessageLink(), deleteMessageLink()),
-        extraClasses = Some("govuk-!-display-none-print")
-      )
       case (_, _) => list(
-        Seq(printMessageLink(), deleteMessageLink()),
+        content = Seq(viewMovementLink(), printMessageLink(), deleteMessageLink()),
         extraClasses = Some("govuk-!-display-none-print")
       )
     }

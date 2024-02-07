@@ -426,6 +426,7 @@ messages.IE803.true.2.description = Notification of a split movement
 messages.IE807.false.0.description = Movement intercepted
 
 messages.IE810.false.0.description = Cancellation
+messages.IE810.false.0.messageType = Cancellation of movement
 messages.IE810.true.0.description = Cancellation submitted successfully
 
 messages.IE813.false.0.description = Change of destination
