@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
+import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.GetMovementResponseFixtures
 import mocks.services.MockGetMovementService
 import models.response.MovementException
@@ -36,6 +36,7 @@ class ItemDetailsControllerSpec extends SpecBase with FakeAuthAction with MockGe
     mcc = app.injector.instanceOf[MessagesControllerComponents],
     auth = FakeSuccessAuthAction,
     getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+    betaAllowList = new FakeBetaAllowListAction,
     view = view,
     movementService = mockGetMovementService
   )

@@ -2,3 +2,4 @@
 
 GET         /unauthorised               controllers.errors.UnauthorisedController.unauthorised()
 GET         /no-access                  controllers.errors.DutyPaidUnauthorisedController.unauthorised()
+GET         /not-on-beta-list           controllers.errors.NotOnBetaListController.unauthorised()

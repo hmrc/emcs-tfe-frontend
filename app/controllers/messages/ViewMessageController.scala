@@ -16,7 +16,7 @@
 
 package controllers.messages
 
-import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,6 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       val auth: AuthAction,
                                       val getData: DataRetrievalAction,
+                                      val betaAllowList: BetaAllowListAction,
                                       getMessagesService: GetMessagesService,
                                       val view: ViewMessage
                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {

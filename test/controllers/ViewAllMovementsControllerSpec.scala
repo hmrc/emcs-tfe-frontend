@@ -17,17 +17,17 @@
 package controllers
 
 import base.SpecBase
-import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
+import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
 import fixtures.{ExciseProductCodeFixtures, MemberStatesFixtures, MovementListFixtures}
 import forms.ViewAllMovementsFormProvider
 import mocks.connectors.{MockEmcsTfeConnector, MockGetExciseProductCodesConnector, MockGetMemberStatesConnector}
 import mocks.viewmodels.MockMovementPaginationHelper
 import models.MovementSortingSelectOption.{ArcAscending, Newest}
-import models.requests.DataRequest
-import models.response.{NotFoundError, UnexpectedDownstreamResponseError}
-import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
 import models._
+import models.requests.DataRequest
+import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
+import models.response.{NotFoundError, UnexpectedDownstreamResponseError}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.data.{Form, FormError}
 import play.api.http.Status
@@ -80,6 +80,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
     errorHandler = errorHandler,
     auth = FakeSuccessAuthAction,
     getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+    betaAllowList = new FakeBetaAllowListAction,
     paginationHelper = mockMovementPaginationHelper,
     formProvider = formProvider
   )

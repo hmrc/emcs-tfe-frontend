@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import config.ErrorHandler
-import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
+import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.GetMovementResponseFixtures
 import mocks.services.MockGetMovementService
 import mocks.viewmodels.MockViewMovementHelper
@@ -44,6 +44,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
     app.injector.instanceOf[MessagesControllerComponents],
     FakeSuccessAuthAction,
     new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+    new FakeBetaAllowListAction,
     mockGetMovementService,
     app.injector.instanceOf[ViewMovementPage],
     app.injector.instanceOf[ErrorHandler],

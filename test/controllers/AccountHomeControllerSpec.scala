@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import config.AppConfig
-import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
+import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import mocks.connectors.MockEmcsTfeConnector
 import models.common.RoleType.GBWK
 import models.requests.DataRequest
@@ -48,7 +48,8 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
       app.injector.instanceOf[MessagesControllerComponents],
       accountHomePage,
       FakeSuccessAuthAction,
-      new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics)
+      new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      new FakeBetaAllowListAction
     )
   }
 

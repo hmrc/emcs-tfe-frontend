@@ -17,7 +17,7 @@
 package controllers.messages
 
 import config.ErrorHandler
-import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions.DEFAULT_MAX_ROWS
 import models.messages.{MessagesSearchOptions, MessagesSortingSelectOption}
 import models.requests.DataRequest
@@ -33,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
                                           val auth: AuthAction,
                                           val getData: DataRetrievalAction,
+                                          val betaAllowList: BetaAllowListAction,
                                           getMessagesService: GetMessagesService,
                                           val view: ViewAllMessages,
                                           errorHandler: ErrorHandler

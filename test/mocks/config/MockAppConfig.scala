@@ -17,7 +17,7 @@
 package mocks.config
 
 import config.AppConfig
-import org.scalamock.handlers.CallHandler
+import org.scalamock.handlers.{CallHandler, CallHandler0}
 import org.scalamock.scalatest.MockFactory
 
 trait MockAppConfig extends MockFactory {
@@ -26,6 +26,8 @@ trait MockAppConfig extends MockFactory {
   object MockedAppConfig {
     def emcsTfeBaseUrl: CallHandler[String] = (() => mockAppConfig.emcsTfeBaseUrl).expects()
     def traderKnownFactsReferenceDataBaseUrl: CallHandler[String] = (() => mockAppConfig.traderKnownFactsReferenceDataBaseUrl).expects()
+    def betaCheckServiceName: CallHandler[String] = (() => mockAppConfig.betaCheckServiceName).expects()
+    def betaAllowListCheckingEnabled: CallHandler0[Boolean] = (() => mockAppConfig.betaAllowListCheckingEnabled).expects()
   }
 
 }

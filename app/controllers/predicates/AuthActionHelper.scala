@@ -27,9 +27,10 @@ trait AuthActionHelper {
 
   val auth: AuthAction
   val getData: DataRetrievalAction
+  val betaAllowList: BetaAllowListAction
 
   private def authorised(ern: String): ActionBuilder[UserRequest, AnyContent] =
-    auth(ern)
+    auth(ern) andThen betaAllowList
 
   def authorisedWithData(ern: String): ActionBuilder[DataRequest, AnyContent] =
     authorised(ern) andThen getData()
