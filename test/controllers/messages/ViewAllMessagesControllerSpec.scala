@@ -18,7 +18,7 @@ package controllers.messages
 
 import base.SpecBase
 import config.ErrorHandler
-import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
+import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.MessagesFixtures
 import fixtures.messages.EN
 import mocks.services.MockGetMessagesService
@@ -48,6 +48,7 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
     mcc = app.injector.instanceOf[MessagesControllerComponents],
     auth = FakeSuccessAuthAction,
     getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+    betaAllowList = new FakeBetaAllowListAction,
     getMessagesService = mockGetMessagesService,
     view = view,
     app.injector.instanceOf[ErrorHandler]

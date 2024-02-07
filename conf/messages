@@ -466,3 +466,16 @@ messages.IE704.true.IE819.1.description = Error with alert or rejection
 messages.IE704.true.IE825.0.description = Error with split movement
 messages.IE704.true.IE837.0.description = Error with explanation for a delay
 messages.IE704.true.IE871.0.description = Error with explanation for a shortage or excess
+
+# May need to change
+notOnBetaList.title = There is a problem
+notOnBetaList.heading = There is a problem
+notOnBetaList.p1 = You do not have permission to view this page.
+notOnBetaList.alreadySignedUp.h2 = If you have signed up for the Excise Movement and Control System (EMCS) private beta research
+notOnBetaList.alreadySignedUp.p1 = If you typed the web address, check it is correct. If you pasted the web address, check you copied the entire address.
+notOnBetaList.alreadySignedUp.p2 = If you think you have signed in with the wrong details, sign out and check the details you have are correct.
+notOnBetaList.notSignedUp.h2 = If you have not signed up for the EMCS private beta research
+notOnBetaList.notSignedUp.p1.preLink = You can choose to
+notOnBetaList.notSignedUp.p1.link = take part in the EMCS private beta research
+notOnBetaList.notSignedUp.p1.afterLink = if you are not already involved.
+notOnBetaList.notSignedUp.p2 = To take part you must currently submit EMCS receipts using the HMRC platform.

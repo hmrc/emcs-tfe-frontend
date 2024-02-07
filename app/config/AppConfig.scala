@@ -98,6 +98,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")
 
+  def signUpBetaFormUrl: String = configuration.get[String]("urls.signupBetaForm")
+
   private def traderKnownFactsReferenceDataService: String =
     if (isEnabled(StubGetTraderKnownFacts)) {
       servicesConfig.baseUrl("emcs-tfe-reference-data-stub")
@@ -114,4 +116,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def messagesCacheTtl: Duration = Duration(configuration.get[String]("mongodb.messages.TTL"))
   def messagesReplaceIndexes(): Boolean = configuration.get[Boolean]("mongodb.messages.replaceIndexes")
+
+  def betaAllowListCheckingEnabled: Boolean = isEnabled(CheckBetaAllowList)
+
+  def betaCheckServiceName: String = configuration.get[String]("beta.serviceName")
 }

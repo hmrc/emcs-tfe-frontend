@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.common.RoleType
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,7 +29,8 @@ import scala.concurrent.ExecutionContext
 class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
                                       accountHomePage: AccountHomePage,
                                       val auth: AuthAction,
-                                      val getData: DataRetrievalAction
+                                      val getData: DataRetrievalAction,
+                                      val betaAllowList: BetaAllowListAction
                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def viewAccountHome(exciseRegistrationNumber: String): Action[AnyContent] = {

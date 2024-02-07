@@ -17,7 +17,7 @@
 package controllers
 
 import config.ErrorHandler
-import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GetMovementService
@@ -31,8 +31,9 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
-                                       override val auth: AuthAction,
-                                       override val getData: DataRetrievalAction,
+                                       val auth: AuthAction,
+                                       val getData: DataRetrievalAction,
+                                       val betaAllowList: BetaAllowListAction,
                                        getMovementService: GetMovementService,
                                        viewMovementPage: ViewMovementPage,
                                        errorHandler: ErrorHandler,
