@@ -27,7 +27,7 @@ import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import viewmodels.helpers.messages.{MessagesHelper, ViewMessageHelper}
+import viewmodels.helpers.messages._
 import views.html.messages.ViewMessage
 import views.{BaseSelectors, ViewBehaviours}
 
@@ -45,6 +45,8 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     val viewMovementLink = "#view-movement"
     val printMessageLink = "#print-link"
     val deleteMessageLink = "#delete-message"
+    val reportOfReceiptLink = "#submit-report-of-receipt"
+    val explainDelayLink = "#submit-explain-delay"
   }
 
   def asDocument(message: Message)(implicit messages: Messages): Document = Jsoup.parse(view(
@@ -54,25 +56,16 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     )
   ).toString())
 
-
-  case class TestMessage(message: Message, messageTitle: String, messageSubTitle: String)
-
-  val ie819ReceivedAlert = TestMessage(ie819AlertReceived, "Alert or rejection received", "Alert received")
-  val ie819ReceivedReject = TestMessage(ie819RejectReceived, "Alert or rejection received", "Rejection received")
-  val ie819SubmittedAlert = TestMessage(ie819AlertSubmitted, "Alert or rejection submitted successfully", "Alert successful submission")
-  val ie819SubmittedReject = TestMessage(ie819RejectSubmitted, "Alert or rejection submitted successfully", "Rejection successful submission")
-  val ie810ReceivedCancellation = TestMessage(ie810CancellationReceived, "Cancellation received", "Cancellation of movement")
-  val ie810SubmittedCancellation = TestMessage(ie810CancellationSubmitted, "Cancellation submitted successfully", "Cancellation of movement successful submission")
-
   Seq(
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
-    ie810ReceivedCancellation, ie810SubmittedCancellation
+    ie810ReceivedCancellation, ie810SubmittedCancellation,
+    ie813ReceivedChangeDestination
   ).foreach{ msg =>
 
     s"when being rendered with a ${msg.message.messageType} ${msg.messageSubTitle} msg" should {
-      "show the correct table content and available actions" when {
-        implicit val doc: Document = asDocument(msg.message)
+      implicit val doc: Document = asDocument(msg.message)
 
+      "show the correct table content" when {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.title -> s"${msg.messageTitle} - Excise Movement and Control System - GOV.UK",
@@ -86,7 +79,9 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
             Selectors.tableRow(3, 2) -> message1.lrn.getOrElse("")
           )
         )
+      }
 
+      "show the correct actions" when {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.viewMovementLink -> English.viewMovementLinkText,
@@ -95,8 +90,35 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
           )
         )
 
+        if (msg.reportOfReceiptLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.reportOfReceiptLink -> English.reportOfReceiptLinkText
+            )
+          )
+        }
+
+        if (msg.explainDelayLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.explainDelayLink -> English.explainDelayLinkText
+            )
+          )
+        }
       }
     }
-
   }
+
+  s"when an IE813 message" should {
+    "contain other information" when {
+      implicit val doc: Document = asDocument(ie813ReceivedChangeDestination.message)
+
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.p(1) -> "The destination of the movement has been changed."
+        )
+      )
+    }
+  }
+
 }

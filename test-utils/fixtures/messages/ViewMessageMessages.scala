@@ -28,6 +28,8 @@ object ViewMessageMessages {
     val viewMovementLinkText = "View movement"
     val printMessageLinkText = "Print message"
     val deleteMessageLinkText = "Delete message"
+    val reportOfReceiptLinkText = "Submit report of receipt"
+    val explainDelayLinkText = "Create explanation for a delay and provide information"
   }
 
   object English extends ViewMessages with EN
