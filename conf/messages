@@ -439,7 +439,9 @@ messages.IE819.false.0.messageType = Alert received
 messages.IE819.false.1.description = Alert or rejection received
 messages.IE819.false.1.messageType = Rejection received
 messages.IE819.true.0.description = Alert or rejection submitted successfully
+messages.IE819.true.0.messageType = Alert successful submission
 messages.IE819.true.1.description = Alert or rejection submitted successfully
+messages.IE819.true.1.messageType = Rejection successful submission
 
 messages.IE829.false.0.description = Customs acceptance of movement for export
 
