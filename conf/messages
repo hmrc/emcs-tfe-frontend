@@ -408,6 +408,9 @@ viewMessage.message.sent = This message was sent to you on the {0} at {1}
 viewMessage.table.messageType.label = Message type
 viewMessage.table.arc.label = Administrative reference code
 viewMessage.table.lrn.label = Local reference number
+viewMessage.link.viewMovement.description = View movement
+viewMessage.link.printMessage.description = Print message
+viewMessage.link.deleteMessage.description = Delete message
 
 messages.IE801.false.0.description = First notification of movement
 messages.IE801.true.0.description = New movement successful submission

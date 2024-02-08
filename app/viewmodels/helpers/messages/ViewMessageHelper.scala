@@ -16,24 +16,27 @@
 
 package viewmodels.helpers.messages
 
+import config.AppConfig
 import models.requests.DataRequest
 import models.response.emcsTfe.messages.Message
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Empty, HtmlContent, NonEmptyHtml, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
 import utils.DateUtils
 import viewmodels.govuk.TagFluency
-import views.html.components.{link, list}
+import views.html.components.{link, list, p}
 
 import javax.inject.Inject
 
 class ViewMessageHelper @Inject()(
-                                        messagesHelper: MessagesHelper,
-                                        list: list,
-                                        link: link,
-                                        govukTable: GovukTable) extends DateUtils with TagFluency {
+                                   appConfig: AppConfig,
+                                   messagesHelper: MessagesHelper,
+                                   list: list,
+                                   link: link,
+                                   p: p,
+                                   govukTable: GovukTable) extends DateUtils with TagFluency {
 
   private[viewmodels] def dataRows(message: Message)
                                   (implicit messages: Messages): Seq[Seq[TableRow]] = {
@@ -63,37 +66,49 @@ class ViewMessageHelper @Inject()(
     )
   }
 
+  def constructInformation(message: Message)(implicit messages: Messages): Html = {
+    message.messageType -> message.submittedByRequestingTrader match {
+      case "IE813" -> false =>
+        p() {
+          Html(messages("messages.IE813.false.0.p1"))
+        }
+      case _ =>
+        Empty.asHtml
+    }
+  }
 
   def constructActions(message: Message)(implicit request: DataRequest[_], messages: Messages): Html = {
 
     def viewMovementLink(): Html =
       link(
         link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, message.arc.getOrElse("")).url,
-        messageKey = "View movement",
+        messageKey = "viewMessage.link.viewMovement.description",
         id = Some("view-movement")
       )
 
     def printMessageLink(): Html =
       link(
         link = "#print-dialogue",
-        messageKey = "Print message",
+        messageKey = "viewMessage.link.printMessage.description",
         id = Some("print-link")
       )
 
     def deleteMessageLink(): Html =
       link(
         link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-        messageKey = "Delete message",
+        messageKey = "viewMessage.link.deleteMessage.description",
         id = Some("delete-message")
       )
 
-    // there may be some messages that have different actions, until then they are all same
-    (message.messageType, message.submittedByRequestingTrader) match {
-      case (_, _) => list(
-        content = Seq(viewMovementLink(), printMessageLink(), deleteMessageLink()),
-        extraClasses = Some("govuk-!-display-none-print")
-      )
+    val actionLinksContent = message.messageType -> message.submittedByRequestingTrader match {
+      case _ -> _ =>
+        Seq(viewMovementLink(), printMessageLink(), deleteMessageLink())
     }
+
+    list(
+      content = actionLinksContent,
+      extraClasses = Some("govuk-!-display-none-print")
+    )
   }
 
 }
