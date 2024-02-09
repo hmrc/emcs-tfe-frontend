@@ -17,13 +17,13 @@
 package viewmodels.helpers.messages
 
 import config.AppConfig
+import models.messages.MessageCache
 import models.requests.DataRequest
 import models.response.emcsTfe.messages.Message
+import models.response.emcsTfe.messages.submissionFailure.FunctionalErrorCodes
 import play.api.i18n.Messages
-import play.twirl.api.Html
-import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content._
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table._
+import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
 import utils.DateUtils
 import viewmodels.govuk.TagFluency
 import views.html.components._
@@ -36,34 +36,20 @@ class ViewMessageHelper @Inject()(
                                    list: list,
                                    link: link,
                                    p: p,
-                                   govukTable: GovukTable) extends DateUtils with TagFluency {
+                                   summary_list: summary_list,
+                                   h2: h2) extends DateUtils with TagFluency {
 
   private[viewmodels] def dataRows(message: Message)
-                                  (implicit messages: Messages): Seq[Seq[TableRow]] = {
-    Seq(
-      Seq(
-        TableRow(content = Text(messages("viewMessage.table.messageType.label"))),
-        TableRow(content = Text(messages(messagesHelper.formattedMessageType(message))))
-      ),
-      Seq(
-        TableRow(content = Text(messages("viewMessage.table.arc.label"))),
-        TableRow(content = Text(message.arc.getOrElse("")))
-      ),
-      Seq(
-        TableRow(content = Text(messages("viewMessage.table.lrn.label"))),
-        TableRow(content = Text(message.lrn.getOrElse("")))
-      )
-    )
+                                  (implicit messages: Messages): Html = {
+    val optMessageTypeRow = if(!message.isAnErrorMessage) Seq(messages("viewMessage.table.messageType.label") -> messages(messagesHelper.formattedMessageType(message))) else Seq()
+    summary_list(optMessageTypeRow ++ Seq(
+      messages("viewMessage.table.arc.label") -> messages(message.arc.getOrElse("")),
+      messages("viewMessage.table.lrn.label") -> messages(message.lrn.getOrElse(""))
+    ))
   }
 
-  def constructTable(message: Message)(implicit messages: Messages): Html = {
-    govukTable(
-      Table(
-        firstCellIsHeader = true,
-        head = None,
-        rows = dataRows(message)
-      )
-    )
+  def constructMovementInformation(message: Message)(implicit messages: Messages): Html = {
+    dataRows(message)
   }
 
   def constructInformation(message: Message)(implicit messages: Messages): Html = {
@@ -127,4 +113,65 @@ class ViewMessageHelper @Inject()(
     )
   }
 
+  def constructErrors(message: MessageCache)(implicit messages: Messages): Html = {
+    message.errorMessage.map {
+      submissionFailureMessage => {
+        HtmlFormat.fill(Seq(
+          h2("messages.errors.heading"),
+          summary_list(
+            submissionFailureMessage.ie704.body.functionalError.map { error =>
+              error.errorType -> error.errorReason
+            }
+          )
+        ))
+      }
+    }.getOrElse(Html(""))
+  }
+
+  def constructFixErrorsContent(message: MessageCache)(implicit messages: Messages): Html = {
+    message.errorMessage.map { failureMessage =>
+      val hasBeenSubmittedVia3rdParty: Boolean = !failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
+      val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
+      val hasFixableError = allErrorCodes.exists(FunctionalErrorCodes.isFixable)
+      failureMessage.relatedMessageType match {
+        case Some(relatedMessageType) => HtmlFormat.fill(
+          (contentForFixableError(relatedMessageType, hasFixableError, message.ern, message.message.arc.getOrElse("")) andThen
+            contentForSubmittedVia3rdParty(relatedMessageType, hasBeenSubmittedVia3rdParty) andThen
+            contentForContactingHelpdesk(relatedMessageType))(Seq.empty))
+        case _ => Html("")
+      }
+    }.getOrElse(Html(""))
+
+  }
+
+  private def contentForFixableError(messageType: String, hasFixableError: Boolean, ern: String, arc: String)
+                                    (implicit messages: Messages): PartialFunction[Seq[Html], Seq[Html]] = {
+    case content if messageType == "IE810" && hasFixableError => content ++ Seq(
+      p()(HtmlFormat.fill(Seq(
+        Html(messages("messages.IE810.fixError.p1.1")),
+        link(appConfig.emcsTfeCancelMovementUrl(ern, arc), "messages.IE810.fixError.link.cancel"),
+        Html(messages("messages.IE810.fixError.p1.2"))
+      ))),
+      p()(HtmlFormat.fill(Seq(
+        Html(messages("messages.IE810.fixError.p2")),
+        link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.IE810.fixError.link.cod", withFullStop = true)
+      )))
+    )
+    case content => content
+  }
+
+  private def contentForSubmittedVia3rdParty(messageType: String, hasBeenSubmittedVia3rdParty: Boolean)
+                                            (implicit messages: Messages): PartialFunction[Seq[Html], Seq[Html]] = {
+    case content if hasBeenSubmittedVia3rdParty => content ++ Seq(p()(Html(messages(s"messages.$messageType.submittedViaThirdParty.message"))))
+    case content => content
+  }
+
+  private def contentForContactingHelpdesk(messageType: String)
+                                            (implicit messages: Messages): PartialFunction[Seq[Html], Seq[Html]] = {
+    case content if messageType == "IE810" => content ++ Seq(p()(HtmlFormat.fill(Seq(
+      link(appConfig.exciseHelplineUrl, "messages.link.helpline"),
+      Html(messages("messages.link.helpline.text"))
+    ))))
+    case content => content
+  }
 }

@@ -434,6 +434,12 @@ messages.IE810.false.0.description = Cancellation received
 messages.IE810.false.0.messageType = Cancellation of movement
 messages.IE810.true.0.description = Cancellation submitted successfully
 messages.IE810.true.0.messageType = Cancellation of movement successful submission
+messages.IE810.submittedViaThirdParty.message = If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.
+messages.IE810.fixError.p1.1 = If you still want to
+messages.IE810.fixError.link.cancel = cancel this movement
+messages.IE810.fixError.p1.2 = you can submit a new cancellation with the errors corrected.
+messages.IE810.fixError.p2 = However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to
+messages.IE810.fixError.link.cod = submit a change of destination
 
 messages.IE813.false.0.description = Change of destination
 messages.IE813.false.0.messageType = Change of destination
@@ -478,6 +484,11 @@ messages.IE704.true.IE819.1.description = Error with alert or rejection
 messages.IE704.true.IE825.0.description = Error with split movement
 messages.IE704.true.IE837.0.description = Error with explanation for a delay
 messages.IE704.true.IE871.0.description = Error with explanation for a shortage or excess
+
+messages.errors.heading = Errors
+
+messages.link.helpline = Contact the HMRC excise helpline
+messages.link.helpline.text = if you need more help or advice.
 
 # May need to change
 notOnBetaList.title = There is a problem

@@ -65,3 +65,5 @@ case class MessageStatisticsException(message: String) extends Exception(message
 case class MessagesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class DocumentTypesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class MessageRetrievalException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse

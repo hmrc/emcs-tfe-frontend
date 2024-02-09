@@ -17,31 +17,22 @@
 package models.messages
 
 import models.response.emcsTfe.messages.Message
-import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
+import models.response.emcsTfe.messages.submissionFailure.GetSubmissionFailureMessageResponse
 import play.api.libs.json._
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
 
 case class MessageCache (
-                          ern:String,
+                          ern: String,
                           message: Message,
+                          errorMessage: Option[GetSubmissionFailureMessageResponse],
                           lastUpdated: Instant = Instant.now
                         )
 
 object MessageCache {
-   val reads: Reads[MessageCache] = (
-      (JsPath \ "ern").read[String] and
-      (JsPath \ "message").read[Message] and
-      (JsPath \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
-    )(MessageCache.apply _)
+  implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
-   val writes: Writes[MessageCache] = (
-    (JsPath \ "ern").write[String] and
-      (JsPath \ "message").write[Message] and
-      (JsPath \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
-    )(unlift(MessageCache.unapply))
-
-  implicit val format: Format[MessageCache] = Format(reads, writes)
+  implicit val format: Format[MessageCache] = Json.format
 
 }
