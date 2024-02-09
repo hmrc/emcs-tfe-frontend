@@ -22,11 +22,11 @@ import models.response.emcsTfe.messages.Message
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Empty, HtmlContent, NonEmptyHtml, Text}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.table._
 import utils.DateUtils
 import viewmodels.govuk.TagFluency
-import views.html.components.{link, list, p}
+import views.html.components._
 
 import javax.inject.Inject
 
