@@ -18,7 +18,7 @@ package controllers.messages
 
 import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
-import fixtures.MessagesFixtures
+import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
 import fixtures.messages.EN
 import mocks.services.MockGetMessagesService
 import models.messages.{MessageCache, MessagesSearchOptions}
@@ -35,7 +35,11 @@ import views.html.messages.ViewMessage
 import java.time.Instant
 import scala.concurrent.Future
 
-class ViewMessageControllerSpec extends SpecBase with MessagesFixtures with FakeAuthAction with MockGetMessagesService {
+class ViewMessageControllerSpec extends SpecBase
+  with MessagesFixtures
+  with FakeAuthAction
+  with MockGetMessagesService
+  with GetSubmissionFailureMessageFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -57,6 +61,7 @@ class ViewMessageControllerSpec extends SpecBase with MessagesFixtures with Fake
   val testMessageFromCache = MessageCache(
     ern = testErn,
     message = message1.copy(uniqueMessageIdentifier = testMessageId),
+    errorMessage = Some(GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel),
     lastUpdated = Instant.now
   )
 

@@ -24,12 +24,12 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
+import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Text, Value}
+import uk.gov.hmrc.govukfrontend.views.html.components._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import views.html.components.{link, list}
 
-class ViewMessageTableHelperSpec extends SpecBase with MessagesFixtures {
+class ViewMessageHelperSpec extends SpecBase with MessagesFixtures {
 
   implicit lazy val msgs: Messages = messages(Seq(ViewMessageMessages.English.lang))
   implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
@@ -39,35 +39,25 @@ class ViewMessageTableHelperSpec extends SpecBase with MessagesFixtures {
   lazy val govukTable: GovukTable = app.injector.instanceOf[GovukTable]
   lazy val link: link = app.injector.instanceOf[link]
   lazy val list: list = app.injector.instanceOf[list]
+  lazy val govukSummaryList: GovukSummaryList = app.injector.instanceOf[GovukSummaryList]
 
-  ".constructTable" in {
-    val result: Html = helper.constructTable(message1)
-
-    result mustBe
-      HtmlFormat.fill(
-        Seq(
-          govukTable(
-            Table(
-              firstCellIsHeader = true,
-              head = None,
-              rows = Seq(
-                Seq(
-                  TableRow(content = Text(ViewMessageMessages.English.labelMessageType)),
-                  TableRow(content = Text(ViewMessageMessages.English.messageTypeDescriptionForIE819))
-                ),
-                Seq(
-                  TableRow(content = Text(ViewMessageMessages.English.labelArc)),
-                  TableRow(content = Text(message1.arc.getOrElse("")))
-                ),
-                Seq(
-                  TableRow(content = Text(ViewMessageMessages.English.labelLrn)),
-                  TableRow(content = Text(message1.lrn.getOrElse("")))
-                )
-              )
-            )
-          )
-        )
+  ".constructMovementInformation" in {
+    val result: Html = helper.constructMovementInformation(message1)
+    result.toString().replaceAll("\n", "") mustBe govukSummaryList(SummaryList(Seq(
+      SummaryListRow(
+        key = Key(Text(value = ViewMessageMessages.English.labelMessageType)),
+        value = Value(Text(value = ViewMessageMessages.English.messageTypeDescriptionForIE819))
+      ),
+      SummaryListRow(
+        key = Key(Text(value = ViewMessageMessages.English.labelArc)),
+        value = Value(Text(value = message1.arc.get))
+      ),
+      SummaryListRow(
+        key = Key(Text(value = ViewMessageMessages.English.labelLrn)),
+        value = Value(Text(value = message1.lrn.get))
       )
+    ))).toString().replaceAll("\n", "")
+
   }
 
   ".constructActions" must {

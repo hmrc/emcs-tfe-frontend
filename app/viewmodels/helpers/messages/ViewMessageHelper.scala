@@ -144,7 +144,7 @@ class ViewMessageHelper @Inject()(
 
   }
 
-  private def contentForFixableError(messageType: String, hasFixableError: Boolean, ern: String, arc: String)
+  private[helpers] def contentForFixableError(messageType: String, hasFixableError: Boolean, ern: String, arc: String)
                                     (implicit messages: Messages): PartialFunction[Seq[Html], Seq[Html]] = {
     case content if messageType == "IE810" && hasFixableError => content ++ Seq(
       p()(HtmlFormat.fill(Seq(
@@ -160,13 +160,13 @@ class ViewMessageHelper @Inject()(
     case content => content
   }
 
-  private def contentForSubmittedVia3rdParty(messageType: String, hasBeenSubmittedVia3rdParty: Boolean)
+  private[helpers] def contentForSubmittedVia3rdParty(messageType: String, hasBeenSubmittedVia3rdParty: Boolean)
                                             (implicit messages: Messages): PartialFunction[Seq[Html], Seq[Html]] = {
     case content if hasBeenSubmittedVia3rdParty => content ++ Seq(p()(Html(messages(s"messages.$messageType.submittedViaThirdParty.message"))))
     case content => content
   }
 
-  private def contentForContactingHelpdesk(messageType: String)
+  private[helpers] def contentForContactingHelpdesk(messageType: String)
                                             (implicit messages: Messages): PartialFunction[Seq[Html], Seq[Html]] = {
     case content if messageType == "IE810" => content ++ Seq(p()(HtmlFormat.fill(Seq(
       link(appConfig.exciseHelplineUrl, "messages.link.helpline"),

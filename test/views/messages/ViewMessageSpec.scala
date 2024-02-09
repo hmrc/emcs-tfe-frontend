@@ -22,6 +22,7 @@ import fixtures.messages.ViewMessageMessages.English
 import models.messages.MessageCache
 import models.requests.DataRequest
 import models.response.emcsTfe.messages.Message
+import models.response.emcsTfe.messages.submissionFailure.GetSubmissionFailureMessageResponse
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
@@ -49,10 +50,12 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     val explainDelayLink = "#submit-explain-delay"
   }
 
-  def asDocument(message: Message)(implicit messages: Messages): Document = Jsoup.parse(view(
+  def asDocument(message: Message, optErrorMessage: Option[GetSubmissionFailureMessageResponse] = None)
+                (implicit messages: Messages): Document = Jsoup.parse(view(
     MessageCache(
       ern = testErn,
-      message = message
+      message = message,
+      errorMessage = optErrorMessage
     )
   ).toString())
 
@@ -60,7 +63,7 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
     ie810ReceivedCancellation, ie810SubmittedCancellation,
     ie813ReceivedChangeDestination, ie813SubmittedChangeDestination
-  ).foreach{ msg =>
+  ).foreach { msg =>
 
     s"when being rendered with a ${msg.message.messageType} ${msg.messageSubTitle} msg" should {
       implicit val doc: Document = asDocument(msg.message)
@@ -71,12 +74,12 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
             Selectors.title -> s"${msg.messageTitle} - Excise Movement and Control System - GOV.UK",
             Selectors.h1 -> msg.messageTitle,
 
-            Selectors.tableRow(1, 1) -> English.labelMessageType,
-            Selectors.tableRow(1, 2) -> msg.messageSubTitle,
-            Selectors.tableRow(2, 1) -> English.labelArc,
-            Selectors.tableRow(2, 2) -> message1.arc.getOrElse(""),
-            Selectors.tableRow(3, 1) -> English.labelLrn,
-            Selectors.tableRow(3, 2) -> message1.lrn.getOrElse("")
+            Selectors.summaryRowKey(1) -> English.labelMessageType,
+            Selectors.summaryRowValue(1) -> msg.messageSubTitle,
+            Selectors.summaryRowKey(2) -> English.labelArc,
+            Selectors.summaryRowValue(2) -> message1.arc.get,
+            Selectors.summaryRowKey(3) -> English.labelLrn,
+            Selectors.summaryRowValue(3) -> message1.lrn.get
           )
         )
       }
@@ -118,6 +121,57 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
           Selectors.p(1) -> "The destination of the movement has been changed."
         )
       )
+    }
+  }
+
+  "when being rendered for a IE704" should {
+    "for a IE810 related message type" must {
+
+//      "render the correct content (when fixable)" when {
+//        implicit val doc: Document = asDocument(ie810ErrorCancellation.message)
+//        behave like pageWithExpectedElementsAndMessages(
+//          Seq(
+//            Selectors.title -> s"${ie810ErrorCancellation.messageTitle} - Excise Movement and Control System - GOV.UK",
+//            Selectors.h1 -> ie810ErrorCancellation.messageTitle,
+//
+//            Selectors.summaryRowKey(1) -> English.labelArc,
+//            Selectors.summaryRowValue(1) -> message1.arc.get,
+//            Selectors.summaryRowKey(2) -> English.labelLrn,
+//            Selectors.summaryRowValue(2) -> message1.lrn.get
+//          )
+//        )
+//
+//        behave like pageWithExpectedElementsAndMessages(
+//          Seq(
+//            Selectors.viewMovementLink -> English.viewMovementLinkText,
+//            Selectors.printMessageLink -> English.printMessageLinkText,
+//            Selectors.deleteMessageLink -> English.deleteMessageLinkText
+//          )
+//        )
+//      }
+//
+//      "render the correct content (when submitted via 3rd party)" when {
+//        implicit val doc: Document = asDocument(ie810ErrorCancellation.message)
+//        behave like pageWithExpectedElementsAndMessages(
+//          Seq(
+//            Selectors.title -> s"${ie810ErrorCancellation.messageTitle} - Excise Movement and Control System - GOV.UK",
+//            Selectors.h1 -> ie810ErrorCancellation.messageTitle,
+//
+//            Selectors.summaryRowKey(1) -> English.labelArc,
+//            Selectors.summaryRowValue(1) -> message1.arc.get,
+//            Selectors.summaryRowKey(2) -> English.labelLrn,
+//            Selectors.summaryRowValue(2) -> message1.lrn.get
+//          )
+//        )
+//
+//        behave like pageWithExpectedElementsAndMessages(
+//          Seq(
+//            Selectors.viewMovementLink -> English.viewMovementLinkText,
+//            Selectors.printMessageLink -> English.printMessageLinkText,
+//            Selectors.deleteMessageLink -> English.deleteMessageLinkText
+//          )
+//        )
+//      }
     }
   }
 

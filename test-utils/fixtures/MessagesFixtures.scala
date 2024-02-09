@@ -22,13 +22,13 @@ import java.time.LocalDateTime
 
 trait MessagesFixtures extends BaseFixtures {
 
-  def createMessage(messageType: String) =
+  def createMessage(messageType: String, optRelatedMessageType: Option[String] = None) =
     Message(
       uniqueMessageIdentifier = 1234L,
       dateCreatedOnCore = LocalDateTime.of(2024, 1, 5, 0, 0, 0, 0),
       arc = Some("ARC1001"),
       messageType = messageType,
-      relatedMessageType = None,
+      relatedMessageType = optRelatedMessageType,
       sequenceNumber = Some(1),
       readIndicator = false,
       lrn = Some("LRN1001"),
@@ -128,6 +128,12 @@ trait MessagesFixtures extends BaseFixtures {
 
   val ie813SubmittedChangeDestination = TestMessage(
     message = createMessage("IE813").copy(messageRole = 0, submittedByRequestingTrader = true),
+    messageTitle = "Change of destination submitted successfully",
+    messageSubTitle = "Change of destination successful submission"
+  )
+
+  val ie704ErrorCancellationIE810 = TestMessage(
+    message = createMessage("IE704", optRelatedMessageType = Some("IE810")),
     messageTitle = "Change of destination submitted successfully",
     messageSubTitle = "Change of destination successful submission"
   )

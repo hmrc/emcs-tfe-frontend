@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import fixtures.{BaseFixtures, MessagesFixtures}
 import mocks.config.MockAppConfig
-import mocks.connectors.{MockGetMessagesConnector, MockMarkMessageAsReadConnector}
+import mocks.connectors.{MockGetMessagesConnector, MockGetSubmissionFailureMessageConnector, MockMarkMessageAsReadConnector}
 import mocks.repositories.MockMessageInboxRepository
 import models.messages.{MessageCache, MessagesSearchOptions}
 import models.response.emcsTfe.messages.MarkMessageAsReadResponse
@@ -37,6 +37,7 @@ class GetMessagesServiceSpec
     with MockGetMessagesConnector
     with MockMessageInboxRepository
     with MockMarkMessageAsReadConnector
+    with MockGetSubmissionFailureMessageConnector
     with MessagesFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -45,6 +46,7 @@ class GetMessagesServiceSpec
   lazy val testService = new GetMessagesService(
     mockGetMessagesConnector,
     mockMarkMessagesAsReadConnector,
+    mockGetSubmissionFailureMessageConnector,
     mockMessageInboxSessionRepository
   )
 
@@ -56,10 +58,12 @@ class GetMessagesServiceSpec
 
       "when Connector returns success from downstream" in {
         MockGetMessagesConnector.getMessages(testErn, searchOptions).returns(Future.successful(Right(getMessageResponse)))
-        MockMessageInboxRepository.set(MessageCache(testErn, getMessageResponse.messages(0))).returns(Future.successful(true))
-        MockMessageInboxRepository.set(MessageCache(testErn, getMessageResponse.messages(1))).returns(Future.successful(true))
+        MockMessageInboxRepository.set(MessageCache(testErn, getMessageResponse.messages(0), None)).returns(Future.successful(true))
+        MockMessageInboxRepository.set(MessageCache(testErn, getMessageResponse.messages(1), None)).returns(Future.successful(true))
         testService.getMessages(testErn, searchOptions).futureValue mustBe getMessageResponse
       }
+
+      //TODO : add error message test
     }
 
     "throw MessagesException" when {
@@ -82,7 +86,7 @@ class GetMessagesServiceSpec
 
     "mark the message as read and return the message" when {
       "when mongo finds the record" in {
-        val expectedMessageResponse = MessageCache(testErn, message1)
+        val expectedMessageResponse = MessageCache(testErn, message1, None)
         val markMessageAsReadResponse = MarkMessageAsReadResponse("date", testErn, 1)
 
         MockMessageInboxRepository.get(testErn, message1.uniqueMessageIdentifier).returns(Future.successful(Some(expectedMessageResponse)))
