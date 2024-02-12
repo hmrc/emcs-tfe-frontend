@@ -28,12 +28,26 @@ class MessagesHelperSpec extends SpecBase with MessagesFixtures {
 
   object Helper extends MessagesHelper()
 
-  ".formattedMessageDescription" in {
-    Helper.formattedMessageDescription(message1) shouldBe "messages.IE819.false.0.description"
+  ".messageDescriptionKey" in {
+    Helper.messageDescriptionKey(ie819ReceivedAlert.message) shouldBe "messages.IE819.false.0.description"
   }
 
-  ".formattedMessageType" in {
-    Helper.formattedMessageType(message1) shouldBe "messages.IE819.false.0.messageType"
+  ".messageTypeKey" when {
+    "when a message type is present" in {
+      Helper.messageTypeKey(ie819ReceivedAlert.message) shouldBe Some("messages.IE819.false.0.messageType")
+    }
+    "when a message type is not present" in {
+      Helper.messageTypeKey(ie829ReceivedCustomsAcceptance.message) shouldBe None
+    }
+  }
+
+  ".additionalInformationKey" when {
+    "when a message paragraph is present" in {
+      Helper.additionalInformationKey(ie829ReceivedCustomsAcceptance.message) shouldBe Some("messages.IE829.false.0.paragraph")
+    }
+    "when a message paragraph is not present" in {
+      Helper.additionalInformationKey(ie810ReceivedCancellation.message) shouldBe None
+    }
   }
 
 }

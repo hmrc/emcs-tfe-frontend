@@ -17,7 +17,7 @@
 @import config.AppConfig
 @import models.messages.MessageCache
 @import models.requests.DataRequest
-@import viewmodels.helpers.messages.{MessagesHelper, MessagesPaginationHelper, ViewMessageHelper}
+@import viewmodels.helpers.messages._
 @import views.html._
 @import views.html.components._
 
@@ -38,14 +38,14 @@
 @(message: MessageCache)(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
-    pageTitle = titleNoForm(messages(messageHelper.formattedMessageDescription(message.message))),
+    pageTitle = titleNoForm(messages(messageHelper.messageDescriptionKey(message.message))),
     maybeShowActiveTrader = None,
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, models.PageSection.Messages)),
     fullWidthContent = false
 ) {
 
     @h1(classes = "govuk-heading-xl govuk-!-margin-bottom-4") {
-        @messages(messageHelper.formattedMessageDescription(message.message))
+        @messages(messageHelper.messageDescriptionKey(message.message))
     }
     @span(
         content = messages(
@@ -62,7 +62,7 @@
 
     @viewMessageHelper.constructFixErrorsContent(message)
 
-    @viewMessageHelper.constructInformation(message.message)
+    @viewMessageHelper.constructAdditionalInformation(message.message)
 
     @viewMessageHelper.constructActions(message.message)
 }

@@ -17,6 +17,7 @@
 package viewmodels.helpers.messages
 
 import models.response.emcsTfe.messages.Message
+import play.api.i18n.Messages
 
 import javax.inject.Inject
 
@@ -29,10 +30,12 @@ class MessagesHelper @Inject()() {
       s"messages.${aMessage.messageType}.${aMessage.submittedByRequestingTrader}.${aMessage.messageRole}"
     }
 
-  def formattedMessageDescription(aMessage: Message): String =
+  def messageDescriptionKey(aMessage: Message): String =
     s"${messageKey(aMessage)}.description"
 
-  def formattedMessageType(aMessage: Message): String =
-    s"${messageKey(aMessage)}.messageType"
+  def messageTypeKey(aMessage: Message)(implicit messages: Messages): Option[String] =
+    Some(s"${messageKey(aMessage)}.messageType").filter(messages.isDefinedAt)
 
+  def additionalInformationKey(aMessage: Message)(implicit messages: Messages): Option[String] =
+    Some(s"${messageKey(aMessage)}.paragraph").filter(messages.isDefinedAt)
 }

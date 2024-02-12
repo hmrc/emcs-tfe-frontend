@@ -51,22 +51,43 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
     input.replaceAll("\n", "")
   }
 
-  ".constructMovementInformation" in {
-    val result: Html = helper.constructMovementInformation(message1)
-    removeNewLines(result.toString()) mustBe removeNewLines(govukSummaryList(SummaryList(Seq(
-      SummaryListRow(
-        key = Key(Text(value = ViewMessageMessages.English.labelMessageType)),
-        value = Value(Text(value = ViewMessageMessages.English.messageTypeDescriptionForIE819))
-      ),
-      SummaryListRow(
-        key = Key(Text(value = ViewMessageMessages.English.labelArc)),
-        value = Value(Text(value = message1.arc.get))
-      ),
-      SummaryListRow(
-        key = Key(Text(value = ViewMessageMessages.English.labelLrn)),
-        value = Value(Text(value = message1.lrn.get))
-      )
-    ))).toString())
+  ".constructMovementInformation" when {
+
+    "a message type description is present" in {
+      val testMessage = ie819ReceivedAlert.message
+      val result: Html = helper.constructMovementInformation(testMessage)
+      removeNewLines(result.toString()) mustBe removeNewLines(govukSummaryList(SummaryList(Seq(
+        SummaryListRow(
+          key = Key(Text(value = ViewMessageMessages.English.labelMessageType)),
+          value = Value(Text(value = ViewMessageMessages.English.messageTypeDescriptionForIE819))
+        ),
+        SummaryListRow(
+          key = Key(Text(value = ViewMessageMessages.English.labelArc)),
+          value = Value(Text(value = testMessage.arc.get))
+        ),
+        SummaryListRow(
+          key = Key(Text(value = ViewMessageMessages.English.labelLrn)),
+          value = Value(Text(value = testMessage.lrn.get))
+        )
+      ))).toString())
+    }
+
+    "a message type description is not present" in {
+      val testMessage = ie829ReceivedCustomsAcceptance.message
+      val result: Html = helper.constructMovementInformation(testMessage)
+      removeNewLines(result.toString()) mustBe removeNewLines(govukSummaryList(SummaryList(Seq(
+        SummaryListRow(
+          key = Key(Text(value = ViewMessageMessages.English.labelArc)),
+          value = Value(Text(value = testMessage.arc.get))
+        ),
+        SummaryListRow(
+          key = Key(Text(value = ViewMessageMessages.English.labelLrn)),
+          value = Value(Text(value = testMessage.lrn.get))
+        )
+      ))).toString())
+    }
+
+
 
   }
 
@@ -74,35 +95,110 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
 
     "return the correct action links" when {
 
-      "the message is an IE819" in {
-        val testMessage = createMessage("IE819")
+      "when processing an IE813 notification" in {
+        val testMessage = ie813ReceivedChangeDestination.message
+
         val result: Html = helper.constructActions(testMessage)
 
         result mustBe
           HtmlFormat.fill(
             Seq(
               list(
-                Seq(
+                extraClasses = Some("govuk-!-display-none-print"),
+                content = Seq(
+                  link(
+                    link = appConfig.emcsTfeReportAReceiptUrl(request.ern, testMessage.arc.getOrElse("")),
+                    messageKey = "viewMessage.link.reportOfReceipt.description",
+                    id = Some("submit-report-of-receipt")
+                  ),
+                  link(
+                    link = appConfig.emcsTfeExplainDelayUrl(request.ern, testMessage.arc.getOrElse("")),
+                    messageKey = "viewMessage.link.explainDelay.description",
+                    id = Some("submit-explain-delay")
+                  ),
                   link(
                     link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
-                    messageKey = "View movement",
-                    id = Some("view-movement"),
-                    classes = "govuk-link"
+                    messageKey = "viewMessage.link.viewMovement.description",
+                    id = Some("view-movement")
                   ),
                   link(
                     link = "#print-dialogue",
-                    messageKey = "Print message",
-                    id = Some("print-link"),
-                    classes = "govuk-link"
+                    messageKey = "viewMessage.link.printMessage.description",
+                    id = Some("print-link")
                   ),
                   link(
                     link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-                    messageKey = "Delete message",
-                    id = Some("delete-message"),
-                    classes = "govuk-link"
+                    messageKey = "viewMessage.link.deleteMessage.description",
+                    id = Some("delete-message")
                   )
-                ),
-                extraClasses = Some("govuk-!-display-none-print")
+                )
+              )
+            )
+          )
+      }
+      "when processing an IE829 notification" in {
+        val testMessage = ie829ReceivedCustomsAcceptance.message
+
+        val result: Html = helper.constructActions(testMessage)
+
+        result mustBe
+          HtmlFormat.fill(
+            Seq(
+              list(
+                extraClasses = Some("govuk-!-display-none-print"),
+                content = Seq(
+                  link(
+                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessage.arc.getOrElse("")),
+                    messageKey = "viewMessage.link.changeDestination.description",
+                    id = Some("submit-change-destination")
+                  ),
+                  link(
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    messageKey = "viewMessage.link.viewMovement.description",
+                    id = Some("view-movement")
+                  ),
+                  link(
+                    link = "#print-dialogue",
+                    messageKey = "viewMessage.link.printMessage.description",
+                    id = Some("print-link")
+                  ),
+                  link(
+                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    messageKey = "viewMessage.link.deleteMessage.description",
+                    id = Some("delete-message")
+                  )
+                )
+              )
+            )
+          )
+      }
+      "when processing an IE819 notification" in {
+        val testMessage = ie819SubmittedAlert.message
+
+        val result: Html = helper.constructActions(testMessage)
+
+        result mustBe
+          HtmlFormat.fill(
+            Seq(
+              list(
+                extraClasses = Some("govuk-!-display-none-print"),
+                content = Seq(
+                  link(
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    messageKey = "viewMessage.link.viewMovement.description",
+                    id = Some("view-movement")
+                  ),
+                  link(
+                    link = "#print-dialogue",
+                    messageKey = "viewMessage.link.printMessage.description",
+                    id = Some("print-link")
+                  ),
+                  link(
+                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    messageKey = "viewMessage.link.deleteMessage.description",
+                    id = Some("delete-message")
+                  )
+                )
               )
             )
           )
@@ -246,6 +342,32 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
 
     "return no content when there is no related message type in the message" in {
       helper.constructFixErrorsContent(MessageCache(testErn, message2, Some(getSubmissionFailureMessageResponseModel.copy(relatedMessageType = None)))) mustBe Html("")
+    }
+  }
+
+  ".constructAdditionalInformation" when {
+
+    "processing a message with additional information" should {
+      "return a paragraph of text" in {
+        val result: Html = helper.constructAdditionalInformation(ie813ReceivedChangeDestination.message)
+
+        result mustBe
+          HtmlFormat.fill(
+            Seq(
+              p() {
+                Html("The destination of the movement has been changed.")
+              }
+            )
+          )
+      }
+    }
+
+    "processing a message with no additional information" should {
+      "be empty" in {
+        val result: Html = helper.constructAdditionalInformation(ie819SubmittedAlert.message)
+
+        result mustBe Empty.asHtml
+      }
     }
   }
 

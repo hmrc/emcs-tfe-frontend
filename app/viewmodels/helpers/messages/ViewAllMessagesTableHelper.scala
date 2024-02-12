@@ -43,7 +43,7 @@ class ViewAllMessagesTableHelper @Inject()(
           content = HtmlContent(
             link(
               link = controllers.messages.routes.ViewMessageController.onPageLoad(request.ern, aMessage.uniqueMessageIdentifier).url,
-              messageKey = messagesHelper.formattedMessageDescription(aMessage),
+              messageKey = messagesHelper.messageDescriptionKey(aMessage),
               hintKey = aMessage.arc.orElse(aMessage.lrn)
             )
           )
