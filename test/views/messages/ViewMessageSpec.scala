@@ -17,12 +17,12 @@
 package views.messages
 
 import base.ViewSpecBase
-import fixtures.MessagesFixtures
+import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
 import fixtures.messages.ViewMessageMessages.English
 import models.messages.MessageCache
 import models.requests.DataRequest
 import models.response.emcsTfe.messages.Message
-import models.response.emcsTfe.messages.submissionFailure.GetSubmissionFailureMessageResponse
+import models.response.emcsTfe.messages.submissionFailure.{GetSubmissionFailureMessageResponse, IE704FunctionalError}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
@@ -32,7 +32,9 @@ import viewmodels.helpers.messages._
 import views.html.messages.ViewMessage
 import views.{BaseSelectors, ViewBehaviours}
 
-class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures {
+class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures with GetSubmissionFailureMessageFixtures {
+
+  import GetSubmissionFailureMessageResponseFixtures._
 
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/message")
@@ -48,6 +50,9 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     val deleteMessageLink = "#delete-message"
     val reportOfReceiptLink = "#submit-report-of-receipt"
     val explainDelayLink = "#submit-explain-delay"
+    override val link: Int => String = i => s"main p:nth-of-type($i) a"
+    def summaryRowKey(i: Int, j: Int): String = s"main dl:nth-of-type($i) div:nth-of-type($j) dt"
+    def summaryRowValue(i: Int, j: Int): String = s"main dl:nth-of-type($i) div:nth-of-type($j) dd"
   }
 
   def asDocument(message: Message, optErrorMessage: Option[GetSubmissionFailureMessageResponse] = None)
@@ -58,6 +63,16 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
       errorMessage = optErrorMessage
     )
   ).toString())
+
+  def movementActionsLinksTest()(implicit doc: Document): Unit = {
+    behave like pageWithExpectedElementsAndMessages(
+      Seq(
+        Selectors.viewMovementLink -> English.viewMovementLinkText,
+        Selectors.printMessageLink -> English.printMessageLinkText,
+        Selectors.deleteMessageLink -> English.deleteMessageLinkText
+      )
+    )
+  }
 
   Seq(
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
@@ -85,13 +100,7 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
       }
 
       "show the correct actions" when {
-        behave like pageWithExpectedElementsAndMessages(
-          Seq(
-            Selectors.viewMovementLink -> English.viewMovementLinkText,
-            Selectors.printMessageLink -> English.printMessageLinkText,
-            Selectors.deleteMessageLink -> English.deleteMessageLinkText
-          )
-        )
+        movementActionsLinksTest()
 
         if (msg.reportOfReceiptLink) {
           behave like pageWithExpectedElementsAndMessages(
@@ -127,51 +136,131 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
   "when being rendered for a IE704" should {
     "for a IE810 related message type" must {
 
-//      "render the correct content (when fixable)" when {
-//        implicit val doc: Document = asDocument(ie810ErrorCancellation.message)
-//        behave like pageWithExpectedElementsAndMessages(
-//          Seq(
-//            Selectors.title -> s"${ie810ErrorCancellation.messageTitle} - Excise Movement and Control System - GOV.UK",
-//            Selectors.h1 -> ie810ErrorCancellation.messageTitle,
-//
-//            Selectors.summaryRowKey(1) -> English.labelArc,
-//            Selectors.summaryRowValue(1) -> message1.arc.get,
-//            Selectors.summaryRowKey(2) -> English.labelLrn,
-//            Selectors.summaryRowValue(2) -> message1.lrn.get
-//          )
-//        )
-//
-//        behave like pageWithExpectedElementsAndMessages(
-//          Seq(
-//            Selectors.viewMovementLink -> English.viewMovementLinkText,
-//            Selectors.printMessageLink -> English.printMessageLinkText,
-//            Selectors.deleteMessageLink -> English.deleteMessageLinkText
-//          )
-//        )
-//      }
-//
-//      "render the correct content (when submitted via 3rd party)" when {
-//        implicit val doc: Document = asDocument(ie810ErrorCancellation.message)
-//        behave like pageWithExpectedElementsAndMessages(
-//          Seq(
-//            Selectors.title -> s"${ie810ErrorCancellation.messageTitle} - Excise Movement and Control System - GOV.UK",
-//            Selectors.h1 -> ie810ErrorCancellation.messageTitle,
-//
-//            Selectors.summaryRowKey(1) -> English.labelArc,
-//            Selectors.summaryRowValue(1) -> message1.arc.get,
-//            Selectors.summaryRowKey(2) -> English.labelLrn,
-//            Selectors.summaryRowValue(2) -> message1.lrn.get
-//          )
-//        )
-//
-//        behave like pageWithExpectedElementsAndMessages(
-//          Seq(
-//            Selectors.viewMovementLink -> English.viewMovementLinkText,
-//            Selectors.printMessageLink -> English.printMessageLinkText,
-//            Selectors.deleteMessageLink -> English.deleteMessageLinkText
-//          )
-//        )
-//      }
+      val ie810Message = message2.copy(relatedMessageType = Some("IE810"), arc = Some(testArc))
+
+      def movementInformationTest()(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.title -> s"${ie810SCancellationError.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.h1 -> ie810SCancellationError.messageTitle,
+            Selectors.summaryRowKey(1) -> English.labelArc,
+            Selectors.summaryRowValue(1) -> ie810Message.arc.get,
+            Selectors.summaryRowKey(2) -> English.labelLrn,
+            Selectors.summaryRowValue(2) -> ie810Message.lrn.get
+          )
+        )
+      }
+
+      def errorRowsTest(failureMessageResponse: GetSubmissionFailureMessageResponse)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.summaryRowKey(2, 1) -> failureMessageResponse.ie704.body.functionalError.head.errorType,
+            Selectors.summaryRowValue(2, 1) -> failureMessageResponse.ie704.body.functionalError.head.errorReason,
+            Selectors.summaryRowKey(2, 2) -> failureMessageResponse.ie704.body.functionalError(1).errorType,
+            Selectors.summaryRowValue(2, 2) -> failureMessageResponse.ie704.body.functionalError(1).errorReason
+          )
+        )
+      }
+
+      def cancelOrChangeLinksTest()(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(1) -> English.cancelMovement,
+            Selectors.link(1) -> English.cancelMovementLink,
+            Selectors.p(2) -> English.changeDestination,
+            Selectors.link(2) -> English.changeDestinationLink
+
+        ))
+      }
+
+      def thirdPartySubmissionTest(index: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(index) -> English.thirdParty
+          )
+        )
+      }
+
+      def helplineLinkTest(index: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(index) -> English.helpline,
+            Selectors.link(index) -> English.helplineLink
+          )
+        )
+      }
+
+      "render the correct content (when fixable) - portal" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345"))
+          ),
+          relatedMessageType = Some("IE810")
+        )
+        implicit val doc: Document = asDocument(ie810Message, optErrorMessage = Some(failureMessageResponse))
+
+        movementInformationTest()
+        errorRowsTest(failureMessageResponse)
+        cancelOrChangeLinksTest()
+        helplineLinkTest(3)
+        movementActionsLinksTest()
+      }
+
+      "render the correct content (when fixable) - 3rd party" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(relatedMessageType = Some("IE810"))
+        val ie810Message = message2.copy(relatedMessageType = Some("IE810"), arc = Some(testArc))
+        implicit val doc: Document = asDocument(ie810Message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest()
+        errorRowsTest(failureMessageResponse)
+        cancelOrChangeLinksTest()
+        thirdPartySubmissionTest(3)
+        helplineLinkTest(4)
+        movementActionsLinksTest()
+      }
+
+      "render the correct content (when non-fixable) - portal" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE810")
+        )
+        val ie810Message = message2.copy(relatedMessageType = Some("IE810"), arc = Some(testArc))
+        implicit val doc: Document = asDocument(ie810Message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest()
+        helplineLinkTest(1)
+        movementActionsLinksTest()
+      }
+
+      "render the correct content (when non-fixable) - 3rd party" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE810")
+        )
+        val ie810Message = message2.copy(relatedMessageType = Some("IE810"), arc = Some(testArc))
+        implicit val doc: Document = asDocument(ie810Message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest()
+        thirdPartySubmissionTest(1)
+        helplineLinkTest(2)
+        movementActionsLinksTest()
+      }
     }
   }
 

@@ -19,7 +19,7 @@ package models.response.emcsTfe.messages.submissionFailure
 object FunctionalErrorCodes {
 
   //May need to change
-  val unRecoverableErrorCodes: Seq[String] = Seq("4403", "4411", "4422", "4424", "4454", "4457", "4485", "4488", "4494", "4495", "4496", "4497", "4498", "4501", "4505", "4513", "4517", "4518"," 9001", "9002", "9003", "9004", "9005", "9007", "9009", "9010")
+  val unrecoverableErrorCodes: Seq[String] = Seq("4403", "4411", "4422", "4424", "4454", "4457", "4485", "4488", "4494", "4495", "4496", "4497", "4498", "4501", "4505", "4513", "4517", "4518"," 9001", "9002", "9003", "9004", "9005", "9007", "9009", "9010")
 
-  def isFixable(errorCode: String): Boolean = !unRecoverableErrorCodes.contains(errorCode)
+  def isFixable(errorCode: String): Boolean = !unrecoverableErrorCodes.contains(errorCode)
 }

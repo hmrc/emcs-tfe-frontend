@@ -76,7 +76,6 @@ class AccountHomePageViewSpec extends SpecBase {
           val messagesLinks = doc.getElementsByTag("ul").get(1).children
 
           messagesLinks.get(0).text mustBe "All messages"
-          //TODO update link location when built
           messagesLinks.get(0).getElementsByTag("a").attr("href") mustBe controllers.messages.routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).url
 
           doc.getElementsByTag("h2").get(2).text mustBe "Your movements"

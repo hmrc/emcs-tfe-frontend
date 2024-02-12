@@ -18,9 +18,7 @@ package models.response.emcsTfe.messages.submissionFailure
 
 import play.api.libs.json._
 
-case class IE704Attributes(arc: Option[String], sequenceNumber: Option[Int], lrn: Option[String]) {
-  def isEmpty: Boolean = arc.isEmpty && sequenceNumber.isEmpty && lrn.isEmpty
-}
+case class IE704Attributes(arc: Option[String], sequenceNumber: Option[Int], lrn: Option[String])
 
 object IE704Attributes {
   implicit val format: Format[IE704Attributes] = Json.format

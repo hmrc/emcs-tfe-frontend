@@ -40,23 +40,6 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
       "messageIdentifier" -> "XI000001",
       "correlationIdentifier" -> "corr123"
     )
-
-    val ie704HeaderMinimumModel: IE704Header = IE704Header(
-      messageSender = "NDEA.XI",
-      messageRecipient = "NDEA.XI",
-      dateOfPreparation = "2001-01-01",
-      timeOfPreparation = "12:00:00",
-      messageIdentifier = "XI000001",
-      correlationIdentifier = None
-    )
-
-    val ie704HeaderMinimumJson: JsValue = Json.obj(
-      "messageSender" -> "NDEA.XI",
-      "messageRecipient" -> "NDEA.XI",
-      "dateOfPreparation" -> "2001-01-01",
-      "timeOfPreparation" -> "12:00:00",
-      "messageIdentifier" -> "XI000001"
-    )
   }
 
   object IE704AttributesFixtures {
@@ -72,48 +55,22 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
       "sequenceNumber" -> 1,
       "lrn" -> "lrnie8155639253",
     )
-
-    val ie704AttributesMinimumModel: IE704Attributes = IE704Attributes(
-      arc = None,
-      sequenceNumber = None,
-      lrn = None
-    )
   }
 
   object IE704FunctionalErrorFixtures {
 
     val ie704FunctionalErrorModel: IE704FunctionalError = IE704FunctionalError(
-      errorType = "Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+      errorType = "1234",
       errorReason = "Boooo! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
       errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
       originalAttributeValue = Some("lrnie8155639253")
     )
 
     val ie704FunctionalErrorJson: JsValue = Json.obj(
-      "errorType" -> "Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+      "errorType" -> "1234",
       "errorReason" -> "Boooo! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
       "errorLocation" -> "/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]",
       "originalAttributeValue" -> "lrnie8155639253"
-    )
-
-    val ie704FunctionalErrorMinimumXmlBody: String =
-      """
-        |<ie:FunctionalError>
-        |  <ie:ErrorType>4402</ie:ErrorType>
-        |  <ie:ErrorReason>Boooo! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules</ie:ErrorReason>
-        |</ie:FunctionalError>
-        |""".stripMargin
-
-    val ie704FunctionalErrorMinimumModel: IE704FunctionalError = IE704FunctionalError(
-      errorType = "Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-      errorReason = "Boooo! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-      errorLocation = None,
-      originalAttributeValue = None
-    )
-
-    val ie704FunctionalErrorMinimumJson: JsValue = Json.obj(
-      "errorType" -> "Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-      "errorReason" -> "Boooo! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules"
     )
   }
 
@@ -124,7 +81,7 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
       functionalError = Seq(
         IE704FunctionalErrorFixtures.ie704FunctionalErrorModel,
         IE704FunctionalError(
-          errorType = "Invalid or missing Consignor on SEED",
+          errorType = "1235",
           errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
           errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
           originalAttributeValue = Some("lrnie8155639254")
@@ -137,32 +94,7 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
       "functionalError" -> JsArray(Seq(
         IE704FunctionalErrorFixtures.ie704FunctionalErrorJson,
         Json.obj(
-          "errorType" -> "Invalid or missing Consignor on SEED",
-          "errorReason" -> "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-          "errorLocation" -> "/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]",
-          "originalAttributeValue" -> "lrnie8155639254"
-        )
-      ))
-    )
-        
-    val ie704BodyEmptyAttributesModel: IE704Body = IE704Body(
-      attributes = None,
-      functionalError = Seq(
-        IE704FunctionalErrorFixtures.ie704FunctionalErrorModel,
-        IE704FunctionalError(
-          errorType = "Invalid or missing Consignor on SEED",
-          errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-          errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-          originalAttributeValue = Some("lrnie8155639254")
-        )
-      )
-    )
-    
-    val ie704BodyEmptyAttributesJson: JsValue = Json.obj(
-      "functionalError" -> JsArray(Seq(
-        IE704FunctionalErrorFixtures.ie704FunctionalErrorJson,
-        Json.obj(
-          "errorType" -> "Invalid or missing Consignor on SEED",
+          "errorType" -> "1235",
           "errorReason" -> "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
           "errorLocation" -> "/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]",
           "originalAttributeValue" -> "lrnie8155639254"
@@ -194,15 +126,6 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
     val getSubmissionFailureMessageResponseJson: JsValue = Json.obj(
       "ie704" -> IE704ModelFixtures.ie704ModelJson,
       "relatedMessageType" -> "IE815"
-    )
-
-    val getSubmissionFailureMessageResponseMinimumModel: GetSubmissionFailureMessageResponse = GetSubmissionFailureMessageResponse(
-      ie704 = IE704ModelFixtures.ie704ModelModel,
-      relatedMessageType = None
-    )
-
-    val getSubmissionFailureMessageResponseMinimumJson: JsValue = Json.obj(
-      "ie704" -> IE704ModelFixtures.ie704ModelJson
     )
   }
 }

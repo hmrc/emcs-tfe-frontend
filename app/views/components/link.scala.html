@@ -24,8 +24,8 @@
         button: Boolean = false,
         classes: String = "govuk-link",
         hiddenContent: Option[String] = None,
-        hintKey: Option[String] = None,
-        withFullStop: Boolean = false
+        withFullStop: Boolean = false,
+        hintKey: Option[String] = None
 )(implicit messages: Messages)
 
 <a href="@link" class="@classes"@id.map(x => s" id=$x")@if(isExternal){ target="_blank" rel="noopener noreferrer"}@if(button){role="button" data-module="govuk-button"}>
@@ -37,6 +37,6 @@
   <p class="govuk-hint govuk-!-margin-top-1">@messages(k)</p>
  }
 
- @{
-  //$COVERAGE-OFF$
- }
+@{
+//$COVERAGE-OFF$
+}
