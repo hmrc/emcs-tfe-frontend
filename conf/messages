@@ -439,6 +439,7 @@ messages.IE813.false.0.description = Change of destination
 messages.IE813.false.0.messageType = Change of destination
 messages.IE813.false.0.p1 = The destination of the movement has been changed.
 messages.IE813.true.0.description = Change of destination submitted successfully
+messages.IE813.true.0.messageType = Change of destination successful submission
 
 messages.IE818.false.0.description = Report of receipt
 messages.IE818.true.0.description = Report of receipt successful submission

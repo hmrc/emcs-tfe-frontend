@@ -125,4 +125,10 @@ trait MessagesFixtures extends BaseFixtures {
     reportOfReceiptLink = true,
     explainDelayLink = true
   )
+
+  val ie813SubmittedChangeDestination = TestMessage(
+    message = createMessage("IE813").copy(messageRole = 0, submittedByRequestingTrader = true),
+    messageTitle = "Change of destination submitted successfully",
+    messageSubTitle = "Change of destination successful submission"
+  )
 }
