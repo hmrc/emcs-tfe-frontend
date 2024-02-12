@@ -458,6 +458,7 @@ messages.IE837.true.1.description = Explanation for a delay submitted successful
 messages.IE837.true.2.description = Explanation for a delay submitted successfully
 
 messages.IE839.false.0.description = Customs rejection of movement for export
+messages.IE839.false.0.paragraph = Your movement has been rejected for export.
 
 messages.IE840.false.2.description = Complimentary event report received
 messages.IE840.false.3.description = Event report received

@@ -101,6 +101,8 @@ class ViewMessageHelper @Inject()(
         Seq(reportOfReceiptLink(), explainDelayLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case "IE829" -> false =>
         Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+      case "IE839" -> false =>
+        Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case _ -> _ =>
         Seq(viewMovementLink(), printMessageLink(), deleteMessageLink())
     }

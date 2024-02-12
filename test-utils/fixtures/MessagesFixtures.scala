@@ -140,6 +140,13 @@ trait MessagesFixtures extends BaseFixtures {
     changeDestinationLink = true
   )
 
+  val ie839ReceivedCustomsRejection = TestMessage(
+    message = createMessage("IE839").copy(messageRole = 0, submittedByRequestingTrader = false),
+    messageTitle = "Customs rejection of movement for export",
+    messageSubTitle = None,
+    changeDestinationLink = true
+  )
+
   val ie704ErrorCancellationIE810 = TestMessage(
     message = createMessage("IE704", optRelatedMessageType = Some("IE810")),
     messageTitle = "Error with cancellation",
