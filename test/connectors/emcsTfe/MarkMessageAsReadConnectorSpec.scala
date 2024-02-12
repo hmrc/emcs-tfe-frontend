@@ -45,7 +45,7 @@ class MarkMessageAsReadConnectorSpec extends SpecBase with Status with MimeTypes
       "downstream call is successful" in new Test {
         val testMessageId = 1234
 
-        val expectedResult = MarkMessageAsReadResponse("dateTime", testErn, 1)
+        val expectedResult = MarkMessageAsReadResponse(1)
 
         MockHttpClient
           .putEmpty(s"$baseUrl/message/$testErn/$testMessageId")

@@ -18,7 +18,7 @@ package models.response.emcsTfe.messages
 
 import play.api.libs.json.{Format, Json}
 
-case class MarkMessageAsReadResponse(dateTime: String, exciseRegistrationNumber: String, recordsAffected: Int)
+case class MarkMessageAsReadResponse(recordsAffected: Int)
 
 object MarkMessageAsReadResponse {
   implicit val fmt: Format[MarkMessageAsReadResponse] = Json.format

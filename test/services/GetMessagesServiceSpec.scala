@@ -87,7 +87,7 @@ class GetMessagesServiceSpec extends SpecBase
     "mark the message as read and return the message" when {
       "when mongo finds the record" in {
         val expectedMessageResponse = MessageCache(testErn, message1, None)
-        val markMessageAsReadResponse = MarkMessageAsReadResponse("date", testErn, 1)
+        val markMessageAsReadResponse = MarkMessageAsReadResponse(1)
 
         MockMessageInboxRepository.get(testErn, message1.uniqueMessageIdentifier).returns(Future.successful(Some(expectedMessageResponse)))
         MockMarkMessageAsReadConnector.markMessageAsRead(testErn, message1.uniqueMessageIdentifier).returns(Future.successful(Right(markMessageAsReadResponse)))
@@ -99,7 +99,7 @@ class GetMessagesServiceSpec extends SpecBase
     "mark the message as read and return the unmodified message" when {
       "the message is a 704 and Mongo has a cache for both message and error" in {
         val expectedMessageResponse = MessageCache(testErn, message2, Some(getSubmissionFailureMessageResponseModel))
-        val markMessageAsReadResponse = MarkMessageAsReadResponse("date", testErn, 1)
+        val markMessageAsReadResponse = MarkMessageAsReadResponse(1)
 
         MockMessageInboxRepository.get(testErn, message2.uniqueMessageIdentifier).returns(Future.successful(Some(expectedMessageResponse)))
         MockMarkMessageAsReadConnector.markMessageAsRead(testErn, message2.uniqueMessageIdentifier).returns(Future.successful(Right(markMessageAsReadResponse)))
@@ -112,7 +112,7 @@ class GetMessagesServiceSpec extends SpecBase
       "the message is a 704 and Mongo doesn't have a cache response for the error message" in {
         val expectedMessageInitialResponse = MessageCache(testErn, message2, None)
         val expectedMessageExpectedResponse = expectedMessageInitialResponse.copy(errorMessage = Some(getSubmissionFailureMessageResponseModel))
-        val markMessageAsReadResponse = MarkMessageAsReadResponse("date", testErn, 1)
+        val markMessageAsReadResponse = MarkMessageAsReadResponse(1)
 
         MockMessageInboxRepository.get(testErn, message2.uniqueMessageIdentifier).returns(Future.successful(Some(expectedMessageInitialResponse)))
         MockMessageInboxRepository.set(expectedMessageExpectedResponse).returns(Future.successful(true))
