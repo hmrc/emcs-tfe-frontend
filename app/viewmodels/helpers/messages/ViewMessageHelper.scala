@@ -79,6 +79,20 @@ class ViewMessageHelper @Inject()(
 
   def constructActions(message: Message)(implicit request: DataRequest[_], messages: Messages): Html = {
 
+    def reportOfReceiptLink(): Html =
+      link(
+        link = appConfig.emcsTfeReportAReceiptUrl(request.ern, message.arc.getOrElse("")),
+        messageKey = "viewMessage.link.reportOfReceipt.description",
+        id = Some("submit-report-of-receipt")
+      )
+
+    def explainDelayLink(): Html =
+      link(
+        link = appConfig.emcsTfeExplainDelayUrl(request.ern, message.arc.getOrElse("")),
+        messageKey = "viewMessage.link.explainDelay.description",
+        id = Some("submit-explain-delay")
+      )
+
     def viewMovementLink(): Html =
       link(
         link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, message.arc.getOrElse("")).url,
@@ -101,6 +115,8 @@ class ViewMessageHelper @Inject()(
       )
 
     val actionLinksContent = message.messageType -> message.submittedByRequestingTrader match {
+      case "IE813" -> false =>
+        Seq(reportOfReceiptLink(), explainDelayLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case _ -> _ =>
         Seq(viewMovementLink(), printMessageLink(), deleteMessageLink())
     }

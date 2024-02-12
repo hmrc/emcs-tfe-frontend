@@ -72,14 +72,57 @@ trait MessagesFixtures extends BaseFixtures {
       messages = Seq.fill(numberOfMessages)(message1),
       totalNumberOfMessagesAvailable = numberOfMessages
     )
-
-
   }
 
-  lazy val ie819AlertReceived = createMessage("IE819").copy(messageRole = 0, submittedByRequestingTrader = false)
-  lazy val ie819RejectReceived = createMessage("IE819").copy(messageRole = 1, submittedByRequestingTrader = false)
-  lazy val ie819AlertSubmitted = createMessage("IE819").copy(messageRole = 0, submittedByRequestingTrader = true)
-  lazy val ie819RejectSubmitted = createMessage("IE819").copy(messageRole = 1, submittedByRequestingTrader = true)
-  lazy val ie810CancellationReceived = createMessage("IE810").copy(messageRole = 0, submittedByRequestingTrader = false)
-  lazy val ie810CancellationSubmitted = createMessage("IE810").copy(messageRole = 0, submittedByRequestingTrader = true)
+  case class TestMessage(
+                          message: Message,
+                          messageTitle: String,
+                          messageSubTitle: String,
+                          reportOfReceiptLink: Boolean = false,
+                          explainDelayLink: Boolean = false
+                        )
+
+  val ie819ReceivedAlert = TestMessage(
+    message = createMessage("IE819").copy(messageRole = 0, submittedByRequestingTrader = false),
+    messageTitle = "Alert or rejection received",
+    messageSubTitle = "Alert received"
+  )
+
+  val ie819ReceivedReject = TestMessage(
+    message = createMessage("IE819").copy(messageRole = 1, submittedByRequestingTrader = false),
+    messageTitle = "Alert or rejection received",
+    messageSubTitle = "Rejection received"
+  )
+
+  val ie819SubmittedAlert = TestMessage(
+    message = createMessage("IE819").copy(messageRole = 0, submittedByRequestingTrader = true),
+    messageTitle = "Alert or rejection submitted successfully",
+    messageSubTitle = "Alert successful submission"
+  )
+
+  val ie819SubmittedReject = TestMessage(
+    message = createMessage("IE819").copy(messageRole = 1, submittedByRequestingTrader = true),
+    messageTitle = "Alert or rejection submitted successfully",
+    messageSubTitle = "Rejection successful submission"
+  )
+
+  val ie810ReceivedCancellation = TestMessage(
+    message = createMessage("IE810").copy(messageRole = 0, submittedByRequestingTrader = false),
+    messageTitle = "Cancellation received",
+    messageSubTitle = "Cancellation of movement"
+  )
+
+  val ie810SubmittedCancellation = TestMessage(
+    message = createMessage("IE810").copy(messageRole = 0, submittedByRequestingTrader = true),
+    messageTitle = "Cancellation submitted successfully",
+    messageSubTitle = "Cancellation of movement successful submission"
+  )
+
+  val ie813ReceivedChangeDestination = TestMessage(
+    message = createMessage("IE813").copy(messageRole = 0, submittedByRequestingTrader = false),
+    messageTitle = "Change of destination",
+    messageSubTitle = "Change of destination",
+    reportOfReceiptLink = true,
+    explainDelayLink = true
+  )
 }

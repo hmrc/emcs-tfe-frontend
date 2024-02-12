@@ -408,6 +408,8 @@ viewMessage.message.sent = This message was sent to you on the {0} at {1}
 viewMessage.table.messageType.label = Message type
 viewMessage.table.arc.label = Administrative reference code
 viewMessage.table.lrn.label = Local reference number
+viewMessage.link.reportOfReceipt.description = Submit report of receipt
+viewMessage.link.explainDelay.description = Create explanation for a delay and provide information
 viewMessage.link.viewMovement.description = View movement
 viewMessage.link.printMessage.description = Print message
 viewMessage.link.deleteMessage.description = Delete message
@@ -434,6 +436,8 @@ messages.IE810.true.0.description = Cancellation submitted successfully
 messages.IE810.true.0.messageType = Cancellation of movement successful submission
 
 messages.IE813.false.0.description = Change of destination
+messages.IE813.false.0.messageType = Change of destination
+messages.IE813.false.0.p1 = The destination of the movement has been changed.
 messages.IE813.true.0.description = Change of destination submitted successfully
 
 messages.IE818.false.0.description = Report of receipt
