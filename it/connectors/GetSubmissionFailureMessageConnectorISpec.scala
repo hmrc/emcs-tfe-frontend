@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, urlEqual
 import com.github.tomakehurst.wiremock.http.Fault
 import connectors.emcsTfe.GetSubmissionFailureMessageConnector
 import fixtures.{BaseFixtures, GetSubmissionFailureMessageFixtures}
-import models.response.UnexpectedDownstreamResponseError
+import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -38,6 +38,18 @@ class GetSubmissionFailureMessageConnectorISpec extends IntegrationBaseSpec
       )
 
       connector.getSubmissionFailureMessage(testErn, testUniqueMessageIdentifier).futureValue mustBe Right(getSubmissionFailureMessageResponseModel)
+    }
+
+    "must fail when the server responds with incorrect JSON" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(url))
+          .willReturn(aResponse()
+            .withStatus(OK)
+            .withBody(Json.stringify(Json.obj())))
+      )
+
+      connector.getSubmissionFailureMessage(testErn, testUniqueMessageIdentifier).futureValue mustBe Left(JsonValidationError)
     }
 
     "must fail when the server responds with any other status" in {

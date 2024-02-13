@@ -113,7 +113,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
   ".constructErrors" must {
 
     "build a summary list of all the errors in the failure message (code -> description) - and a heading" in {
-      val message = MessageCache(testErn, ie704ErrorCancellationIE810, Some(getSubmissionFailureMessageResponseModel))
+      val message = MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(getSubmissionFailureMessageResponseModel))
       val result = helper.constructErrors(message)
       removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
         h2("Errors"),

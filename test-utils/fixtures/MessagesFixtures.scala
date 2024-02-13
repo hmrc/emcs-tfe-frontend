@@ -22,7 +22,7 @@ import java.time.LocalDateTime
 
 trait MessagesFixtures extends BaseFixtures {
 
-  def createMessage(messageType: String, optRelatedMessageType: Option[String] = None) =
+  def createMessage(messageType: String, optRelatedMessageType: Option[String] = None): Message =
     Message(
       uniqueMessageIdentifier = 1234L,
       dateCreatedOnCore = LocalDateTime.of(2024, 1, 5, 0, 0, 0, 0),
@@ -134,7 +134,7 @@ trait MessagesFixtures extends BaseFixtures {
 
   val ie704ErrorCancellationIE810 = TestMessage(
     message = createMessage("IE704", optRelatedMessageType = Some("IE810")),
-    messageTitle = "Change of destination submitted successfully",
-    messageSubTitle = "Change of destination successful submission"
+    messageTitle = "Error with cancellation",
+    messageSubTitle = ""
   )
 }

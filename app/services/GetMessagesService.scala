@@ -63,16 +63,13 @@ class GetMessagesService @Inject()(
       case (false, _) | (true, Some(_)) => Future(cachedMessage)
       case (true, None) =>
         getSubmissionFailureMessageConnector.getSubmissionFailureMessage(cachedMessage.ern, cachedMessage.message.uniqueMessageIdentifier).map {
-        _.fold(
-          error => throw MessageRetrievalException(error.message),
-          failureMessage => {
+          case Left(error) => throw MessageRetrievalException(error.message)
+          case Right(failureMessage) =>
             val cachedMessageWithFailureMessage = cachedMessage.copy(errorMessage = Some(failureMessage))
             //Async because we don't care if the message gets cached successfully (we can always call it again)
             messageInboxRepository.set(cachedMessageWithFailureMessage)
             cachedMessageWithFailureMessage
-          }
-        )
-      }
+        }
     }
   }
 

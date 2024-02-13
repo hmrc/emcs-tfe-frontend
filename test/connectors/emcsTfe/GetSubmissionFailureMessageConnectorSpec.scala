@@ -20,7 +20,7 @@ import base.SpecBase
 import fixtures.GetSubmissionFailureMessageFixtures
 import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
-import models.response.JsonValidationError
+import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -60,11 +60,18 @@ class GetSubmissionFailureMessageConnectorSpec extends SpecBase
 
     "return an error response" when {
 
-      "when downstream call fails" in new Test {
+      "when downstream call fails (due to a JSON validation error)" in new Test {
 
         MockHttpClient.get(s"$baseUrl/submission-failure-message/ern/1234").returns(Future.successful(Left(JsonValidationError)))
 
         await(connector.getSubmissionFailureMessage(exciseRegistrationNumber = "ern", uniqueMessageIdentifier = 1234)) mustBe Left(JsonValidationError)
+      }
+
+      "when downstream call fails (due to a non-200 status code being returned)" in new Test {
+
+        MockHttpClient.get(s"$baseUrl/submission-failure-message/ern/1234").returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+        await(connector.getSubmissionFailureMessage(exciseRegistrationNumber = "ern", uniqueMessageIdentifier = 1234)) mustBe Left(UnexpectedDownstreamResponseError)
       }
     }
   }

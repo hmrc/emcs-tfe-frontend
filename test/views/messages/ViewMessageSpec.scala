@@ -141,8 +141,8 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
       def movementInformationTest()(implicit doc: Document): Unit = {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
-            Selectors.title -> s"${ie810SCancellationError.messageTitle} - Excise Movement and Control System - GOV.UK",
-            Selectors.h1 -> ie810SCancellationError.messageTitle,
+            Selectors.title -> s"${ie704ErrorCancellationIE810.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.h1 -> ie704ErrorCancellationIE810.messageTitle,
             Selectors.summaryRowKey(1) -> English.labelArc,
             Selectors.summaryRowValue(1) -> ie810Message.arc.get,
             Selectors.summaryRowKey(2) -> English.labelLrn,

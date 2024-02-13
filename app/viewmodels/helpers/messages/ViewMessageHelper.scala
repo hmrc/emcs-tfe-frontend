@@ -39,17 +39,12 @@ class ViewMessageHelper @Inject()(
                                    summary_list: summary_list,
                                    h2: h2) extends DateUtils with TagFluency {
 
-  private[viewmodels] def dataRows(message: Message)
-                                  (implicit messages: Messages): Html = {
+  def constructMovementInformation(message: Message)(implicit messages: Messages): Html = {
     val optMessageTypeRow = if(!message.isAnErrorMessage) Seq(messages("viewMessage.table.messageType.label") -> messages(messagesHelper.formattedMessageType(message))) else Seq()
     summary_list(optMessageTypeRow ++ Seq(
       messages("viewMessage.table.arc.label") -> messages(message.arc.getOrElse("")),
       messages("viewMessage.table.lrn.label") -> messages(message.lrn.getOrElse(""))
     ))
-  }
-
-  def constructMovementInformation(message: Message)(implicit messages: Messages): Html = {
-    dataRows(message)
   }
 
   def constructInformation(message: Message)(implicit messages: Messages): Html = {
@@ -130,6 +125,7 @@ class ViewMessageHelper @Inject()(
 
   def constructFixErrorsContent(message: MessageCache)(implicit messages: Messages): Html = {
     message.errorMessage.map { failureMessage =>
+      // If the correlation ID starts with PORTAL then it has been submitted via the frontend
       val hasBeenSubmittedVia3rdParty: Boolean = !failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
       val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
       val hasFixableError = allErrorCodes.exists(FunctionalErrorCodes.isFixable)
