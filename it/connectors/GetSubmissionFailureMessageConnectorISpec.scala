@@ -52,7 +52,7 @@ class GetSubmissionFailureMessageConnectorISpec extends IntegrationBaseSpec
       connector.getSubmissionFailureMessage(testErn, testUniqueMessageIdentifier).futureValue mustBe Left(JsonValidationError)
     }
 
-    "must fail when the server responds with any other status" in {
+    "must fail when the server responds with any other status (ISE returned and handled by the parser)" in {
 
       wireMockServer.stubFor(
         get(urlEqualTo(url))
@@ -62,7 +62,7 @@ class GetSubmissionFailureMessageConnectorISpec extends IntegrationBaseSpec
       connector.getSubmissionFailureMessage(testErn, testUniqueMessageIdentifier).futureValue mustBe Left(UnexpectedDownstreamResponseError)
     }
 
-    "must fail when the connection fails" in {
+    "must fail when the connection fails (an exception is thrown and handled by the connector)" in {
 
       wireMockServer.stubFor(
         get(urlEqualTo(url))
