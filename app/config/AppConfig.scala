@@ -45,6 +45,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   lazy val exciseHelplineUrl: String = configuration.get[String]("urls.exciseHelpline")
 
+  lazy val recoverableErrorCodes: Seq[String] = configuration.get[Seq[String]]("messages.recoverableErrorCodes")
+
   def emcsTfeListMovementsUrl(ern: String): String = routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()).url
 
   // TODO: update with new URL when MOV01 filters are created

@@ -18,8 +18,8 @@ package connectors.emcsTfe
 
 import config.AppConfig
 import models.response.emcsTfe.messages.submissionFailure.GetSubmissionFailureMessageResponse
-import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
-import play.api.libs.json.{JsResultException, Reads}
+import models.response.{ErrorResponse, UnexpectedDownstreamResponseError}
+import play.api.libs.json.Reads
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}

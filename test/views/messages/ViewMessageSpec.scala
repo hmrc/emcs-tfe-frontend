@@ -17,8 +17,8 @@
 package views.messages
 
 import base.ViewSpecBase
-import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
 import fixtures.messages.ViewMessageMessages.English
+import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
 import models.messages.MessageCache
 import models.requests.DataRequest
 import models.response.emcsTfe.messages.Message
@@ -33,8 +33,6 @@ import views.html.messages.ViewMessage
 import views.{BaseSelectors, ViewBehaviours}
 
 class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures with GetSubmissionFailureMessageFixtures {
-
-  import GetSubmissionFailureMessageResponseFixtures._
 
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/message")
@@ -155,22 +153,9 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.summaryRowKey(2, 1) -> failureMessageResponse.ie704.body.functionalError.head.errorType,
-            Selectors.summaryRowValue(2, 1) -> failureMessageResponse.ie704.body.functionalError.head.errorReason,
-            Selectors.summaryRowKey(2, 2) -> failureMessageResponse.ie704.body.functionalError(1).errorType,
-            Selectors.summaryRowValue(2, 2) -> failureMessageResponse.ie704.body.functionalError(1).errorReason
+            Selectors.summaryRowValue(2, 1) -> messages(s"messages.IE704.error.${failureMessageResponse.ie704.body.functionalError.head.errorType}")
           )
         )
-      }
-
-      def cancelOrChangeLinksTest()(implicit doc: Document): Unit = {
-        behave like pageWithExpectedElementsAndMessages(
-          Seq(
-            Selectors.p(1) -> English.cancelMovement,
-            Selectors.link(1) -> English.cancelMovementLink,
-            Selectors.p(2) -> English.changeDestination,
-            Selectors.link(2) -> English.changeDestinationLink
-
-        ))
       }
 
       def thirdPartySubmissionTest(index: Int)(implicit doc: Document): Unit = {
@@ -188,34 +173,6 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
             Selectors.link(index) -> English.helplineLink
           )
         )
-      }
-
-      "render the correct content (when fixable) - portal" when {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345"))
-          ),
-          relatedMessageType = Some("IE810")
-        )
-        implicit val doc: Document = asDocument(ie810Message, optErrorMessage = Some(failureMessageResponse))
-
-        movementInformationTest()
-        errorRowsTest(failureMessageResponse)
-        cancelOrChangeLinksTest()
-        helplineLinkTest(3)
-        movementActionsLinksTest()
-      }
-
-      "render the correct content (when fixable) - 3rd party" when {
-        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(relatedMessageType = Some("IE810"))
-        val ie810Message = message2.copy(relatedMessageType = Some("IE810"), arc = Some(testArc))
-        implicit val doc: Document = asDocument(ie810Message, optErrorMessage = Some(failureMessageResponse))
-        movementInformationTest()
-        errorRowsTest(failureMessageResponse)
-        cancelOrChangeLinksTest()
-        thirdPartySubmissionTest(3)
-        helplineLinkTest(4)
-        movementActionsLinksTest()
       }
 
       "render the correct content (when non-fixable) - portal" when {
@@ -236,6 +193,7 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
         val ie810Message = message2.copy(relatedMessageType = Some("IE810"), arc = Some(testArc))
         implicit val doc: Document = asDocument(ie810Message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest()
+        errorRowsTest(failureMessageResponse)
         helplineLinkTest(1)
         movementActionsLinksTest()
       }
@@ -257,6 +215,7 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
         val ie810Message = message2.copy(relatedMessageType = Some("IE810"), arc = Some(testArc))
         implicit val doc: Document = asDocument(ie810Message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest()
+        errorRowsTest(failureMessageResponse)
         thirdPartySubmissionTest(1)
         helplineLinkTest(2)
         movementActionsLinksTest()
