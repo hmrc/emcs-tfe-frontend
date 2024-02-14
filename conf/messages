@@ -482,7 +482,6 @@ messages.IE704.true.IE837.0.description = Error with explanation for a delay
 messages.IE704.true.IE871.0.description = Error with explanation for a shortage or excess
 
 messages.errors.heading = Errors
-messages.IE704.error.4401 =
 messages.IE704.error.4401 = You have entered an incorrect code
 messages.IE704.error.4402 = The Local Reference Number (LRN) entered has been used before
 messages.IE704.error.4403 = The consignor Excise Registration Number you have entered is not recognised
