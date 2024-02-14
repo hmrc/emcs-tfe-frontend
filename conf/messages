@@ -410,6 +410,7 @@ viewMessage.table.arc.label = Administrative reference code
 viewMessage.table.lrn.label = Local reference number
 viewMessage.link.reportOfReceipt.description = Submit report of receipt
 viewMessage.link.explainDelay.description = Create explanation for a delay and provide information
+viewMessage.link.changeDestination.description = Create new change of destination
 viewMessage.link.viewMovement.description = View movement
 viewMessage.link.printMessage.description = Print message
 viewMessage.link.deleteMessage.description = Delete message
@@ -430,17 +431,13 @@ messages.IE803.true.2.description = Notification of a split movement
 
 messages.IE807.false.0.description = Movement intercepted
 
-messages.IE810.false.0.description = Cancellation received
-messages.IE810.false.0.messageType = Cancellation of movement
-messages.IE810.true.0.description = Cancellation submitted successfully
-messages.IE810.true.0.messageType = Cancellation of movement successful submission
+messages.IE810.false.0.description = Cancellation of movement received
+messages.IE810.true.0.description = Cancellation of movement submitted successfully
 messages.IE810.submittedViaThirdParty.message = If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.
 
 messages.IE813.false.0.description = Change of destination
-messages.IE813.false.0.messageType = Change of destination
-messages.IE813.false.0.p1 = The destination of the movement has been changed.
+messages.IE813.false.0.paragraph = The destination of the movement has been changed.
 messages.IE813.true.0.description = Change of destination submitted successfully
-messages.IE813.true.0.messageType = Change of destination successful submission
 
 messages.IE818.false.0.description = Report of receipt
 messages.IE818.true.0.description = Report of receipt successful submission
@@ -455,6 +452,7 @@ messages.IE819.true.1.description = Alert or rejection submitted successfully
 messages.IE819.true.1.messageType = Rejection successful submission
 
 messages.IE829.false.0.description = Customs acceptance of movement for export
+messages.IE829.false.0.paragraph = Your movement has been accepted for export.
 
 messages.IE837.true.1.description = Explanation for a delay submitted successfully
 messages.IE837.true.2.description = Explanation for a delay submitted successfully
@@ -481,7 +479,7 @@ messages.IE704.true.IE837.0.description = Error with explanation for a delay
 messages.IE704.true.IE871.0.description = Error with explanation for a shortage or excess
 
 messages.errors.heading = Errors
-messages.IE704.error.4401 = 
+messages.IE704.error.4401 =
 messages.IE704.error.4401 = You have entered an incorrect code
 messages.IE704.error.4402 = The Local Reference Number (LRN) entered has been used before
 messages.IE704.error.4403 = The consignor Excise Registration Number you have entered is not recognised

@@ -48,6 +48,7 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     val deleteMessageLink = "#delete-message"
     val reportOfReceiptLink = "#submit-report-of-receipt"
     val explainDelayLink = "#submit-explain-delay"
+    val changeDestinationLink = "#submit-change-destination"
     override val link: Int => String = i => s"main p:nth-of-type($i) a"
     def summaryRowKey(i: Int, j: Int): String = s"main dl:nth-of-type($i) div:nth-of-type($j) dt"
     def summaryRowValue(i: Int, j: Int): String = s"main dl:nth-of-type($i) div:nth-of-type($j) dd"
@@ -75,26 +76,45 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
   Seq(
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
     ie810ReceivedCancellation, ie810SubmittedCancellation,
-    ie813ReceivedChangeDestination, ie813SubmittedChangeDestination
-  ).foreach { msg =>
+    ie813ReceivedChangeDestination, ie813SubmittedChangeDestination,
+    ie829ReceivedCustomsAcceptance
+  ).foreach{ msg =>
 
-    s"when being rendered with a ${msg.message.messageType} ${msg.messageSubTitle} msg" should {
+    s"when being rendered with a ${msg.message.messageType} ${msg.messageTitle} ${msg.messageSubTitle} msg" should {
       implicit val doc: Document = asDocument(msg.message)
 
-      "show the correct table content" when {
+      "show the correct title and H1" when {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.title -> s"${msg.messageTitle} - Excise Movement and Control System - GOV.UK",
             Selectors.h1 -> msg.messageTitle,
-
-            Selectors.summaryRowKey(1) -> English.labelMessageType,
-            Selectors.summaryRowValue(1) -> msg.messageSubTitle,
-            Selectors.summaryRowKey(2) -> English.labelArc,
-            Selectors.summaryRowValue(2) -> message1.arc.get,
-            Selectors.summaryRowKey(3) -> English.labelLrn,
-            Selectors.summaryRowValue(3) -> message1.lrn.get
           )
         )
+      }
+
+      "show the correct table content" when {
+        msg.messageSubTitle match {
+          case Some(subTitle) =>
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.summaryRowKey(1) -> English.labelMessageType,
+                Selectors.summaryRowValue(1) -> subTitle,
+                Selectors.summaryRowKey(2) -> English.labelArc,
+                Selectors.summaryRowValue(2) -> message1.arc.getOrElse(""),
+                Selectors.summaryRowKey(3) -> English.labelLrn,
+                Selectors.summaryRowValue(3) -> message1.lrn.getOrElse("")
+              )
+            )
+          case None =>
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.summaryRowKey(1) -> English.labelArc,
+                Selectors.summaryRowValue(1) -> message1.arc.getOrElse(""),
+                Selectors.summaryRowKey(2) -> English.labelLrn,
+                Selectors.summaryRowValue(2) -> message1.lrn.getOrElse("")
+              )
+            )
+        }
       }
 
       "show the correct actions" when {
@@ -115,6 +135,14 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
             )
           )
         }
+
+        if (msg.changeDestinationLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.changeDestinationLink -> English.changeDestinationLinkText
+            )
+          )
+        }
       }
     }
   }
@@ -126,6 +154,18 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
       behave like pageWithExpectedElementsAndMessages(
         Seq(
           Selectors.p(1) -> "The destination of the movement has been changed."
+        )
+      )
+    }
+  }
+
+  s"when an IE829 message" should {
+    "contain other information" when {
+      implicit val doc: Document = asDocument(ie829ReceivedCustomsAcceptance.message)
+
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.p(1) -> "Your movement has been accepted for export."
         )
       )
     }

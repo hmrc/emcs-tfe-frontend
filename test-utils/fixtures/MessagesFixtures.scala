@@ -77,51 +77,52 @@ trait MessagesFixtures extends BaseFixtures {
   case class TestMessage(
                           message: Message,
                           messageTitle: String,
-                          messageSubTitle: String,
+                          messageSubTitle: Option[String],
                           reportOfReceiptLink: Boolean = false,
-                          explainDelayLink: Boolean = false
+                          explainDelayLink: Boolean = false,
+                          changeDestinationLink: Boolean = false
                         )
 
   val ie819ReceivedAlert = TestMessage(
     message = createMessage("IE819").copy(messageRole = 0, submittedByRequestingTrader = false),
     messageTitle = "Alert or rejection received",
-    messageSubTitle = "Alert received"
+    messageSubTitle = Some("Alert received")
   )
 
   val ie819ReceivedReject = TestMessage(
     message = createMessage("IE819").copy(messageRole = 1, submittedByRequestingTrader = false),
     messageTitle = "Alert or rejection received",
-    messageSubTitle = "Rejection received"
+    messageSubTitle = Some("Rejection received")
   )
 
   val ie819SubmittedAlert = TestMessage(
     message = createMessage("IE819").copy(messageRole = 0, submittedByRequestingTrader = true),
     messageTitle = "Alert or rejection submitted successfully",
-    messageSubTitle = "Alert successful submission"
+    messageSubTitle = Some("Alert successful submission")
   )
 
   val ie819SubmittedReject = TestMessage(
     message = createMessage("IE819").copy(messageRole = 1, submittedByRequestingTrader = true),
     messageTitle = "Alert or rejection submitted successfully",
-    messageSubTitle = "Rejection successful submission"
+    messageSubTitle = Some("Rejection successful submission")
   )
 
   val ie810ReceivedCancellation = TestMessage(
     message = createMessage("IE810").copy(messageRole = 0, submittedByRequestingTrader = false),
-    messageTitle = "Cancellation received",
-    messageSubTitle = "Cancellation of movement"
+    messageTitle = "Cancellation of movement received",
+    messageSubTitle = None
   )
 
   val ie810SubmittedCancellation = TestMessage(
     message = createMessage("IE810").copy(messageRole = 0, submittedByRequestingTrader = true),
-    messageTitle = "Cancellation submitted successfully",
-    messageSubTitle = "Cancellation of movement successful submission"
+    messageTitle = "Cancellation of movement submitted successfully",
+    messageSubTitle = None
   )
 
   val ie813ReceivedChangeDestination = TestMessage(
     message = createMessage("IE813").copy(messageRole = 0, submittedByRequestingTrader = false),
     messageTitle = "Change of destination",
-    messageSubTitle = "Change of destination",
+    messageSubTitle = None,
     reportOfReceiptLink = true,
     explainDelayLink = true
   )
@@ -129,12 +130,19 @@ trait MessagesFixtures extends BaseFixtures {
   val ie813SubmittedChangeDestination = TestMessage(
     message = createMessage("IE813").copy(messageRole = 0, submittedByRequestingTrader = true),
     messageTitle = "Change of destination submitted successfully",
-    messageSubTitle = "Change of destination successful submission"
+    messageSubTitle = None
+  )
+
+  val ie829ReceivedCustomsAcceptance = TestMessage(
+    message = createMessage("IE829").copy(messageRole = 0, submittedByRequestingTrader = false),
+    messageTitle = "Customs acceptance of movement for export",
+    messageSubTitle = None,
+    changeDestinationLink = true
   )
 
   val ie704ErrorCancellationIE810 = TestMessage(
     message = createMessage("IE704", optRelatedMessageType = Some("IE810")),
     messageTitle = "Error with cancellation",
-    messageSubTitle = ""
+    messageSubTitle = None
   )
 }

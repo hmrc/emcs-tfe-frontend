@@ -39,56 +39,58 @@ class ViewMessageHelper @Inject()(
                                    h2: h2) extends DateUtils with TagFluency {
 
   def constructMovementInformation(message: Message)(implicit messages: Messages): Html = {
-    val optMessageTypeRow = if (!message.isAnErrorMessage) Seq(messages("viewMessage.table.messageType.label") -> messages(messagesHelper.formattedMessageType(message))) else Seq()
+    val optMessageTypeRow = messagesHelper.messageTypeKey(message).map( value =>
+      Seq(messages("viewMessage.table.messageType.label") -> messages(value))
+    ).getOrElse(Seq.empty)
+
     summary_list(optMessageTypeRow ++ Seq(
       messages("viewMessage.table.arc.label") -> messages(message.arc.getOrElse("")),
       messages("viewMessage.table.lrn.label") -> messages(message.lrn.getOrElse(""))
     ))
   }
 
-  def constructInformation(message: Message)(implicit messages: Messages): Html = {
-    message.messageType -> message.submittedByRequestingTrader match {
-      case "IE813" -> false =>
-        p() {
-          Html(messages("messages.IE813.false.0.p1"))
-        }
-      case _ =>
+  def constructAdditionalInformation(message: Message)(implicit messages: Messages): Html =
+    messagesHelper.additionalInformationKey(message) match {
+      case Some(key) =>
+        p() { Html(messages(key)) }
+      case None =>
         Empty.asHtml
     }
-  }
+
 
   def constructActions(message: Message)(implicit request: DataRequest[_], messages: Messages): Html = {
 
-    def reportOfReceiptLink(): Html =
-      link(
+    def reportOfReceiptLink(): Html = link(
         link = appConfig.emcsTfeReportAReceiptUrl(request.ern, message.arc.getOrElse("")),
         messageKey = "viewMessage.link.reportOfReceipt.description",
         id = Some("submit-report-of-receipt")
       )
 
-    def explainDelayLink(): Html =
-      link(
+    def explainDelayLink(): Html = link(
         link = appConfig.emcsTfeExplainDelayUrl(request.ern, message.arc.getOrElse("")),
         messageKey = "viewMessage.link.explainDelay.description",
         id = Some("submit-explain-delay")
       )
 
-    def viewMovementLink(): Html =
-      link(
+    def changeDestinationLink(): Html = link(
+        link = appConfig.emcsTfeChangeDestinationUrl(request.ern, message.arc.getOrElse("")),
+        messageKey = "viewMessage.link.changeDestination.description",
+        id = Some("submit-change-destination")
+      )
+
+    def viewMovementLink(): Html = link(
         link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, message.arc.getOrElse("")).url,
         messageKey = "viewMessage.link.viewMovement.description",
         id = Some("view-movement")
       )
 
-    def printMessageLink(): Html =
-      link(
+    def printMessageLink(): Html = link(
         link = "#print-dialogue",
         messageKey = "viewMessage.link.printMessage.description",
         id = Some("print-link")
       )
 
-    def deleteMessageLink(): Html =
-      link(
+    def deleteMessageLink(): Html = link(
         link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
         messageKey = "viewMessage.link.deleteMessage.description",
         id = Some("delete-message")
@@ -97,14 +99,13 @@ class ViewMessageHelper @Inject()(
     val actionLinksContent = message.messageType -> message.submittedByRequestingTrader match {
       case "IE813" -> false =>
         Seq(reportOfReceiptLink(), explainDelayLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+      case "IE829" -> false =>
+        Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case _ -> _ =>
         Seq(viewMovementLink(), printMessageLink(), deleteMessageLink())
     }
 
-    list(
-      content = actionLinksContent,
-      extraClasses = Some("govuk-!-display-none-print")
-    )
+    list(content = actionLinksContent, extraClasses = Some("govuk-!-display-none-print"))
   }
 
   def constructErrors(message: MessageCache)(implicit messages: Messages): Html = {
