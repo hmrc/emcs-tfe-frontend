@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package models.response.emcsTfe.messages
+package models.response.emcsTfe.messages.submissionFailure
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json._
 
-case class MarkMessageAsReadResponse(recordsAffected: Int)
+case class IE704Header(
+                        messageSender: String,
+                        messageRecipient: String,
+                        dateOfPreparation: String,
+                        timeOfPreparation: String,
+                        messageIdentifier: String,
+                        correlationIdentifier: Option[String]
+                      )
 
-object MarkMessageAsReadResponse {
-  implicit val fmt: Format[MarkMessageAsReadResponse] = Json.format
+object IE704Header {
+  implicit val format: Format[IE704Header] = Json.format
 }

@@ -29,8 +29,6 @@ class MarkMessageAsReadConnectorISpec extends IntegrationBaseSpec
   ".markMessageAsRead" must {
 
     val body = MarkMessageAsReadResponse(
-      dateTime = "dateTime",
-      exciseRegistrationNumber = testErn,
       recordsAffected = 1
     )
 

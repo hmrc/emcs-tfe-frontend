@@ -32,5 +32,15 @@ object ViewMessageMessages {
     val explainDelayLinkText = "Create explanation for a delay and provide information"
   }
 
-  object English extends ViewMessages with EN
+  sealed trait IE810SubmissionFailureMessages { _: i18n =>
+    val cancelMovement = "If you still want to cancel this movement you can submit a new cancellation with the errors corrected."
+    val changeDestination = "However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to submit a change of destination."
+    val cancelMovementLink = "cancel this movement"
+    val changeDestinationLink = "change of destination"
+    val helpline = "Contact the HMRC excise helpline if you need more help or advice."
+    val helplineLink = "Contact the HMRC excise helpline"
+    val thirdParty = "If you used commercial software for your submission, please correct these errors with the same software that you used for the submission."
+  }
+
+  object English extends ViewMessages with IE810SubmissionFailureMessages with EN
 }

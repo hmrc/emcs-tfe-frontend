@@ -17,6 +17,7 @@
 package repositories
 
 import base.SpecBase
+import fixtures.GetSubmissionFailureMessageFixtures
 import models.messages.MessageCache
 import models.response.emcsTfe.messages.Message
 import org.scalatest.BeforeAndAfterAll
@@ -30,7 +31,8 @@ class MessageInboxRepositorySpec extends SpecBase
   with PlayMongoRepositorySupport[MessageCache]
   with CleanMongoCollectionSupport
   with IntegrationPatience
-  with BeforeAndAfterAll {
+  with BeforeAndAfterAll
+  with GetSubmissionFailureMessageFixtures {
 
   implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
@@ -45,13 +47,16 @@ class MessageInboxRepositorySpec extends SpecBase
       uniqueMessageIdentifier = 2,
       dateCreatedOnCore = LocalDateTime.now(),
       arc = Some("ARC123"),
-      messageType = "IE818",
-      relatedMessageType = None,
+      messageType = "IE704",
+      relatedMessageType = Some("IE818"),
       sequenceNumber = Some(1),
       readIndicator = false,
       lrn = Some("LRN123"),
       messageRole = 0,
       submittedByRequestingTrader = true
+    ),
+    errorMessage = Some(
+      GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel.copy(relatedMessageType = Some("IE818"))
     )
   )
 

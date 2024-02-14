@@ -16,9 +16,9 @@
 
 package services
 
-import connectors.emcsTfe.{GetMessagesConnector, MarkMessageAsReadConnector}
+import connectors.emcsTfe.{GetMessagesConnector, GetSubmissionFailureMessageConnector, MarkMessageAsReadConnector}
 import models.messages.{MessageCache, MessagesSearchOptions}
-import models.response.MessagesException
+import models.response.{MessageRetrievalException, MessagesException}
 import models.response.emcsTfe.messages.GetMessagesResponse
 import repositories.MessageInboxRepository
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,15 +30,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class GetMessagesService @Inject()(
                                     messagesConnector: GetMessagesConnector,
                                     markMessageAsReadConnector: MarkMessageAsReadConnector,
+                                    getSubmissionFailureMessageConnector: GetSubmissionFailureMessageConnector,
                                     messageInboxRepository: MessageInboxRepository
                                   )(implicit ec: ExecutionContext) {
 
   def getMessages(ern: String, search: Option[MessagesSearchOptions])(implicit hc: HeaderCarrier): Future[GetMessagesResponse] = {
     messagesConnector.getMessages(ern, search).map {
       case Right(messages) =>
-        messages.messages.foreach { message =>
-          messageInboxRepository.set(MessageCache(ern, message))
-        }
+        messages.messages.foreach(message => messageInboxRepository.set(MessageCache(ern, message, errorMessage = None)))
         messages
       case _ => throw MessagesException(s"Error occurred when fetching messages for trader $ern")
     }
@@ -46,14 +45,32 @@ class GetMessagesService @Inject()(
 
   def getMessage(ern: String, uniqueMessageIdentifier: Long)(implicit hc: HeaderCarrier): Future[Option[MessageCache]] = {
 
-    messageInboxRepository.get(ern, uniqueMessageIdentifier).map {
-      case Some(message) =>
-        markMessageAsReadConnector.markMessageAsRead(ern, uniqueMessageIdentifier)
-        Some(message)
+    messageInboxRepository.get(ern, uniqueMessageIdentifier).flatMap {
+      case Some(cachedMessage) =>
+        retrieveSubmissionFailureMessageIfMessageIs704(cachedMessage).map {
+          cachedMessageWithPossible704 =>
+            markMessageAsReadConnector.markMessageAsRead(ern, uniqueMessageIdentifier)
+            Some(cachedMessageWithPossible704)
+        }
       case _ =>
-        None
+        Future(None)
     }
 
+  }
+
+  private[services] def retrieveSubmissionFailureMessageIfMessageIs704(cachedMessage: MessageCache)(implicit hc: HeaderCarrier): Future[MessageCache] = {
+    (cachedMessage.message.isAnErrorMessage, cachedMessage.errorMessage) match {
+      case (false, _) | (true, Some(_)) => Future(cachedMessage)
+      case (true, None) =>
+        getSubmissionFailureMessageConnector.getSubmissionFailureMessage(cachedMessage.ern, cachedMessage.message.uniqueMessageIdentifier).map {
+          case Left(error) => throw MessageRetrievalException(error.message)
+          case Right(failureMessage) =>
+            val cachedMessageWithFailureMessage = cachedMessage.copy(errorMessage = Some(failureMessage))
+            //Async because we don't care if the message gets cached successfully (we can always call it again)
+            messageInboxRepository.set(cachedMessageWithFailureMessage)
+            cachedMessageWithFailureMessage
+        }
+    }
   }
 
 }

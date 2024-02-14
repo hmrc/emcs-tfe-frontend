@@ -35,6 +35,7 @@ class LinkSpec extends SpecBase {
     val button: Boolean = false
     val classes: String = "govuk-link"
     val hiddenContent: Option[String] = None
+    val hasFullStop: Boolean = false
 
     lazy val link: link = app.injector.instanceOf[link]
     lazy val messagesApi = app.injector.instanceOf[MessagesApi]
@@ -48,7 +49,8 @@ class LinkSpec extends SpecBase {
       isExternal,
       button,
       classes,
-      hiddenContent
+      hiddenContent,
+      hasFullStop
     )
 
     lazy val document: Document = Jsoup.parse(html.toString)
@@ -114,6 +116,15 @@ class LinkSpec extends SpecBase {
 
             span.hasClass("govuk-visually-hidden") mustBe true
             span.text() mustBe hiddenContent.get
+          }
+        }
+
+        "has 'willFullStop' set to true" must {
+
+          "output the expected HTML" in new TestFixture {
+
+            override val hasFullStop: Boolean = true
+            document.body().text() mustBe messages(messageKey) + "."
           }
         }
       }

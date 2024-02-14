@@ -22,9 +22,7 @@
         helper: SummaryListHelper
 )
 
-@(
-        list: Seq[(String, String)]
-)
+@(list: Seq[(String, String)])
 
 @govukSummaryList(helper.render(list))
 

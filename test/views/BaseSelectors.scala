@@ -43,8 +43,6 @@ trait BaseSelectors {
   val dateMonth = s".govuk-date-input .govuk-date-input__item:nth-of-type(2)"
   val dateYear = s".govuk-date-input .govuk-date-input__item:nth-of-type(3)"
 
-  val tableHeader: Int => String = i => s"main table thead tr th:nth-of-type($i)"
-  val tableRow: (Int, Int) => String = (x, y) => s"main table tbody tr:nth-of-type($x) > :nth-child($y)"
   val summaryRowKey: Int => String = i => s"main dl div:nth-of-type($i) dt"
   val summaryRowValue: Int => String = i => s"main dl div:nth-of-type($i) dd"
 
