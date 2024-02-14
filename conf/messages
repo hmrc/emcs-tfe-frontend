@@ -610,6 +610,13 @@ messages.IE704.error.4601 = The type of transport must be sea transport or fixed
 messages.IE704.error.4602 = All movements between the UK and EU require a guarantee except the movement of energy products
 messages.IE704.error.9005 = A GB trader can only raise movements to GB warehouse destinations and exports with a GB export office. NI traders cannot raise exports with a GB export office.
 
+messages.IE704.IE810.fixError.cancel.prefix = If you still want to
+messages.IE704.IE810.fixError.cancel.link = cancel this movement
+messages.IE704.IE810.fixError.cancel.suffix = you can submit a new cancellation with the errors corrected.
+
+messages.IE704.IE810.fixError.changeDestination = However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to
+messages.IE704.IE810.fixError.changeDestination.link = submit a change of destination
+
 messages.link.helpline = Contact the HMRC excise helpline
 messages.link.helpline.text = if you need more help or advice.
 
