@@ -77,7 +77,8 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
     ie810ReceivedCancellation, ie810SubmittedCancellation,
     ie813ReceivedChangeDestination, ie813SubmittedChangeDestination,
-    ie829ReceivedCustomsAcceptance
+    ie829ReceivedCustomsAcceptance,
+    ie839ReceivedCustomsRejection
   ).foreach{ msg =>
 
     s"when being rendered with a ${msg.message.messageType} ${msg.messageTitle} ${msg.messageSubTitle} msg" should {
@@ -166,6 +167,18 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
       behave like pageWithExpectedElementsAndMessages(
         Seq(
           Selectors.p(1) -> "Your movement has been accepted for export."
+        )
+      )
+    }
+  }
+
+  s"when an IE839 message" should {
+    "contain other information" when {
+      implicit val doc: Document = asDocument(ie839ReceivedCustomsRejection.message)
+
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.p(1) -> "Your movement has been rejected for export."
         )
       )
     }
