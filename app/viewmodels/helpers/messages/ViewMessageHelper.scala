@@ -169,7 +169,7 @@ class ViewMessageHelper @Inject()(
                                                    (implicit messages: Messages): Seq[Html] = {
     messageType match {
       case "IE810" => Seq(p()(HtmlFormat.fill(Seq(
-        link(appConfig.exciseHelplineUrl, "messages.link.helpline", id = Some("excise-helpline-link")),
+        link(appConfig.exciseHelplineUrl, "messages.link.helpline", id = Some("excise-helpline-link"), isExternal = true),
         Html(messages("messages.link.helpline.text"))
       ))))
       case _ => Seq.empty

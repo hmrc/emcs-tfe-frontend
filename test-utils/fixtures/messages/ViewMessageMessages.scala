@@ -38,8 +38,8 @@ object ViewMessageMessages {
     val changeDestination = "However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to submit a change of destination."
     val cancelMovementLink = "cancel this movement"
     val changeDestinationLink = "change of destination"
-    val helpline = "Contact the HMRC excise helpline if you need more help or advice."
-    val helplineLink = "Contact the HMRC excise helpline"
+    val helpline = "Contact the HMRC excise helpline (opens in new tab) if you need more help or advice."
+    val helplineLink = "Contact the HMRC excise helpline (opens in new tab)"
     val thirdParty = "If you used commercial software for your submission, please correct these errors with the same software that you used for the submission."
   }
 

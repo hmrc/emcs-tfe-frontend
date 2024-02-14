@@ -318,7 +318,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
     "return the correct content for an IE810 error" in {
       helper.contentForContactingHelpdesk("IE810") mustBe Seq(p() {
         HtmlFormat.fill(Seq(
-          link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("excise-helpline-link")),
+          link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("excise-helpline-link"), isExternal = true),
           Html("if you need more help or advice.")
         ))
       })
@@ -373,7 +373,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("excise-helpline-link")),
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("excise-helpline-link"), isExternal = true),
               Html("if you need more help or advice.")
             ))
           }
@@ -399,7 +399,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("excise-helpline-link")),
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("excise-helpline-link"), isExternal = true),
               Html("if you need more help or advice.")
             ))
           }
