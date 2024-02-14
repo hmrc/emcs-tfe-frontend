@@ -181,8 +181,14 @@ trait MessagesFixtures extends BaseFixtures {
   )
 
   val ie704ErrorCancellationIE810 = TestMessage(
-    message = createMessage("IE704", optRelatedMessageType = Some("IE810")),
+    message = createMessage("IE704", optRelatedMessageType = Some("IE810")).copy(messageRole = 0, submittedByRequestingTrader = true),
     messageTitle = "Error with cancellation",
     messageSubTitle = None
+  )
+
+  val ie704ErrorCancellationIE837 = TestMessage(
+    message = createMessage("IE704", optRelatedMessageType = Some("IE837")).copy(messageRole = 0, submittedByRequestingTrader = true),
+    messageTitle = "Error with explanation for a delay",
+    messageSubTitle = ""
   )
 }

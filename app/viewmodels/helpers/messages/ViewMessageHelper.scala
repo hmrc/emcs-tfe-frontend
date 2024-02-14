@@ -136,7 +136,7 @@ class ViewMessageHelper @Inject()(
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
           contentForFixingError(relatedMessageType, hasFixableError, message.ern, message.message.arc.getOrElse("")) ++
-            contentForSubmittedVia3rdParty(relatedMessageType, hasBeenSubmittedVia3rdParty) ++
+            contentForSubmittedVia3rdParty(hasBeenSubmittedVia3rdParty) ++
             contentForContactingHelpdesk(relatedMessageType))
         case _ => Html("")
       }
@@ -162,14 +162,19 @@ class ViewMessageHelper @Inject()(
             link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.IE704.IE810.fixError.changeDestination.link", withFullStop = true)
           )))
         )
+      case "IE837" =>
+        Seq(p()(HtmlFormat.fill(Seq(
+          Html(messages("messages.IE704.IE837.fixError.text")),
+          link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "messages.IE704.IE837.fixError.link", withFullStop = true)
+        ))))
       case _ => Seq.empty
     }
   }
 
-  private[helpers] def contentForSubmittedVia3rdParty(messageType: String, hasBeenSubmittedVia3rdParty: Boolean)
+  private[helpers] def contentForSubmittedVia3rdParty(hasBeenSubmittedVia3rdParty: Boolean)
                                                      (implicit messages: Messages): Seq[Html] = {
     if (hasBeenSubmittedVia3rdParty) {
-      Seq(p()(Html(messages(s"messages.$messageType.submittedViaThirdParty.message"))))
+      Seq(p()(Html(messages("messages.submittedViaThirdParty"))))
     } else {
       Seq.empty
     }
@@ -178,11 +183,11 @@ class ViewMessageHelper @Inject()(
   private[helpers] def contentForContactingHelpdesk(messageType: String)
                                                    (implicit messages: Messages): Seq[Html] = {
     messageType match {
-      case "IE810" => Seq(p()(HtmlFormat.fill(Seq(
-        link(appConfig.exciseHelplineUrl, "messages.link.helpline", id = Some("contactHmrc"), isExternal = true),
+      case "IE819" => Seq.empty
+      case _ => Seq(p()(HtmlFormat.fill(Seq(
+        link(appConfig.exciseHelplineUrl, "messages.link.helpline"),
         Html(messages("messages.link.helpline.text"))
       ))))
-      case _ => Seq.empty
     }
   }
 }

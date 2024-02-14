@@ -380,30 +380,32 @@ class ViewMessageHelperSpec extends SpecBase
   ".contentForSubmittedVia3rdParty" must {
 
     "return the correct content when the submission was made via a 3rd party" in {
-      helper.contentForSubmittedVia3rdParty("IE810", hasBeenSubmittedVia3rdParty = true) mustBe Seq(p() {
+      helper.contentForSubmittedVia3rdParty(hasBeenSubmittedVia3rdParty = true) mustBe Seq(p() {
         Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
       })
     }
 
     "return an empty list when the submission was not made by a 3rd party" in {
-      helper.contentForSubmittedVia3rdParty("IE810", hasBeenSubmittedVia3rdParty = false) mustBe Seq.empty
+      helper.contentForSubmittedVia3rdParty(hasBeenSubmittedVia3rdParty = false) mustBe Seq.empty
     }
 
   }
 
   ".contentForContactingHelpdesk" must {
 
-    "return the correct content for an IE810 error" in {
-      helper.contentForContactingHelpdesk("IE810") mustBe Seq(p() {
-        HtmlFormat.fill(Seq(
-          link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-          Html("if you need more help or advice.")
-        ))
-      })
+    Seq("IE810", "IE837").foreach { messageInError =>
+      s"return the correct content for an $messageInError in error" in {
+        helper.contentForContactingHelpdesk(messageInError) mustBe Seq(p() {
+          HtmlFormat.fill(Seq(
+            link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline"),
+            Html("if you need more help or advice.")
+          ))
+        })
+      }
     }
 
-    "return an empty list when the message type is not matched" in {
-      helper.contentForContactingHelpdesk("FAKE") mustBe Seq.empty
+    "return an empty list for a IE819 in error" in {
+      helper.contentForContactingHelpdesk("IE819") mustBe Seq.empty
     }
 
   }
@@ -426,6 +428,13 @@ class ViewMessageHelperSpec extends SpecBase
           link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true)
         )))
       )
+    }
+
+    "return the correct content for an IE837 error" in {
+      helper.contentForFixingError("IE837", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+        Html("You need to"),
+        link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true)
+      ))))
     }
 
     "return an empty list when the message type is not matched" in {
