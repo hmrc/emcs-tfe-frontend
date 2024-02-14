@@ -96,14 +96,18 @@ class ViewMessageHelper @Inject()(
         id = Some("delete-message")
       )
 
-    val actionLinksContent = message.messageType -> message.submittedByRequestingTrader match {
-      case "IE813" -> false =>
+    val actionLinksContent = (message.messageType, message.submittedByRequestingTrader, message.messageRole) match {
+      case ("IE813", false, _) =>
         Seq(reportOfReceiptLink(), explainDelayLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
-      case "IE829" -> false =>
+      case ("IE829", false, _) =>
         Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
-      case "IE839" -> false =>
+      case ("IE837", true, 1) =>
+        Seq(reportOfReceiptLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+      case ("IE837", true, 2) =>
         Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
-      case _ -> _ =>
+      case ("IE839", false, _) =>
+        Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+      case (_, _, _) =>
         Seq(viewMovementLink(), printMessageLink(), deleteMessageLink())
     }
 

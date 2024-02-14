@@ -140,6 +140,20 @@ trait MessagesFixtures extends BaseFixtures {
     changeDestinationLink = true
   )
 
+  val ie837SubmittedExplainDelayROR = TestMessage(
+    message = createMessage("IE837").copy(messageRole = 1, submittedByRequestingTrader = true),
+    messageTitle = "Explanation for a delay submitted successfully",
+    messageSubTitle = Some("Explanation submitted for delayed report of receipt"),
+    reportOfReceiptLink = true
+  )
+
+  val ie837SubmittedExplainDelayCOD = TestMessage(
+    message = createMessage("IE837").copy(messageRole = 2, submittedByRequestingTrader = true),
+    messageTitle = "Explanation for a delay submitted successfully",
+    messageSubTitle = Some("Explanation submitted for delayed change of destination or providing consignee"),
+    changeDestinationLink = true
+  )
+
   val ie839ReceivedCustomsRejection = TestMessage(
     message = createMessage("IE839").copy(messageRole = 0, submittedByRequestingTrader = false),
     messageTitle = "Customs rejection of movement for export",

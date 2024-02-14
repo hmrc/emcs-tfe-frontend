@@ -30,7 +30,7 @@ object ViewMessageMessages {
     val deleteMessageLinkText = "Delete message"
     val reportOfReceiptLinkText = "Submit report of receipt"
     val explainDelayLinkText = "Create explanation for a delay and provide information"
-    val changeDestinationLinkText = "Create new change of destination"
+    val changeDestinationLinkText = "Change of destination"
   }
 
   sealed trait IE810SubmissionFailureMessages { _: i18n =>
