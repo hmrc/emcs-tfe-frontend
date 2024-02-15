@@ -454,9 +454,9 @@ messages.IE819.true.1.messageType = Rejection successful submission
 messages.IE829.false.0.description = Customs acceptance of movement for export
 messages.IE829.false.0.paragraph = Your movement has been accepted for export.
 
-messages.IE837.true.1.description = Explanation for a delay submitted successfully
+messages.IE837.true.1.description = Explanation for delayed report of receipt submitted successfully
 messages.IE837.true.1.messageType = Explanation submitted for delayed report of receipt
-messages.IE837.true.2.description = Explanation for a delay submitted successfully
+messages.IE837.true.2.description = Explanation for delayed destination information submitted successfully
 messages.IE837.true.2.messageType = Explanation submitted for delayed change of destination or providing consignee
 
 messages.IE839.false.0.description = Customs rejection of movement for export

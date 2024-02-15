@@ -142,14 +142,14 @@ trait MessagesFixtures extends BaseFixtures {
 
   val ie837SubmittedExplainDelayROR = TestMessage(
     message = createMessage("IE837").copy(messageRole = 1, submittedByRequestingTrader = true),
-    messageTitle = "Explanation for a delay submitted successfully",
+    messageTitle = "Explanation for delayed report of receipt submitted successfully",
     messageSubTitle = Some("Explanation submitted for delayed report of receipt"),
     reportOfReceiptLink = true
   )
 
   val ie837SubmittedExplainDelayCOD = TestMessage(
     message = createMessage("IE837").copy(messageRole = 2, submittedByRequestingTrader = true),
-    messageTitle = "Explanation for a delay submitted successfully",
+    messageTitle = "Explanation for delayed destination information submitted successfully",
     messageSubTitle = Some("Explanation submitted for delayed change of destination or providing consignee"),
     changeDestinationLink = true
   )
