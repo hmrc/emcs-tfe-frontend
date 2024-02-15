@@ -78,6 +78,7 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     ie810ReceivedCancellation, ie810SubmittedCancellation,
     ie813ReceivedChangeDestination, ie813SubmittedChangeDestination,
     ie829ReceivedCustomsAcceptance,
+    ie837SubmittedExplainDelayROR, ie837SubmittedExplainDelayCOD,
     ie839ReceivedCustomsRejection
   ).foreach{ msg =>
 
