@@ -79,7 +79,8 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     ie813ReceivedChangeDestination, ie813SubmittedChangeDestination,
     ie829ReceivedCustomsAcceptance,
     ie837SubmittedExplainDelayROR, ie837SubmittedExplainDelayCOD,
-    ie839ReceivedCustomsRejection
+    ie839ReceivedCustomsRejection,
+    ie871SubmittedShortageExcess
   ).foreach{ msg =>
 
     s"when being rendered with a ${msg.message.messageType} ${msg.messageTitle} ${msg.messageSubTitle} msg" should {

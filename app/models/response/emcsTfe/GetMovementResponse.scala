@@ -66,6 +66,7 @@ case class GetMovementResponse(
     ).toLocalDate.formatDateForUIOutput()
   }
 
+  def isConsigneeOfMovement(ern: String): Boolean = consigneeTrader.exists(_.traderExciseNumber == ern)
 }
 
 object GetMovementResponse {

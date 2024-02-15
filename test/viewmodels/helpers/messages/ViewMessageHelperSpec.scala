@@ -275,6 +275,42 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
             )
           )
       }
+      "when processing an IE871 for a shortage or excess" in {
+        val testMessage = ie871SubmittedShortageExcess.message
+
+        val result: Html = helper.constructActions(testMessage)
+
+        result mustBe
+          HtmlFormat.fill(
+            Seq(
+              list(
+                extraClasses = Some("govuk-!-display-none-print"),
+                content = Seq(
+                  link(
+                    link = appConfig.emcsTfeReportAReceiptUrl(request.ern, testMessage.arc.getOrElse("")),
+                    messageKey = "viewMessage.link.reportOfReceipt.description",
+                    id = Some("submit-report-of-receipt")
+                  ),
+                  link(
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    messageKey = "viewMessage.link.viewMovement.description",
+                    id = Some("view-movement")
+                  ),
+                  link(
+                    link = "#print-dialogue",
+                    messageKey = "viewMessage.link.printMessage.description",
+                    id = Some("print-link")
+                  ),
+                  link(
+                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    messageKey = "viewMessage.link.deleteMessage.description",
+                    id = Some("delete-message")
+                  )
+                )
+              )
+            )
+          )
+      }
     }
   }
 

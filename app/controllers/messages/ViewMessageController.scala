@@ -20,7 +20,7 @@ import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction
 import models.messages.MessagesSearchOptions
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.GetMessagesService
+import services.{GetMessagesService, GetMovementService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.messages.ViewMessage
 
@@ -32,16 +32,21 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       val getData: DataRetrievalAction,
                                       val betaAllowList: BetaAllowListAction,
                                       getMessagesService: GetMessagesService,
+                                      getMovementService: GetMovementService,
                                       val view: ViewMessage
                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
-    authorisedWithData(ern).async { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
 
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
-        case Some(message) =>
+        case Some(msg) if msg.message.arc.isDefined =>
+            getMovementService.getMovement(ern, msg.message.arc.get).map { movement =>
+                Ok(view(msg, Some(movement)))
+            }
+        case Some(msg) if msg.message.arc.isEmpty =>
           Future.successful(
-            Ok(view(message))
+            Ok(view(msg, None))
           )
         case _ =>
           Future.successful(

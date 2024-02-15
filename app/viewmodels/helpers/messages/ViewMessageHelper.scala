@@ -19,6 +19,7 @@ package viewmodels.helpers.messages
 import config.AppConfig
 import models.messages.MessageCache
 import models.requests.DataRequest
+import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.messages.Message
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
@@ -49,69 +50,73 @@ class ViewMessageHelper @Inject()(
     ))
   }
 
-  def constructAdditionalInformation(message: Message)(implicit messages: Messages): Html =
+  def constructAdditionalInformation(message: Message, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages): Html =
     messagesHelper.additionalInformationKey(message) match {
       case Some(key) =>
-        p() { Html(messages(key)) }
+        message.messageType match {
+          case "IE871" if !movement.exists(_.isConsigneeOfMovement(request.ern)) =>
+            Empty.asHtml
+          case _ =>
+            p() { Html(messages(key)) }
+        }
       case None =>
         Empty.asHtml
     }
 
 
-  def constructActions(message: Message)(implicit request: DataRequest[_], messages: Messages): Html = {
-
+  def constructActions(message: Message, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages): Html = {
     def reportOfReceiptLink(): Html = link(
         link = appConfig.emcsTfeReportAReceiptUrl(request.ern, message.arc.getOrElse("")),
         messageKey = "viewMessage.link.reportOfReceipt.description",
         id = Some("submit-report-of-receipt")
       )
-
     def explainDelayLink(): Html = link(
         link = appConfig.emcsTfeExplainDelayUrl(request.ern, message.arc.getOrElse("")),
         messageKey = "viewMessage.link.explainDelay.description",
         id = Some("submit-explain-delay")
       )
-
     def changeDestinationLink(): Html = link(
         link = appConfig.emcsTfeChangeDestinationUrl(request.ern, message.arc.getOrElse("")),
         messageKey = "viewMessage.link.changeDestination.description",
         id = Some("submit-change-destination")
       )
-
     def viewMovementLink(): Html = link(
         link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, message.arc.getOrElse("")).url,
         messageKey = "viewMessage.link.viewMovement.description",
         id = Some("view-movement")
       )
-
     def printMessageLink(): Html = link(
         link = "#print-dialogue",
         messageKey = "viewMessage.link.printMessage.description",
         id = Some("print-link")
       )
-
     def deleteMessageLink(): Html = link(
         link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
         messageKey = "viewMessage.link.deleteMessage.description",
         id = Some("delete-message")
       )
 
-    val actionLinksContent = (message.messageType, message.submittedByRequestingTrader, message.messageRole) match {
+    val additionalActionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole) match {
       case ("IE813", false, _) =>
-        Seq(reportOfReceiptLink(), explainDelayLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+        Seq(reportOfReceiptLink(), explainDelayLink())
       case ("IE829", false, _) =>
-        Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+        Seq(changeDestinationLink())
       case ("IE837", true, 1) =>
-        Seq(reportOfReceiptLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+        Seq(reportOfReceiptLink())
       case ("IE837", true, 2) =>
-        Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+        Seq(changeDestinationLink())
       case ("IE839", false, _) =>
-        Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+        Seq(changeDestinationLink())
+      case ("IE871", true, _) if movement.exists(_.isConsigneeOfMovement(request.ern)) =>
+        Seq(reportOfReceiptLink())
       case (_, _, _) =>
-        Seq(viewMovementLink(), printMessageLink(), deleteMessageLink())
+        Seq.empty
     }
 
-    list(content = actionLinksContent, extraClasses = Some("govuk-!-display-none-print"))
+    list(
+      content = additionalActionLinks ++ Seq(viewMovementLink(), printMessageLink(), deleteMessageLink()),
+      extraClasses = Some("govuk-!-display-none-print")
+    )
   }
 
   def constructErrors(message: MessageCache)(implicit messages: Messages): Html = {
