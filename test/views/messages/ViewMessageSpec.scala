@@ -229,6 +229,17 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
         )
       }
 
+      def cancelOrChangeDestinationContent()(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(1) -> English.cancelMovement,
+            Selectors.link(1) -> English.cancelMovementLink,
+            Selectors.p(2) -> English.changeDestination,
+            Selectors.link(2) -> English.changeDestinationLink
+          )
+        )
+      }
+
       "render the correct content (when non-fixable) - portal" when {
         val failureMessageResponse = GetSubmissionFailureMessageResponse(
           ie704 = IE704ModelFixtures.ie704ModelModel.copy(
@@ -248,7 +259,8 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
         implicit val doc: Document = asDocument(ie810Message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest()
         errorRowsTest(failureMessageResponse)
-        helplineLinkTest(1)
+        cancelOrChangeDestinationContent()
+        helplineLinkTest(3)
         movementActionsLinksTest()
       }
 
@@ -270,8 +282,9 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
         implicit val doc: Document = asDocument(ie810Message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest()
         errorRowsTest(failureMessageResponse)
-        thirdPartySubmissionTest(1)
-        helplineLinkTest(2)
+        cancelOrChangeDestinationContent()
+        thirdPartySubmissionTest(3)
+        helplineLinkTest(4)
         movementActionsLinksTest()
       }
     }

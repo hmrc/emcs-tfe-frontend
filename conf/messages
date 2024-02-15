@@ -482,7 +482,6 @@ messages.IE704.true.IE837.0.description = Error with explanation for a delay
 messages.IE704.true.IE871.0.description = Error with explanation for a shortage or excess
 
 messages.errors.heading = Errors
-messages.IE704.error.4401 =
 messages.IE704.error.4401 = You have entered an incorrect code
 messages.IE704.error.4402 = The Local Reference Number (LRN) entered has been used before
 messages.IE704.error.4403 = The consignor Excise Registration Number you have entered is not recognised
@@ -610,6 +609,13 @@ messages.IE704.error.4531 = The ’Alert or Rejection of E-AD Reason Code’ is 
 messages.IE704.error.4601 = The type of transport must be sea transport or fixed transport installation if the latest version of the movement has no guarantee
 messages.IE704.error.4602 = All movements between the UK and EU require a guarantee except the movement of energy products
 messages.IE704.error.9005 = A GB trader can only raise movements to GB warehouse destinations and exports with a GB export office. NI traders cannot raise exports with a GB export office.
+
+messages.IE704.IE810.fixError.cancel.prefix = If you still want to
+messages.IE704.IE810.fixError.cancel.link = cancel this movement
+messages.IE704.IE810.fixError.cancel.suffix = you can submit a new cancellation with the errors corrected.
+
+messages.IE704.IE810.fixError.changeDestination = However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to
+messages.IE704.IE810.fixError.changeDestination.link = submit a change of destination
 
 messages.link.helpline = Contact the HMRC excise helpline
 messages.link.helpline.text = if you need more help or advice.

@@ -318,7 +318,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
     "return the correct content for an IE810 error" in {
       helper.contentForContactingHelpdesk("IE810") mustBe Seq(p() {
         HtmlFormat.fill(Seq(
-          link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline"),
+          link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
           Html("if you need more help or advice.")
         ))
       })
@@ -330,18 +330,32 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
 
   }
 
-  ".contentForFixableError" must {
+  ".contentForFixingError" must {
     "return the correct content for an IE815 error" in {
       //TODO: update when IE815 submission failure message is played (ETFE-2737)
-      helper.contentForFixableError("IE815", hasFixableError = true, testErn, testArc) mustBe Seq(Html("placeholder"))
+      helper.contentForFixingError("IE815", hasFixableError = true, testErn, testArc) mustBe Seq(Html("placeholder"))
+    }
+
+    "return the correct content for an IE810 error" in {
+      helper.contentForFixingError("IE810", hasFixableError = true, testErn, testArc) mustBe Seq(
+        p()(HtmlFormat.fill(Seq(
+          Html("If you still want to"),
+          link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement"),
+          Html(msgs("you can submit a new cancellation with the errors corrected."))
+        ))),
+        p()(HtmlFormat.fill(Seq(
+          Html(msgs("However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to")),
+          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true)
+        )))
+      )
     }
 
     "return an empty list when the message type is not matched" in {
-      helper.contentForFixableError("FAKE", hasFixableError = true, testErn, testArc) mustBe Seq.empty
+      helper.contentForFixingError("FAKE", hasFixableError = true, testErn, testArc) mustBe Seq.empty
     }
 
     "return an empty list when there are no fixable errors" in {
-      helper.contentForFixableError("IE815", hasFixableError = false, testErn, testArc) mustBe Seq.empty
+      helper.contentForFixingError("IE815", hasFixableError = false, testErn, testArc) mustBe Seq.empty
     }
   }
 
@@ -368,12 +382,21 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie810Message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p()(HtmlFormat.fill(Seq(
+            Html("If you still want to"),
+            link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement"),
+            Html(msgs("you can submit a new cancellation with the errors corrected."))
+          ))),
+          p()(HtmlFormat.fill(Seq(
+            Html(msgs("However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to")),
+            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true)
+          ))),
           p() {
             Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline"),
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
               Html("if you need more help or advice.")
             ))
           }
@@ -397,9 +420,18 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie810Message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p()(HtmlFormat.fill(Seq(
+            Html("If you still want to"),
+            link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement"),
+            Html(msgs("you can submit a new cancellation with the errors corrected."))
+          ))),
+          p()(HtmlFormat.fill(Seq(
+            Html(msgs("However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to")),
+            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true)
+          ))),
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline"),
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
               Html("if you need more help or advice.")
             ))
           }
