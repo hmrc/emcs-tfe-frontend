@@ -93,21 +93,23 @@ class ViewMessageHelper @Inject()(
         id = Some("delete-message")
       )
 
-    val additionalActionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole) match {
+    val actionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole) match {
+      case ("IE801", true, _) =>
+        Seq(viewMovementLink(), changeDestinationLink(), printMessageLink(), deleteMessageLink())
       case ("IE829", false, _) | ("IE837", true, 2) | ("IE839", false, _) =>
-        Seq(changeDestinationLink())
+        Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case ("IE813", false, _) =>
-        Seq(reportOfReceiptLink(), explainDelayLink())
+        Seq(reportOfReceiptLink(), explainDelayLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case ("IE837", true, 1) =>
-        Seq(reportOfReceiptLink())
+        Seq(reportOfReceiptLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case ("IE871", true, _) if movement.exists(_.isConsigneeOfMovement(request.ern)) =>
-        Seq(reportOfReceiptLink())
+        Seq(reportOfReceiptLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case _ =>
-        Seq.empty
+        Seq(viewMovementLink(), printMessageLink(), deleteMessageLink())
     }
 
     list(
-      content = additionalActionLinks ++ Seq(viewMovementLink(), printMessageLink(), deleteMessageLink()),
+      content = actionLinks,
       extraClasses = Some("govuk-!-display-none-print")
     )
   }

@@ -89,6 +89,13 @@ trait MessagesFixtures extends BaseFixtures {
     messageSubTitle = None
   )
 
+  val ie801SubmittedMovement = TestMessage(
+    message = createMessage("IE801").copy(messageRole = 0, submittedByRequestingTrader = true),
+    messageTitle = "New movement submitted successfully",
+    messageSubTitle = None,
+    changeDestinationLink = true
+  )
+
   val ie819ReceivedAlert = TestMessage(
     message = createMessage("IE819").copy(messageRole = 0, submittedByRequestingTrader = false),
     messageTitle = "Alert or rejection received",

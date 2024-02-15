@@ -353,6 +353,74 @@ class ViewMessageHelperSpec extends SpecBase
             )
         }
       }
+      "when processing an IE801 notification" in {
+        val testMessage = ie801ReceivedMovement.message
+
+        val result: Html = helper.constructActions(testMessage, None)
+
+        result mustBe
+          HtmlFormat.fill(
+            Seq(
+              list(
+                extraClasses = Some("govuk-!-display-none-print"),
+                content = Seq(
+                  link(
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    messageKey = "viewMessage.link.viewMovement.description",
+                    id = Some("view-movement")
+                  ),
+                  link(
+                    link = "#print-dialogue",
+                    messageKey = "viewMessage.link.printMessage.description",
+                    id = Some("print-link")
+                  ),
+                  link(
+                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    messageKey = "viewMessage.link.deleteMessage.description",
+                    id = Some("delete-message")
+                  )
+                )
+              )
+            )
+          )
+      }
+      "when processing an IE801 submission" in {
+        val testMessage = ie801SubmittedMovement.message
+
+        val result: Html = helper.constructActions(testMessage, None)
+
+        result mustBe
+          HtmlFormat.fill(
+            Seq(
+              list(
+                extraClasses = Some("govuk-!-display-none-print"),
+                content = Seq(
+                  link(
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    messageKey = "viewMessage.link.viewMovement.description",
+                    id = Some("view-movement")
+                  ),
+                  link(
+                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessage.arc.getOrElse("")),
+                    messageKey = "viewMessage.link.changeDestination.description",
+                    id = Some("submit-change-destination")
+                  ),
+                  link(
+                    link = "#print-dialogue",
+                    messageKey = "viewMessage.link.printMessage.description",
+                    id = Some("print-link")
+                  ),
+                  link(
+                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    messageKey = "viewMessage.link.deleteMessage.description",
+                    id = Some("delete-message")
+                  )
+                )
+              )
+            )
+          )
+      }
+
     }
   }
 
