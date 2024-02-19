@@ -94,19 +94,15 @@ class ViewMessageHelper @Inject()(
       )
 
     val additionalActionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole) match {
+      case ("IE829", false, _) | ("IE837", true, 2) | ("IE839", false, _) =>
+        Seq(changeDestinationLink())
       case ("IE813", false, _) =>
         Seq(reportOfReceiptLink(), explainDelayLink())
-      case ("IE829", false, _) =>
-        Seq(changeDestinationLink())
       case ("IE837", true, 1) =>
         Seq(reportOfReceiptLink())
-      case ("IE837", true, 2) =>
-        Seq(changeDestinationLink())
-      case ("IE839", false, _) =>
-        Seq(changeDestinationLink())
       case ("IE871", true, _) if movement.exists(_.isConsigneeOfMovement(request.ern)) =>
         Seq(reportOfReceiptLink())
-      case (_, _, _) =>
+      case _ =>
         Seq.empty
     }
 
