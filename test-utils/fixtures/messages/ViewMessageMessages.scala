@@ -48,5 +48,10 @@ object ViewMessageMessages {
     val submitNewExplainDelayLink = "submit a new explanation of a delay"
   }
 
-  object English extends ViewMessages with IE810SubmissionFailureMessages with IE837SubmissionFailureMessages with EN
+  sealed trait IE871SubmissionFailureMessages { _: i18n =>
+    val submitNewExplanationOfShortageOrExcess = "You need to submit a new explanation of a shortage or excess."
+    val submitNewExplanationOfShortageOrExcessLink = "submit a new explanation of a shortage or excess"
+  }
+
+  object English extends ViewMessages with IE810SubmissionFailureMessages with IE837SubmissionFailureMessages with IE871SubmissionFailureMessages with EN
 }
