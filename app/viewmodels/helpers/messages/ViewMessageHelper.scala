@@ -185,7 +185,7 @@ class ViewMessageHelper @Inject()(
     messageType match {
       case "IE819" => Seq.empty
       case _ => Seq(p()(HtmlFormat.fill(Seq(
-        link(appConfig.exciseHelplineUrl, "messages.link.helpline"),
+        link(appConfig.exciseHelplineUrl, "messages.link.helpline", id = Some("contactHmrc"), isExternal = true),
         Html(messages("messages.link.helpline.text"))
       ))))
     }

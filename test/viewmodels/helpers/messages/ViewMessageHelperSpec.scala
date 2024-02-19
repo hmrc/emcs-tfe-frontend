@@ -397,7 +397,7 @@ class ViewMessageHelperSpec extends SpecBase
       s"return the correct content for an $messageInError in error" in {
         helper.contentForContactingHelpdesk(messageInError) mustBe Seq(p() {
           HtmlFormat.fill(Seq(
-            link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline"),
+            link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
             Html("if you need more help or advice.")
           ))
         })
@@ -450,9 +450,6 @@ class ViewMessageHelperSpec extends SpecBase
 
     "for an IE810" must {
 
-      val ie810Message = message2.copy(relatedMessageType = Some("IE810"), arc = Some(testArc))
-
-      //IE810 submissions are always non-fixable
       "return the correct content when the errors are non-fixable, 3rd party submission" in {
         val failureMessageResponse = GetSubmissionFailureMessageResponse(
           ie704 = IE704ModelFixtures.ie704ModelModel.copy(
@@ -467,7 +464,7 @@ class ViewMessageHelperSpec extends SpecBase
           ),
           relatedMessageType = Some("IE810")
         )
-        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie810Message, Some(failureMessageResponse)))
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p()(HtmlFormat.fill(Seq(
             Html("If you still want to"),
@@ -505,7 +502,7 @@ class ViewMessageHelperSpec extends SpecBase
           ),
           relatedMessageType = Some("IE810")
         )
-        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie810Message, Some(failureMessageResponse)))
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p()(HtmlFormat.fill(Seq(
             Html("If you still want to"),
@@ -516,6 +513,76 @@ class ViewMessageHelperSpec extends SpecBase
             Html(msgs("However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to")),
             link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true)
           ))),
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+    }
+
+    "for an IE837" must {
+
+      "return the correct content when the errors are non-fixable, 3rd party submission" in {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE837")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorExplainDelayIE837.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html("You need to"),
+              link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true)
+            ))
+          },
+          p() {
+            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+          },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+      "return the correct content when the errors are non-fixable, portal submission" in {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE837")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorExplainDelayIE837.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html("You need to"),
+              link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true)
+            ))
+          },
           p() {
             HtmlFormat.fill(Seq(
               link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
