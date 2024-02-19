@@ -483,6 +483,13 @@ messages.IE704.true.IE825.0.description = Error with split movement
 messages.IE704.true.IE837.0.description = Error with explanation for a delay
 messages.IE704.true.IE871.0.description = Error with explanation for a shortage or excess
 
+messages.IE704.IE837.fixError.text = You need to
+messages.IE704.IE837.fixError.link = submit a new explanation of a delay
+
+messages.IE704.IE819.fixError.text.1 = To correct any errors you must
+messages.IE704.IE819.fixError.link = submit a new alert or rejection
+messages.IE704.IE819.fixError.text.2 = of this movement.
+
 messages.errors.heading = Errors
 messages.IE704.error.4401 = You have entered an incorrect code
 messages.IE704.error.4402 = The Local Reference Number (LRN) entered has been used before

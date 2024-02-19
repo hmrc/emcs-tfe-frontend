@@ -187,6 +187,12 @@ class ViewMessageHelper @Inject()(
             id = Some("submit-a-new-report-of-receipt")
           )
         ))))
+      case "IE819" =>
+        Seq(p()(HtmlFormat.fill(Seq(
+          Html(messages("messages.IE704.IE819.fixError.text.1")),
+          link(appConfig.emcsTfeAlertOrRejectionUrl(ern, arc), "messages.IE704.IE819.fixError.link"),
+          Html(messages("messages.IE704.IE819.fixError.text.2"))
+        ))))
       case _ => Seq.empty
     }
   }

@@ -236,4 +236,10 @@ trait MessagesFixtures extends BaseFixtures {
     messageTitle = "Error with report of receipt",
     messageSubTitle = None
   )
+
+  val ie704ErrorAlertRejectionIE819 = TestMessage(
+    message = createMessage("IE704", optRelatedMessageType = Some("IE819")).copy(messageRole = 0, submittedByRequestingTrader = true, arc = Some(testArc)),
+    messageTitle = "Error with alert or rejection",
+    messageSubTitle = None
+  )
 }

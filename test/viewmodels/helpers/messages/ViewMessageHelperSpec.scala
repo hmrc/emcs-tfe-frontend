@@ -677,6 +677,14 @@ class ViewMessageHelperSpec extends SpecBase
       ))))
     }
 
+    "return the correct content for an IE819 error" in {
+      helper.contentForFixingError("IE819", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+        Html("To correct any errors you must"),
+        link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection"),
+        Html("of this movement.")
+      ))))
+    }
+
     "return an empty list when the message type is not matched" in {
       helper.contentForFixingError("FAKE", hasFixableError = true, testErn, testArc) mustBe Seq.empty
     }
@@ -977,6 +985,66 @@ class ViewMessageHelperSpec extends SpecBase
             HtmlFormat.fill(Seq(
               link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
               Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+    }
+
+    "for an IE819" must {
+
+      "return the correct content when the errors are non-fixable, 3rd party submission" in {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE819")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorAlertRejectionIE819.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html("To correct any errors you must"),
+              link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection"),
+              Html("of this movement.")
+            ))
+          },
+          p() {
+            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+          }
+        )).toString())
+      }
+
+      "return the correct content when the errors are non-fixable, portal submission" in {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE819")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorAlertRejectionIE819.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html("To correct any errors you must"),
+              link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection"),
+              Html("of this movement.")
             ))
           }
         )).toString())
