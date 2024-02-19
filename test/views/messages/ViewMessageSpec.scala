@@ -662,8 +662,8 @@ class ViewMessageSpec extends ViewSpecBase
               ),
               relatedMessageType = Some("IE837")
             )
-            implicit val doc: Document = asDocument(ie704ErrorCancellationIE837.message, optErrorMessage = Some(failureMessageResponse))
-            movementInformationTest(ie704ErrorCancellationIE837)
+            implicit val doc: Document = asDocument(ie704ErrorExplainDelayIE837.message, optErrorMessage = Some(failureMessageResponse))
+            movementInformationTest(ie704ErrorExplainDelayIE837)
             errorRowsTest(failureMessageResponse)
             submitNewExplainDelayContentTest(1)
             helplineLinkTest(2)
@@ -684,8 +684,8 @@ class ViewMessageSpec extends ViewSpecBase
               ),
               relatedMessageType = Some("IE837")
             )
-            implicit val doc: Document = asDocument(ie704ErrorCancellationIE837.message, optErrorMessage = Some(failureMessageResponse))
-            movementInformationTest(ie704ErrorCancellationIE837)
+            implicit val doc: Document = asDocument(ie704ErrorExplainDelayIE837.message, optErrorMessage = Some(failureMessageResponse))
+            movementInformationTest(ie704ErrorExplainDelayIE837)
             errorRowsTest(failureMessageResponse)
             submitNewExplainDelayContentTest(1)
             thirdPartySubmissionTest(2)
