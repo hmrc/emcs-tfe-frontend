@@ -416,8 +416,8 @@ viewMessage.link.printMessage.description = Print message
 viewMessage.link.deleteMessage.description = Delete message
 
 messages.IE801.false.0.description = First notification of movement
+messages.IE801.false.0.paragraph = There is a new movement on its way to you.
 messages.IE801.true.0.description = New movement successful submission
-messages.IE801.true.1.description = First notification of a split movement
 
 messages.IE802.false.1.description = Reminder to change destination
 messages.IE802.false.2.description = Reminder for report of receipt
