@@ -51,15 +51,12 @@ class ViewMessageHelper @Inject()(
   }
 
   def constructAdditionalInformation(message: Message, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages): Html =
-    messagesHelper.additionalInformationKey(message) match {
-      case Some(key) =>
-        message.messageType match {
-          case "IE871" if !movement.exists(_.isConsigneeOfMovement(request.ern)) =>
-            Empty.asHtml
-          case _ =>
-            p() { Html(messages(key)) }
-        }
-      case None =>
+    messagesHelper.additionalInformationKey(message) -> message.messageType match {
+      case Some(_) -> "IE871" if movement.exists(!_.isConsigneeOfMovement(request.ern)) =>
+        Empty.asHtml
+      case Some(key) -> _ =>
+        p() { Html(messages(key)) }
+      case _ =>
         Empty.asHtml
     }
 

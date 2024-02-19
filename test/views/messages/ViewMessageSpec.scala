@@ -18,9 +18,10 @@ package views.messages
 
 import base.ViewSpecBase
 import fixtures.messages.ViewMessageMessages.English
-import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
+import fixtures.{GetMovementResponseFixtures, GetSubmissionFailureMessageFixtures, MessagesFixtures}
 import models.messages.MessageCache
 import models.requests.DataRequest
+import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.messages.Message
 import models.response.emcsTfe.messages.submissionFailure.{GetSubmissionFailureMessageResponse, IE704FunctionalError}
 import org.jsoup.Jsoup
@@ -32,7 +33,11 @@ import viewmodels.helpers.messages._
 import views.html.messages.ViewMessage
 import views.{BaseSelectors, ViewBehaviours}
 
-class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures with GetSubmissionFailureMessageFixtures {
+class ViewMessageSpec extends ViewSpecBase
+  with ViewBehaviours
+  with MessagesFixtures
+  with GetMovementResponseFixtures
+  with GetSubmissionFailureMessageFixtures {
 
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/message")
@@ -54,13 +59,18 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     def summaryRowValue(i: Int, j: Int): String = s"main dl:nth-of-type($i) div:nth-of-type($j) dd"
   }
 
-  def asDocument(message: Message, optErrorMessage: Option[GetSubmissionFailureMessageResponse] = None)
+  def asDocument(
+                  message: Message,
+                  optErrorMessage: Option[GetSubmissionFailureMessageResponse] = None,
+                  optMovement: Option[GetMovementResponse] = None
+                )
                 (implicit messages: Messages): Document = Jsoup.parse(view(
     MessageCache(
       ern = testErn,
       message = message,
       errorMessage = optErrorMessage
-    )
+    ),
+    movement = optMovement
   ).toString())
 
   def movementActionsLinksTest()(implicit doc: Document): Unit = {
@@ -79,8 +89,7 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
     ie813ReceivedChangeDestination, ie813SubmittedChangeDestination,
     ie829ReceivedCustomsAcceptance,
     ie837SubmittedExplainDelayROR, ie837SubmittedExplainDelayCOD,
-    ie839ReceivedCustomsRejection,
-    ie871SubmittedShortageExcess
+    ie839ReceivedCustomsRejection
   ).foreach{ msg =>
 
     s"when being rendered with a ${msg.message.messageType} ${msg.messageTitle} ${msg.messageSubTitle} msg" should {
@@ -140,6 +149,157 @@ class ViewMessageSpec extends ViewSpecBase with ViewBehaviours with MessagesFixt
         }
 
         if (msg.changeDestinationLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.changeDestinationLink -> English.changeDestinationLinkText
+            )
+          )
+        }
+      }
+    }
+  }
+
+  "when being rendered with an IE871 message" should {
+    "the logged in user is the consignor of the movement" when {
+      val testMessage = ie871SubmittedShortageExcessAsAConsignor
+
+      val movementWithLoggedInUserAsConsignor = Some(getMovementResponseModel
+        .copy(
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = testErn),
+          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = "GB00000000000"))
+        )
+      )
+
+      implicit val doc: Document = asDocument(testMessage.message, optMovement = movementWithLoggedInUserAsConsignor)
+
+      "show the correct title and H1" when {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.h1 -> testMessage.messageTitle,
+          )
+        )
+      }
+
+      "show the correct table content" when {
+        testMessage.messageSubTitle match {
+          case Some(subTitle) =>
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.summaryRowKey(1) -> English.labelMessageType,
+                Selectors.summaryRowValue(1) -> subTitle,
+                Selectors.summaryRowKey(2) -> English.labelArc,
+                Selectors.summaryRowValue(2) -> message1.arc.getOrElse(""),
+                Selectors.summaryRowKey(3) -> English.labelLrn,
+                Selectors.summaryRowValue(3) -> message1.lrn.getOrElse("")
+              )
+            )
+          case None =>
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.summaryRowKey(1) -> English.labelArc,
+                Selectors.summaryRowValue(1) -> message1.arc.getOrElse(""),
+                Selectors.summaryRowKey(2) -> English.labelLrn,
+                Selectors.summaryRowValue(2) -> message1.lrn.getOrElse("")
+              )
+            )
+        }
+      }
+
+      "show the correct actions" when {
+        movementActionsLinksTest()
+
+        if (testMessage.reportOfReceiptLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.reportOfReceiptLink -> English.reportOfReceiptLinkText
+            )
+          )
+        }
+
+        if (testMessage.explainDelayLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.explainDelayLink -> English.explainDelayLinkText
+            )
+          )
+        }
+
+        if (testMessage.changeDestinationLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.changeDestinationLink -> English.changeDestinationLinkText
+            )
+          )
+        }
+      }
+    }
+    "the logged in user is the consignee of the movement" when {
+      val testMessage = ie871SubmittedShortageExcessAsAConsignor
+
+      val movementWithLoggedInUserAsConsignee = Some(getMovementResponseModel
+        .copy(
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = "GB00000000000"),
+          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = testErn))
+        )
+      )
+
+      implicit val doc: Document = asDocument(testMessage.message, optMovement = movementWithLoggedInUserAsConsignee)
+
+      "show the correct title and H1" when {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.h1 -> testMessage.messageTitle,
+          )
+        )
+      }
+
+      "show the correct table content" when {
+        testMessage.messageSubTitle match {
+          case Some(subTitle) =>
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.summaryRowKey(1) -> English.labelMessageType,
+                Selectors.summaryRowValue(1) -> subTitle,
+                Selectors.summaryRowKey(2) -> English.labelArc,
+                Selectors.summaryRowValue(2) -> message1.arc.getOrElse(""),
+                Selectors.summaryRowKey(3) -> English.labelLrn,
+                Selectors.summaryRowValue(3) -> message1.lrn.getOrElse("")
+              )
+            )
+          case None =>
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.summaryRowKey(1) -> English.labelArc,
+                Selectors.summaryRowValue(1) -> message1.arc.getOrElse(""),
+                Selectors.summaryRowKey(2) -> English.labelLrn,
+                Selectors.summaryRowValue(2) -> message1.lrn.getOrElse("")
+              )
+            )
+        }
+      }
+
+      "show the correct actions" when {
+        movementActionsLinksTest()
+
+        if (testMessage.reportOfReceiptLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.reportOfReceiptLink -> English.reportOfReceiptLinkText
+            )
+          )
+        }
+
+        if (testMessage.explainDelayLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.explainDelayLink -> English.explainDelayLinkText
+            )
+          )
+        }
+
+        if (testMessage.changeDestinationLink) {
           behave like pageWithExpectedElementsAndMessages(
             Seq(
               Selectors.changeDestinationLink -> English.changeDestinationLinkText

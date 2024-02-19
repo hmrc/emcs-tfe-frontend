@@ -161,13 +161,18 @@ trait MessagesFixtures extends BaseFixtures {
     changeDestinationLink = true
   )
 
-  val ie871SubmittedShortageExcess = TestMessage(
+  val ie871SubmittedShortageExcessAsAConsignor = TestMessage(
+    message = createMessage("IE871").copy(messageRole = 0, submittedByRequestingTrader = true),
+    messageTitle = "Explanation for a shortage or excess submitted successfully",
+    messageSubTitle = None
+  )
+
+  val ie871SubmittedShortageExcessAsAConsignee = TestMessage(
     message = createMessage("IE871").copy(messageRole = 0, submittedByRequestingTrader = true),
     messageTitle = "Explanation for a shortage or excess submitted successfully",
     messageSubTitle = None,
     reportOfReceiptLink = true
   )
-
 
   val ie704ErrorCancellationIE810 = TestMessage(
     message = createMessage("IE704", optRelatedMessageType = Some("IE810")),

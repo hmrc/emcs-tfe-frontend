@@ -36,15 +36,17 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       val view: ViewMessage
                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
+  private val messagesThatNeedMovement = Seq("IE871")
+
   def onPageLoad(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
     authorisedDataRequestAsync(ern) { implicit request =>
 
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
-        case Some(msg) if msg.message.arc.isDefined =>
-            getMovementService.getMovement(ern, msg.message.arc.get).map { movement =>
-                Ok(view(msg, Some(movement)))
-            }
-        case Some(msg) if msg.message.arc.isEmpty =>
+        case Some(msg) if messagesThatNeedMovement.contains(msg.message.messageType) && msg.message.arc.isDefined =>
+          getMovementService.getRawMovement(ern, msg.message.arc.get).map { movement =>
+            Ok(view(msg, Some(movement)))
+          }
+        case Some(msg) =>
           Future.successful(
             Ok(view(msg, None))
           )
@@ -53,7 +55,6 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
             Redirect(routes.ViewAllMessagesController.onPageLoad(request.ern, MessagesSearchOptions()))
           )
       }
-
     }
   }
 

@@ -18,9 +18,9 @@ package controllers.messages
 
 import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
-import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
 import fixtures.messages.EN
-import mocks.services.MockGetMessagesService
+import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
+import mocks.services.{MockGetMessagesService, MockGetMovementService}
 import models.messages.{MessageCache, MessagesSearchOptions}
 import models.requests.DataRequest
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
@@ -39,6 +39,7 @@ class ViewMessageControllerSpec extends SpecBase
   with MessagesFixtures
   with FakeAuthAction
   with MockGetMessagesService
+  with MockGetMovementService
   with GetSubmissionFailureMessageFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -53,6 +54,7 @@ class ViewMessageControllerSpec extends SpecBase
     getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
     betaAllowList = new FakeBetaAllowListAction,
     getMessagesService = mockGetMessagesService,
+    getMovementService = mockGetMovementService,
     view = view
   )
 
@@ -79,7 +81,7 @@ class ViewMessageControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(testMessageFromCache).toString()
+        contentAsString(result) shouldBe view(testMessageFromCache, None).toString()
       }
     }
 
