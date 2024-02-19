@@ -18,7 +18,7 @@ package viewmodels.helpers.messages
 
 import base.SpecBase
 import fixtures.messages.ViewMessageMessages
-import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
+import fixtures.{GetMovementResponseFixtures, GetSubmissionFailureMessageFixtures, MessagesFixtures}
 import models.messages.MessageCache
 import models.requests.DataRequest
 import models.response.emcsTfe.messages.submissionFailure.{GetSubmissionFailureMessageResponse, IE704FunctionalError}
@@ -31,7 +31,10 @@ import uk.gov.hmrc.govukfrontend.views.html.components._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import views.html.components.{h2, link, list, p}
 
-class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmissionFailureMessageFixtures {
+class ViewMessageHelperSpec extends SpecBase
+  with MessagesFixtures
+  with GetMovementResponseFixtures
+  with GetSubmissionFailureMessageFixtures {
 
   import GetSubmissionFailureMessageResponseFixtures._
 
@@ -98,7 +101,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
       "when processing an IE813 notification" in {
         val testMessage = ie813ReceivedChangeDestination.message
 
-        val result: Html = helper.constructActions(testMessage)
+        val result: Html = helper.constructActions(testMessage, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -139,7 +142,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
       "when processing an IE829 notification" in {
         val testMessage = ie829ReceivedCustomsAcceptance.message
 
-        val result: Html = helper.constructActions(testMessage)
+        val result: Html = helper.constructActions(testMessage, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -175,7 +178,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
       "when processing an IE819 notification" in {
         val testMessage = ie819SubmittedAlert.message
 
-        val result: Html = helper.constructActions(testMessage)
+        val result: Html = helper.constructActions(testMessage, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -206,7 +209,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
       "when processing an IE837 for a report of receipt" in {
         val testMessage = ie837SubmittedExplainDelayROR.message
 
-        val result: Html = helper.constructActions(testMessage)
+        val result: Html = helper.constructActions(testMessage, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -242,7 +245,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
       "when processing an IE837 for a change of destination" in {
         val testMessage = ie837SubmittedExplainDelayCOD.message
 
-        val result: Html = helper.constructActions(testMessage)
+        val result: Html = helper.constructActions(testMessage, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -274,6 +277,81 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
               )
             )
           )
+      }
+      "when processing an IE871 for a shortage or excess" when {
+        "the logged in user is the consignor of the movement" in {
+
+          val testMessage = ie871SubmittedShortageExcessAsAConsignor.message
+
+          val result: Html = helper.constructActions(testMessage, Some(getMovementResponseModel))
+
+          result mustBe
+            HtmlFormat.fill(
+              Seq(
+                list(
+                  extraClasses = Some("govuk-!-display-none-print"),
+                  content = Seq(
+                    link(
+                      link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                      messageKey = "viewMessage.link.viewMovement.description",
+                      id = Some("view-movement")
+                    ),
+                    link(
+                      link = "#print-dialogue",
+                      messageKey = "viewMessage.link.printMessage.description",
+                      id = Some("print-link")
+                    ),
+                    link(
+                      link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                      messageKey = "viewMessage.link.deleteMessage.description",
+                      id = Some("delete-message")
+                    )
+                  )
+                )
+              )
+            )
+        }
+        "the logged in user is the consignee of the movement" in {
+
+          val testMessage = ie871SubmittedShortageExcessAsAConsignee.message
+
+          val movementWithLoggedInUserAsConsignee = Some(getMovementResponseModel
+            .copy(consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = testErn)))
+          )
+
+          val result: Html = helper.constructActions(testMessage, movementWithLoggedInUserAsConsignee)
+
+          result mustBe
+            HtmlFormat.fill(
+              Seq(
+                list(
+                  extraClasses = Some("govuk-!-display-none-print"),
+                  content = Seq(
+                    link(
+                      link = appConfig.emcsTfeReportAReceiptUrl(request.ern, testMessage.arc.getOrElse("")),
+                      messageKey = "viewMessage.link.reportOfReceipt.description",
+                      id = Some("submit-report-of-receipt")
+                    ),
+                    link(
+                      link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                      messageKey = "viewMessage.link.viewMovement.description",
+                      id = Some("view-movement")
+                    ),
+                    link(
+                      link = "#print-dialogue",
+                      messageKey = "viewMessage.link.printMessage.description",
+                      id = Some("print-link")
+                    ),
+                    link(
+                      link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                      messageKey = "viewMessage.link.deleteMessage.description",
+                      id = Some("delete-message")
+                    )
+                  )
+                )
+              )
+            )
+        }
       }
     }
   }
@@ -453,7 +531,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
 
     "processing a message with additional information" should {
       "return a paragraph of text" in {
-        val result: Html = helper.constructAdditionalInformation(ie813ReceivedChangeDestination.message)
+        val result: Html = helper.constructAdditionalInformation(ie813ReceivedChangeDestination.message, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -468,7 +546,7 @@ class ViewMessageHelperSpec extends SpecBase with MessagesFixtures with GetSubmi
 
     "processing a message with no additional information" should {
       "be empty" in {
-        val result: Html = helper.constructAdditionalInformation(ie819SubmittedAlert.message)
+        val result: Html = helper.constructAdditionalInformation(ie819SubmittedAlert.message, None)
 
         result mustBe Empty.asHtml
       }

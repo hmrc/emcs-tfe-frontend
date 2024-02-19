@@ -17,6 +17,7 @@
 @import config.AppConfig
 @import models.messages.MessageCache
 @import models.requests.DataRequest
+@import models.response.emcsTfe.GetMovementResponse
 @import viewmodels.helpers.messages._
 @import views.html._
 @import views.html.components._
@@ -35,7 +36,7 @@
         paginationHelper: MessagesPaginationHelper
 )
 
-@(message: MessageCache)(implicit request: DataRequest[_], messages: Messages)
+@(message: MessageCache, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
     pageTitle = titleNoForm(messages(messageHelper.messageDescriptionKey(message.message))),
@@ -62,9 +63,9 @@
 
     @viewMessageHelper.constructFixErrorsContent(message)
 
-    @viewMessageHelper.constructAdditionalInformation(message.message)
+    @viewMessageHelper.constructAdditionalInformation(message.message, movement)
 
-    @viewMessageHelper.constructActions(message.message)
+    @viewMessageHelper.constructActions(message.message, movement)
 }
 
 @{

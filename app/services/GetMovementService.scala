@@ -31,26 +31,30 @@ class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
                                    getWineOperationsService: GetWineOperationsService,
                                    getMovementHistoryEventsService: GetMovementHistoryEventsService)(implicit ec: ExecutionContext) {
 
-  def getMovement(ern: String, arc: String)(implicit hc: HeaderCarrier): Future[GetMovementResponse] =
-    getMovementConnector.getMovement(ern, arc).flatMap {
-      case Right(movement) =>
-        for {
-          historyEvents <- getMovementHistoryEventsService.getMovementHistoryEvents(ern, arc)
-          itemsWithWineOperations <- getWineOperationsService.getWineOperations(movement.items)
-          itemsWithWineAndPackaging <- getPackagingTypesService.getMovementItemsWithPackagingTypes(itemsWithWineOperations)
-          itemsWithCnCodeInfo <- getCnCodeInformationService.getCnCodeInformation(itemsWithWineAndPackaging)
-          itemsWithWineAndPackagingAndCnCodeInfo = itemsWithCnCodeInfo.map {
-            case (item, cnCodeInfo) => item.copy(
-              unitOfMeasure = Some(cnCodeInfo.unitOfMeasure),
-              productCodeDescription = Some(cnCodeInfo.exciseProductCodeDescription)
-            )
-          }
-        } yield movement.copy(
-          items = itemsWithWineAndPackagingAndCnCodeInfo,
-          eventHistorySummary = Some(historyEvents)
-        )
-
+  def getRawMovement(ern: String, arc: String)(implicit hc: HeaderCarrier) : Future[GetMovementResponse] =
+    getMovementConnector.getMovement(ern, arc).map {
+      case Right(movement) => movement
       case Left(errorResponse) =>
         throw MovementException(s"Failed to retrieve movement from emcs-tfe: $errorResponse")
+
+    }
+
+  def getMovement(ern: String, arc: String)(implicit hc: HeaderCarrier): Future[GetMovementResponse] =
+    getRawMovement(ern, arc).flatMap { movement =>
+      for {
+        historyEvents <- getMovementHistoryEventsService.getMovementHistoryEvents(ern, arc)
+        itemsWithWineOperations <- getWineOperationsService.getWineOperations(movement.items)
+        itemsWithWineAndPackaging <- getPackagingTypesService.getMovementItemsWithPackagingTypes(itemsWithWineOperations)
+        itemsWithCnCodeInfo <- getCnCodeInformationService.getCnCodeInformation(itemsWithWineAndPackaging)
+        itemsWithWineAndPackagingAndCnCodeInfo = itemsWithCnCodeInfo.map {
+          case (item, cnCodeInfo) => item.copy(
+            unitOfMeasure = Some(cnCodeInfo.unitOfMeasure),
+            productCodeDescription = Some(cnCodeInfo.exciseProductCodeDescription)
+          )
+        }
+      } yield movement.copy(
+        items = itemsWithWineAndPackagingAndCnCodeInfo,
+        eventHistorySummary = Some(historyEvents)
+      )
     }
 }
