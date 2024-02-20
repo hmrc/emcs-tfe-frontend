@@ -350,166 +350,220 @@ class ViewMessageSpec extends ViewSpecBase
   }
 
   "when being rendered for a IE704" should {
+
+    def movementInformationTest(testMessage: TestMessage)(implicit doc: Document): Unit = {
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
+          Selectors.h1 -> testMessage.messageTitle,
+          Selectors.summaryRowKey(1) -> English.labelArc,
+          Selectors.summaryRowValue(1) -> testMessage.message.arc.get,
+          Selectors.summaryRowKey(2) -> English.labelLrn,
+          Selectors.summaryRowValue(2) -> testMessage.message.lrn.get
+        )
+      )
+    }
+
+    def errorRowsTest(failureMessageResponse: GetSubmissionFailureMessageResponse)(implicit doc: Document): Unit = {
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.summaryRowKey(2, 1) -> failureMessageResponse.ie704.body.functionalError.head.errorType,
+          Selectors.summaryRowValue(2, 1) -> messages(s"messages.IE704.error.${failureMessageResponse.ie704.body.functionalError.head.errorType}")
+        )
+      )
+    }
+
+    def thirdPartySubmissionTest(index: Int)(implicit doc: Document): Unit = {
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.p(index) -> English.thirdParty
+        )
+      )
+    }
+
+    def helplineLinkTest(index: Int)(implicit doc: Document): Unit = {
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.p(index) -> English.helpline,
+          Selectors.link(index) -> English.helplineLink
+        )
+      )
+    }
+
+
     "for a IE810 related message type" must {
 
-      def movementInformationTest(testMessage: TestMessage)(implicit doc: Document): Unit = {
+      def cancelOrChangeDestinationContent()(implicit doc: Document): Unit = {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
-            Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
-            Selectors.h1 -> testMessage.messageTitle,
-            Selectors.summaryRowKey(1) -> English.labelArc,
-            Selectors.summaryRowValue(1) -> testMessage.message.arc.get,
-            Selectors.summaryRowKey(2) -> English.labelLrn,
-            Selectors.summaryRowValue(2) -> testMessage.message.lrn.get
+            Selectors.p(1) -> English.cancelMovement,
+            Selectors.link(1) -> English.cancelMovementLink,
+            Selectors.p(2) -> English.changeDestination,
+            Selectors.link(2) -> English.changeDestinationLink
           )
         )
       }
 
-      def errorRowsTest(failureMessageResponse: GetSubmissionFailureMessageResponse)(implicit doc: Document): Unit = {
-        behave like pageWithExpectedElementsAndMessages(
-          Seq(
-            Selectors.summaryRowKey(2, 1) -> failureMessageResponse.ie704.body.functionalError.head.errorType,
-            Selectors.summaryRowValue(2, 1) -> messages(s"messages.IE704.error.${failureMessageResponse.ie704.body.functionalError.head.errorType}")
-          )
-        )
-      }
-
-      def thirdPartySubmissionTest(index: Int)(implicit doc: Document): Unit = {
-        behave like pageWithExpectedElementsAndMessages(
-          Seq(
-            Selectors.p(index) -> English.thirdParty
-          )
-        )
-      }
-
-      def helplineLinkTest(index: Int)(implicit doc: Document): Unit = {
-        behave like pageWithExpectedElementsAndMessages(
-          Seq(
-            Selectors.p(index) -> English.helpline,
-            Selectors.link(index) -> English.helplineLink
-          )
-        )
-      }
-
-
-      "when being rendered for a IE704" should {
-        "for a IE810 related message type" must {
-
-          def cancelOrChangeDestinationContent()(implicit doc: Document): Unit = {
-            behave like pageWithExpectedElementsAndMessages(
-              Seq(
-                Selectors.p(1) -> English.cancelMovement,
-                Selectors.link(1) -> English.cancelMovementLink,
-                Selectors.p(2) -> English.changeDestination,
-                Selectors.link(2) -> English.changeDestinationLink
+      "render the correct content (when non-fixable) - portal" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
               )
-            )
-          }
+            ))
+          ),
+          relatedMessageType = Some("IE810")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorCancellationIE810.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorCancellationIE810)
+        errorRowsTest(failureMessageResponse)
+        cancelOrChangeDestinationContent()
+        helplineLinkTest(3)
+        movementActionsLinksTest()
+      }
 
-          "render the correct content (when non-fixable) - portal" when {
-            val failureMessageResponse = GetSubmissionFailureMessageResponse(
-              ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-                header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
-                body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-                  IE704FunctionalError(
-                    errorType = "4403",
-                    errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                    errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                    originalAttributeValue = Some("lrnie8155639254")
-                  )
-                ))
-              ),
-              relatedMessageType = Some("IE810")
-            )
-            implicit val doc: Document = asDocument(ie704ErrorCancellationIE810.message, optErrorMessage = Some(failureMessageResponse))
-            movementInformationTest(ie704ErrorCancellationIE810)
-            errorRowsTest(failureMessageResponse)
-            cancelOrChangeDestinationContent()
-            helplineLinkTest(3)
-            movementActionsLinksTest()
-          }
-
-          "render the correct content (when non-fixable) - 3rd party" when {
-            val failureMessageResponse = GetSubmissionFailureMessageResponse(
-              ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-                body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-                  IE704FunctionalError(
-                    errorType = "4403",
-                    errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                    errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                    originalAttributeValue = Some("lrnie8155639254")
-                  )
-                ))
-              ),
-              relatedMessageType = Some("IE810")
-            )
-            implicit val doc: Document = asDocument(ie704ErrorCancellationIE810.message, optErrorMessage = Some(failureMessageResponse))
-            movementInformationTest(ie704ErrorCancellationIE810)
-            errorRowsTest(failureMessageResponse)
-            cancelOrChangeDestinationContent()
-            thirdPartySubmissionTest(3)
-            helplineLinkTest(4)
-            movementActionsLinksTest()
-          }
-        }
-
-        "for a IE837 related message type" must {
-
-          def submitNewExplainDelayContentTest(pIndex: Int)(implicit doc: Document): Unit = {
-            behave like pageWithExpectedElementsAndMessages(
-              Seq(
-                Selectors.p(pIndex) -> English.submitNewExplainDelay,
-                Selectors.link(pIndex) -> English.submitNewExplainDelayLink
+      "render the correct content (when non-fixable) - 3rd party" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
               )
-            )
-          }
+            ))
+          ),
+          relatedMessageType = Some("IE810")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorCancellationIE810.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorCancellationIE810)
+        errorRowsTest(failureMessageResponse)
+        cancelOrChangeDestinationContent()
+        thirdPartySubmissionTest(3)
+        helplineLinkTest(4)
+        movementActionsLinksTest()
+      }
+    }
 
-          "render the correct content (when non-fixable) - portal" when {
-            val failureMessageResponse = GetSubmissionFailureMessageResponse(
-              ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-                header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
-                body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-                  IE704FunctionalError(
-                    errorType = "4403",
-                    errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                    errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                    originalAttributeValue = Some("lrnie8155639254")
-                  )
-                ))
-              ),
-              relatedMessageType = Some("IE837")
-            )
-            implicit val doc: Document = asDocument(ie704ErrorExplainDelayIE837.message, optErrorMessage = Some(failureMessageResponse))
-            movementInformationTest(ie704ErrorExplainDelayIE837)
-            errorRowsTest(failureMessageResponse)
-            submitNewExplainDelayContentTest(1)
-            helplineLinkTest(2)
-            movementActionsLinksTest()
-          }
+    "for a IE837 related message type" must {
 
-          "render the correct content (when non-fixable) - 3rd party" when {
-            val failureMessageResponse = GetSubmissionFailureMessageResponse(
-              ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-                body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-                  IE704FunctionalError(
-                    errorType = "4403",
-                    errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                    errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                    originalAttributeValue = Some("lrnie8155639254")
-                  )
-                ))
-              ),
-              relatedMessageType = Some("IE837")
-            )
-            implicit val doc: Document = asDocument(ie704ErrorExplainDelayIE837.message, optErrorMessage = Some(failureMessageResponse))
-            movementInformationTest(ie704ErrorExplainDelayIE837)
-            errorRowsTest(failureMessageResponse)
-            submitNewExplainDelayContentTest(1)
-            thirdPartySubmissionTest(2)
-            helplineLinkTest(3)
-            movementActionsLinksTest()
-          }
-        }
+      def submitNewExplainDelayContentTest(pIndex: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(pIndex) -> English.submitNewExplainDelay,
+            Selectors.link(pIndex) -> English.submitNewExplainDelayLink
+          )
+        )
+      }
+
+      "render the correct content (when non-fixable) - portal" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE837")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorExplainDelayIE837.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorExplainDelayIE837)
+        errorRowsTest(failureMessageResponse)
+        submitNewExplainDelayContentTest(1)
+        helplineLinkTest(2)
+        movementActionsLinksTest()
+      }
+
+      "render the correct content (when non-fixable) - 3rd party" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE837")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorExplainDelayIE837.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorExplainDelayIE837)
+        errorRowsTest(failureMessageResponse)
+        submitNewExplainDelayContentTest(1)
+        thirdPartySubmissionTest(2)
+        helplineLinkTest(3)
+        movementActionsLinksTest()
+      }
+    }
+
+    "for a IE871 related message type" must {
+
+      def submitNewExplanationOfShortageOrExcessContentTest(pIndex: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(pIndex) -> English.submitNewExplanationOfShortageOrExcess,
+            Selectors.link(pIndex) -> English.submitNewExplanationOfShortageOrExcessLink
+          )
+        )
+      }
+
+      "render the correct content (when non-fixable) - portal" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE871")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorExplainShortageOrExcessIE871.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorExplainShortageOrExcessIE871)
+        errorRowsTest(failureMessageResponse)
+        submitNewExplanationOfShortageOrExcessContentTest(1)
+        helplineLinkTest(2)
+        movementActionsLinksTest()
+      }
+
+      "render the correct content (when non-fixable) - 3rd party" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE871")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorExplainShortageOrExcessIE871.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorExplainShortageOrExcessIE871)
+        errorRowsTest(failureMessageResponse)
+        submitNewExplanationOfShortageOrExcessContentTest(1)
+        thirdPartySubmissionTest(2)
+        helplineLinkTest(3)
+        movementActionsLinksTest()
       }
     }
   }

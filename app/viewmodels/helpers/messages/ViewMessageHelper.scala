@@ -169,6 +169,11 @@ class ViewMessageHelper @Inject()(
           Html(messages("messages.IE704.IE837.fixError.text")),
           link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "messages.IE704.IE837.fixError.link", withFullStop = true)
         ))))
+      case "IE871" =>
+        Seq(p()(HtmlFormat.fill(Seq(
+          Html(messages("messages.IE704.IE871.fixError.text")),
+          link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "messages.IE704.IE871.fixError.link", withFullStop = true)
+        ))))
       case _ => Seq.empty
     }
   }

@@ -198,4 +198,10 @@ trait MessagesFixtures extends BaseFixtures {
     messageTitle = "Error with explanation for a delay",
     messageSubTitle = None
   )
+
+  val ie704ErrorExplainShortageOrExcessIE871 = TestMessage(
+    message = createMessage("IE704", optRelatedMessageType = Some("IE871")).copy(messageRole = 0, submittedByRequestingTrader = true, arc = Some(testArc)),
+    messageTitle = "Error with explanation for a shortage or excess",
+    messageSubTitle = None
+  )
 }
