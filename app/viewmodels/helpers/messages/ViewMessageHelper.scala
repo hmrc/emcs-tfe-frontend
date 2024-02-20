@@ -140,7 +140,7 @@ class ViewMessageHelper @Inject()(
         case Some(relatedMessageType) => HtmlFormat.fill(
           contentForFixingError(relatedMessageType, hasFixableError, message.ern, message.message.arc.getOrElse("")) ++
             contentForSubmittedVia3rdParty(hasBeenSubmittedVia3rdParty) ++
-            contentForContactingHelpdesk(relatedMessageType))
+            contentForContactingHelpdesk())
         case _ => Html("")
       }
     }.getOrElse(Html(""))
@@ -206,14 +206,10 @@ class ViewMessageHelper @Inject()(
     }
   }
 
-  private[helpers] def contentForContactingHelpdesk(messageType: String)
-                                                   (implicit messages: Messages): Seq[Html] = {
-    messageType match {
-      case "IE819" => Seq.empty
-      case _ => Seq(p()(HtmlFormat.fill(Seq(
-        link(appConfig.exciseHelplineUrl, "messages.link.helpline", id = Some("contactHmrc"), isExternal = true),
-        Html(messages("messages.link.helpline.text"))
-      ))))
-    }
+  private[helpers] def contentForContactingHelpdesk()(implicit messages: Messages): Seq[Html] = {
+    Seq(p()(HtmlFormat.fill(Seq(
+      link(appConfig.exciseHelplineUrl, "messages.link.helpline", id = Some("contactHmrc"), isExternal = true),
+      Html(messages("messages.link.helpline.text"))
+    ))))
   }
 }

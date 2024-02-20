@@ -614,19 +614,13 @@ class ViewMessageHelperSpec extends SpecBase
 
   ".contentForContactingHelpdesk" must {
 
-    Seq("IE810", "IE837", "IE871", "IE818").foreach { messageInError =>
-      s"return the correct content for an $messageInError in error" in {
-        helper.contentForContactingHelpdesk(messageInError) mustBe Seq(p() {
-          HtmlFormat.fill(Seq(
-            link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-            Html("if you need more help or advice.")
-          ))
-        })
-      }
-    }
-
-    "return an empty list for a IE819 in error" in {
-      helper.contentForContactingHelpdesk("IE819") mustBe Seq.empty
+    "return the correct content" in {
+      helper.contentForContactingHelpdesk() mustBe Seq(p() {
+        HtmlFormat.fill(Seq(
+          link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+          Html("if you need more help or advice.")
+        ))
+      })
     }
 
   }
@@ -1019,6 +1013,12 @@ class ViewMessageHelperSpec extends SpecBase
           },
           p() {
             Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+          },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
           }
         )).toString())
       }
@@ -1045,6 +1045,12 @@ class ViewMessageHelperSpec extends SpecBase
               Html("To correct any errors you must"),
               link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection"),
               Html("of this movement.")
+            ))
+          },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
             ))
           }
         )).toString())
