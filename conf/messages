@@ -542,10 +542,10 @@ messages.IE704.error.4458 = The excise ID for the tax warehouse of dispatch is n
 messages.IE704.error.4459 = The transport arranger must be in a language from the Language Code list
 messages.IE704.error.4460 = The New Transport Trader must be in a language from the Language Code list
 messages.IE704.error.4461 = Excise ID entered for the tax warehouse of dispatch is not linked with the consignor
-messages.IE704.error.4462 =
-messages.IE704.error.4463 =
-messages.IE704.error.4464 =
-messages.IE704.error.4465 =
+messages.IE704.error.4462 = The delivery place trader group should not be present.  Please amend your entry
+messages.IE704.error.4463 = The delivery place trader group is required.  Please amend your entry
+messages.IE704.error.4464 = The destination office group should not be present.  Please amend your entry
+messages.IE704.error.4465 = The destination office group is required.  Please amend your entry
 messages.IE704.error.4466 = The consignee trader ID should not be present
 messages.IE704.error.4467 = The consignee trader ID is required
 messages.IE704.error.4468 = The place of destination trader ID should not be present
@@ -622,6 +622,9 @@ messages.IE704.IE837.fixError.link = submit a new explanation of a delay
 
 messages.IE704.IE871.fixError.text = You need to
 messages.IE704.IE871.fixError.link = submit a new explanation of a shortage or excess
+
+messages.IE704.IE818.fixError.text = You need to
+messages.IE704.IE818.fixError.link = submit a new report of receipt
 
 messages.link.helpline = Contact the HMRC excise helpline
 messages.link.helpline.text = if you need more help or advice.

@@ -522,7 +522,7 @@ class ViewMessageHelperSpec extends SpecBase
 
   ".contentForContactingHelpdesk" must {
 
-    Seq("IE810", "IE837", "IE871").foreach { messageInError =>
+    Seq("IE810", "IE837", "IE871", "IE818").foreach { messageInError =>
       s"return the correct content for an $messageInError in error" in {
         helper.contentForContactingHelpdesk(messageInError) mustBe Seq(p() {
           HtmlFormat.fill(Seq(
@@ -570,6 +570,18 @@ class ViewMessageHelperSpec extends SpecBase
       helper.contentForFixingError("IE871", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
         link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true)
+      ))))
+    }
+
+    "return the correct content for an IE818 error" in {
+      helper.contentForFixingError("IE818", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+        Html("You need to"),
+        link(
+          link = appConfig.emcsTfeReportAReceiptUrl(testErn, testArc),
+          messageKey = "submit a new report of receipt",
+          withFullStop = true,
+          id = Some("submit-a-new-report-of-receipt")
+        )
       ))))
     }
 
