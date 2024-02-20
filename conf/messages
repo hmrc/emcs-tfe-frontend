@@ -410,14 +410,14 @@ viewMessage.table.arc.label = Administrative reference code
 viewMessage.table.lrn.label = Local reference number
 viewMessage.link.reportOfReceipt.description = Submit report of receipt
 viewMessage.link.explainDelay.description = Create explanation for a delay and provide information
-viewMessage.link.changeDestination.description = Submit new change of destination
+viewMessage.link.changeDestination.description = Submit a change of destination
 viewMessage.link.viewMovement.description = View movement
 viewMessage.link.printMessage.description = Print message
 viewMessage.link.deleteMessage.description = Delete message
 
 messages.IE801.false.0.description = First notification of movement
 messages.IE801.false.0.paragraph = There is a new movement on its way to you.
-messages.IE801.true.0.description = New movement successful submission
+messages.IE801.true.0.description = New movement submitted successfully
 
 messages.IE802.false.1.description = Reminder to change destination
 messages.IE802.false.2.description = Reminder for report of receipt
