@@ -658,5 +658,40 @@ class ViewMessageSpec extends ViewSpecBase
         movementActionsLinksTest()
       }
     }
+    "for a IE813 related message type" must {
+
+      def submitNewChangeDestinationContentTest(pIndex: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(pIndex) -> English.submitNewChangeDestination,
+            Selectors.link(pIndex) -> English.submitNewChangeDestinationLink
+          )
+        )
+      }
+
+      "render the correct content (when non-fixable) - portal" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704PortalSubmission,
+          relatedMessageType = Some("IE813")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorChangeDestinationIE813.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorChangeDestinationIE813)
+        errorRowsTest(failureMessageResponse)
+        submitNewChangeDestinationContentTest(1)
+        movementActionsLinksTest()
+      }
+
+      "render the correct content (when non-fixable) - 3rd party" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          relatedMessageType = Some("IE813")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorChangeDestinationIE813.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorChangeDestinationIE813)
+        errorRowsTest(failureMessageResponse)
+        submitNewChangeDestinationContentTest(1)
+        thirdPartySubmissionTest(2)
+        movementActionsLinksTest()
+      }
+    }
   }
 }

@@ -493,6 +493,9 @@ messages.IE704.IE819.fixError.text.1 = To correct any errors you must
 messages.IE704.IE819.fixError.link = submit a new alert or rejection
 messages.IE704.IE819.fixError.text.2 = of this movement.
 
+messages.IE704.IE813.fixError.text = You need to
+messages.IE704.IE813.fixError.link = submit a new change of destination
+
 messages.errors.heading = Errors
 messages.IE704.error.4401 = You have entered an incorrect code
 messages.IE704.error.4402 = The Local Reference Number (LRN) entered has been used before

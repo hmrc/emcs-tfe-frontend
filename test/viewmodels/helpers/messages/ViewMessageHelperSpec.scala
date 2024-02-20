@@ -681,6 +681,13 @@ class ViewMessageHelperSpec extends SpecBase
       helper.contentForFixingError("IE825", hasFixableError = false, testErn, testArc) mustBe Seq.empty
     }
 
+    "return the correct content for an IE813 error" in {
+      helper.contentForFixingError("IE813", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+        Html("You need to"),
+        link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a new change of destination", id = Some("submit-change-destination"), withFullStop = true)
+      ))))
+    }
+
     "return an empty list when the message type is not matched" in {
       helper.contentForFixingError("FAKE", hasFixableError = true, testErn, testArc) mustBe Seq.empty
     }
@@ -989,6 +996,66 @@ class ViewMessageHelperSpec extends SpecBase
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorSplitMovementIE825.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+    }
+
+    "for an IE813" must {
+
+      "return the correct content when the errors are non-fixable, 3rd party submission" in {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          relatedMessageType = Some("IE813")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorChangeDestinationIE813.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html("You need to"),
+              link(
+                link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
+                messageKey = "submit a new change of destination",
+                withFullStop = true,
+                id = Some("submit-change-destination")
+              )
+            ))
+          },
+          p() {
+            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+          },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+      "return the correct content when the errors are non-fixable, portal submission" in {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704PortalSubmission,
+          relatedMessageType = Some("IE813")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorChangeDestinationIE813.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html("You need to"),
+              link(
+                link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
+                messageKey = "submit a new change of destination",
+                withFullStop = true,
+                id = Some("submit-change-destination")
+              )
+            ))
+          },
           p() {
             HtmlFormat.fill(Seq(
               link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),

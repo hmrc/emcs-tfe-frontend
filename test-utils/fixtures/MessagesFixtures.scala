@@ -272,4 +272,10 @@ trait MessagesFixtures extends BaseFixtures {
     messageTitle = "Error with split movement",
     messageSubTitle = None
   )
+
+  val ie704ErrorChangeDestinationIE813 = TestMessage(
+    message = createMessage("IE704", optRelatedMessageType = Some("IE813")).copy(messageRole = 0, submittedByRequestingTrader = true, arc = Some(testArc)),
+    messageTitle = "Error with change of destination",
+    messageSubTitle = None
+  )
 }
