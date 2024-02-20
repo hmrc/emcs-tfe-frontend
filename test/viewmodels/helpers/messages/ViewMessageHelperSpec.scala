@@ -487,22 +487,47 @@ class ViewMessageHelperSpec extends SpecBase
 
   ".constructErrors" must {
 
-    "build a summary list of all the errors in the failure message (code -> description) - and a heading" in {
-      val message = MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(getSubmissionFailureMessageResponseModel))
-      val result = helper.constructErrors(message)
-      removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
-        h2("Errors"),
-        govukSummaryList(SummaryList(Seq(
-          SummaryListRow(
-            key = Key(Text(value = IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.errorType)),
-            value = Value(Text(value = msgs(s"messages.IE704.error.${IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.errorType}")))
-          ),
-          SummaryListRow(
-            key = Key(Text(value = "1235")),
-            value = Value(Text(value = msgs("messages.IE704.error.1235")))
-          )
-        )))
-      )).toString())
+    //scalastyle:off
+    Seq(4401, 4402, 4403, 4404, 4405, 4406, 4407, 4408, 4409, 4410, 4411, 4412, 4413, 4414, 4415, 4416, 4417, 4418, 4419, 4420, 4421, 4422, 4423, 4424, 4425, 4426, 4427, 4428, 4429, 4430, 4431, 4432, 4433, 4434, 4435, 4436, 4437, 4438, 4439, 4440, 4441, 4442, 4443, 4444, 4445, 4446, 4447, 4448, 4449, 4451, 4452, 4453, 4454, 4455, 4456, 4457, 4458, 4459, 4460, 4461, 4462, 4463, 4464, 4465, 4466, 4467, 4468, 4469, 4470, 4471, 4472, 4473, 4474, 4475, 4476, 4477, 4478, 4479, 4480, 4481, 4482, 4483, 4484, 4485, 4486, 4487, 4488, 4490, 4492, 4493, 4494, 4495, 4496, 4497, 4498, 4499, 4500, 4501, 4502, 4503, 4504, 4505, 4506, 4509, 4510, 4511, 4512, 4513, 4516, 4517, 4518, 4519, 4520, 4521, 4522, 4523, 4524, 4525, 4526, 4527, 4528, 4529, 4530, 4531, 4601, 4602, 9005, 4600).foreach {
+      errorCode => {
+        "build a summary list of all the errors in the failure message (code -> description where the error is mapped to a custom value) - and a heading" when {
+          s"the error code is $errorCode" in {
+            val message = MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(getSubmissionFailureMessageResponseModel.copy(IE704ModelFixtures.ie704ModelModel.copy(
+              body = IE704BodyFixtures.ie704BodyModel.copy(
+                functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(s"$errorCode")))))
+            ))
+            val result = helper.constructErrors(message)
+            removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+              h2("Errors"),
+              govukSummaryList(SummaryList(Seq(
+                SummaryListRow(
+                  key = Key(Text(value = message.errorMessage.get.ie704.body.functionalError.head.errorType)),
+                  value = Value(Text(value = msgs(s"messages.IE704.error.${message.errorMessage.get.ie704.body.functionalError.head.errorType}")))
+                )
+              )))
+            )).toString())
+          }
+        }
+      }
+    }
+
+    "build a summary list of all the errors in the failure message (code -> description where the error is not mapped to a custom value) - and a heading" when {
+      "the error code is unmatched" in {
+        val message = MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(getSubmissionFailureMessageResponseModel.copy(IE704ModelFixtures.ie704ModelModel.copy(
+          body = IE704BodyFixtures.ie704BodyModel.copy(
+            functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy("12345")))))
+        ))
+        val result = helper.constructErrors(message)
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          h2("Errors"),
+          govukSummaryList(SummaryList(Seq(
+            SummaryListRow(
+              key = Key(Text(value = message.errorMessage.get.ie704.body.functionalError.head.errorType)),
+              value = Value(Text(value = message.errorMessage.get.ie704.body.functionalError.head.errorReason))
+            )
+          )))
+        )).toString())
+      }
     }
   }
 
