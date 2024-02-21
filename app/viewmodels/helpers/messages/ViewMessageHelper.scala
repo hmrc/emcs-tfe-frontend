@@ -146,8 +146,10 @@ class ViewMessageHelper @Inject()(
 
   }
 
+
   private[helpers] def contentForFixingError(messageType: String, hasFixableError: Boolean, ern: String, arc: String)
                                              (implicit messages: Messages): Seq[Html] = {
+
     messageType match {
       case "IE815" if hasFixableError => Seq(
         Html("placeholder")
@@ -173,6 +175,16 @@ class ViewMessageHelper @Inject()(
         Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.IE704.IE871.fixError.text")),
           link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "messages.IE704.IE871.fixError.link", withFullStop = true)
+        ))))
+      case "IE818" =>
+        Seq(p()(HtmlFormat.fill(Seq(
+          Html(messages("messages.IE704.IE818.fixError.text")),
+          link(
+            link = appConfig.emcsTfeReportAReceiptUrl(ern, arc),
+            messageKey = "messages.IE704.IE818.fixError.link",
+            withFullStop = true,
+            id = Some("submit-a-new-report-of-receipt")
+          )
         ))))
       case _ => Seq.empty
     }

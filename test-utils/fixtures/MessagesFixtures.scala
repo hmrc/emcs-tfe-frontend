@@ -216,4 +216,10 @@ trait MessagesFixtures extends BaseFixtures {
     messageTitle = "Error with explanation for a shortage or excess",
     messageSubTitle = None
   )
+
+  val ie704ErrorReportOfReceiptIE818 = TestMessage(
+    message = createMessage("IE704", optRelatedMessageType = Some("IE818")).copy(messageRole = 0, submittedByRequestingTrader = true, arc = Some(testArc)),
+    messageTitle = "Error with report of receipt",
+    messageSubTitle = None
+  )
 }
