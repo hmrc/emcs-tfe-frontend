@@ -121,7 +121,8 @@ class ViewMessageHelper @Inject()(
           h2("messages.errors.heading"),
           summary_list(
             submissionFailureMessage.ie704.body.functionalError.map { error =>
-              error.errorType -> messages(s"messages.IE704.error.${error.errorType}")
+              val mappedErrorMessage = Some(s"messages.IE704.error.${error.errorType}").filter(messages.isDefinedAt)
+              error.errorType -> mappedErrorMessage.map(messages(_)).getOrElse(error.errorReason)
             }
           )
         ))

@@ -602,6 +602,7 @@ messages.IE704.error.4528 = You cannot cancel a movement that has been split
 messages.IE704.error.4529 = You cannot cancel a deferred movement
 messages.IE704.error.4530 = The date of dispatch must not be in the future
 messages.IE704.error.4531 = The ’Alert or Rejection of E-AD Reason Code’ is invalid
+messages.IE704.error.4600 =
 messages.IE704.error.4601 = The type of transport must be sea transport or fixed transport installation if the latest version of the movement has no guarantee
 messages.IE704.error.4602 = All movements between the UK and EU require a guarantee except the movement of energy products
 messages.IE704.error.9005 = A GB trader can only raise movements to GB warehouse destinations and exports with a GB export office. NI traders cannot raise exports with a GB export office.
