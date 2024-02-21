@@ -54,6 +54,7 @@ class ViewMessageSpec extends ViewSpecBase
     val reportOfReceiptLink = "#submit-report-of-receipt"
     val explainDelayLink = "#submit-explain-delay"
     val changeDestinationLink = "#submit-change-destination"
+    val explainShortageLink = "#submit-shortage-excess"
     override val link: Int => String = i => s"main p:nth-of-type($i) a"
 
     def summaryRowKey(i: Int, j: Int): String = s"main dl:nth-of-type($i) div:nth-of-type($j) dt"
@@ -88,6 +89,7 @@ class ViewMessageSpec extends ViewSpecBase
   Seq(
     ie801ReceivedMovement, ie801SubmittedMovement,
     ie803ReceivedChangeDestination, ie803ReceivedSplit,
+    ie818ReceivedReportOfReceipt, ie818SubmittedReportOfReceipt,
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
     ie810ReceivedCancellation, ie810SubmittedCancellation,
     ie813ReceivedChangeDestination, ie813SubmittedChangeDestination,
@@ -156,6 +158,14 @@ class ViewMessageSpec extends ViewSpecBase
           behave like pageWithExpectedElementsAndMessages(
             Seq(
               Selectors.changeDestinationLink -> English.changeDestinationLinkText
+            )
+          )
+        }
+
+        if (msg.explainShortageExcess) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.explainShortageLink -> English.explainShortageExcessLinkText
             )
           )
         }

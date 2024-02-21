@@ -64,33 +64,31 @@ class ViewMessageHelper @Inject()(
   def constructActions(message: Message, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages): Html = {
     def reportOfReceiptLink(): Html = link(
         link = appConfig.emcsTfeReportAReceiptUrl(request.ern, message.arc.getOrElse("")),
-        messageKey = "viewMessage.link.reportOfReceipt.description",
-        id = Some("submit-report-of-receipt")
+        messageKey = "viewMessage.link.reportOfReceipt.description", id = Some("submit-report-of-receipt")
       )
     def explainDelayLink(): Html = link(
         link = appConfig.emcsTfeExplainDelayUrl(request.ern, message.arc.getOrElse("")),
-        messageKey = "viewMessage.link.explainDelay.description",
-        id = Some("submit-explain-delay")
+        messageKey = "viewMessage.link.explainDelay.description", id = Some("submit-explain-delay")
       )
     def changeDestinationLink(): Html = link(
         link = appConfig.emcsTfeChangeDestinationUrl(request.ern, message.arc.getOrElse("")),
-        messageKey = "viewMessage.link.changeDestination.description",
-        id = Some("submit-change-destination")
+        messageKey = "viewMessage.link.changeDestination.description", id = Some("submit-change-destination")
+      )
+    def explainShortageExcessLink(): Html = link(
+        link = appConfig.emcsTfeExplainShortageOrExcessUrl(request.ern, message.arc.getOrElse("")),
+        messageKey = "viewMessage.link.explainShortageExcess.description", id = Some("submit-shortage-excess")
       )
     def viewMovementLink(): Html = link(
         link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, message.arc.getOrElse("")).url,
-        messageKey = "viewMessage.link.viewMovement.description",
-        id = Some("view-movement")
+        messageKey = "viewMessage.link.viewMovement.description", id = Some("view-movement")
       )
     def printMessageLink(): Html = link(
         link = "#print-dialogue",
-        messageKey = "viewMessage.link.printMessage.description",
-        id = Some("print-link")
+        messageKey = "viewMessage.link.printMessage.description", id = Some("print-link")
       )
     def deleteMessageLink(): Html = link(
         link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-        messageKey = "viewMessage.link.deleteMessage.description",
-        id = Some("delete-message")
+        messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
       )
 
     val actionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole) match {
@@ -100,6 +98,8 @@ class ViewMessageHelper @Inject()(
         Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case ("IE813", false, _) =>
         Seq(reportOfReceiptLink(), explainDelayLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+      case ("IE818", true, _) =>
+        Seq(explainShortageExcessLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case ("IE837", true, 1) =>
         Seq(reportOfReceiptLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
       case ("IE871", true, _) if movement.exists(_.isConsigneeOfMovement(request.ern)) =>

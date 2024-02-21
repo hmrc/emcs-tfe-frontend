@@ -411,6 +411,7 @@ viewMessage.table.lrn.label = Local reference number
 viewMessage.link.reportOfReceipt.description = Submit report of receipt
 viewMessage.link.explainDelay.description = Create explanation for a delay and provide information
 viewMessage.link.changeDestination.description = Submit a change of destination
+viewMessage.link.explainShortageExcess.description = Submit explanation for a shortage or excess
 viewMessage.link.viewMovement.description = View movement
 viewMessage.link.printMessage.description = Print message
 viewMessage.link.deleteMessage.description = Delete message
@@ -439,7 +440,8 @@ messages.IE813.false.0.paragraph = The destination of the movement has been chan
 messages.IE813.true.0.description = Change of destination submitted successfully
 
 messages.IE818.false.0.description = Report of receipt
-messages.IE818.true.0.description = Report of receipt successful submission
+messages.IE818.false.0.paragraph = A report of receipt has been submitted for this movement.
+messages.IE818.true.0.description = Report of receipt submitted successfully
 
 messages.IE819.false.0.description = Alert or rejection received
 messages.IE819.false.0.messageType = Alert received

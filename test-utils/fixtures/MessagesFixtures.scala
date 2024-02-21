@@ -80,7 +80,8 @@ trait MessagesFixtures extends BaseFixtures {
                           messageSubTitle: Option[String],
                           reportOfReceiptLink: Boolean = false,
                           explainDelayLink: Boolean = false,
-                          changeDestinationLink: Boolean = false
+                          changeDestinationLink: Boolean = false,
+                          explainShortageExcess: Boolean = false
                         )
 
   val ie801ReceivedMovement = TestMessage(
@@ -106,6 +107,19 @@ trait MessagesFixtures extends BaseFixtures {
     message = createMessage("IE803").copy(messageRole = 2, submittedByRequestingTrader = false),
     messageTitle = "Notification of a split movement",
     messageSubTitle = None
+  )
+
+  val ie818ReceivedReportOfReceipt = TestMessage(
+    message = createMessage("IE818").copy(messageRole = 0, submittedByRequestingTrader = false),
+    messageTitle = "Report of receipt",
+    messageSubTitle = None
+  )
+
+  val ie818SubmittedReportOfReceipt = TestMessage(
+    message = createMessage("IE818").copy(messageRole = 0, submittedByRequestingTrader = true),
+    messageTitle = "Report of receipt submitted successfully",
+    messageSubTitle = None,
+    explainShortageExcess = true
   )
 
   val ie819ReceivedAlert = TestMessage(
