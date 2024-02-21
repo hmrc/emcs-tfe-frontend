@@ -567,5 +567,63 @@ class ViewMessageSpec extends ViewSpecBase
         movementActionsLinksTest()
       }
     }
+
+    "for a IE818 related message type" must {
+
+      def submitNewReportOfReceiptTest(pIndex: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(pIndex) -> English.submitNewReportOfReceipt,
+            Selectors.link(pIndex) -> English.submitNewReportOfReceiptLink
+          )
+        )
+      }
+
+      "render the correct content (when non-fixable) - portal" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE818")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorReportOfReceiptIE818.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorReportOfReceiptIE818)
+        errorRowsTest(failureMessageResponse)
+        submitNewReportOfReceiptTest(1)
+        helplineLinkTest(2)
+        movementActionsLinksTest()
+      }
+
+      "render the correct content (when non-fixable) - 3rd party" when {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE818")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorReportOfReceiptIE818.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorReportOfReceiptIE818)
+        errorRowsTest(failureMessageResponse)
+        submitNewReportOfReceiptTest(1)
+        thirdPartySubmissionTest(2)
+        helplineLinkTest(3)
+        movementActionsLinksTest()
+      }
+    }
   }
 }

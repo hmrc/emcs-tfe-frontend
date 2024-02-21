@@ -812,6 +812,86 @@ class ViewMessageHelperSpec extends SpecBase
 
     }
 
+    "for an IE818" must {
+
+      "return the correct content when the errors are non-fixable, 3rd party submission" in {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE818")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorReportOfReceiptIE818.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html("You need to"),
+              link(
+                link = appConfig.emcsTfeReportAReceiptUrl(testErn, testArc),
+                messageKey = "submit a new report of receipt",
+                withFullStop = true,
+                id = Some("submit-a-new-report-of-receipt")
+              )
+            ))
+          },
+          p() {
+            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+          },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+      "return the correct content when the errors are non-fixable, portal submission" in {
+        val failureMessageResponse = GetSubmissionFailureMessageResponse(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
+            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
+              IE704FunctionalError(
+                errorType = "4403",
+                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
+                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
+                originalAttributeValue = Some("lrnie8155639254")
+              )
+            ))
+          ),
+          relatedMessageType = Some("IE818")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorReportOfReceiptIE818.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html("You need to"),
+              link(
+                link = appConfig.emcsTfeReportAReceiptUrl(testErn, testArc),
+                messageKey = "submit a new report of receipt",
+                withFullStop = true,
+                id = Some("submit-a-new-report-of-receipt")
+              )
+            ))
+          },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+    }
+
     "return no content when the message doesn't relate to a 704" in {
       helper.constructFixErrorsContent(MessageCache(testErn, message1, None)) mustBe Html("")
     }
