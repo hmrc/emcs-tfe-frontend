@@ -88,6 +88,7 @@ class ViewMessageSpec extends ViewSpecBase
 
   Seq(
     ie801ReceivedMovement, ie801SubmittedMovement,
+    ie802ReminderToChangeDestination, ie802ReminderToReportReceipt, ie802ReminderToProvideDestination,
     ie803ReceivedChangeDestination, ie803ReceivedSplit,
     ie818ReceivedReportOfReceipt, ie818SubmittedReportOfReceipt,
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
@@ -321,6 +322,42 @@ class ViewMessageSpec extends ViewSpecBase
           )
         }
       }
+    }
+  }
+
+  s"when an IE802 reminder to change destination" should {
+    "contain other information" when {
+      implicit val doc: Document = asDocument(ie802ReminderToChangeDestination.message)
+
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.p(1) -> "This movement requires a change of destination."
+        )
+      )
+    }
+  }
+
+  s"when an IE802 reminder to receipt" should {
+    "contain other information" when {
+      implicit val doc: Document = asDocument(ie802ReminderToReportReceipt.message)
+
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.p(1) ->"You have received a movement but we have not yet received your Report of Receipt. However if you have sent a Report of Receipt within the last 7 days, please ignore this reminder."
+        )
+      )
+    }
+  }
+
+  s"when an IE802 reminder to provide destination" should {
+    "contain other information" when {
+      implicit val doc: Document = asDocument(ie802ReminderToProvideDestination.message)
+
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.p(1) -> "Your movement has been submitted successfully."
+        )
+      )
     }
   }
 

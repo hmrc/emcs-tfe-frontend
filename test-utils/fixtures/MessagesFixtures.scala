@@ -97,6 +97,30 @@ trait MessagesFixtures extends BaseFixtures {
     changeDestinationLink = true
   )
 
+  val ie802ReminderToChangeDestination = TestMessage(
+    message = createMessage("IE802").copy(messageRole = 1, submittedByRequestingTrader = false),
+    messageTitle = "Reminder to change destination",
+    messageSubTitle = None,
+    changeDestinationLink = true,
+    explainDelayLink = true
+  )
+
+  val ie802ReminderToReportReceipt = TestMessage(
+    message = createMessage("IE802").copy(messageRole = 2, submittedByRequestingTrader = false),
+    messageTitle = "Reminder for report of receipt",
+    messageSubTitle = None,
+    reportOfReceiptLink = true,
+    explainDelayLink = true
+  )
+
+  val ie802ReminderToProvideDestination = TestMessage(
+    message = createMessage("IE802").copy(messageRole = 3, submittedByRequestingTrader = false),
+    messageTitle = "Reminder to provide a destination",
+    messageSubTitle = None,
+    changeDestinationLink = true,
+    explainDelayLink = true
+  )
+
   val ie803ReceivedChangeDestination = TestMessage(
     message = createMessage("IE803").copy(messageRole = 1, submittedByRequestingTrader = false),
     messageTitle = "Diverted movement",
