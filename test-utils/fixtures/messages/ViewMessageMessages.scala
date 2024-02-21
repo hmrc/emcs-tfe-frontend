@@ -37,14 +37,14 @@ object ViewMessageMessages {
     val thirdParty = "If you used commercial software for your submission, please correct these errors with the same software that you used for the submission."
   }
 
-  sealed trait IE810SubmissionFailureMessages { _: i18n =>
+  sealed trait IE810SubmissionFailureMessages {
     val cancelMovement = "If you still want to cancel this movement you can submit a new cancellation with the errors corrected."
     val changeDestination = "However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to submit a change of destination."
     val cancelMovementLink = "cancel this movement"
     val changeDestinationLink = "change of destination"
   }
 
-  sealed trait IE837SubmissionFailureMessages { _: i18n =>
+  sealed trait IE837SubmissionFailureMessages {
     val submitNewExplainDelay = "You need to submit a new explanation of a delay."
     val submitNewExplainDelayLink = "submit a new explanation of a delay"
   }
@@ -59,10 +59,16 @@ object ViewMessageMessages {
     val submitNewReportOfReceiptLink = "submit a new report of receipt"
   }
 
+  sealed trait IE819SubmissionFailureMessages {
+    val submitNewAlertRejection = "To correct any errors you must submit a new alert or rejection of this movement."
+    val submitNewAlertRejectionLink = "submit a new alert or rejection"
+  }
+
   object English extends ViewMessages
     with IE810SubmissionFailureMessages
     with IE837SubmissionFailureMessages
     with IE871SubmissionFailureMessages
     with IE818SubmissionFailureMessages
+    with IE819SubmissionFailureMessages
     with EN
 }
