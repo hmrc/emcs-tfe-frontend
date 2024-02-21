@@ -21,7 +21,6 @@ import fixtures.messages.ViewMessageMessages
 import fixtures.{GetMovementResponseFixtures, GetSubmissionFailureMessageFixtures, MessagesFixtures}
 import models.messages.MessageCache
 import models.requests.DataRequest
-import models.response.emcsTfe.messages.submissionFailure.{GetSubmissionFailureMessageResponse, IE704FunctionalError}
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -690,20 +689,12 @@ class ViewMessageHelperSpec extends SpecBase
 
   ".constructFixErrorsContent" should {
 
+    import IE704ModelFixtures._
+
     "for an IE810" must {
 
       "return the correct content when the errors are non-fixable, 3rd party submission" in {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-              IE704FunctionalError(
-                errorType = "4403",
-                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                originalAttributeValue = Some("lrnie8155639254")
-              )
-            ))
-          ),
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           relatedMessageType = Some("IE810")
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(failureMessageResponse)))
@@ -730,18 +721,8 @@ class ViewMessageHelperSpec extends SpecBase
       }
 
       "return the correct content when the errors are non-fixable, portal submission" in {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
-            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-              IE704FunctionalError(
-                errorType = "4403",
-                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                originalAttributeValue = Some("lrnie8155639254")
-              )
-            ))
-          ),
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704PortalSubmission,
           relatedMessageType = Some("IE810")
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(failureMessageResponse)))
@@ -769,17 +750,7 @@ class ViewMessageHelperSpec extends SpecBase
     "for an IE837" must {
 
       "return the correct content when the errors are non-fixable, 3rd party submission" in {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-              IE704FunctionalError(
-                errorType = "4403",
-                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                originalAttributeValue = Some("lrnie8155639254")
-              )
-            ))
-          ),
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           relatedMessageType = Some("IE837")
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorExplainDelayIE837.message, Some(failureMessageResponse)))
@@ -803,18 +774,8 @@ class ViewMessageHelperSpec extends SpecBase
       }
 
       "return the correct content when the errors are non-fixable, portal submission" in {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
-            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-              IE704FunctionalError(
-                errorType = "4403",
-                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                originalAttributeValue = Some("lrnie8155639254")
-              )
-            ))
-          ),
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704PortalSubmission,
           relatedMessageType = Some("IE837")
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorExplainDelayIE837.message, Some(failureMessageResponse)))
@@ -839,17 +800,7 @@ class ViewMessageHelperSpec extends SpecBase
     "for an IE871" must {
 
       "return the correct content when the errors are non-fixable, 3rd party submission" in {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-              IE704FunctionalError(
-                errorType = "4403",
-                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                originalAttributeValue = Some("lrnie8155639254")
-              )
-            ))
-          ),
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           relatedMessageType = Some("IE871")
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorExplainShortageOrExcessIE871.message, Some(failureMessageResponse)))
@@ -873,18 +824,8 @@ class ViewMessageHelperSpec extends SpecBase
       }
 
       "return the correct content when the errors are non-fixable, portal submission" in {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
-            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-              IE704FunctionalError(
-                errorType = "4403",
-                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                originalAttributeValue = Some("lrnie8155639254")
-              )
-            ))
-          ),
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704PortalSubmission,
           relatedMessageType = Some("IE871")
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorExplainShortageOrExcessIE871.message, Some(failureMessageResponse)))
@@ -989,17 +930,7 @@ class ViewMessageHelperSpec extends SpecBase
     "for an IE819" must {
 
       "return the correct content when the errors are non-fixable, 3rd party submission" in {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-              IE704FunctionalError(
-                errorType = "4403",
-                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                originalAttributeValue = Some("lrnie8155639254")
-              )
-            ))
-          ),
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           relatedMessageType = Some("IE819")
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorAlertRejectionIE819.message, Some(failureMessageResponse)))
@@ -1024,18 +955,8 @@ class ViewMessageHelperSpec extends SpecBase
       }
 
       "return the correct content when the errors are non-fixable, portal submission" in {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
-            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-              IE704FunctionalError(
-                errorType = "4403",
-                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                originalAttributeValue = Some("lrnie8155639254")
-              )
-            ))
-          ),
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704PortalSubmission,
           relatedMessageType = Some("IE819")
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorAlertRejectionIE819.message, Some(failureMessageResponse)))

@@ -114,6 +114,10 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
       "header" -> IE704HeaderFixtures.ie704HeaderJson,
       "body" -> IE704BodyFixtures.ie704BodyJson
     )
+
+    val ie704PortalSubmission: IE704Model = ie704ModelModel.copy(
+      header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345"))
+    )
   }
 
   object GetSubmissionFailureMessageResponseFixtures {
