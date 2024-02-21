@@ -621,7 +621,6 @@ class ViewMessageHelperSpec extends SpecBase
         ))
       })
     }
-
   }
 
   ".contentForFixingError" must {
@@ -676,6 +675,10 @@ class ViewMessageHelperSpec extends SpecBase
         link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection"),
         Html("of this movement.")
       ))))
+    }
+
+    "return the correct content for an IE825 error" in {
+      helper.contentForFixingError("IE825", hasFixableError = false, testErn, testArc) mustBe Seq.empty
     }
 
     "return an empty list when the message type is not matched" in {
@@ -948,6 +951,44 @@ class ViewMessageHelperSpec extends SpecBase
               Html("of this movement.")
             ))
           },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+    }
+
+    "for an IE825" must {
+
+      "return the correct content when the errors are non-fixable, 3rd party submission" in {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          relatedMessageType = Some("IE825")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorSplitMovementIE825.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+          },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+      "return the correct content when the errors are non-fixable, portal submission" in {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = ie704PortalSubmission,
+          relatedMessageType = Some("IE825")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorSplitMovementIE825.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
               link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
