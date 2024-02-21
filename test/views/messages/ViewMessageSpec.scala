@@ -87,6 +87,7 @@ class ViewMessageSpec extends ViewSpecBase
 
   Seq(
     ie801ReceivedMovement, ie801SubmittedMovement,
+    ie803ReceivedChangeDestination, ie803ReceivedSplit,
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
     ie810ReceivedCancellation, ie810SubmittedCancellation,
     ie813ReceivedChangeDestination, ie813SubmittedChangeDestination,

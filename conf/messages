@@ -423,11 +423,10 @@ messages.IE802.false.1.description = Reminder to change destination
 messages.IE802.false.2.description = Reminder for report of receipt
 messages.IE802.false.3.description = Reminder to provide a destination
 
-messages.IE803.false.0.description = Diverted movement
 messages.IE803.false.1.description = Diverted movement
-messages.IE803.true.1.description = Diverted movement
-messages.IE803.false.2.description = Diverted movement
-messages.IE803.true.2.description = Notification of a split movement
+messages.IE803.false.1.paragraph = This movement has been diverted.
+messages.IE803.false.2.description = Notification of a split movement
+messages.IE803.false.2.paragraph = This movement has been split.
 
 messages.IE807.false.0.description = Movement intercepted
 
