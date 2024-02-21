@@ -850,17 +850,7 @@ class ViewMessageHelperSpec extends SpecBase
     "for an IE818" must {
 
       "return the correct content when the errors are non-fixable, 3rd party submission" in {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-              IE704FunctionalError(
-                errorType = "4403",
-                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                originalAttributeValue = Some("lrnie8155639254")
-              )
-            ))
-          ),
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           relatedMessageType = Some("IE818")
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorReportOfReceiptIE818.message, Some(failureMessageResponse)))
@@ -889,18 +879,8 @@ class ViewMessageHelperSpec extends SpecBase
       }
 
       "return the correct content when the errors are non-fixable, portal submission" in {
-        val failureMessageResponse = GetSubmissionFailureMessageResponse(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-            header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL12345")),
-            body = IE704BodyFixtures.ie704BodyModel.copy(functionalError = Seq(
-              IE704FunctionalError(
-                errorType = "4403",
-                errorReason = "Oh no! Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules",
-                errorLocation = Some("/IE813[1]/Body[1]/SubmittedDraftOfEADESAD[1]/EadEsadDraft[1]/LocalReferenceNumber[1]"),
-                originalAttributeValue = Some("lrnie8155639254")
-              )
-            ))
-          ),
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704PortalSubmission,
           relatedMessageType = Some("IE818")
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorReportOfReceiptIE818.message, Some(failureMessageResponse)))
