@@ -54,6 +54,10 @@ trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
   def putEmpty(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
     http.PUTString(url, "")
 
+  def delete(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
+    http.DELETE[Either[ErrorResponse, A]](url)(EmcsTfeReads, hc, ec)
+
+
   def put[I](url: String, body: I)
                (implicit hc: HeaderCarrier, ec: ExecutionContext, writes: Writes[I]): Future[Either[ErrorResponse, A]] =
     http.PUT[I, Either[ErrorResponse, A]](url, body)

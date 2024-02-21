@@ -419,6 +419,15 @@ viewMessage.link.viewMovement.description = View movement
 viewMessage.link.printMessage.description = Print message
 viewMessage.link.deleteMessage.description = Delete message
 
+
+
+deleteMessage.title = Delete message
+deleteMessage.table.message.label = Message
+deleteMessage.table.arc.label = Administrative reference code
+deleteMessage.table.lrn.label = Local reference number
+deleteMessage.table.dateAndTimeReceived.label = Date and time received
+
+
 messages.IE801.false.0.description = First notification of movement
 messages.IE801.false.0.paragraph = There is a new movement on its way to you.
 messages.IE801.true.0.description = New movement submitted successfully
