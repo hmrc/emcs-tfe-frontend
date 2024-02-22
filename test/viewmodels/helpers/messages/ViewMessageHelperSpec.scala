@@ -633,12 +633,12 @@ class ViewMessageHelperSpec extends SpecBase
       helper.contentForFixingError("IE810", hasFixableError = true, testErn, testArc) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
           Html("If you still want to"),
-          link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement"),
+          link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement", id = Some("cancel-movement")),
           Html(msgs("you can submit a new cancellation with the errors corrected."))
         ))),
         p()(HtmlFormat.fill(Seq(
           Html(msgs("However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to")),
-          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true)
+          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true, id = Some("submit-change-destination"))
         )))
       )
     }
@@ -646,14 +646,14 @@ class ViewMessageHelperSpec extends SpecBase
     "return the correct content for an IE837 error" in {
       helper.contentForFixingError("IE837", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
-        link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true)
+        link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true, id = Some("submit-new-explanation-for-delay"))
       ))))
     }
 
     "return the correct content for an IE871 error" in {
       helper.contentForFixingError("IE871", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
-        link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true)
+        link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
       ))))
     }
 
@@ -672,7 +672,7 @@ class ViewMessageHelperSpec extends SpecBase
     "return the correct content for an IE819 error" in {
       helper.contentForFixingError("IE819", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("To correct any errors you must"),
-        link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection"),
+        link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection", id = Some("submit-a-new-alert-rejection")),
         Html("of this movement.")
       ))))
     }
@@ -704,12 +704,12 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p()(HtmlFormat.fill(Seq(
             Html("If you still want to"),
-            link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement"),
+            link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement", id = Some("cancel-movement")),
             Html(msgs("you can submit a new cancellation with the errors corrected."))
           ))),
           p()(HtmlFormat.fill(Seq(
             Html(msgs("However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to")),
-            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true)
+            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true, id = Some("submit-change-destination"))
           ))),
           p() {
             Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
@@ -732,12 +732,12 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p()(HtmlFormat.fill(Seq(
             Html("If you still want to"),
-            link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement"),
+            link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement", id = Some("cancel-movement")),
             Html(msgs("you can submit a new cancellation with the errors corrected."))
           ))),
           p()(HtmlFormat.fill(Seq(
             Html(msgs("However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to")),
-            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true)
+            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true, id = Some("submit-change-destination"))
           ))),
           p() {
             HtmlFormat.fill(Seq(
@@ -761,7 +761,7 @@ class ViewMessageHelperSpec extends SpecBase
           p() {
             HtmlFormat.fill(Seq(
               Html("You need to"),
-              link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true)
+              link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true, id = Some("submit-new-explanation-for-delay"))
             ))
           },
           p() {
@@ -786,7 +786,7 @@ class ViewMessageHelperSpec extends SpecBase
           p() {
             HtmlFormat.fill(Seq(
               Html("You need to"),
-              link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true)
+              link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true, id = Some("submit-new-explanation-for-delay"))
             ))
           },
           p() {
@@ -811,7 +811,7 @@ class ViewMessageHelperSpec extends SpecBase
           p() {
             HtmlFormat.fill(Seq(
               Html("You need to"),
-              link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true)
+              link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
             ))
           },
           p() {
@@ -836,7 +836,7 @@ class ViewMessageHelperSpec extends SpecBase
           p() {
             HtmlFormat.fill(Seq(
               Html("You need to"),
-              link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true)
+              link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
             ))
           },
           p() {
@@ -921,7 +921,7 @@ class ViewMessageHelperSpec extends SpecBase
           p() {
             HtmlFormat.fill(Seq(
               Html("To correct any errors you must"),
-              link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection"),
+              link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection", id = Some("submit-a-new-alert-rejection")),
               Html("of this movement.")
             ))
           },
@@ -947,7 +947,7 @@ class ViewMessageHelperSpec extends SpecBase
           p() {
             HtmlFormat.fill(Seq(
               Html("To correct any errors you must"),
-              link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection"),
+              link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection", id = Some("submit-a-new-alert-rejection")),
               Html("of this movement.")
             ))
           },

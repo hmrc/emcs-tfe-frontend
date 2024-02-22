@@ -411,9 +411,9 @@ class ViewMessageSpec extends ViewSpecBase
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.p(1) -> English.cancelMovement,
-            Selectors.link(1) -> English.cancelMovementLink,
+            Selectors.id("cancel-movement") -> English.cancelMovementLink,
             Selectors.p(2) -> English.changeDestination,
-            Selectors.link(2) -> English.changeDestinationLink
+            Selectors.id("submit-change-destination") -> English.changeDestinationLink
           )
         )
       }
@@ -451,7 +451,7 @@ class ViewMessageSpec extends ViewSpecBase
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.p(pIndex) -> English.submitNewExplainDelay,
-            Selectors.link(pIndex) -> English.submitNewExplainDelayLink
+            Selectors.id("submit-new-explanation-for-delay") -> English.submitNewExplainDelayLink
           )
         )
       }
@@ -489,7 +489,7 @@ class ViewMessageSpec extends ViewSpecBase
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.p(pIndex) -> English.submitNewExplanationOfShortageOrExcess,
-            Selectors.link(pIndex) -> English.submitNewExplanationOfShortageOrExcessLink
+            Selectors.id("submit-a-new-explanation-for-shortage-or-excess") -> English.submitNewExplanationOfShortageOrExcessLink
           )
         )
       }
@@ -527,7 +527,7 @@ class ViewMessageSpec extends ViewSpecBase
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.p(pIndex) -> English.submitNewReportOfReceipt,
-            Selectors.link(pIndex) -> English.submitNewReportOfReceiptLink
+            Selectors.id("submit-a-new-report-of-receipt") -> English.submitNewReportOfReceiptLink
           )
         )
       }
@@ -565,7 +565,7 @@ class ViewMessageSpec extends ViewSpecBase
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.p(pIndex) -> English.submitNewAlertRejection,
-            Selectors.link(pIndex) -> English.submitNewAlertRejectionLink
+            Selectors.id("submit-a-new-alert-rejection") -> English.submitNewAlertRejectionLink
           )
         )
       }

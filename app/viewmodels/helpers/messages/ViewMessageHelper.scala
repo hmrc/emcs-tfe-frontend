@@ -159,23 +159,23 @@ class ViewMessageHelper @Inject()(
         Seq(
           p()(HtmlFormat.fill(Seq(
             Html(messages("messages.IE704.IE810.fixError.cancel.prefix")),
-            link(appConfig.emcsTfeCancelMovementUrl(ern, arc), "messages.IE704.IE810.fixError.cancel.link"),
+            link(appConfig.emcsTfeCancelMovementUrl(ern, arc), "messages.IE704.IE810.fixError.cancel.link", id = Some("cancel-movement")),
             Html(messages("messages.IE704.IE810.fixError.cancel.suffix"))
           ))),
           p()(HtmlFormat.fill(Seq(
             Html(messages("messages.IE704.IE810.fixError.changeDestination")),
-            link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.IE704.IE810.fixError.changeDestination.link", withFullStop = true)
+            link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.IE704.IE810.fixError.changeDestination.link", withFullStop = true, id = Some("submit-change-destination"))
           )))
         )
       case "IE837" =>
         Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.IE704.IE837.fixError.text")),
-          link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "messages.IE704.IE837.fixError.link", withFullStop = true)
+          link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "messages.IE704.IE837.fixError.link", withFullStop = true, id = Some("submit-new-explanation-for-delay"))
         ))))
       case "IE871" =>
         Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.IE704.IE871.fixError.text")),
-          link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "messages.IE704.IE871.fixError.link", withFullStop = true)
+          link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "messages.IE704.IE871.fixError.link", withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
         ))))
       case "IE818" =>
         Seq(p()(HtmlFormat.fill(Seq(
@@ -190,7 +190,7 @@ class ViewMessageHelper @Inject()(
       case "IE819" =>
         Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.IE704.IE819.fixError.text.1")),
-          link(appConfig.emcsTfeAlertOrRejectionUrl(ern, arc), "messages.IE704.IE819.fixError.link"),
+          link(appConfig.emcsTfeAlertOrRejectionUrl(ern, arc), "messages.IE704.IE819.fixError.link", id = Some("submit-a-new-alert-rejection")),
           Html(messages("messages.IE704.IE819.fixError.text.2"))
         ))))
       case _ => Seq.empty
