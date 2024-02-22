@@ -104,7 +104,6 @@ class MessageInboxRepositoryImpl @Inject()(
       collection
         .findOneAndDelete(by(ern, uniqueMessageIdentifier))
         .headOption()
-
     })
 }
 

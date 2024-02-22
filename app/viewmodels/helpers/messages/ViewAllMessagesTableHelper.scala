@@ -61,7 +61,7 @@ class ViewAllMessagesTableHelper @Inject()(
         TableRow(
           content = HtmlContent(
             link(
-              link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+              link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, aMessage.uniqueMessageIdentifier).url,
               messageKey = messages("viewAllMessages.link.message.delete.label")
             )
           )

@@ -105,7 +105,7 @@ class ViewMessageHelper @Inject()(
     )
     lazy val deleteMessageLink: Html = link(
       //TODO: implement link in ETFE-2855
-      link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url, messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
+      link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, message.uniqueMessageIdentifier).url, messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
     )
     val actionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole,
       messageCache.errorMessage.flatMap(_.relatedMessageType)) match {
