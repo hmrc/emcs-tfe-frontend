@@ -594,5 +594,32 @@ class ViewMessageSpec extends ViewSpecBase
         movementActionsLinksTest()
       }
     }
+
+    "for a IE825 related message type" must {
+
+      "render the correct content (when non-fixable) - portal" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = ie704PortalSubmission,
+          relatedMessageType = Some("IE825")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorSplitMovementIE825.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorSplitMovementIE825)
+        errorRowsTest(failureMessageResponse)
+        helplineLinkTest(1)
+        movementActionsLinksTest()
+      }
+
+      "render the correct content (when non-fixable) - 3rd party" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          relatedMessageType = Some("IE825")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorSplitMovementIE825.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorSplitMovementIE825)
+        errorRowsTest(failureMessageResponse)
+        thirdPartySubmissionTest(1)
+        helplineLinkTest(2)
+        movementActionsLinksTest()
+      }
+    }
   }
 }
