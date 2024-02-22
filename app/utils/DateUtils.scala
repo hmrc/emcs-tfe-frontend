@@ -16,8 +16,9 @@
 
 package utils
 
-import java.time.{LocalDate, LocalTime}
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 trait DateUtils {
   implicit class LocalDateExtensions(date: LocalDate) {
@@ -33,4 +34,12 @@ trait DateUtils {
       formatter.format(time)
     }
   }
+
+  implicit class LocalDateTimeExtensions(dateTime: LocalDateTime) {
+    def formatDateTimeForUIOutput(): String = {
+      val dateFormat = DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mm a", Locale.UK)
+      dateTime.format(dateFormat)
+    }
+  }
+
 }

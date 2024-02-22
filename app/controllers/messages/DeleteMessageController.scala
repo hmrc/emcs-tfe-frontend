@@ -17,6 +17,8 @@
 package controllers.messages
 
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import forms.DeleteMessageFormProvider
+import models.messages.MessagesSearchOptions
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DeleteMessageService, GetMessagesService}
@@ -32,27 +34,22 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                         val betaAllowList: BetaAllowListAction,
                                         val getMessagesService: GetMessagesService,
                                         val deleteMessageService: DeleteMessageService,
+                                        formProvider: DeleteMessageFormProvider,
                                         val view: DeleteMessage
                                        )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
 
   def onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
-
-      /*
-
-
-           TODO show the delete message page
-          */
-
       getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).map {
         case Some(message) =>
-          Ok(view(message))
-        case None => ???
+          Ok(view(
+            message,
+            formProvider(),
+            controllers.messages.routes.ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url
+          ))
+        case None => ??? //TODO
       }
-
-
-
     }
   }
 

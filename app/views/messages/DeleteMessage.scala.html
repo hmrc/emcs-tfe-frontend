@@ -19,24 +19,30 @@
 @import models.requests.DataRequest
 @import models.response.emcsTfe.messages.Message
 @import viewmodels.helpers.messages._
+
+@import models.requests.DataRequest
+@import models.response.emcsTfe.GetMovementListItem
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
 @import views.html._
 @import views.html.components._
+@import views.html.viewAllMovements._
+
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(
         layout: templates.Layout,
         h1: h1,
-        span: span,
-        p: p,
-        appConfig: AppConfig,
-        govukSelect: GovukSelect,
-        govukPagination : GovukPagination,
+        govukRadios: GovukRadios,
+        govukSummaryList: GovukSummaryList,
         govukButton: GovukButton,
-        messageHelper: MessagesHelper,
         deleteMessageHelper: DeleteMessageHelper,
-        paginationHelper: MessagesPaginationHelper
+        formHelper: FormWithCSRF,
+        govukErrorSummary: GovukErrorSummary,
 )
 
-@(message: MessageCache)(implicit request: DataRequest[_], messages: Messages)
+@(message: MessageCache, form: Form[_], returnToMessagesUrl: String)(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
     pageTitle = messages("deleteMessage.title"),
@@ -45,18 +51,38 @@
     fullWidthContent = false
 ) {
 
-    @h1(classes = "govuk-heading-xl govuk-!-margin-bottom-4") {
+    @h1(classes = "govuk-heading-xl govuk-!-margin-bottom-9") {
         @messages("deleteMessage.title")
     }
-    @span(
-        content = messages(
-            "viewMessage.message.sent",
-            message.message.dateCreatedOnCore.toLocalDate.formatDateForUIOutput(),
-            message.message.dateCreatedOnCore.toLocalTime.formatTimeForUIOutput()
-        ),
-        classes = "govuk-caption-m govuk-!-margin-bottom-7"
-    )
 
+    @{govukSummaryList(deleteMessageHelper.constructMessageInformation(message.message))}
+
+    @formHelper(action = controllers.messages.routes.DeleteMessageController.onSubmit(request.ern, message.message.uniqueMessageIdentifier)) {
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
+        @govukRadios(
+            RadiosViewModel(
+                field = form("value"),
+                legend = Legend(
+                    content = Text(messages("deleteMessage.heading")),
+                    classes = "govuk-fieldset__legend--m",
+                    isPageHeading = false
+                ),
+                items = deleteMessageHelper.options()
+            )
+        )
+
+        <div class="govuk-button-group">
+            @govukButton(
+                ButtonViewModel(messages("site.confirm"))
+            )
+
+            <a class="govuk-link" id="return-to-messages" href="@returnToMessagesUrl">@messages("deleteMessage.returnToMessages")</a>
+        </div>
+    }
 }
 
 @{

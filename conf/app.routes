@@ -29,3 +29,4 @@ GET        /trader/:ern/messages                                            cont
 GET        /trader/:ern/message/:uniqueMessageIdentifier/view                controllers.messages.ViewMessageController.onPageLoad(ern: String, uniqueMessageIdentifier: Long)
 
 GET        /trader/:exciseRegistrationNumber/message/:uniqueMessageIdentifier/delete-message      controllers.messages.DeleteMessageController.onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)
+POST       /trader/:exciseRegistrationNumber/message/:uniqueMessageIdentifier/delete-message      controllers.messages.DeleteMessageController.onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)
