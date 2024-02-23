@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-package pages
+package config
 
-import scala.language.implicitConversions
-
-trait Page
-
-object Page {
-  implicit def toString(page: Page): String = page.toString
-}
-
-case object ViewMessagePage extends Page {
-  override val toString: String = "viewMessage"
-}
-
-case object ViewAllMessagesPage extends Page {
-  override val toString: String = "viewAllMessages"
+object SessionKeys {
+  val FROM_PAGE = "TFE_FRONTEND_FROM_PAGE"
 }

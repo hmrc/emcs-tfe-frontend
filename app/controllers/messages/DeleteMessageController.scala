@@ -16,14 +16,18 @@
 
 package controllers.messages
 
-import controllers.messages.routes.ViewAllMessagesController
+import config.SessionKeys.FROM_PAGE
+import controllers.messages.routes.{ViewAllMessagesController, ViewMessageController}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import forms.DeleteMessageFormProvider
 import models.messages.MessagesSearchOptions
-import pages.{Page, ViewMessagePage}
+import models.requests.DataRequest
+import pages.{Page, ViewAllMessagesPage, ViewMessagePage}
+import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc._
 import services.{DeleteMessageService, GetMessagesService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.messages.DeleteMessage
 
@@ -37,44 +41,93 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                         val getMessagesService: GetMessagesService,
                                         val deleteMessageService: DeleteMessageService,
                                         formProvider: DeleteMessageFormProvider,
-                                        val view: DeleteMessage
-                                       )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                        val view: DeleteMessage)
+                                       (implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
-
-  def onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long, fromPage: Option[Page]): Action[AnyContent] = {
+  def onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
-
-      val page = fromPage.getOrElse(ViewMessagePage)
-
-      getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).map {
-        case Some(messageCache) =>
-          Ok(view(
-            messageCache.message,
-            form = formProvider(),
-            returnToMessagesUrl = ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
-            page
-          ))
-        case None => ??? //TODO
-      }
+      renderView(
+        exciseRegistrationNumber,
+        uniqueMessageIdentifier,
+        formProvider(),
+        pageFromSession(request.session.get(FROM_PAGE))
+      )
     }
   }
 
   def onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
 
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
-//      getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).map {
-//        case Some(messageCache) =>
-//      formProvider().bindFromRequest().fold(
-//        formWithErrors => Future.successful(BadRequest(view(messageCache, formWithErrors)))
-//      )
-      /*
-        TODO go to message inbox, which will now show the message removed, and a message saying Message Deleted
-       */
-      ???
-    }
+      formProvider().bindFromRequest().fold(
+        formWithErrors => {
+          renderView(exciseRegistrationNumber, uniqueMessageIdentifier, formWithErrors, pageFromSession(request.session.get(FROM_PAGE)))
+        },
+        deleteMessage => {
+          if (deleteMessage) {
+            deleteMessageService.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier)
+              .map(deleteMessageResponse => {
 
-    ???
+                if (deleteMessageResponse.recordsAffected == 1) {
+                  // TODO redirect to the ViewAllMessage controller with the message deleted success thingy
+                } else {
+
+                  // TODO error deleting message ???
+                }
+
+                ???
+              }) // TODO recoverWith ???
+
+          } else {
+
+            pageFromSession(request.session.get(FROM_PAGE)) match {
+              case ViewAllMessagesPage =>
+                Future(
+                  removeFromPageSessionValue(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
+                )
+              case _ =>
+                Future(
+                  removeFromPageSessionValue(Redirect(ViewMessageController.onPageLoad(exciseRegistrationNumber, uniqueMessageIdentifier)))
+                )
+            }
+          }
+        }
+      )
+
+    }
   }
 
+  def renderView(exciseRegistrationNumber: String,
+                 uniqueMessageIdentifier: Long,
+                 form: Form[_],
+                 fromPage: Page)(implicit dr: DataRequest[_], hc: HeaderCarrier): Future[Result] = {
+
+    getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).flatMap {
+      case Some(messageCache) =>
+        Future(
+          removeFromPageSessionValue(
+            BadRequest(view(
+              messageCache.message,
+              form = form,
+              returnToMessagesUrl = ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
+              fromPage
+            ))
+          )
+        )
+      case None =>
+        Future(
+          removeFromPageSessionValue(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
+        )
+    }
+  }
+
+  private def pageFromSession(pageFromSession: Option[String]): Page = {
+    pageFromSession match {
+      case Some(ViewMessagePage.toString) => ViewMessagePage
+      case Some(ViewAllMessagesPage.toString) => ViewAllMessagesPage
+      case _ => ViewAllMessagesPage
+    }
+  }
+
+  private def removeFromPageSessionValue(call: Result)(implicit request: RequestHeader): Result = call.removingFromSession(FROM_PAGE)
 
 }

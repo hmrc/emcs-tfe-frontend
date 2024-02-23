@@ -66,8 +66,8 @@ class DeleteMessageHelper @Inject()() extends DateUtils with TagFluency {
     }
 
     Seq(
-      RadioItem(content = Text(messages("deleteMessage.yes"))),
-      RadioItem(content = Text(messages(key)))
+      RadioItem(content = Text(messages("deleteMessage.yes")), value = Some("true")),
+      RadioItem(content = Text(messages(key)), value = Some("false"))
     )
   }
 

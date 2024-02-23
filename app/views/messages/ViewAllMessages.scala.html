@@ -47,7 +47,6 @@
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, models.PageSection.Messages)),
     fullWidthContent = true
 ) {
-
      @h1() {
          @messages("viewAllMessages.heading", request.messageStatistics.countOfAllMessages)
      }

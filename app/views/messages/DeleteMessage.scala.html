@@ -56,13 +56,15 @@
         @messages("deleteMessage.title")
     }
 
-    @{govukSummaryList(deleteMessageHelper.constructMessageInformation(message))}
 
     @formHelper(action = controllers.messages.routes.DeleteMessageController.onSubmit(request.ern, message.uniqueMessageIdentifier)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
+
+        @{govukSummaryList(deleteMessageHelper.constructMessageInformation(message))}
+
 
         @govukRadios(
             RadiosViewModel(

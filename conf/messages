@@ -259,6 +259,8 @@ deleteMessage.yes = Yes, delete this message
 deleteMessage.fromMessagePage.no = No, return to message
 deleteMessage.fromMessageInbox.no = No, return to all messages
 
+deleteMessage.successMessage = Success
+
 deleteMessage.returnToMessages = Return to messages
 
 itemDetails.itemDetailsCardTitle = Item details

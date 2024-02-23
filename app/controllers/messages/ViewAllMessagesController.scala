@@ -17,12 +17,14 @@
 package controllers.messages
 
 import config.ErrorHandler
+import config.SessionKeys.FROM_PAGE
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions.DEFAULT_MAX_ROWS
 import models.messages.{MessagesSearchOptions, MessagesSortingSelectOption}
 import models.requests.DataRequest
+import pages.ViewAllMessagesPage
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc._
 import services.GetMessagesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.messages.ViewAllMessages
@@ -42,26 +44,28 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
 
   def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] =
     authorisedWithData(ern).async { implicit request =>
+      val sessionWithFromPageSet: Session = request.session + (FROM_PAGE -> ViewAllMessagesPage.toString)
+
       if (search.index <= 0) {
         Future.successful(
-          Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
+          Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1))).withSession(sessionWithFromPageSet)
         )
       } else {
-        renderView(Ok, ern, search)
+        renderView(Ok, ern, search, sessionWithFromPageSet)
       }
     }
 
-  private def renderView(status: Status, ern: String, search: MessagesSearchOptions)(implicit request: DataRequest[_]): Future[Result] = {
+  private def renderView(status: Status, ern: String, search: MessagesSearchOptions, session: Session)(implicit request: DataRequest[_]): Future[Result] = {
 
     getMessagesService.getMessages(ern, Some(search)).map { allMessages =>
 
-      val totalNumberOfPages : Int = calculatePageCount(
-          allMessages.totalNumberOfMessagesAvailable.toInt,
-          DEFAULT_MAX_ROWS
-        )
+      val totalNumberOfPages: Int = calculatePageCount(
+        allMessages.totalNumberOfMessagesAvailable.toInt,
+        DEFAULT_MAX_ROWS
+      )
 
       if (search.index > totalNumberOfPages) {
-        Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
+        Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1))).withSession(session)
       } else {
         status(
           view(
@@ -70,7 +74,7 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
             totalNumberOfPages = totalNumberOfPages,
             searchOptions = search
           )
-        )
+        ).withSession(session)
       }
     } recover {
       case _ =>

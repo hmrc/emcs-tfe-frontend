@@ -28,6 +28,8 @@ import views.html.messages.ViewMessage
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import config.SessionKeys.FROM_PAGE
+import pages.ViewMessagePage
 
 class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       val auth: AuthAction,
@@ -46,18 +48,20 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
   def onPageLoad(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
     authorisedDataRequestAsync(ern) { implicit request =>
 
+      val sessionWithFromPageSet = request.session + (FROM_PAGE -> ViewMessagePage.toString)
+
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
         case Some(msg) if messagesThatNeedMovement.contains(msg.message.messageType) && msg.message.arc.isDefined =>
           getMovementService.getRawMovement(ern, msg.message.arc.get).map { movement =>
-            Ok(view(msg, Some(movement)))
+            Ok(view(msg, Some(movement))).withSession(sessionWithFromPageSet)
           }
         case Some(msg) =>
           Future.successful(
-            Ok(view(msg, None))
+            Ok(view(msg, None)).withSession(sessionWithFromPageSet)
           )
         case _ =>
           Future.successful(
-            Redirect(routes.ViewAllMessagesController.onPageLoad(request.ern, MessagesSearchOptions()))
+            Redirect(routes.ViewAllMessagesController.onPageLoad(request.ern, MessagesSearchOptions())).withSession(sessionWithFromPageSet)
           )
       }
     }
