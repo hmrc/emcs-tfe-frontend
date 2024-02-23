@@ -231,7 +231,6 @@ viewMovement.document.documentDescription = Description
 viewMovement.document.notProvided = Not provided
 
 
-# MOV02 - History events
 deleteMessage.IE801.first.label = Movement created
 deleteMessage.IE801.further.label = Update to movement
 deleteMessage.IE802.cod.label = Reminder to provide change of destination

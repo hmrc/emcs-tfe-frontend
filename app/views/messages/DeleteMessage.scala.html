@@ -28,6 +28,7 @@
 @import views.html._
 @import views.html.components._
 @import views.html.viewAllMovements._
+@import pages.Page
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
@@ -42,7 +43,7 @@
         govukErrorSummary: GovukErrorSummary,
 )
 
-@(message: MessageCache, form: Form[_], returnToMessagesUrl: String)(implicit request: DataRequest[_], messages: Messages)
+@(message: Message, form: Form[_], returnToMessagesUrl: String, fromPage: Page)(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
     pageTitle = messages("deleteMessage.title"),
@@ -55,9 +56,9 @@
         @messages("deleteMessage.title")
     }
 
-    @{govukSummaryList(deleteMessageHelper.constructMessageInformation(message.message))}
+    @{govukSummaryList(deleteMessageHelper.constructMessageInformation(message))}
 
-    @formHelper(action = controllers.messages.routes.DeleteMessageController.onSubmit(request.ern, message.message.uniqueMessageIdentifier)) {
+    @formHelper(action = controllers.messages.routes.DeleteMessageController.onSubmit(request.ern, message.uniqueMessageIdentifier)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -71,7 +72,7 @@
                     classes = "govuk-fieldset__legend--m",
                     isPageHeading = false
                 ),
-                items = deleteMessageHelper.options()
+                items = deleteMessageHelper.options(fromPage)
             )
         )
 

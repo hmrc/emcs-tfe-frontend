@@ -17,6 +17,7 @@
 package viewmodels.helpers.messages
 
 import models.response.emcsTfe.messages.Message
+import pages.{Page, ViewAllMessagesPage, ViewMessagePage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
@@ -58,14 +59,16 @@ class DeleteMessageHelper @Inject()() extends DateUtils with TagFluency {
     )
   }
 
-  def options()(implicit messages: Messages): Seq[RadioItem] = {
+  def options(fromPage: Page)(implicit messages: Messages): Seq[RadioItem] = {
+    val key = fromPage match {
+      case ViewAllMessagesPage => "deleteMessage.fromMessageInbox.no"
+      case ViewMessagePage | _ => "deleteMessage.fromMessagePage.no"
+    }
+
     Seq(
       RadioItem(content = Text(messages("deleteMessage.yes"))),
-      RadioItem(content = Text(messages("deleteMessage.no"))) // TODO find if the previous page was a message, or the message inbox
+      RadioItem(content = Text(messages(key)))
     )
-
-
   }
-
 
 }

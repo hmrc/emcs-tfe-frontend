@@ -22,6 +22,7 @@ import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.messages.Message
 import models.response.emcsTfe.messages.submissionFailure.GetSubmissionFailureMessageResponse
+import pages.ViewMessagePage
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
@@ -105,7 +106,7 @@ class ViewMessageHelper @Inject()(
     )
     lazy val deleteMessageLink: Html = link(
       //TODO: implement link in ETFE-2855
-      link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, message.uniqueMessageIdentifier).url, messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
+      link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, message.uniqueMessageIdentifier,  Some(ViewMessagePage)).url, messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
     )
     val actionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole,
       messageCache.errorMessage.flatMap(_.relatedMessageType)) match {

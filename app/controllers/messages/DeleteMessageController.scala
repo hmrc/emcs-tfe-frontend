@@ -16,9 +16,11 @@
 
 package controllers.messages
 
+import controllers.messages.routes.ViewAllMessagesController
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import forms.DeleteMessageFormProvider
 import models.messages.MessagesSearchOptions
+import pages.{Page, ViewMessagePage}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DeleteMessageService, GetMessagesService}
@@ -26,7 +28,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.messages.DeleteMessage
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                         val auth: AuthAction,
@@ -39,14 +41,18 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                        )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
 
-  def onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
+  def onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long, fromPage: Option[Page]): Action[AnyContent] = {
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
+
+      val page = fromPage.getOrElse(ViewMessagePage)
+
       getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).map {
-        case Some(message) =>
+        case Some(messageCache) =>
           Ok(view(
-            message,
-            formProvider(),
-            controllers.messages.routes.ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url
+            messageCache.message,
+            form = formProvider(),
+            returnToMessagesUrl = ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
+            page
           ))
         case None => ??? //TODO
       }
@@ -56,6 +62,11 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
   def onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
 
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
+//      getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).map {
+//        case Some(messageCache) =>
+//      formProvider().bindFromRequest().fold(
+//        formWithErrors => Future.successful(BadRequest(view(messageCache, formWithErrors)))
+//      )
       /*
         TODO go to message inbox, which will now show the message removed, and a message saying Message Deleted
        */

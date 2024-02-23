@@ -18,6 +18,7 @@ package viewmodels.helpers.messages
 
 import models.requests.DataRequest
 import models.response.emcsTfe.messages.Message
+import pages.ViewAllMessagesPage
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.html.components.{GovukTable, GovukTag}
@@ -61,7 +62,7 @@ class ViewAllMessagesTableHelper @Inject()(
         TableRow(
           content = HtmlContent(
             link(
-              link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, aMessage.uniqueMessageIdentifier).url,
+              link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, aMessage.uniqueMessageIdentifier, Some(ViewAllMessagesPage)).url,
               messageKey = messages("viewAllMessages.link.message.delete.label")
             )
           )
