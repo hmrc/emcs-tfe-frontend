@@ -76,13 +76,13 @@ class ViewMessageSpec extends ViewSpecBase
     movement = optMovement
   ).toString())
 
-  def movementActionsLinksTest()(implicit doc: Document): Unit = {
+  def movementActionsLinksTest(withViewMovementLink: Boolean = true)(implicit doc: Document): Unit = {
     behave like pageWithExpectedElementsAndMessages(
       Seq(
-        Selectors.viewMovementLink -> English.viewMovementLinkText,
-        Selectors.printMessageLink -> English.printMessageLinkText,
-        Selectors.deleteMessageLink -> English.deleteMessageLinkText
-      )
+        if(withViewMovementLink) Some(Selectors.viewMovementLink -> English.viewMovementLinkText) else None,
+        Some(Selectors.printMessageLink -> English.printMessageLinkText),
+        Some(Selectors.deleteMessageLink -> English.deleteMessageLinkText)
+      ).flatten
     )
   }
 
@@ -402,17 +402,24 @@ class ViewMessageSpec extends ViewSpecBase
     import GetSubmissionFailureMessageResponseFixtures._
     import IE704ModelFixtures._
 
-    def movementInformationTest(testMessage: TestMessage)(implicit doc: Document): Unit = {
+    def movementInformationTest(testMessage: TestMessage, withArc: Boolean = true)(implicit doc: Document): Unit = {
       behave like pageWithExpectedElementsAndMessages(
         Seq(
           Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
           Selectors.h1 -> testMessage.messageTitle,
-          Selectors.summaryRowKey(1) -> English.labelArc,
-          Selectors.summaryRowValue(1) -> testMessage.message.arc.get,
-          Selectors.summaryRowKey(2) -> English.labelLrn,
-          Selectors.summaryRowValue(2) -> testMessage.message.lrn.get
+          Selectors.summaryRowKey(if(withArc) 2 else 1) -> English.labelLrn,
+          Selectors.summaryRowValue(if(withArc) 2 else 1) -> testMessage.message.lrn.get
         )
       )
+
+      if(withArc) {
+        pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.summaryRowKey(1) -> English.labelArc,
+            Selectors.summaryRowValue(1) -> testMessage.message.arc.get
+          )
+        )
+      }
     }
 
     def errorRowsTest(failureMessageResponse: GetSubmissionFailureMessageResponse)(implicit doc: Document): Unit = {
@@ -691,6 +698,70 @@ class ViewMessageSpec extends ViewSpecBase
         submitNewChangeDestinationContentTest(1)
         thirdPartySubmissionTest(2)
         movementActionsLinksTest()
+      }
+    }
+
+    "for a IE815 related message type" must {
+
+      def submitNewMovementContentTest(pIndex: Int, isSingularWording: Boolean)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(pIndex) -> (if(isSingularWording) English.submitNewMovementSingularError else English.submitNewMovementMultipleErrors),
+            Selectors.id("create-a-new-movement") -> English.createNewMovementLink
+          )
+        )
+      }
+
+      def arcContentTest(pIndex: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(pIndex) -> English.arcText
+          )
+        )
+      }
+
+
+      "render the correct content (when non-fixable) - portal" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = ie704PortalSubmission.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(
+              functionalError = Seq(
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry.")
+              )
+            )
+          ),
+          relatedMessageType = Some("IE815")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
+        errorRowsTest(failureMessageResponse)
+        submitNewMovementContentTest(1, isSingularWording = true)
+        arcContentTest(2)
+        helplineLinkTest(3)
+        movementActionsLinksTest(withViewMovementLink = false)
+      }
+
+      "render the correct content (when non-fixable) - 3rd party" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(
+              functionalError = Seq(
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4402", errorReason = "This Local Reference Number (LRN) you have entered has been used before. Please enter a unique LRN."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4403", errorReason = "The consignor Excise Registration Number you have entered is not recognised by SEED. Please amend your entry."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry."),
+              )
+            )
+          ),
+          relatedMessageType = Some("IE815")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
+        errorRowsTest(failureMessageResponse)
+        submitNewMovementContentTest(1, isSingularWording = false)
+        thirdPartySubmissionTest(2)
+        arcContentTest(3)
+        helplineLinkTest(4)
+        movementActionsLinksTest(withViewMovementLink = false)
       }
     }
   }

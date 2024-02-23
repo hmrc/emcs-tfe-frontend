@@ -69,6 +69,16 @@ object ViewMessageMessages {
     val submitNewChangeDestinationLink = "submit a new change of destination"
   }
 
+  sealed trait IE815SubmissionFailureMessages {
+    val movementInformationHeading = "Movement information"
+
+    val submitNewMovementSingularError = "The error cannot be fixed, so you need to create a new movement."
+    val submitNewMovementMultipleErrors = "At least one of these errors cannot be fixed, so you need to create a new movement."
+    val createNewMovementLink = "create a new movement"
+
+    val arcText = "An ARC will only be created for a movement once it has been successfully submitted."
+  }
+
   object English extends ViewMessages
     with IE810SubmissionFailureMessages
     with IE837SubmissionFailureMessages
@@ -76,5 +86,6 @@ object ViewMessageMessages {
     with IE818SubmissionFailureMessages
     with IE819SubmissionFailureMessages
     with IE813SubmissionFailureMessages
+    with IE815SubmissionFailureMessages
     with EN
 }

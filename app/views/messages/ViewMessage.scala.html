@@ -57,7 +57,7 @@
         classes = "govuk-caption-m govuk-!-margin-bottom-7"
     )
 
-    @viewMessageHelper.constructMovementInformation(message.message)
+    @viewMessageHelper.constructMovementInformation(message)
 
     @viewMessageHelper.constructErrors(message)
 
@@ -65,7 +65,7 @@
 
     @viewMessageHelper.constructAdditionalInformation(message.message, movement)
 
-    @viewMessageHelper.constructActions(message.message, movement)
+    @viewMessageHelper.constructActions(message, movement)
 }
 
 @{

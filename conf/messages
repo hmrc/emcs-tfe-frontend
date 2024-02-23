@@ -486,6 +486,8 @@ messages.IE704.true.IE825.0.description = Error with split movement
 messages.IE704.true.IE837.0.description = Error with explanation for a delay
 messages.IE704.true.IE871.0.description = Error with explanation for a shortage or excess
 
+messages.IE704.IE815.h2 = Movement information
+
 messages.IE704.IE837.fixError.text = You need to
 messages.IE704.IE837.fixError.link = submit a new explanation of a delay
 
@@ -634,6 +636,12 @@ messages.IE704.IE871.fixError.link = submit a new explanation of a shortage or e
 
 messages.IE704.IE818.fixError.text = You need to
 messages.IE704.IE818.fixError.link = submit a new report of receipt
+
+messages.IE704.IE815.fixError.nonFixable.text.singular = The error cannot be fixed, so you need to
+messages.IE704.IE815.fixError.nonFixable.text.plural = At least one of these errors cannot be fixed, so you need to
+messages.IE704.IE815.fixError.nonFixable.link.createNewMovement = create a new movement
+
+messages.IE704.IE815.arc.text = An ARC will only be created for a movement once it has been successfully submitted.
 
 messages.link.helpline = Contact the HMRC excise helpline
 messages.link.helpline.text = if you need more help or advice.

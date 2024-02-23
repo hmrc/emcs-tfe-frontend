@@ -56,8 +56,8 @@ class ViewMessageHelperSpec extends SpecBase
   ".constructMovementInformation" when {
 
     "a message type description is present" in {
-      val testMessage = ie819ReceivedAlert.message
-      val result: Html = helper.constructMovementInformation(testMessage)
+      val testMessageCache = MessageCache(testErn, ie819ReceivedAlert.message, None)
+      val result: Html = helper.constructMovementInformation(testMessageCache)
       removeNewLines(result.toString()) mustBe removeNewLines(govukSummaryList(SummaryList(Seq(
         SummaryListRow(
           key = Key(Text(value = ViewMessageMessages.English.labelMessageType)),
@@ -65,30 +65,46 @@ class ViewMessageHelperSpec extends SpecBase
         ),
         SummaryListRow(
           key = Key(Text(value = ViewMessageMessages.English.labelArc)),
-          value = Value(Text(value = testMessage.arc.get))
+          value = Value(Text(value = testMessageCache.message.arc.get))
         ),
         SummaryListRow(
           key = Key(Text(value = ViewMessageMessages.English.labelLrn)),
-          value = Value(Text(value = testMessage.lrn.get))
+          value = Value(Text(value = testMessageCache.message.lrn.get))
         )
       ))).toString())
     }
 
     "a message type description is not present" in {
-      val testMessage = ie829ReceivedCustomsAcceptance.message
-      val result: Html = helper.constructMovementInformation(testMessage)
+      val testMessageCache = MessageCache(testErn, ie829ReceivedCustomsAcceptance.message, None)
+      val result: Html = helper.constructMovementInformation(testMessageCache)
       removeNewLines(result.toString()) mustBe removeNewLines(govukSummaryList(SummaryList(Seq(
         SummaryListRow(
           key = Key(Text(value = ViewMessageMessages.English.labelArc)),
-          value = Value(Text(value = testMessage.arc.get))
+          value = Value(Text(value = testMessageCache.message.arc.get))
         ),
         SummaryListRow(
           key = Key(Text(value = ViewMessageMessages.English.labelLrn)),
-          value = Value(Text(value = testMessage.lrn.get))
+          value = Value(Text(value = testMessageCache.message.lrn.get))
         )
       ))).toString())
     }
 
+    "show a H2 when the message is a 704 and the error message relates to an IE815" in {
+      val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+        relatedMessageType = Some("IE815")
+      )
+      val testMessageCache = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse))
+      val result: Html = helper.constructMovementInformation(testMessageCache)
+      removeNewLines(result.toString()) mustBe removeNewLines(
+        HtmlFormat.fill(Seq(
+          h2(ViewMessageMessages.English.movementInformationHeading),
+          govukSummaryList(SummaryList(Seq(
+            SummaryListRow(
+              key = Key(Text(value = ViewMessageMessages.English.labelLrn)),
+              value = Value(Text(value = testMessageCache.message.lrn.get))
+            ))
+          )))).toString())
+    }
 
 
   }
@@ -98,9 +114,9 @@ class ViewMessageHelperSpec extends SpecBase
     "return the correct action links" when {
 
       "when processing an IE813 notification" in {
-        val testMessage = ie813ReceivedChangeDestination.message
+        val testMessageCache = MessageCache(testErn, ie813ReceivedChangeDestination.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -109,17 +125,17 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = appConfig.emcsTfeReportAReceiptUrl(request.ern, testMessage.arc.getOrElse("")),
+                    link = appConfig.emcsTfeReportAReceiptUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
                     messageKey = "viewMessage.link.reportOfReceipt.description",
                     id = Some("submit-report-of-receipt")
                   ),
                   link(
-                    link = appConfig.emcsTfeExplainDelayUrl(request.ern, testMessage.arc.getOrElse("")),
+                    link = appConfig.emcsTfeExplainDelayUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
                     messageKey = "viewMessage.link.explainDelay.description",
                     id = Some("submit-explain-delay")
                   ),
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -139,9 +155,9 @@ class ViewMessageHelperSpec extends SpecBase
           )
       }
       "when processing an IE829 notification" in {
-        val testMessage = ie829ReceivedCustomsAcceptance.message
+        val testMessageCache = MessageCache(testErn, ie829ReceivedCustomsAcceptance.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -150,12 +166,12 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessage.arc.getOrElse("")),
+                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
                     messageKey = "viewMessage.link.changeDestination.description",
                     id = Some("submit-change-destination")
                   ),
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -175,9 +191,9 @@ class ViewMessageHelperSpec extends SpecBase
           )
       }
       "when processing an IE819 notification" in {
-        val testMessage = ie819SubmittedAlert.message
+        val testMessageCache = MessageCache(testErn, ie819SubmittedAlert.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -186,7 +202,7 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -206,9 +222,9 @@ class ViewMessageHelperSpec extends SpecBase
           )
       }
       "when processing an IE837 for a report of receipt" in {
-        val testMessage = ie837SubmittedExplainDelayROR.message
+        val testMessageCache = MessageCache(testErn, ie837SubmittedExplainDelayROR.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -217,12 +233,12 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = appConfig.emcsTfeReportAReceiptUrl(request.ern, testMessage.arc.getOrElse("")),
+                    link = appConfig.emcsTfeReportAReceiptUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
                     messageKey = "viewMessage.link.reportOfReceipt.description",
                     id = Some("submit-report-of-receipt")
                   ),
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -242,9 +258,9 @@ class ViewMessageHelperSpec extends SpecBase
           )
       }
       "when processing an IE837 for a change of destination" in {
-        val testMessage = ie837SubmittedExplainDelayCOD.message
+        val testMessageCache = MessageCache(testErn, ie837SubmittedExplainDelayCOD.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -253,12 +269,12 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessage.arc.getOrElse("")),
+                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
                     messageKey = "viewMessage.link.changeDestination.description",
                     id = Some("submit-change-destination")
                   ),
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -280,9 +296,9 @@ class ViewMessageHelperSpec extends SpecBase
       "when processing an IE871 for a shortage or excess" when {
         "the logged in user is the consignor of the movement" in {
 
-          val testMessage = ie871SubmittedShortageExcessAsAConsignor.message
+          val testMessageCache = MessageCache(testErn, ie871SubmittedShortageExcessAsAConsignor.message, None)
 
-          val result: Html = helper.constructActions(testMessage, Some(getMovementResponseModel))
+          val result: Html = helper.constructActions(testMessageCache, Some(getMovementResponseModel))
 
           result mustBe
             HtmlFormat.fill(
@@ -291,7 +307,7 @@ class ViewMessageHelperSpec extends SpecBase
                   extraClasses = Some("govuk-!-display-none-print"),
                   content = Seq(
                     link(
-                      link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                      link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                       messageKey = "viewMessage.link.viewMovement.description",
                       id = Some("view-movement")
                     ),
@@ -312,13 +328,13 @@ class ViewMessageHelperSpec extends SpecBase
         }
         "the logged in user is the consignee of the movement" in {
 
-          val testMessage = ie871SubmittedShortageExcessAsAConsignee.message
+          val testMessageCache = MessageCache(testErn, ie871SubmittedShortageExcessAsAConsignee.message, None)
 
           val movementWithLoggedInUserAsConsignee = Some(getMovementResponseModel
             .copy(consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = testErn)))
           )
 
-          val result: Html = helper.constructActions(testMessage, movementWithLoggedInUserAsConsignee)
+          val result: Html = helper.constructActions(testMessageCache, movementWithLoggedInUserAsConsignee)
 
           result mustBe
             HtmlFormat.fill(
@@ -327,12 +343,12 @@ class ViewMessageHelperSpec extends SpecBase
                   extraClasses = Some("govuk-!-display-none-print"),
                   content = Seq(
                     link(
-                      link = appConfig.emcsTfeReportAReceiptUrl(request.ern, testMessage.arc.getOrElse("")),
+                      link = appConfig.emcsTfeReportAReceiptUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
                       messageKey = "viewMessage.link.reportOfReceipt.description",
                       id = Some("submit-report-of-receipt")
                     ),
                     link(
-                      link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                      link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                       messageKey = "viewMessage.link.viewMovement.description",
                       id = Some("view-movement")
                     ),
@@ -352,10 +368,10 @@ class ViewMessageHelperSpec extends SpecBase
             )
         }
       }
-      "when processing an IE801 notification" in {
-        val testMessage = ie801ReceivedMovement.message
+      "when processing an IE801 (received) notification" in {
+        val testMessageCache = MessageCache(testErn, ie801ReceivedMovement.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -364,7 +380,7 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -383,10 +399,10 @@ class ViewMessageHelperSpec extends SpecBase
             )
           )
       }
-      "when processing an IE801 submission" in {
-        val testMessage = ie801SubmittedMovement.message
+      "when processing an IE801 (submitted) submission" in {
+        val testMessageCache = MessageCache(testErn, ie801SubmittedMovement.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -395,12 +411,12 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
                   link(
-                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessage.arc.getOrElse("")),
+                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
                     messageKey = "viewMessage.link.changeDestination.description",
                     id = Some("submit-change-destination")
                   ),
@@ -420,9 +436,9 @@ class ViewMessageHelperSpec extends SpecBase
           )
       }
       "when processing an IE803 notification change destination" in {
-        val testMessage = ie803ReceivedChangeDestination.message
+        val testMessageCache = MessageCache(testErn, ie803ReceivedChangeDestination.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -431,7 +447,7 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -451,9 +467,9 @@ class ViewMessageHelperSpec extends SpecBase
           )
       }
       "when processing an IE803 notification split" in {
-        val testMessage = ie803ReceivedSplit.message
+        val testMessageCache = MessageCache(testErn, ie803ReceivedSplit.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -462,7 +478,7 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -481,10 +497,10 @@ class ViewMessageHelperSpec extends SpecBase
             )
           )
       }
-      "when processing an IE818 notification" in {
-        val testMessage = ie818ReceivedReportOfReceipt.message
+      "when processing an IE818 (received) notification" in {
+        val testMessageCache = MessageCache(testErn, ie818ReceivedReportOfReceipt.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -493,7 +509,7 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -512,10 +528,10 @@ class ViewMessageHelperSpec extends SpecBase
             )
           )
       }
-      "when processing an IE818 submission" in {
-        val testMessage = ie818SubmittedReportOfReceipt.message
+      "when processing an IE818 (submitted) submission" in {
+        val testMessageCache = MessageCache(testErn, ie818SubmittedReportOfReceipt.message, None)
 
-        val result: Html = helper.constructActions(testMessage, None)
+        val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
           HtmlFormat.fill(
@@ -524,12 +540,12 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = appConfig.emcsTfeExplainShortageOrExcessUrl(request.ern, testMessage.arc.getOrElse("")),
+                    link = appConfig.emcsTfeExplainShortageOrExcessUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
                     messageKey = "viewMessage.link.explainShortageExcess.description",
                     id = Some("submit-shortage-excess")
                   ),
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessage.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -560,8 +576,10 @@ class ViewMessageHelperSpec extends SpecBase
           s"the error code is $errorCode" in {
             val message = MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(getSubmissionFailureMessageResponseModel.copy(IE704ModelFixtures.ie704ModelModel.copy(
               body = IE704BodyFixtures.ie704BodyModel.copy(
-                functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(s"$errorCode")))))
-            ))
+                functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(s"$errorCode"))
+              )),
+              relatedMessageType = Some("IE810")
+            )))
             val result = helper.constructErrors(message)
             removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
               h2("Errors"),
@@ -624,13 +642,31 @@ class ViewMessageHelperSpec extends SpecBase
   }
 
   ".contentForFixingError" must {
-    "return the correct content for an IE815 error" in {
-      //TODO: update when IE815 submission failure message is played (ETFE-2737)
-      helper.contentForFixingError("IE815", hasFixableError = true, testErn, testArc) mustBe Seq(Html("placeholder"))
+    "return the correct content for an IE815 error - fixable" in {
+      //TODO: update when IE815 submission failure message is played (ETFE-3437)
+      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, testErn, testArc) mustBe Seq(Html("placeholder"))
+    }
+
+    "return the correct content for an IE815 error - non-fixable (singular)" in {
+      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 1, testErn, "") mustBe Seq(
+        p()(HtmlFormat.fill(Seq(
+          Html("The error cannot be fixed, so you need to"),
+          link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+        )))
+      )
+    }
+
+    "return the correct content for an IE815 error - non-fixable (plural)" in {
+      helper.contentForFixingError("IE815", numberOfErrors = 3, numberOfNonFixableErrors = 2, testErn, "") mustBe Seq(
+        p()(HtmlFormat.fill(Seq(
+          Html("At least one of these errors cannot be fixed, so you need to"),
+          link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+        )))
+      )
     }
 
     "return the correct content for an IE810 error" in {
-      helper.contentForFixingError("IE810", hasFixableError = true, testErn, testArc) mustBe Seq(
+      helper.contentForFixingError("IE810", numberOfErrors = 1, numberOfNonFixableErrors = 1, testErn, testArc) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
           Html("If you still want to"),
           link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement", id = Some("cancel-movement")),
@@ -644,21 +680,21 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return the correct content for an IE837 error" in {
-      helper.contentForFixingError("IE837", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+      helper.contentForFixingError("IE837", numberOfErrors = 1, numberOfNonFixableErrors = 1, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
         link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true, id = Some("submit-new-explanation-for-delay"))
       ))))
     }
 
     "return the correct content for an IE871 error" in {
-      helper.contentForFixingError("IE871", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+      helper.contentForFixingError("IE871", numberOfErrors = 1, numberOfNonFixableErrors = 1, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
         link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
       ))))
     }
 
     "return the correct content for an IE818 error" in {
-      helper.contentForFixingError("IE818", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+      helper.contentForFixingError("IE818", numberOfErrors = 1, numberOfNonFixableErrors = 1, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
         link(
           link = appConfig.emcsTfeReportAReceiptUrl(testErn, testArc),
@@ -670,7 +706,7 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return the correct content for an IE819 error" in {
-      helper.contentForFixingError("IE819", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+      helper.contentForFixingError("IE819", numberOfErrors = 1, numberOfNonFixableErrors = 1, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("To correct any errors you must"),
         link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection", id = Some("submit-a-new-alert-rejection")),
         Html("of this movement.")
@@ -678,7 +714,7 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return the correct content for an IE825 error" in {
-      helper.contentForFixingError("IE825", hasFixableError = false, testErn, testArc) mustBe Seq.empty
+      helper.contentForFixingError("IE825", numberOfErrors = 1, numberOfNonFixableErrors = 1, testErn, testArc) mustBe Seq.empty
     }
 
     "return the correct content for an IE813 error" in {
@@ -689,11 +725,7 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return an empty list when the message type is not matched" in {
-      helper.contentForFixingError("FAKE", hasFixableError = true, testErn, testArc) mustBe Seq.empty
-    }
-
-    "return an empty list when there are no fixable errors" in {
-      helper.contentForFixingError("IE815", hasFixableError = false, testErn, testArc) mustBe Seq.empty
+      helper.contentForFixingError("FAKE", numberOfErrors = 1, numberOfNonFixableErrors = 0, testErn, testArc) mustBe Seq.empty
     }
   }
 
@@ -1055,6 +1087,76 @@ class ViewMessageHelperSpec extends SpecBase
                 id = Some("submit-change-destination")
               )
             ))
+          },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+    }
+
+    "for an IE815" must {
+
+      "return the correct content when the errors are non-fixable, 3rd party submission" in {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(
+              functionalError = Seq(
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry."),
+              )
+            )
+          ),
+          relatedMessageType = Some("IE815")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html("The error cannot be fixed, so you need to"),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+            ))
+          },
+          p() {
+            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+          },
+          p() {
+            Html("An ARC will only be created for a movement once it has been successfully submitted.")
+          },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
+              Html("if you need more help or advice.")
+            ))
+          }
+        )).toString())
+      }
+
+      "return the correct content when the errors are non-fixable, portal submission" in {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = ie704PortalSubmission.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(
+              functionalError = Seq(
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4403", errorReason = "The consignor Excise Registration Number you have entered is not recognised by SEED. Please amend your entry."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry."),
+              )
+            )
+          ),
+          relatedMessageType = Some("IE815")
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html("At least one of these errors cannot be fixed, so you need to"),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+            ))
+          },
+          p() {
+            Html("An ARC will only be created for a movement once it has been successfully submitted.")
           },
           p() {
             HtmlFormat.fill(Seq(

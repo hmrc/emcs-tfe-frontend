@@ -278,4 +278,10 @@ trait MessagesFixtures extends BaseFixtures {
     messageTitle = "Error with change of destination",
     messageSubTitle = None
   )
+
+  val ie704ErrorCreateMovementIE815 = TestMessage(
+    message = createMessage("IE704", optRelatedMessageType = Some("IE815")).copy(messageRole = 0, submittedByRequestingTrader = true),
+    messageTitle = "Error with movement submission",
+    messageSubTitle = None
+  )
 }
