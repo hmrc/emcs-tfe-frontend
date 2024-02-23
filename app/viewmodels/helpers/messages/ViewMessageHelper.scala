@@ -147,13 +147,13 @@ class ViewMessageHelper @Inject()(
   def constructFixErrorsContent(message: MessageCache)(implicit messages: Messages): Html = {
     message.errorMessage.map { failureMessage =>
       // If the correlation ID starts with PORTAL then it has been submitted via the frontend
-      val hasBeenSubmittedVia3rdParty: Boolean = !failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
+      val isPortalSubmission: Boolean = failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
       val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
       val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
-          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, message.ern, message.message.arc.getOrElse("")) ++
-            contentForSubmittedVia3rdParty(hasBeenSubmittedVia3rdParty) ++
+          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission, message.ern, message.message.arc.getOrElse("")) ++
+            contentForSubmittedVia3rdParty(isPortalSubmission) ++
             Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
             contentForContactingHelpdesk())
         case _ => Html("")
@@ -164,13 +164,13 @@ class ViewMessageHelper @Inject()(
 
 
   //scalastyle:off
-  private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, ern: String, arc: String)
+  private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, isPortalSubmission: Boolean, ern: String, arc: String)
                                              (implicit messages: Messages): Seq[Html] = {
     messageType match {
-      case "IE815" if numberOfNonFixableErrors == 0 => Seq(
+      case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission => Seq(
         Html("placeholder")
       )
-      case "IE815" =>
+      case "IE815" if isPortalSubmission =>
         Seq(
           p()(HtmlFormat.fill(Seq(
             Html(ViewUtils.pluralSingular("messages.IE704.IE815.fixError.nonFixable.text", numberOfErrors)),
@@ -224,9 +224,9 @@ class ViewMessageHelper @Inject()(
     }
   }
 
-  private[helpers] def contentForSubmittedVia3rdParty(hasBeenSubmittedVia3rdParty: Boolean)
+  private[helpers] def contentForSubmittedVia3rdParty(isPortalSubmission: Boolean)
                                                      (implicit messages: Messages): Seq[Html] = {
-    if (hasBeenSubmittedVia3rdParty) {
+    if (!isPortalSubmission) {
       Seq(p()(Html(messages("messages.submittedViaThirdParty"))))
     } else {
       Seq.empty

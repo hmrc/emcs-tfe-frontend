@@ -721,7 +721,7 @@ class ViewMessageSpec extends ViewSpecBase
       }
 
 
-      "render the correct content (when non-fixable) - portal" when {
+      "render the correct content (when non-fixable) - portal (singular)" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = ie704PortalSubmission.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
@@ -741,12 +741,12 @@ class ViewMessageSpec extends ViewSpecBase
         movementActionsLinksTest(withViewMovementLink = false)
       }
 
-      "render the correct content (when non-fixable) - 3rd party" when {
+      "render the correct content (when non-fixable) - portal (plural)" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
-          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+          ie704 = ie704PortalSubmission.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
               functionalError = Seq(
-                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4402", errorReason = "This Local Reference Number (LRN) you have entered has been used before. Please enter a unique LRN."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry."),
                 IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4403", errorReason = "The consignor Excise Registration Number you have entered is not recognised by SEED. Please amend your entry."),
                 IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry."),
               )
@@ -758,9 +758,30 @@ class ViewMessageSpec extends ViewSpecBase
         movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
         errorRowsTest(failureMessageResponse)
         submitNewMovementContentTest(1, isSingularWording = false)
-        thirdPartySubmissionTest(2)
-        arcContentTest(3)
-        helplineLinkTest(4)
+        arcContentTest(2)
+        helplineLinkTest(3)
+        movementActionsLinksTest(withViewMovementLink = false)
+      }
+
+      "render the correct content (when non-fixable) - 3rd party" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(
+              functionalError = Seq(
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4402", errorReason = "This Local Reference Number (LRN) you have entered has been used before. Please enter a unique LRN."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4403", errorReason = "The consignor Excise Registration Number you have entered is not recognised by SEED. Please amend your entry."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry.")
+              )
+            )
+          ),
+          relatedMessageType = Some("IE815")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
+        errorRowsTest(failureMessageResponse)
+        thirdPartySubmissionTest(1)
+        arcContentTest(2)
+        helplineLinkTest(3)
         movementActionsLinksTest(withViewMovementLink = false)
       }
     }
