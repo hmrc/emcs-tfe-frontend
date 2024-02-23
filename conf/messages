@@ -631,6 +631,8 @@ messages.IE704.IE810.fixError.cancel.suffix = you can submit a new cancellation 
 messages.IE704.IE810.fixError.changeDestination = However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to
 messages.IE704.IE810.fixError.changeDestination.link = submit a change of destination
 
+messages.IE704.IE825.fixError.text = Your split movement contained validation errors.
+
 messages.IE704.IE837.fixError.text = You need to
 messages.IE704.IE837.fixError.link = submit a new explanation of a delay
 

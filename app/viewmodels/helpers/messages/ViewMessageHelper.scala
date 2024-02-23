@@ -220,6 +220,8 @@ class ViewMessageHelper @Inject()(
           Html(messages("messages.IE704.IE837.fixError.text")),
           link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "messages.IE704.IE837.fixError.link", withFullStop = true, id = Some("submit-new-explanation-for-delay"))
         ))))
+      case "IE825" =>
+        Seq(p()(Html(messages("messages.IE704.IE825.fixError.text"))))
       case "IE871" =>
         Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.IE704.IE871.fixError.text")),

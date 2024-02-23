@@ -32,36 +32,49 @@ object ViewMessageMessages {
     val explainDelayLinkText = "Submit an explanation of a delay"
     val changeDestinationLinkText = "Submit a change of destination"
     val explainShortageExcessLinkText = "Submit explanation for a shortage or excess"
-    val helpline = "Contact the HMRC excise helpline (opens in new tab) if you need more help or advice."
-    val helplineLink = "Contact the HMRC excise helpline (opens in new tab)"
+    val helplineLink = "Contact the HMRC excise helpline"
+    val helplinePostLink = "if you need more help or advice."
+    val helpline = s"$helplineLink (opens in new tab) $helplinePostLink"
     val thirdParty = "If you used commercial software for your submission, please correct these errors with the same software that you used for the submission."
   }
 
   sealed trait IE810SubmissionFailureMessages {
-    val cancelMovement = "If you still want to cancel this movement you can submit a new cancellation with the errors corrected."
-    val changeDestination = "However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to submit a change of destination."
+    val cancelMovementPreLink = "If you still want to"
     val cancelMovementLink = "cancel this movement"
-    val changeDestinationLink = "change of destination"
+    val cancelMovementPostLink = "you can submit a new cancellation with the errors corrected."
+    val cancelMovement = s"$cancelMovementPreLink $cancelMovementLink $cancelMovementPostLink"
+    val changeDestinationPreLink = "However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to"
+    val changeDestinationLink = "submit a change of destination"
+    val changeDestination = s"$changeDestinationPreLink $changeDestinationLink."
   }
 
   sealed trait IE837SubmissionFailureMessages {
-    val submitNewExplainDelay = "You need to submit a new explanation of a delay."
+    val submitNewExplainDelayPreLink = "You need to"
     val submitNewExplainDelayLink = "submit a new explanation of a delay"
+    val submitNewExplainDelay = s"$submitNewExplainDelayPreLink $submitNewExplainDelayLink."
   }
 
   sealed trait IE871SubmissionFailureMessages { _: i18n =>
-    val submitNewExplanationOfShortageOrExcess = "You need to submit a new explanation of a shortage or excess."
+    val submitNewExplanationOfShortageOrExcessPreLink = "You need to"
     val submitNewExplanationOfShortageOrExcessLink = "submit a new explanation of a shortage or excess"
+    val submitNewExplanationOfShortageOrExcess = s"$submitNewExplanationOfShortageOrExcessPreLink $submitNewExplanationOfShortageOrExcessLink."
   }
 
   sealed trait IE818SubmissionFailureMessages { _: i18n =>
-    val submitNewReportOfReceipt = "You need to submit a new report of receipt."
+    val submitNewReportOfReceiptPreLink = "You need to"
     val submitNewReportOfReceiptLink = "submit a new report of receipt"
+    val submitNewReportOfReceipt = s"$submitNewReportOfReceiptPreLink $submitNewReportOfReceiptLink."
   }
 
   sealed trait IE819SubmissionFailureMessages {
-    val submitNewAlertRejection = "To correct any errors you must submit a new alert or rejection of this movement."
+    val submitNewAlertRejectionPreLink = "To correct any errors you must"
     val submitNewAlertRejectionLink = "submit a new alert or rejection"
+    val submitNewAlertRejectionPostLink = "of this movement."
+    val submitNewAlertRejection = s"$submitNewAlertRejectionPreLink $submitNewAlertRejectionLink $submitNewAlertRejectionPostLink"
+  }
+
+  sealed trait IE825SubmissionFailureMessages {
+    val splitMovementError = "Your split movement contained validation errors."
   }
 
   sealed trait IE813SubmissionFailureMessages {
@@ -93,5 +106,6 @@ object ViewMessageMessages {
     with IE819SubmissionFailureMessages
     with IE813SubmissionFailureMessages
     with IE815SubmissionFailureMessages
+    with IE825SubmissionFailureMessages
     with EN
 }
