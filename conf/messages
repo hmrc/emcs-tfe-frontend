@@ -1,6 +1,8 @@
 service.name = Excise Movement and Control System
 service.text = This is your new service
 
+site.warning = Warning:
+
 errorPage.title = Sorry, we’re experiencing technical difficulties
 errorPage.heading = Sorry, we’re experiencing technical difficulties
 errorPage.message = Please try again in a few minutes.
@@ -641,6 +643,9 @@ messages.IE704.IE818.fixError.link = submit a new report of receipt
 messages.IE704.IE815.fixError.nonFixable.text.singular = The error cannot be fixed, so you need to
 messages.IE704.IE815.fixError.nonFixable.text.plural = At least one of these errors cannot be fixed, so you need to
 messages.IE704.IE815.fixError.nonFixable.link.createNewMovement = create a new movement
+
+messages.IE704.IE815.fixError.fixable.link = Update and resubmit the movement
+messages.IE704.IE815.fixError.fixable.warning = If you delete this message you will not be able to access the original draft movement details and must create a new movement.
 
 messages.IE704.IE815.arc.text = An ARC will only be created for a movement once it has been successfully submitted.
 

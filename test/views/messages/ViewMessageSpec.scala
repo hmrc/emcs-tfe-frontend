@@ -720,6 +720,21 @@ class ViewMessageSpec extends ViewSpecBase
         )
       }
 
+      def updateMovementDraftContentTest(pIndex: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(pIndex) -> English.updateMovementLink
+          )
+        )
+      }
+
+      def warningTextContentTest()(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.warningText -> English.warningTextWhenFixable
+          )
+        )
+      }
 
       "render the correct content (when non-fixable) - portal (singular)" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
@@ -783,6 +798,33 @@ class ViewMessageSpec extends ViewSpecBase
         arcContentTest(2)
         helplineLinkTest(3)
         movementActionsLinksTest(withViewMovementLink = false)
+      }
+
+      "render the correct content (when fixable) - portal" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 =ie704PortalSubmission,
+          relatedMessageType = Some("IE815")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
+        updateMovementDraftContentTest(1)
+        arcContentTest(2)
+        helplineLinkTest(3)
+        movementActionsLinksTest(withViewMovementLink = false)
+        warningTextContentTest()
+      }
+
+      "render the correct content (when fixable) - 3rd party" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          relatedMessageType = Some("IE815")
+        )
+        implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
+        movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
+        thirdPartySubmissionTest(1)
+        arcContentTest(2)
+        helplineLinkTest(3)
+        movementActionsLinksTest(withViewMovementLink = false)
+        warningTextContentTest()
       }
     }
   }

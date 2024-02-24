@@ -66,6 +66,8 @@
     @viewMessageHelper.constructAdditionalInformation(message.message, movement)
 
     @viewMessageHelper.constructActions(message, movement)
+
+    @viewMessageHelper.showWarningTextIfFixableIE805(message)
 }
 
 @{

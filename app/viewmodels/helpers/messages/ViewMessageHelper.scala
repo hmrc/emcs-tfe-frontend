@@ -38,6 +38,7 @@ class ViewMessageHelper @Inject()(
                                    link: link,
                                    p: p,
                                    summary_list: summary_list,
+                                   warning_text: warning_text,
                                    h2: h2) extends DateUtils with TagFluency {
 
   def constructMovementInformation(messageCache: MessageCache)(implicit messages: Messages): Html = {
@@ -162,14 +163,30 @@ class ViewMessageHelper @Inject()(
 
   }
 
+  def showWarningTextIfFixableIE805(messageCache: MessageCache)(implicit messages: Messages): Html = {
+    messageCache.errorMessage.map {
+      errorMessage =>
+        val allErrorCodes = errorMessage.ie704.body.functionalError.map(_.errorType)
+        val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
+        if(numberOfNonFixableErrors == 0) {
+          warning_text(Html(messages("messages.IE704.IE815.fixError.fixable.warning")))
+        } else {
+          Html("")
+        }
+    }.getOrElse(Html(""))
+  }
 
   //scalastyle:off
   private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, isPortalSubmission: Boolean, ern: String, arc: String)
                                              (implicit messages: Messages): Seq[Html] = {
     messageType match {
-      case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission => Seq(
-        Html("placeholder")
-      )
+      case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission =>
+        Seq(
+          p()(HtmlFormat.fill(Seq(
+            //TODO: route to 'revive' draft movement controller on CaM
+            link("#", "messages.IE704.IE815.fixError.fixable.link", id = Some("update-draft-movement"), withFullStop = true)
+          )))
+        )
       case "IE815" if isPortalSubmission =>
         Seq(
           p()(HtmlFormat.fill(Seq(
@@ -239,4 +256,5 @@ class ViewMessageHelper @Inject()(
       Html(messages("messages.link.helpline.text"))
     ))))
   }
+
 }
