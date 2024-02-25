@@ -642,22 +642,25 @@ class ViewMessageHelperSpec extends SpecBase
   }
 
   ".contentForFixingError" must {
+
+    def messageCache(testMessage: TestMessage): MessageCache = MessageCache(testErn, testMessage.message, Some(getSubmissionFailureMessageResponseModel))
+
     "return the correct content for an IE815 error - fixable (portal)" in {
-      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = true, testErn, testArc) mustBe Seq(
+      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
-          //TODO: route to 'revive' draft movement controller on CaM
-          link("#", "Update and resubmit the movement", id = Some("update-draft-movement"), withFullStop = true)
+          link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
+            "Update and resubmit the movement", id = Some("update-draft-movement"), withFullStop = true)
         )))
       )
     }
 
     "return the correct content for an IE815 error - fixable (3rd party)" in {
       //TODO: update when IE815 submission failure message is played (ETFE-3437)
-      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = false, testErn, testArc) mustBe Seq()
+      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq()
     }
 
     "return the correct content for an IE815 error - non-fixable (singular - portal submission)" in {
-      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = true, testErn, "") mustBe Seq(
+      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
           Html("The error cannot be fixed, so you need to"),
           link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
@@ -666,7 +669,7 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return the correct content for an IE815 error - non-fixable (plural - portal submission)" in {
-      helper.contentForFixingError("IE815", numberOfErrors = 3, numberOfNonFixableErrors = 2, isPortalSubmission = true, testErn, "") mustBe Seq(
+      helper.contentForFixingError("IE815", numberOfErrors = 3, numberOfNonFixableErrors = 2, isPortalSubmission = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
           Html("At least one of these errors cannot be fixed, so you need to"),
           link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
@@ -675,11 +678,11 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return the correct content for an IE815 error - non-fixable (third party)" in {
-      helper.contentForFixingError("IE815", numberOfErrors = 3, numberOfNonFixableErrors = 2, isPortalSubmission = false, testErn, "") mustBe Seq()
+      helper.contentForFixingError("IE815", numberOfErrors = 3, numberOfNonFixableErrors = 2, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq()
     }
 
     "return the correct content for an IE810 error" in {
-      helper.contentForFixingError("IE810", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false, testErn, testArc) mustBe Seq(
+      helper.contentForFixingError("IE810", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorCancellationIE810)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
           Html("If you still want to"),
           link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement", id = Some("cancel-movement")),
@@ -693,21 +696,21 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return the correct content for an IE837 error" in {
-      helper.contentForFixingError("IE837", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+      helper.contentForFixingError("IE837", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorExplainDelayIE837)) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
         link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true, id = Some("submit-new-explanation-for-delay"))
       ))))
     }
 
     "return the correct content for an IE871 error" in {
-      helper.contentForFixingError("IE871", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+      helper.contentForFixingError("IE871", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorExplainShortageOrExcessIE871)) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
         link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
       ))))
     }
 
     "return the correct content for an IE818 error" in {
-      helper.contentForFixingError("IE818", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+      helper.contentForFixingError("IE818", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorReportOfReceiptIE818)) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
         link(
           link = appConfig.emcsTfeReportAReceiptUrl(testErn, testArc),
@@ -719,7 +722,7 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return the correct content for an IE819 error" in {
-      helper.contentForFixingError("IE819", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+      helper.contentForFixingError("IE819", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorAlertRejectionIE819)) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("To correct any errors you must"),
         link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection", id = Some("submit-a-new-alert-rejection")),
         Html("of this movement.")
@@ -727,7 +730,7 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return the correct content for an IE825 error" in {
-      helper.contentForFixingError("IE825", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false, testErn, testArc) mustBe Seq.empty
+      helper.contentForFixingError("IE825", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorSplitMovementIE825)) mustBe Seq.empty
     }
 
     "return the correct content for an IE813 error" in {
@@ -738,7 +741,7 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return an empty list when the message type is not matched" in {
-      helper.contentForFixingError("FAKE", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = false, testErn, testArc) mustBe Seq.empty
+      helper.contentForFixingError("FAKE", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = false)(implicitly, messageCache(ie801ReceivedMovement)) mustBe Seq.empty
     }
   }
 
@@ -1248,7 +1251,8 @@ class ViewMessageHelperSpec extends SpecBase
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
-            link("#", "Update and resubmit the movement", id = Some("update-draft-movement"), withFullStop = true)
+            link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
+              "Update and resubmit the movement", id = Some("update-draft-movement"), withFullStop = true)
           },
           p() {
             Html("An ARC will only be created for a movement once it has been successfully submitted.")

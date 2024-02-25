@@ -91,6 +91,7 @@ class ViewMessageHelper @Inject()(
       link = "#print-dialogue", messageKey = "viewMessage.link.printMessage.description", id = Some("print-link")
     )
     lazy val deleteMessageLink: Html = link(
+      //TODO: implement link in ETFE-2855
       link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url, messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
     )
     val actionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole,
@@ -145,15 +146,16 @@ class ViewMessageHelper @Inject()(
     }.getOrElse(Html(""))
   }
 
-  def constructFixErrorsContent(message: MessageCache)(implicit messages: Messages): Html = {
-    message.errorMessage.map { failureMessage =>
+  def constructFixErrorsContent(messageCache: MessageCache)(implicit messages: Messages): Html = {
+    implicit val msgCache: MessageCache = messageCache
+    messageCache.errorMessage.map { failureMessage =>
       // If the correlation ID starts with PORTAL then it has been submitted via the frontend
       val isPortalSubmission: Boolean = failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
       val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
       val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
-          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission, message.ern, message.message.arc.getOrElse("")) ++
+          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission) ++
             contentForSubmittedVia3rdParty(isPortalSubmission) ++
             Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
             contentForContactingHelpdesk())
@@ -177,14 +179,17 @@ class ViewMessageHelper @Inject()(
   }
 
   //scalastyle:off
-  private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, isPortalSubmission: Boolean, ern: String, arc: String)
-                                             (implicit messages: Messages): Seq[Html] = {
+  private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, isPortalSubmission: Boolean)
+                                             (implicit messages: Messages, messageCache: MessageCache): Seq[Html] = {
+    val ern = messageCache.ern
+    val arc = messageCache.message.arc.getOrElse("")
+    val uniqueMessageId = messageCache.message.uniqueMessageIdentifier
     messageType match {
       case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission =>
         Seq(
           p()(HtmlFormat.fill(Seq(
-            //TODO: route to 'revive' draft movement controller on CaM
-            link("#", "messages.IE704.IE815.fixError.fixable.link", id = Some("update-draft-movement"), withFullStop = true)
+            link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(ern, uniqueMessageId).url,
+              "messages.IE704.IE815.fixError.fixable.link", id = Some("update-draft-movement"), withFullStop = true)
           )))
         )
       case "IE815" if isPortalSubmission =>
