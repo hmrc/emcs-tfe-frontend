@@ -727,7 +727,7 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return the correct content for an IE813 error" in {
-      helper.contentForFixingError("IE813", hasFixableError = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
+      helper.contentForFixingError("IE813", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false, testErn, testArc) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
         link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a new change of destination", id = Some("submit-change-destination"), withFullStop = true)
       ))))
