@@ -57,6 +57,8 @@
         classes = "govuk-caption-m govuk-!-margin-bottom-7"
     )
 
+    @viewMessageHelper.constructSplitMessageErrorContent(message)
+
     @viewMessageHelper.constructMovementInformation(message)
 
     @viewMessageHelper.constructErrors(message)

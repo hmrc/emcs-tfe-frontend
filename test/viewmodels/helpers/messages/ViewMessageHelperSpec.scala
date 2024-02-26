@@ -27,6 +27,7 @@ import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Text, Value}
 import uk.gov.hmrc.govukfrontend.views.html.components._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import views.html.components._
 
@@ -778,12 +779,6 @@ class ViewMessageHelperSpec extends SpecBase
       ))))
     }
 
-    "return the correct content for an IE825 error" in {
-      helper.contentForFixingError("IE825", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorSplitMovementIE825)) mustBe Seq(p()(
-        Html(ViewMessageMessages.English.splitMovementError)
-      ))
-    }
-
     "return the correct content for an IE813 error" in {
       helper.contentForFixingError("IE813", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorChangeDestinationIE813)) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
@@ -914,7 +909,7 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html (ViewMessageMessages.English.submitNewExplanationOfShortageOrExcessPreLink),
+              Html(ViewMessageMessages.English.submitNewExplanationOfShortageOrExcessPreLink),
               link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), ViewMessageMessages.English.submitNewExplanationOfShortageOrExcessLink, withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
             ))
           },
@@ -1074,9 +1069,6 @@ class ViewMessageHelperSpec extends SpecBase
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorSplitMovementIE825.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
-            Html(ViewMessageMessages.English.splitMovementError)
-          },
-          p() {
             Html(ViewMessageMessages.English.thirdParty)
           },
           p() {
@@ -1095,9 +1087,6 @@ class ViewMessageHelperSpec extends SpecBase
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorSplitMovementIE825.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
-          p() {
-            Html(ViewMessageMessages.English.splitMovementError)
-          },
           p() {
             HtmlFormat.fill(Seq(
               link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
@@ -1410,6 +1399,51 @@ class ViewMessageHelperSpec extends SpecBase
 
       val testMessageCache = MessageCache(testErn, ie819ReceivedAlert.message, None)
       helper.showWarningTextIfFixableIE805(testMessageCache) mustBe Html("")
+    }
+  }
+
+  ".constructSplitMessageErrorContent" must {
+
+    "return the correct content for IE825" in {
+
+      val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+        relatedMessageType = Some("IE825")
+      )
+
+      val result = helper.constructSplitMessageErrorContent(MessageCache(
+        ern = testErn,
+        message = ie704ErrorSplitMovementIE825.message,
+        errorMessage = Some(failureMessageResponse)
+      ))
+
+      removeNewLines(result.toString()) mustBe
+        removeNewLines(p()(Html(ViewMessageMessages.English.splitMovementError)).toString())
+    }
+
+    "return empty Html when there is no relatedMessageType" in {
+
+      val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+        relatedMessageType = None
+      )
+
+      val result = helper.constructSplitMessageErrorContent(MessageCache(
+        ern = testErn,
+        message = ie704ErrorSplitMovementIE825.message,
+        errorMessage = Some(failureMessageResponse)
+      ))
+
+      result mustBe Empty.asHtml
+    }
+
+    "return empty Html when there is no error message" in {
+
+      val result = helper.constructSplitMessageErrorContent(MessageCache(
+        ern = testErn,
+        message = ie704ErrorSplitMovementIE825.message,
+        errorMessage = None
+      ))
+
+      result mustBe Empty.asHtml
     }
   }
 }
