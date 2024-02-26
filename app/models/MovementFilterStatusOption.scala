@@ -36,8 +36,8 @@ object MovementFilterStatusOption extends Enumerable.Implicits {
   case object Cancelled extends WithName("Cancelled") with MovementFilterStatusOption {
     override val displayName = "viewAllMovements.filters.status.cancelled"
   }
-  case object DeemedExported extends WithName("Deemed Exported") with MovementFilterStatusOption {
-    override val displayName = "viewAllMovements.filters.status.deemedExported"
+  case object DeemedExported extends WithName("DeemedExported") with MovementFilterStatusOption {
+    override val displayName = "viewAllMovements.filters.status.deemedexported"
   }
   case object Delivered extends WithName("Delivered") with MovementFilterStatusOption {
     override val displayName = "viewAllMovements.filters.status.delivered"
@@ -48,11 +48,11 @@ object MovementFilterStatusOption extends Enumerable.Implicits {
   case object Exporting extends WithName("Exporting") with MovementFilterStatusOption {
     override val displayName = "viewAllMovements.filters.status.exporting"
   }
-  case object ManuallyClosed extends WithName("Manually Closed") with MovementFilterStatusOption {
-    override val displayName = "viewAllMovements.filters.status.manuallyClosed"
+  case object ManuallyClosed extends WithName("ManuallyClosed") with MovementFilterStatusOption {
+    override val displayName = "viewAllMovements.filters.status.manuallyclosed"
   }
-  case object PartiallyRefused extends WithName("Partially Refused") with MovementFilterStatusOption {
-    override val displayName = "viewAllMovements.filters.status.partiallyRefused"
+  case object PartiallyRefused extends WithName("PartiallyRefused") with MovementFilterStatusOption {
+    override val displayName = "viewAllMovements.filters.status.partiallyrefused"
   }
   case object Refused extends WithName("Refused") with MovementFilterStatusOption {
     override val displayName = "viewAllMovements.filters.status.refused"

@@ -22,15 +22,19 @@
 package models
 
 import base.SpecBase
+import controllers.routes
 import fixtures.MovementListFixtures
+import fixtures.messages.ViewAllMovementsMessages.English
 import models.response.emcsTfe.GetMovementListItem
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.govukfrontend.views.html.components.Text
 import viewmodels.govuk.TagFluency
-import controllers.routes
 
 
 class GetMovementListItemSpec extends SpecBase with MovementListFixtures with TagFluency {
+
+  implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))
 
   "GetMovementListResponse" must {
 
@@ -59,34 +63,34 @@ class GetMovementListItemSpec extends SpecBase with MovementListFixtures with Ta
 
       "return an blue tag when status is Accepted" in {
 
-        movement1.copy(movementStatus = "Accepted").statusTag mustBe TagViewModel(Text("Accepted")).blue().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "Accepted").statusTag() mustBe TagViewModel(Text("Accepted")).blue().withCssClass("govuk-!-margin-top-5")
       }
 
       "return an green tag Deemed exported, Diverted or Exporting" in {
 
-        movement1.copy(movementStatus = "Deemed exported").statusTag mustBe TagViewModel(Text("Deemed exported")).green().withCssClass("govuk-!-margin-top-5")
-        movement1.copy(movementStatus = "Diverted").statusTag mustBe TagViewModel(Text("Diverted")).green().withCssClass("govuk-!-margin-top-5")
-        movement1.copy(movementStatus = "Exporting").statusTag mustBe TagViewModel(Text("Exporting")).green().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "DeemedExported").statusTag() mustBe TagViewModel(Text("Deemed exported")).green().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "Diverted").statusTag() mustBe TagViewModel(Text("Diverted")).green().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "Exporting").statusTag() mustBe TagViewModel(Text("Exporting")).green().withCssClass("govuk-!-margin-top-5")
       }
 
       "return an orange tag Partially refused, Refused or Rejected" in {
 
-        movement1.copy(movementStatus = "Partially refused").statusTag mustBe TagViewModel(Text("Partially refused")).orange().withCssClass("govuk-!-margin-top-5")
-        movement1.copy(movementStatus = "Refused").statusTag mustBe TagViewModel(Text("Refused")).orange().withCssClass("govuk-!-margin-top-5")
-        movement1.copy(movementStatus = "Rejected").statusTag mustBe TagViewModel(Text("Rejected")).orange().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "PartiallyRefused").statusTag() mustBe TagViewModel(Text("Partially refused")).orange().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "Refused").statusTag() mustBe TagViewModel(Text("Refused")).orange().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "Rejected").statusTag() mustBe TagViewModel(Text("Rejected")).orange().withCssClass("govuk-!-margin-top-5")
       }
 
       "return an purple tag Cancelled, Manually closed, Replaced or Stopped" in {
 
-        movement1.copy(movementStatus = "Cancelled").statusTag mustBe TagViewModel(Text("Cancelled")).purple().withCssClass("govuk-!-margin-top-5")
-        movement1.copy(movementStatus = "Manually closed").statusTag mustBe TagViewModel(Text("Manually closed")).purple().withCssClass("govuk-!-margin-top-5")
-        movement1.copy(movementStatus = "Replaced").statusTag mustBe TagViewModel(Text("Replaced")).purple().withCssClass("govuk-!-margin-top-5")
-        movement1.copy(movementStatus = "Stopped").statusTag mustBe TagViewModel(Text("Stopped")).purple().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "Cancelled").statusTag() mustBe TagViewModel(Text("Cancelled")).purple().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "ManuallyClosed").statusTag() mustBe TagViewModel(Text("Manually closed")).purple().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "Replaced").statusTag() mustBe TagViewModel(Text("Replaced")).purple().withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "Stopped").statusTag() mustBe TagViewModel(Text("Stopped")).purple().withCssClass("govuk-!-margin-top-5")
       }
 
       "return an green tag is Delivered" in {
 
-        movement1.copy(movementStatus = "Delivered").statusTag mustBe TagViewModel(Text("Delivered")).withCssClass("govuk-!-margin-top-5")
+        movement1.copy(movementStatus = "Delivered").statusTag() mustBe TagViewModel(Text("Delivered")).withCssClass("govuk-!-margin-top-5")
       }
     }
   }
