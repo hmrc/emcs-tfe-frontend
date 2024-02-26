@@ -192,6 +192,11 @@ class ViewMessageHelper @Inject()(
           link(appConfig.emcsTfeAlertOrRejectionUrl(ern, arc), "messages.IE704.IE819.fixError.link", id = Some("submit-a-new-alert-rejection")),
           Html(messages("messages.IE704.IE819.fixError.text.2"))
         ))))
+      case "IE813" =>
+        Seq(p()(HtmlFormat.fill(Seq(
+          Html(messages("messages.IE704.IE813.fixError.text")),
+          link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.IE704.IE813.fixError.link", id = Some("submit-change-destination"), withFullStop = true)
+        ))))
       case _ => Seq.empty
     }
   }

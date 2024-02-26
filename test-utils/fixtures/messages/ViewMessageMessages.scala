@@ -64,11 +64,17 @@ object ViewMessageMessages {
     val submitNewAlertRejectionLink = "submit a new alert or rejection"
   }
 
+  sealed trait IE813SubmissionFailureMessages {
+    val submitNewChangeDestination = "You need to submit a new change of destination."
+    val submitNewChangeDestinationLink = "submit a new change of destination"
+  }
+
   object English extends ViewMessages
     with IE810SubmissionFailureMessages
     with IE837SubmissionFailureMessages
     with IE871SubmissionFailureMessages
     with IE818SubmissionFailureMessages
     with IE819SubmissionFailureMessages
+    with IE813SubmissionFailureMessages
     with EN
 }
