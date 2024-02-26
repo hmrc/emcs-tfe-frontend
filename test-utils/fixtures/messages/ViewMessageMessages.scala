@@ -29,7 +29,7 @@ object ViewMessageMessages {
     val printMessageLinkText = "Print message"
     val deleteMessageLinkText = "Delete message"
     val reportOfReceiptLinkText = "Submit report of receipt"
-    val explainDelayLinkText = "Create explanation for a delay and provide information"
+    val explainDelayLinkText = "Submit an explanation of a delay"
     val changeDestinationLinkText = "Submit a change of destination"
     val explainShortageExcessLinkText = "Submit explanation for a shortage or excess"
     val helpline = "Contact the HMRC excise helpline (opens in new tab) if you need more help or advice."
