@@ -43,6 +43,9 @@ class ViewMessageHelper @Inject()(
 
   def constructMovementInformation(messageCache: MessageCache)(implicit messages: Messages): Html = {
     val is704ForIE815 = messageCache.errorMessage.exists(_.relatedMessageType.contains("IE815"))
+    //In some cases (according to QA data) the LRN may not be in the message itself, but it's in the error message so we may
+    //need to fallback on that
+    val lrnFromErrorMessage = messageCache.errorMessage.flatMap(_.ie704.body.attributes.flatMap(_.lrn))
     val optMessageTypeRow = messagesHelper.messageTypeKey(messageCache.message).map( value =>
       Seq(messages("viewMessage.table.messageType.label") -> messages(value))
     ).getOrElse(Seq.empty)
@@ -50,7 +53,7 @@ class ViewMessageHelper @Inject()(
       if(is704ForIE815) Some(h2("messages.IE704.IE815.h2")) else None,
       Some(summary_list(optMessageTypeRow ++ Seq(
         if(!is704ForIE815) Some(messages("viewMessage.table.arc.label") -> messages(messageCache.message.arc.getOrElse(""))) else None,
-        Some(messages("viewMessage.table.lrn.label") -> messages(messageCache.message.lrn.getOrElse("")))
+        Some(messages("viewMessage.table.lrn.label") -> messages(messageCache.message.lrn.orElse(lrnFromErrorMessage).getOrElse("")))
       ).flatten))
     ).flatten)
   }

@@ -107,6 +107,23 @@ class ViewMessageHelperSpec extends SpecBase
           )))).toString())
     }
 
+    "fallback to the LRN in the error message when the message itself doesn't have an LRN (4402 error)" in {
+      val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+        relatedMessageType = Some("IE815")
+      )
+      val testMessageCache = MessageCache(testErn, ie704ErrorCreateMovementIE815.message.copy(lrn = None), Some(failureMessageResponse))
+      val result: Html = helper.constructMovementInformation(testMessageCache)
+      removeNewLines(result.toString()) mustBe removeNewLines(
+        HtmlFormat.fill(Seq(
+          h2(ViewMessageMessages.English.movementInformationHeading),
+          govukSummaryList(SummaryList(Seq(
+            SummaryListRow(
+              key = Key(Text(value = ViewMessageMessages.English.labelLrn)),
+              value = Value(Text(value = failureMessageResponse.ie704.body.attributes.get.lrn.get))
+            ))
+          )))).toString())
+    }
+
   }
 
   ".constructActions" must {
