@@ -50,57 +50,62 @@
     fullWidthContent = true
 ) {
 
-    @{
-        maybeDeletedPageTitle.map(messageTitle => {
-            notificationBanner(
-                NotificationBanner(
-                    title = messages("deleteMessage.successMessageTitle"),
-                    content = messages("deleteMessage.successMessagePart") + ":" + messageTitle,
-                    classes = "govuk-!-margin-top-4"
-                )
-            )
-        })
-    }
-
-     @h1() {
-         @messages("viewAllMessages.heading", request.messageStatistics.countOfAllMessages)
-     }
-
-     <div class="inbox">
-        @p(classes = "govuk-body-l") {
-             @messages("viewAllMessages.totalNumberOfMessages", request.messageStatistics.countOfNewMessages)
-         }
-
-        <form>
-            <div style="display: inline-flex; align-items: flex-end;">
-                @govukSelect(Select(
-                    items = sortSelectItems,
-                    name = "sortBy",
-                    id = "sortBy",
-                    label = Label(
-                        content = Text(messages("viewAllMessages.sort.label")),
-                        classes = "govuk-!-display-inline govuk-!-padding-right-2"
-                    ),
-                    classes = "govuk-!-display-inline"
-                ))
-
-                @govukButton(
-                    ButtonViewModel(Text(messages("viewAllMessages.sort.button")))
-                            .withCssClass("govuk-!-margin-left-2")
-                            .withId("sortBySubmit")
-                )
-
-                <input type="hidden" name="index" value="@{searchOptions.index}"/>
+    <div class="govuk-grid-row">
+        @if(maybeDeletedPageTitle.isDefined){
+            <div class="govuk-grid-column-two-thirds">
+                @{
+                    notificationBanner(
+                        NotificationBanner(
+                            title = messages("deleteMessage.successMessageTitle"),
+                            content = messages("deleteMessage.successMessagePart") + ": " + maybeDeletedPageTitle.get,
+                            classes = "govuk-notification-banner--success"
+                        )
+                    )
+                }
             </div>
-        </form>
+        }
+
+        <div class="govuk-grid-column-full">
+             @h1() {
+                 @messages("viewAllMessages.heading", request.messageStatistics.countOfAllMessages)
+             }
+
+             <div class="inbox">
+                @p(classes = "govuk-body-l") {
+                     @messages("viewAllMessages.totalNumberOfMessages", request.messageStatistics.countOfNewMessages)
+                 }
+
+                <form>
+                    <div style="display: inline-flex; align-items: flex-end;">
+                        @govukSelect(Select(
+                            items = sortSelectItems,
+                            name = "sortBy",
+                            id = "sortBy",
+                            label = Label(
+                                content = Text(messages("viewAllMessages.sort.label")),
+                                classes = "govuk-!-display-inline govuk-!-padding-right-2"
+                            ),
+                            classes = "govuk-!-display-inline"
+                        ))
+
+                        @govukButton(
+                            ButtonViewModel(Text(messages("viewAllMessages.sort.button")))
+                                    .withCssClass("govuk-!-margin-left-2")
+                                    .withId("sortBySubmit")
+                        )
+
+                        <input type="hidden" name="index" value="@{searchOptions.index}"/>
+                    </div>
+                </form>
+            </div>
+
+            @tableHelper.constructTable(allMessages)
+
+            @govukPagination(
+                paginationHelper.constructPagination(totalNumberOfPages, request.ern, searchOptions)
+            )
+        </div>
     </div>
-
-    @tableHelper.constructTable(allMessages)
-
-    @govukPagination(
-        paginationHelper.constructPagination(totalNumberOfPages, request.ern, searchOptions)
-    )
-
 }
 
 @{

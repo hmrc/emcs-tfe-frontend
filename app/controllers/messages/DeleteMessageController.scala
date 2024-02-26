@@ -16,7 +16,7 @@
 
 package controllers.messages
 
-import config.SessionKeys.{DELETED_MESSAGE_TITLE, FROM_PAGE}
+import config.SessionKeys.{DELETED_MESSAGE_TITLE, FROM_PAGE, TEMP_DELETE_MESSAGE_TITLE}
 import controllers.messages.routes.{ViewAllMessagesController, ViewMessageController}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import forms.DeleteMessageFormProvider
@@ -24,13 +24,13 @@ import models.messages.MessagesSearchOptions
 import models.requests.DataRequest
 import pages.{Page, ViewAllMessagesPage, ViewMessagePage}
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.{DeleteMessageService, GetMessagesService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.messages.DeleteMessage
 import viewmodels.helpers.messages.DeleteMessageHelper
+import views.html.messages.DeleteMessage
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,8 +43,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                         val deleteMessageService: DeleteMessageService,
                                         formProvider: DeleteMessageFormProvider,
                                         val view: DeleteMessage,
-                                        val deleteMessageHelper: DeleteMessageHelper,
-                                        val messages: Messages)
+                                        val deleteMessageHelper: DeleteMessageHelper)
                                        (implicit val executionContext: ExecutionContext)
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
@@ -59,55 +58,30 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
-
+  def onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] =
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       formProvider().bindFromRequest().fold(
         formWithErrors => {
           renderView(exciseRegistrationNumber, uniqueMessageIdentifier, formWithErrors, pageFromSession(request.session.get(FROM_PAGE)))
         },
-        deleteMessage => {
-          if (deleteMessage) {
-            deleteMessageService.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier)
-              .map(deleteMessageResponse => {
+        userSelectsDeleteMessage => {
+          if (userSelectsDeleteMessage) {
+            deleteMessageService.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier) map {
+              case deleteMessageResponse if deleteMessageResponse.recordsAffected == 1 =>
+                // redirect to all messages page to show success banner, add the deleted message title to session for the banner title
+                Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
+                  .addingToSession(DELETED_MESSAGE_TITLE -> request.session.get(TEMP_DELETE_MESSAGE_TITLE).getOrElse(""))
+                  .removingFromSession(TEMP_DELETE_MESSAGE_TITLE)
 
-                if (deleteMessageResponse.recordsAffected == 1) {
-                  /*
-                    TODO
-                     - set a session key with the message title
-                     - redirect to the ViewAllMessage controller with the message deleted success thingy
-
-                   */
-
-
-                  Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
-
-                } else {
-
-                  // TODO error deleting message ???
-                }
-
-                ???
-              }) // TODO recoverWith ???
-
-          } else {
-
-            pageFromSession(request.session.get(FROM_PAGE)) match {
-              case ViewAllMessagesPage =>
-                Future(
-                  removeFromPageSessionValue(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
-                )
-              case _ =>
-                Future(
-                  removeFromPageSessionValue(Redirect(ViewMessageController.onPageLoad(exciseRegistrationNumber, uniqueMessageIdentifier)))
-                )
+              case _ => // TODO what do we show if no records are deleted?
+                Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
             }
+          } else {
+            returnToAllMessagesOrMessagePage(exciseRegistrationNumber, uniqueMessageIdentifier)
           }
         }
       )
-
     }
-  }
 
   def renderView(exciseRegistrationNumber: String,
                  uniqueMessageIdentifier: Long,
@@ -115,7 +89,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                  fromPage: Page)(implicit dr: DataRequest[_], hc: HeaderCarrier): Future[Result] = {
 
     getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).flatMap {
-      case Some(messageCache) =>
+      case Some(messageCache) => {
         Future(
           removeFromPageSessionValue(
             Ok(view(
@@ -124,14 +98,30 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
               returnToMessagesUrl = ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
               fromPage
             ))
-          ).addingToSession(DELETED_MESSAGE_TITLE -> messages(deleteMessageHelper.getMessageTitleKey(messageCache.message)))
+          ).addingToSession(
+            // used to avoid another call to the getMessagesService in the onSubmit method, as we can set the message title here
+            TEMP_DELETE_MESSAGE_TITLE -> mcc.messagesApi.messages("default")(deleteMessageHelper.getMessageTitleKey(messageCache.message))
+          )
         )
+      }
       case None =>
         Future(
           removeFromPageSessionValue(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
         )
     }
   }
+
+  // When the user selects No, return to ViewAllMessage or ViewMessage page, depending on how they got here
+  private def returnToAllMessagesOrMessagePage(exciseRegistrationNumber: String,
+                                               uniqueMessageIdentifier: Long)(implicit dr: DataRequest[_]): Future[Result] =
+    Future(
+      pageFromSession(dr.session.get(FROM_PAGE)) match {
+        case ViewAllMessagesPage =>
+          removeFromPageSessionValue(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
+        case _ =>
+          removeFromPageSessionValue(Redirect(ViewMessageController.onPageLoad(exciseRegistrationNumber, uniqueMessageIdentifier)))
+      }
+    )
 
   private def pageFromSession(pageFromSession: Option[String]): Page = {
     pageFromSession match {

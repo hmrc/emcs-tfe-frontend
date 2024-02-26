@@ -38,26 +38,23 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
                                           val betaAllowList: BetaAllowListAction,
                                           getMessagesService: GetMessagesService,
                                           val view: ViewAllMessages,
-                                          errorHandler: ErrorHandler
-                                         )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                          errorHandler: ErrorHandler)
+                                         (implicit val executionContext: ExecutionContext)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
-
-  def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] =
+  def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] = {
     authorisedWithData(ern).async { implicit request =>
-      val maybeDeletedMessageTitle = request.session.get(DELETED_MESSAGE_TITLE)
-
-      val sessionWithFromPageSetAndDeletedMessageTitleRemoved: Session =
-        request.session - DELETED_MESSAGE_TITLE + (FROM_PAGE -> ViewAllMessagesPage.toString)
+      val session = amendSession(request.session)
 
       if (search.index <= 0) {
         Future.successful(
-          Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
-            .withSession(sessionWithFromPageSetAndDeletedMessageTitleRemoved)
+          Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1))).withSession(session)
         )
       } else {
-        renderView(Ok, ern, search, sessionWithFromPageSetAndDeletedMessageTitleRemoved, maybeDeletedMessageTitle)
+        renderView(Ok, ern, search, session, request.session.get(DELETED_MESSAGE_TITLE))
       }
     }
+  }
 
   private def renderView(status: Status,
                          ern: String,
@@ -98,6 +95,19 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
       (totalNumberOfMessagesAvailable / maximumRowsPerPage) + 1
     } else {
       totalNumberOfMessagesAvailable / maximumRowsPerPage
+    }
+  }
+
+  // Set the FROM_PAGE session variable used by the delete message controller.
+  // If set, unset the DELETED_MESSAGE_TITLE variable, so the 'Success Message Deleted' banner does not show when we visit
+  // this page, if the user has not deleted a message.
+  private def amendSession(previousSession: Session): Session = {
+    val session = previousSession + (FROM_PAGE -> ViewAllMessagesPage.toString)
+
+    if (previousSession.get(DELETED_MESSAGE_TITLE).isDefined) {
+      session - DELETED_MESSAGE_TITLE
+    } else {
+      session
     }
   }
 }
