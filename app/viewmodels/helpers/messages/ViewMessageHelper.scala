@@ -26,6 +26,7 @@ import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
 import utils.DateUtils
 import viewmodels.govuk.TagFluency
+import views.ViewUtils
 import views.html.components._
 
 import javax.inject.Inject
@@ -39,15 +40,18 @@ class ViewMessageHelper @Inject()(
                                    summary_list: summary_list,
                                    h2: h2) extends DateUtils with TagFluency {
 
-  def constructMovementInformation(message: Message)(implicit messages: Messages): Html = {
-    val optMessageTypeRow = messagesHelper.messageTypeKey(message).map( value =>
+  def constructMovementInformation(messageCache: MessageCache)(implicit messages: Messages): Html = {
+    val is704ForIE815 = messageCache.errorMessage.exists(_.relatedMessageType.contains("IE815"))
+    val optMessageTypeRow = messagesHelper.messageTypeKey(messageCache.message).map( value =>
       Seq(messages("viewMessage.table.messageType.label") -> messages(value))
     ).getOrElse(Seq.empty)
-
-    summary_list(optMessageTypeRow ++ Seq(
-      messages("viewMessage.table.arc.label") -> messages(message.arc.getOrElse("")),
-      messages("viewMessage.table.lrn.label") -> messages(message.lrn.getOrElse(""))
-    ))
+    HtmlFormat.fill(Seq(
+      if(is704ForIE815) Some(h2("messages.IE704.IE815.h2")) else None,
+      Some(summary_list(optMessageTypeRow ++ Seq(
+        if(!is704ForIE815) Some(messages("viewMessage.table.arc.label") -> messages(messageCache.message.arc.getOrElse(""))) else None,
+        Some(messages("viewMessage.table.lrn.label") -> messages(messageCache.message.lrn.getOrElse("")))
+      ).flatten))
+    ).flatten)
   }
 
   def constructAdditionalInformation(message: Message, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages): Html =
@@ -61,52 +65,58 @@ class ViewMessageHelper @Inject()(
     }
 
 
-  def constructActions(message: Message, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages): Html = {
-    def reportOfReceiptLink(): Html = link(
-        link = appConfig.emcsTfeReportAReceiptUrl(request.ern, message.arc.getOrElse("")),
-        messageKey = "viewMessage.link.reportOfReceipt.description", id = Some("submit-report-of-receipt"))
-    def explainDelayLink(): Html = link(
-        link = appConfig.emcsTfeExplainDelayUrl(request.ern, message.arc.getOrElse("")),
-        messageKey = "viewMessage.link.explainDelay.description", id = Some("submit-explain-delay"))
-    def changeDestinationLink(): Html = link(
-        link = appConfig.emcsTfeChangeDestinationUrl(request.ern, message.arc.getOrElse("")),
-        messageKey = "viewMessage.link.changeDestination.description", id = Some("submit-change-destination"))
-    def explainShortageExcessLink(): Html = link(
+  def constructActions(messageCache: MessageCache, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages): Html = {
+    val message = messageCache.message
+    lazy val reportOfReceiptLink: Html = link(
+      link = appConfig.emcsTfeReportAReceiptUrl(request.ern, message.arc.getOrElse("")),
+      messageKey = "viewMessage.link.reportOfReceipt.description", id = Some("submit-report-of-receipt"))
+    lazy val explainDelayLink: Html = link(
+      link = appConfig.emcsTfeExplainDelayUrl(request.ern, message.arc.getOrElse("")),
+      messageKey = "viewMessage.link.explainDelay.description", id = Some("submit-explain-delay")
+    )
+    lazy val changeDestinationLink: Html = link(
+      link = appConfig.emcsTfeChangeDestinationUrl(request.ern, message.arc.getOrElse("")),
+      messageKey = "viewMessage.link.changeDestination.description", id = Some("submit-change-destination")
+    )
+    lazy val explainShortageExcessLink: Html = link(
       link = appConfig.emcsTfeExplainShortageOrExcessUrl(request.ern, message.arc.getOrElse("")),
-      messageKey = "viewMessage.link.explainShortageExcess.description", id = Some("submit-shortage-excess"))
-    def viewMovementLink(): Html = link(
-        link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, message.arc.getOrElse("")).url,
-        messageKey = "viewMessage.link.viewMovement.description", id = Some("view-movement"))
-    def printMessageLink(): Html = link(
-        link = "#print-dialogue",
-        messageKey = "viewMessage.link.printMessage.description", id = Some("print-link"))
-    def deleteMessageLink(): Html = link(
-        link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-        messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message"))
-
-    val actionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole) match {
-      case ("IE801", true, _) =>
-        Seq(viewMovementLink(), changeDestinationLink(), printMessageLink(), deleteMessageLink())
-      case ("IE802", false, 1) =>
-        Seq(changeDestinationLink(), explainDelayLink(),viewMovementLink(), printMessageLink(), deleteMessageLink())
-      case ("IE802", false, 2) =>
-        Seq(viewMovementLink(), reportOfReceiptLink(), explainDelayLink(), printMessageLink(), deleteMessageLink())
-      case ("IE802", false, 3) =>
-        Seq(changeDestinationLink(), explainDelayLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
-      case ("IE829", false, _) | ("IE837", true, 2) | ("IE839", false, _) =>
-        Seq(changeDestinationLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
-      case ("IE813", false, _) =>
-        Seq(reportOfReceiptLink(), explainDelayLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
-      case ("IE818", true, _) =>
-        Seq(explainShortageExcessLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
-      case ("IE837", true, 1) =>
-        Seq(reportOfReceiptLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
-      case ("IE871", true, _) if movement.exists(_.isConsigneeOfMovement(request.ern)) =>
-        Seq(reportOfReceiptLink(), viewMovementLink(), printMessageLink(), deleteMessageLink())
+      messageKey = "viewMessage.link.explainShortageExcess.description", id = Some("submit-shortage-excess")
+    )
+    lazy val viewMovementLink: Html = link(
+      link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, message.arc.getOrElse("")).url,
+      messageKey = "viewMessage.link.viewMovement.description", id = Some("view-movement")
+    )
+    lazy val printMessageLink: Html = link(
+      link = "#print-dialogue", messageKey = "viewMessage.link.printMessage.description", id = Some("print-link")
+    )
+    lazy val deleteMessageLink: Html = link(
+      link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url, messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
+    )
+    val actionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole,
+      messageCache.errorMessage.flatMap(_.relatedMessageType)) match {
+      case ("IE801", true, _, _) =>
+        Seq(viewMovementLink, changeDestinationLink, printMessageLink, deleteMessageLink)
+      case ("IE802", false, 1, _) =>
+        Seq(changeDestinationLink, explainDelayLink,viewMovementLink, printMessageLink, deleteMessageLink)
+      case ("IE802", false, 2, _) =>
+        Seq(viewMovementLink, reportOfReceiptLink, explainDelayLink, printMessageLink, deleteMessageLink)
+      case ("IE802", false, 3, _) =>
+        Seq(changeDestinationLink, explainDelayLink, viewMovementLink, printMessageLink, deleteMessageLink)
+      case ("IE829", false, _, _) | ("IE837", true, 2, _) | ("IE839", false, _, _) =>
+        Seq(changeDestinationLink, viewMovementLink, printMessageLink, deleteMessageLink)
+      case ("IE813", false, _, _) =>
+        Seq(reportOfReceiptLink, explainDelayLink, viewMovementLink, printMessageLink, deleteMessageLink)
+      case ("IE818", true, _, _) =>
+        Seq(explainShortageExcessLink, viewMovementLink, printMessageLink, deleteMessageLink)
+      case ("IE837", true, 1, _) =>
+        Seq(reportOfReceiptLink, viewMovementLink, printMessageLink, deleteMessageLink)
+      case ("IE871", true, _, _) if movement.exists(_.isConsigneeOfMovement(request.ern)) =>
+        Seq(reportOfReceiptLink, viewMovementLink, printMessageLink, deleteMessageLink)
+      case (_, _, _, Some("IE815")) =>
+        Seq(printMessageLink, deleteMessageLink)
       case _ =>
-        Seq(viewMovementLink(), printMessageLink(), deleteMessageLink())
+        Seq(viewMovementLink, printMessageLink, deleteMessageLink)
     }
-
     list(
       content = actionLinks,
       extraClasses = Some("govuk-!-display-none-print")
@@ -116,15 +126,20 @@ class ViewMessageHelper @Inject()(
   def constructErrors(message: MessageCache)(implicit messages: Messages): Html = {
     message.errorMessage.map {
       submissionFailureMessage => {
-        HtmlFormat.fill(Seq(
-          h2("messages.errors.heading"),
-          summary_list(
-            submissionFailureMessage.ie704.body.functionalError.map { error =>
-              val mappedErrorMessage = Some(s"messages.IE704.error.${error.errorType}").filter(messages.isDefinedAt)
-              error.errorType -> mappedErrorMessage.map(messages(_)).getOrElse(error.errorReason)
-            }
-          )
-        ))
+        val allErrorCodes = submissionFailureMessage.ie704.body.functionalError.map(_.errorType)
+        val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
+        submissionFailureMessage.relatedMessageType match {
+          case Some("IE815") if numberOfNonFixableErrors == 0 => Html("")
+          case _ => HtmlFormat.fill(Seq(
+            h2("messages.errors.heading"),
+            summary_list(
+              submissionFailureMessage.ie704.body.functionalError.map { error =>
+                val mappedErrorMessage = Some(s"messages.IE704.error.${error.errorType}").filter(messages.isDefinedAt)
+                error.errorType -> mappedErrorMessage.map(messages(_)).getOrElse(error.errorReason)
+              }
+            )
+          ))
+        }
       }
     }.getOrElse(Html(""))
   }
@@ -132,13 +147,14 @@ class ViewMessageHelper @Inject()(
   def constructFixErrorsContent(message: MessageCache)(implicit messages: Messages): Html = {
     message.errorMessage.map { failureMessage =>
       // If the correlation ID starts with PORTAL then it has been submitted via the frontend
-      val hasBeenSubmittedVia3rdParty: Boolean = !failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
+      val isPortalSubmission: Boolean = failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
       val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
-      val hasFixableError = allErrorCodes.exists(appConfig.recoverableErrorCodes.contains(_))
+      val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
-          contentForFixingError(relatedMessageType, hasFixableError, message.ern, message.message.arc.getOrElse("")) ++
-            contentForSubmittedVia3rdParty(hasBeenSubmittedVia3rdParty) ++
+          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission, message.ern, message.message.arc.getOrElse("")) ++
+            contentForSubmittedVia3rdParty(isPortalSubmission) ++
+            Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
             contentForContactingHelpdesk())
         case _ => Html("")
       }
@@ -147,13 +163,20 @@ class ViewMessageHelper @Inject()(
   }
 
 
-  private[helpers] def contentForFixingError(messageType: String, hasFixableError: Boolean, ern: String, arc: String)
+  //scalastyle:off
+  private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, isPortalSubmission: Boolean, ern: String, arc: String)
                                              (implicit messages: Messages): Seq[Html] = {
-
     messageType match {
-      case "IE815" if hasFixableError => Seq(
+      case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission => Seq(
         Html("placeholder")
       )
+      case "IE815" if isPortalSubmission =>
+        Seq(
+          p()(HtmlFormat.fill(Seq(
+            Html(ViewUtils.pluralSingular("messages.IE704.IE815.fixError.nonFixable.text", numberOfErrors)),
+            link(appConfig.emcsTfeCreateMovementUrl(ern), "messages.IE704.IE815.fixError.nonFixable.link.createNewMovement", id = Some("create-a-new-movement"), withFullStop = true)
+          )))
+        )
       case "IE810" =>
         Seq(
           p()(HtmlFormat.fill(Seq(
@@ -201,9 +224,9 @@ class ViewMessageHelper @Inject()(
     }
   }
 
-  private[helpers] def contentForSubmittedVia3rdParty(hasBeenSubmittedVia3rdParty: Boolean)
+  private[helpers] def contentForSubmittedVia3rdParty(isPortalSubmission: Boolean)
                                                      (implicit messages: Messages): Seq[Html] = {
-    if (hasBeenSubmittedVia3rdParty) {
+    if (!isPortalSubmission) {
       Seq(p()(Html(messages("messages.submittedViaThirdParty"))))
     } else {
       Seq.empty

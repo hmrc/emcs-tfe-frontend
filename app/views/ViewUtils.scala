@@ -41,4 +41,9 @@ object ViewUtils extends DateUtils {
     Option.when(request.request.hasMultipleErns) {
       TraderInfo(request.traderKnownFacts.traderName, request.ern)
     }
+
+  def pluralSingular(msg: String, count: Int, additionalArgs: String*)(implicit messages: Messages): String = {
+    val msgArgs = Seq(count.toString) ++ additionalArgs
+    messages(msg + (if(count!=1) ".plural" else ".singular"), msgArgs:_*)
+  }
 }
