@@ -50,7 +50,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
                   content = HtmlContent(movementTableRowContent(testErn, movement1))
                 ),
                 TableRow(
-                  content = HtmlContent(new GovukTag().apply(movement1.statusTag)),
+                  content = HtmlContent(new GovukTag().apply(movement1.statusTag())),
                   classes = "govuk-!-text-align-right"
                 )
               ),
@@ -59,7 +59,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
                   content = HtmlContent(movementTableRowContent(testErn, movement2))
                 ),
                 TableRow(
-                  content = HtmlContent(new GovukTag().apply(movement2.statusTag)),
+                  content = HtmlContent(new GovukTag().apply(movement2.statusTag())),
                   classes = "govuk-!-text-align-right"
                 )
               )

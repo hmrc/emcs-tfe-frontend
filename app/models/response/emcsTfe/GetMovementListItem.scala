@@ -17,6 +17,7 @@
 package models.response.emcsTfe
 
 import controllers.routes
+import play.api.i18n.Messages
 import play.api.libs.json.{Json, Reads}
 import play.api.mvc.Call
 import uk.gov.hmrc.govukfrontend.views.html.components.Text
@@ -35,18 +36,23 @@ case class GetMovementListItem(arc: String,
 
   val formattedDateOfDispatch: String = dateOfDispatch.toLocalDate.formatDateForUIOutput()
 
-  val statusTag: Tag = (movementStatus.toLowerCase match {
-    case "accepted" =>
-      TagViewModel(Text(movementStatus)).blue()
-    case "deemed exported" | "diverted" | "exporting" =>
-      TagViewModel(Text(movementStatus)).green()
-    case "partially refused" | "refused" | "rejected" =>
-      TagViewModel(Text(movementStatus)).orange()
-    case "cancelled" | "manually closed" | "e-ad manually closed" | "replaced" | "stopped" =>
-      TagViewModel(Text(movementStatus)).purple()
-    case _ =>
-      TagViewModel(Text(movementStatus))
-  }).withCssClass("govuk-!-margin-top-5")
+  def statusTag()(implicit messages: Messages): Tag = {
+
+    val displayName = messages(s"viewAllMovements.filters.status.${movementStatus.toLowerCase}")
+
+    (movementStatus.toLowerCase match {
+      case "accepted" =>
+        TagViewModel(Text(displayName)).blue()
+      case "deemedexported" | "diverted" | "exporting" =>
+        TagViewModel(Text(displayName)).green()
+      case "partiallyrefused" | "refused" | "rejected" =>
+        TagViewModel(Text(displayName)).orange()
+      case "cancelled" | "manuallyclosed" | "replaced" | "stopped" =>
+        TagViewModel(Text(displayName)).purple()
+      case _ =>
+        TagViewModel(Text(movementStatus))
+    }).withCssClass("govuk-!-margin-top-5")
+  }
 }
 
 object GetMovementListItem {
