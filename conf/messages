@@ -259,7 +259,8 @@ deleteMessage.yes = Yes, delete this message
 deleteMessage.fromMessagePage.no = No, return to message
 deleteMessage.fromMessageInbox.no = No, return to all messages
 
-deleteMessage.successMessage = Success
+deleteMessage.successMessageTitle = Success
+deleteMessage.successMessagePart = Message Deleted
 
 deleteMessage.returnToMessages = Return to messages
 

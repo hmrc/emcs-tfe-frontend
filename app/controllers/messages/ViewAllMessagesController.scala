@@ -17,7 +17,7 @@
 package controllers.messages
 
 import config.ErrorHandler
-import config.SessionKeys.FROM_PAGE
+import config.SessionKeys.{DELETED_MESSAGE_TITLE, FROM_PAGE}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions.DEFAULT_MAX_ROWS
 import models.messages.{MessagesSearchOptions, MessagesSortingSelectOption}
@@ -44,18 +44,26 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
 
   def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] =
     authorisedWithData(ern).async { implicit request =>
-      val sessionWithFromPageSet: Session = request.session + (FROM_PAGE -> ViewAllMessagesPage.toString)
+      val maybeDeletedMessageTitle = request.session.get(DELETED_MESSAGE_TITLE)
+
+      val sessionWithFromPageSetAndDeletedMessageTitleRemoved: Session =
+        request.session - DELETED_MESSAGE_TITLE + (FROM_PAGE -> ViewAllMessagesPage.toString)
 
       if (search.index <= 0) {
         Future.successful(
-          Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1))).withSession(sessionWithFromPageSet)
+          Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
+            .withSession(sessionWithFromPageSetAndDeletedMessageTitleRemoved)
         )
       } else {
-        renderView(Ok, ern, search, sessionWithFromPageSet)
+        renderView(Ok, ern, search, sessionWithFromPageSetAndDeletedMessageTitleRemoved, maybeDeletedMessageTitle)
       }
     }
 
-  private def renderView(status: Status, ern: String, search: MessagesSearchOptions, session: Session)(implicit request: DataRequest[_]): Future[Result] = {
+  private def renderView(status: Status,
+                         ern: String,
+                         search: MessagesSearchOptions,
+                         session: Session,
+                         maybeDeletedMessageTitle: Option[String])(implicit request: DataRequest[_]): Future[Result] = {
 
     getMessagesService.getMessages(ern, Some(search)).map { allMessages =>
 
@@ -72,7 +80,8 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
             sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
             allMessages = allMessages.messages,
             totalNumberOfPages = totalNumberOfPages,
-            searchOptions = search
+            searchOptions = search,
+            maybeDeletedPageTitle = maybeDeletedMessageTitle
           )
         ).withSession(session)
       }

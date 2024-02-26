@@ -16,7 +16,7 @@
 
 package controllers.messages
 
-import config.SessionKeys.FROM_PAGE
+import config.SessionKeys.{DELETED_MESSAGE_TITLE, FROM_PAGE}
 import controllers.messages.routes.{ViewAllMessagesController, ViewMessageController}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import forms.DeleteMessageFormProvider
@@ -24,12 +24,13 @@ import models.messages.MessagesSearchOptions
 import models.requests.DataRequest
 import pages.{Page, ViewAllMessagesPage, ViewMessagePage}
 import play.api.data.Form
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc._
 import services.{DeleteMessageService, GetMessagesService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.messages.DeleteMessage
+import viewmodels.helpers.messages.DeleteMessageHelper
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,8 +42,11 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                         val getMessagesService: GetMessagesService,
                                         val deleteMessageService: DeleteMessageService,
                                         formProvider: DeleteMessageFormProvider,
-                                        val view: DeleteMessage)
-                                       (implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                        val view: DeleteMessage,
+                                        val deleteMessageHelper: DeleteMessageHelper,
+                                        val messages: Messages)
+                                       (implicit val executionContext: ExecutionContext)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
@@ -68,7 +72,16 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
               .map(deleteMessageResponse => {
 
                 if (deleteMessageResponse.recordsAffected == 1) {
-                  // TODO redirect to the ViewAllMessage controller with the message deleted success thingy
+                  /*
+                    TODO
+                     - set a session key with the message title
+                     - redirect to the ViewAllMessage controller with the message deleted success thingy
+
+                   */
+
+
+                  Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
+
                 } else {
 
                   // TODO error deleting message ???
@@ -105,13 +118,13 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
       case Some(messageCache) =>
         Future(
           removeFromPageSessionValue(
-            BadRequest(view(
+            Ok(view(
               messageCache.message,
               form = form,
               returnToMessagesUrl = ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
               fromPage
             ))
-          )
+          ).addingToSession(DELETED_MESSAGE_TITLE -> messages(deleteMessageHelper.getMessageTitleKey(messageCache.message)))
         )
       case None =>
         Future(

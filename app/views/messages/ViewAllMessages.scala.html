@@ -31,14 +31,16 @@
         govukPagination : GovukPagination,
         govukButton: GovukButton,
         tableHelper: ViewAllMessagesTableHelper,
-        paginationHelper: MessagesPaginationHelper
+        paginationHelper: MessagesPaginationHelper,
+        notificationBanner: GovukNotificationBanner
 )
 
 @(
     sortSelectItems: Seq[SelectItem],
     allMessages: Seq[Message],
     totalNumberOfPages: Int,
-    searchOptions: MessagesSearchOptions
+    searchOptions: MessagesSearchOptions,
+    maybeDeletedPageTitle: Option[String] = None
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
@@ -47,6 +49,19 @@
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, models.PageSection.Messages)),
     fullWidthContent = true
 ) {
+
+    @{
+        maybeDeletedPageTitle.map(messageTitle => {
+            notificationBanner(
+                NotificationBanner(
+                    title = messages("deleteMessage.successMessageTitle"),
+                    content = messages("deleteMessage.successMessagePart") + ":" + messageTitle,
+                    classes = "govuk-!-margin-top-4"
+                )
+            )
+        })
+    }
+
      @h1() {
          @messages("viewAllMessages.heading", request.messageStatistics.countOfAllMessages)
      }

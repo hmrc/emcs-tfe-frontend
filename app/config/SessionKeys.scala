@@ -18,4 +18,5 @@ package config
 
 object SessionKeys {
   val FROM_PAGE = "TFE_FRONTEND_FROM_PAGE"
+  val DELETED_MESSAGE_TITLE = "TFE_FRONTEND_DELETED_MESSAGE_TITLE"
 }
