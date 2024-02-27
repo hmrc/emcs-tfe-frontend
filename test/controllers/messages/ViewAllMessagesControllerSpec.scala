@@ -17,7 +17,7 @@
 package controllers.messages
 
 import base.SpecBase
-import config.ErrorHandler
+import config.{ErrorHandler, SessionKeys}
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.MessagesFixtures
 import fixtures.messages.EN
@@ -221,6 +221,31 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
         redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions(index = 1)).url)
       }
 
+      "show deleted message success banner, if the DELETED_MESSAGE_TITLE session key set" in {
+        val deletedMessageTitle = "Alert or rejection received"
+
+        implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+          FakeRequest("GET", "/")
+            .withSession(SessionKeys.DELETED_MESSAGE_TITLE -> deletedMessageTitle)
+
+        val messagesResponse = constructMessageResponse(numberOfMessages = 0)
+        val search = MessagesSearchOptions()
+
+        MockGetMessagesService
+          .getMessages(testErn, Some(search))
+          .returns(Future.successful(messagesResponse))
+
+        val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
+
+        status(result) shouldBe Status.OK
+        contentAsString(result) shouldBe view(
+          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
+          allMessages = messagesResponse.messages,
+          totalNumberOfPages = 1,
+          searchOptions = search,
+          maybeDeletedPageTitle = Some(deletedMessageTitle)
+        ).toString()
+      }
     }
 
     "service call to get messages is un-successful" should {
