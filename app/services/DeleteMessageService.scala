@@ -37,14 +37,7 @@ class DeleteMessageService @Inject()(deleteMessageConnector: DeleteMessageConnec
       case Right(deleteMessageResponse) =>
         if (deleteMessageResponse.recordsAffected == 1) {
           // TODO - does this delete the user's local copy of messages?
-          println("meesage deleted???!")
           deleteMessageResponse
-//          messageInboxRepository.delete(exciseRegistrationNumber, uniqueMessageIdentifier).map(thing => {
-//            val d = thing
-//            println(d + "dsfkdsajfskl ")
-//
-//            deleteMessageResponse
-//          })
         } else {
           deleteMessageResponse
         }
