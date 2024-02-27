@@ -99,7 +99,7 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
   }
 
   // Set the FROM_PAGE session variable used by the delete message controller.
-  // If set, unset the DELETED_MESSAGE_TITLE variable, so the 'Success Message Deleted' banner does not show when we visit
+  // If DELETED_MESSAGE_TITLE variable is set, unset it, so the 'Success Message Deleted' banner does not show when we visit
   // this page, if the user has not deleted a message.
   private def amendSession(previousSession: Session): Session = {
     val session = previousSession + (FROM_PAGE -> ViewAllMessagesPage.toString)

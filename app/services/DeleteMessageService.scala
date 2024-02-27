@@ -33,18 +33,20 @@ class DeleteMessageService @Inject()(deleteMessageConnector: DeleteMessageConnec
 
   def deleteMessage(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)(implicit hc: HeaderCarrier): Future[DeleteMessageResponse] = {
 
-    deleteMessageConnector.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier).map {
+    deleteMessageConnector.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier).flatMap {
       case Right(deleteMessageResponse) =>
         if (deleteMessageResponse.recordsAffected == 1) {
           // TODO - does this delete the user's local copy of messages?
-          deleteMessageResponse
+          messageInboxRepository.delete(exciseRegistrationNumber, uniqueMessageIdentifier).map(_ => {
+            deleteMessageResponse
+          })
         } else {
-          deleteMessageResponse
+          // TODO return an error here?
+          Future.successful(deleteMessageResponse)
         }
 
       case Left(errorResponse) =>
         throw DeleteMessageException(s"Error deleting message $uniqueMessageIdentifier for trader $exciseRegistrationNumber: ${errorResponse.message}")
-
     }
   }
 
