@@ -16,6 +16,7 @@
 
 package controllers.messages
 
+import config.ErrorHandler
 import config.SessionKeys.{DELETED_MESSAGE_TITLE, FROM_PAGE, TEMP_DELETE_MESSAGE_TITLE}
 import controllers.messages.routes.{ViewAllMessagesController, ViewMessageController}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
@@ -43,7 +44,8 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                         val deleteMessageService: DeleteMessageService,
                                         formProvider: DeleteMessageFormProvider,
                                         val view: DeleteMessage,
-                                        val deleteMessageHelper: DeleteMessageHelper)
+                                        val deleteMessageHelper: DeleteMessageHelper,
+                                        errorHandler: ErrorHandler)
                                        (implicit val executionContext: ExecutionContext)
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
@@ -73,8 +75,8 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                   .addingToSession(DELETED_MESSAGE_TITLE -> request.session.get(TEMP_DELETE_MESSAGE_TITLE).getOrElse(""))
                   .removingFromSession(TEMP_DELETE_MESSAGE_TITLE)
 
-              case _ => // TODO what do we show if no records are deleted?
-                Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
+              case _ =>
+                InternalServerError(errorHandler.standardErrorTemplate())
             }
           } else {
             returnToAllMessagesOrMessagePage(exciseRegistrationNumber, uniqueMessageIdentifier)
