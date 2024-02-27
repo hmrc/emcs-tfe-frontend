@@ -38,10 +38,14 @@ class ViewMessageHelper @Inject()(
                                    link: link,
                                    p: p,
                                    summary_list: summary_list,
+                                   warning_text: warning_text,
                                    h2: h2) extends DateUtils with TagFluency {
 
   def constructMovementInformation(messageCache: MessageCache)(implicit messages: Messages): Html = {
     val is704ForIE815 = messageCache.errorMessage.exists(_.relatedMessageType.contains("IE815"))
+    //In some cases (according to QA data) the LRN may not be in the message itself, but it's in the error message so we may
+    //need to fallback on that
+    val lrnFromErrorMessage = messageCache.errorMessage.flatMap(_.ie704.body.attributes.flatMap(_.lrn))
     val optMessageTypeRow = messagesHelper.messageTypeKey(messageCache.message).map( value =>
       Seq(messages("viewMessage.table.messageType.label") -> messages(value))
     ).getOrElse(Seq.empty)
@@ -49,7 +53,7 @@ class ViewMessageHelper @Inject()(
       if(is704ForIE815) Some(h2("messages.IE704.IE815.h2")) else None,
       Some(summary_list(optMessageTypeRow ++ Seq(
         if(!is704ForIE815) Some(messages("viewMessage.table.arc.label") -> messages(messageCache.message.arc.getOrElse(""))) else None,
-        Some(messages("viewMessage.table.lrn.label") -> messages(messageCache.message.lrn.getOrElse("")))
+        Some(messages("viewMessage.table.lrn.label") -> messages(messageCache.message.lrn.orElse(lrnFromErrorMessage).getOrElse("")))
       ).flatten))
     ).flatten)
   }
@@ -90,6 +94,7 @@ class ViewMessageHelper @Inject()(
       link = "#print-dialogue", messageKey = "viewMessage.link.printMessage.description", id = Some("print-link")
     )
     lazy val deleteMessageLink: Html = link(
+      //TODO: implement link in ETFE-2855
       link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url, messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
     )
     val actionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole,
@@ -144,15 +149,16 @@ class ViewMessageHelper @Inject()(
     }.getOrElse(Html(""))
   }
 
-  def constructFixErrorsContent(message: MessageCache)(implicit messages: Messages): Html = {
-    message.errorMessage.map { failureMessage =>
+  def constructFixErrorsContent(messageCache: MessageCache)(implicit messages: Messages): Html = {
+    implicit val msgCache: MessageCache = messageCache
+    messageCache.errorMessage.map { failureMessage =>
       // If the correlation ID starts with PORTAL then it has been submitted via the frontend
       val isPortalSubmission: Boolean = failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
       val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
       val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
-          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission, message.ern, message.message.arc.getOrElse("")) ++
+          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission) ++
             contentForSubmittedVia3rdParty(isPortalSubmission) ++
             Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
             contentForContactingHelpdesk())
@@ -162,14 +168,33 @@ class ViewMessageHelper @Inject()(
 
   }
 
+  def showWarningTextIfFixableIE805(messageCache: MessageCache)(implicit messages: Messages): Html = {
+    messageCache.errorMessage.map {
+      errorMessage =>
+        val allErrorCodes = errorMessage.ie704.body.functionalError.map(_.errorType)
+        val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
+        if(numberOfNonFixableErrors == 0) {
+          warning_text(Html(messages("messages.IE704.IE815.fixError.fixable.warning")))
+        } else {
+          Html("")
+        }
+    }.getOrElse(Html(""))
+  }
 
   //scalastyle:off
-  private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, isPortalSubmission: Boolean, ern: String, arc: String)
-                                             (implicit messages: Messages): Seq[Html] = {
+  private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, isPortalSubmission: Boolean)
+                                             (implicit messages: Messages, messageCache: MessageCache): Seq[Html] = {
+    val ern = messageCache.ern
+    val arc = messageCache.message.arc.getOrElse("")
+    val uniqueMessageId = messageCache.message.uniqueMessageIdentifier
     messageType match {
-      case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission => Seq(
-        Html("placeholder")
-      )
+      case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission =>
+        Seq(
+          p()(HtmlFormat.fill(Seq(
+            link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(ern, uniqueMessageId).url,
+              "messages.IE704.IE815.fixError.fixable.link", id = Some("update-draft-movement"), withFullStop = true)
+          )))
+        )
       case "IE815" if isPortalSubmission =>
         Seq(
           p()(HtmlFormat.fill(Seq(
@@ -239,4 +264,5 @@ class ViewMessageHelper @Inject()(
       Html(messages("messages.link.helpline.text"))
     ))))
   }
+
 }

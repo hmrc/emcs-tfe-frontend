@@ -16,6 +16,7 @@
 
 package controllers.messages
 
+import config.ErrorHandler
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions
 import play.api.i18n.I18nSupport
@@ -33,7 +34,8 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       val betaAllowList: BetaAllowListAction,
                                       getMessagesService: GetMessagesService,
                                       getMovementService: GetMovementService,
-                                      val view: ViewMessage
+                                      val view: ViewMessage,
+                                      errorHandler: ErrorHandler
                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   private val messagesThatNeedMovement = Seq("IE871")
@@ -58,4 +60,13 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
+  def removeMessageAndRedirectToDraftMovement(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] =
+    authorisedDataRequestAsync(ern) { implicit request =>
+      getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
+        case Some(msg) if msg.errorMessage.exists(_.relatedMessageType.contains("IE815")) =>
+          //TODO: delete message (ETFE-2855) then route to 'revive' draft movement controller on CaM
+          Future(Redirect(testOnly.controllers.routes.UnderConstructionController.onPageLoad()))
+        case _ => Future(NotFound(errorHandler.notFoundTemplate))
+      }
+    }
 }

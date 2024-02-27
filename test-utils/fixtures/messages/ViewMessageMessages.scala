@@ -76,6 +76,9 @@ object ViewMessageMessages {
     val submitNewMovementMultipleErrors = "At least one of these errors cannot be fixed, so you need to create a new movement."
     val createNewMovementLink = "create a new movement"
 
+    val updateMovementLink = "Update and resubmit the movement."
+    val warningTextWhenFixable = "If you delete this message you will not be able to access the original draft movement details and must create a new movement."
+
     val arcText = "An ARC will only be created for a movement once it has been successfully submitted."
   }
 

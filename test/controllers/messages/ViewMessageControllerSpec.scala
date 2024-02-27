@@ -48,6 +48,10 @@ class ViewMessageControllerSpec extends SpecBase
 
   lazy val view = app.injector.instanceOf[ViewMessage]
 
+  implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+
+  implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
+
   lazy val controller: ViewMessageController = new ViewMessageController(
     mcc = app.injector.instanceOf[MessagesControllerComponents],
     auth = FakeSuccessAuthAction,
@@ -55,7 +59,8 @@ class ViewMessageControllerSpec extends SpecBase
     betaAllowList = new FakeBetaAllowListAction,
     getMessagesService = mockGetMessagesService,
     getMovementService = mockGetMovementService,
-    view = view
+    view = view,
+    errorHandler = errorHandler
   )
 
   val testMessageId = 1234
@@ -67,10 +72,7 @@ class ViewMessageControllerSpec extends SpecBase
     lastUpdated = Instant.now
   )
 
-  "GET" when {
-    implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
-
-    implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
+  "GET /trader/:ern/message/:uniqueMessageIdentifier/view" when {
 
     "service call to get message returns a Some(MessageCache)" should {
       "render the view" in {
@@ -95,6 +97,54 @@ class ViewMessageControllerSpec extends SpecBase
 
         status(result) shouldBe Status.SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url)
+      }
+    }
+  }
+
+  "GET /trader/:ern/message/:uniqueMessageIdentifier/draft-movement" when {
+
+    "the message ID relates to a movement submission in error" should {
+
+      "delete the message and redirect to CaM to 'revive' the draft" in {
+
+        MockGetMessagesService
+          .getMessage(testErn, testMessageId)
+          .returns(Future.successful(Some(testMessageFromCache)))
+
+        //TODO: add in mock for delete message call
+
+        val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+
+        status(result) shouldBe Status.SEE_OTHER
+        redirectLocation(result).value shouldBe testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+      }
+    }
+
+    "the message ID does not relate to a movement submission in error" should {
+
+      "return a Not Found response" in {
+
+          MockGetMessagesService
+            .getMessage(testErn, testMessageId)
+            .returns(Future.successful(Some(testMessageFromCache.copy(errorMessage = None))))
+
+          val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+
+          status(result) shouldBe Status.NOT_FOUND
+      }
+    }
+
+    "no message ID can be found" should {
+
+      "return a Not Found response" in {
+
+        MockGetMessagesService
+          .getMessage(testErn, testMessageId)
+          .returns(Future.successful(None))
+
+        val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+
+        status(result) shouldBe Status.NOT_FOUND
       }
     }
   }
