@@ -36,6 +36,7 @@ object ViewMessageMessages {
     val helplinePostLink = "if you need more help or advice."
     val helpline = s"$helplineLink (opens in new tab) $helplinePostLink"
     val thirdParty = "If you used commercial software for your submission, please correct these errors with the same software that you used for the submission."
+    val thirdPartyOr = "If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or"
   }
 
   sealed trait IE810SubmissionFailureMessages {
@@ -78,16 +79,19 @@ object ViewMessageMessages {
   }
 
   sealed trait IE813SubmissionFailureMessages {
-    val submitNewChangeDestination = "You need to submit a new change of destination."
+    val submitNewChangeDestinationPreLink = "You need to"
     val submitNewChangeDestinationLink = "submit a new change of destination"
+    val submitNewChangeDestination = s"$submitNewChangeDestinationPreLink $submitNewChangeDestinationLink."
   }
 
   sealed trait IE815SubmissionFailureMessages {
     val movementInformationHeading = "Movement information"
 
-    val submitNewMovementSingularError = "The error cannot be fixed, so you need to create a new movement."
-    val submitNewMovementMultipleErrors = "At least one of these errors cannot be fixed, so you need to create a new movement."
+    val submitNewMovementSingularErrorPreLink = "The error cannot be fixed, so you need to"
+    val submitNewMovementMultipleErrorsPreLink = "At least one of these errors cannot be fixed, so you need to"
     val createNewMovementLink = "create a new movement"
+    val submitNewMovementSingularError = s"$submitNewMovementSingularErrorPreLink $createNewMovementLink."
+    val submitNewMovementMultipleErrors = s"$submitNewMovementMultipleErrorsPreLink $createNewMovementLink."
 
     val updateMovementLink = "Update and resubmit the movement."
     val warningTextWhenFixable = "If you delete this message you will not be able to access the original draft movement details and must create a new movement."

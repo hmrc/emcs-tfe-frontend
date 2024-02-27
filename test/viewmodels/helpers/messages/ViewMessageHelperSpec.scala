@@ -1108,22 +1108,22 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("You need to"),
+              Html(ViewMessageMessages.English.submitNewChangeDestinationPreLink),
               link(
                 link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
-                messageKey = "submit a new change of destination",
+                messageKey = ViewMessageMessages.English.submitNewChangeDestinationLink,
                 withFullStop = true,
                 id = Some("submit-change-destination")
               )
             ))
           },
           p() {
-            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+            Html(ViewMessageMessages.English.thirdParty)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1138,10 +1138,10 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("You need to"),
+              Html(ViewMessageMessages.English.submitNewChangeDestinationPreLink),
               link(
                 link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
-                messageKey = "submit a new change of destination",
+                messageKey = ViewMessageMessages.English.submitNewChangeDestinationLink,
                 withFullStop = true,
                 id = Some("submit-change-destination")
               )
@@ -1149,8 +1149,8 @@ class ViewMessageHelperSpec extends SpecBase
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1175,17 +1175,17 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or"),
+              Html(ViewMessageMessages.English.thirdPartyOr),
               link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
             ))
           },
           p() {
-            Html("An ARC will only be created for a movement once it has been successfully submitted.")
+            Html(ViewMessageMessages.English.arcText)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1207,17 +1207,17 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("At least one of these errors cannot be fixed, so you need to"),
-              link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+              Html(ViewMessageMessages.English.submitNewMovementMultipleErrorsPreLink),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
             ))
           },
           p() {
-            Html("An ARC will only be created for a movement once it has been successfully submitted.")
+            Html(ViewMessageMessages.English.arcText)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1238,17 +1238,17 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("The error cannot be fixed, so you need to"),
-              link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+              Html(ViewMessageMessages.English.submitNewMovementSingularErrorPreLink),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
             ))
           },
           p() {
-            Html("An ARC will only be created for a movement once it has been successfully submitted.")
+            Html(ViewMessageMessages.English.arcText)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
