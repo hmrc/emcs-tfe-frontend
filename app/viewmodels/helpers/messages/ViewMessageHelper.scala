@@ -132,9 +132,10 @@ class ViewMessageHelper @Inject()(
     message.errorMessage.map {
       submissionFailureMessage => {
         val allErrorCodes = submissionFailureMessage.ie704.body.functionalError.map(_.errorType)
+        val isPortalSubmission: Boolean = submissionFailureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
         val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
         submissionFailureMessage.relatedMessageType match {
-          case Some("IE815") if numberOfNonFixableErrors == 0 => Html("")
+          case Some("IE815") if numberOfNonFixableErrors == 0 || !isPortalSubmission => Html("")
           case _ => HtmlFormat.fill(Seq(
             h2("messages.errors.heading"),
             summary_list(
@@ -159,7 +160,7 @@ class ViewMessageHelper @Inject()(
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
           contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission) ++
-            contentForSubmittedVia3rdParty(isPortalSubmission) ++
+            contentForSubmittedVia3rdParty(isPortalSubmission, relatedMessageType, msgCache.ern) ++
             Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
             contentForContactingHelpdesk())
         case _ => Html("")
@@ -249,10 +250,16 @@ class ViewMessageHelper @Inject()(
     }
   }
 
-  private[helpers] def contentForSubmittedVia3rdParty(isPortalSubmission: Boolean)
+  private[helpers] def contentForSubmittedVia3rdParty(isPortalSubmission: Boolean, relatedMessageType: String, ern: String)
                                                      (implicit messages: Messages): Seq[Html] = {
     if (!isPortalSubmission) {
-      Seq(p()(Html(messages("messages.submittedViaThirdParty"))))
+      relatedMessageType match {
+        case "IE815" => Seq(p()(HtmlFormat.fill(Seq(
+          Html(messages("messages.submittedViaThirdParty.ie815")),
+          link(appConfig.emcsTfeCreateMovementUrl(ern), "messages.submittedViaThirdParty.ie815.link", id = Some("create-a-new-movement"), withFullStop = true)
+        ))))
+        case _ => Seq(p()(Html(messages("messages.submittedViaThirdParty"))))
+      }
     } else {
       Seq.empty
     }
