@@ -74,8 +74,6 @@ import views.{BaseSelectors, ViewBehaviours}
 
         implicit val doc: Document = asDocument(1)
 
-
-
         behave like pageWithExpectedElementsAndMessages(Seq(
           Selectors.title -> English.title,
           Selectors.h1 -> English.heading,
@@ -90,7 +88,6 @@ import views.{BaseSelectors, ViewBehaviours}
           Selectors.sortBySelectOption(7) -> English.sortReadIndicatorA,
           Selectors.sortBySelectOption(8) -> English.sortReadIndicatorD,
           Selectors.sortButton -> English.sortByButton,
-
 
           Selectors.messageRow(1) -> "Alert or rejection received",
           Selectors.messageHintRow(1) -> "ARC1001",
