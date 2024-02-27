@@ -104,7 +104,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
             TEMP_DELETE_MESSAGE_TITLE -> mcc.messagesApi.messages("default")(deleteMessageHelper.getMessageTitleKey(messageCache.message))
           )
         )
-      case None =>
+      case None => // TODO check this...
         Future(
           removeFromPageSessionValue(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
         )
@@ -125,8 +125,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
   private def pageFromSession(pageFromSession: Option[String]): Page = {
     pageFromSession match {
       case Some(ViewMessagePage.toString) => ViewMessagePage
-      case Some(ViewAllMessagesPage.toString) => ViewAllMessagesPage
-      case _ => ViewAllMessagesPage
+      case Some(ViewAllMessagesPage.toString) | _ => ViewAllMessagesPage
     }
   }
 

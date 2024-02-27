@@ -16,7 +16,7 @@
 
 package fixtures
 
-import models.response.emcsTfe.messages.{GetMessagesResponse, Message}
+import models.response.emcsTfe.messages.{DeleteMessageResponse, GetMessagesResponse, Message}
 
 import java.time.LocalDateTime
 
@@ -66,6 +66,8 @@ trait MessagesFixtures extends BaseFixtures {
     messages = Seq(message1, message2),
     totalNumberOfMessagesAvailable = 3
   )
+
+  lazy val deleteMessageResponse: DeleteMessageResponse = DeleteMessageResponse(recordsAffected = 1)
 
   def constructMessageResponse(numberOfMessages: Int): GetMessagesResponse = {
     GetMessagesResponse(
