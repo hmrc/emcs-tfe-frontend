@@ -86,10 +86,9 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
   def renderView(exciseRegistrationNumber: String,
                  uniqueMessageIdentifier: Long,
                  form: Form[_],
-                 fromPage: Page)(implicit dr: DataRequest[_], hc: HeaderCarrier): Future[Result] = {
-
+                 fromPage: Page)(implicit dr: DataRequest[_], hc: HeaderCarrier): Future[Result] =
     getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).flatMap {
-      case Some(messageCache) => {
+      case Some(messageCache) =>
         Future(
           removeFromPageSessionValue(
             Ok(view(
@@ -103,13 +102,11 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
             TEMP_DELETE_MESSAGE_TITLE -> mcc.messagesApi.messages("default")(deleteMessageHelper.getMessageTitleKey(messageCache.message))
           )
         )
-      }
       case None =>
         Future(
           removeFromPageSessionValue(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
         )
     }
-  }
 
   // When the user selects No, return to ViewAllMessage or ViewMessage page, depending on how they got here
   private def returnToAllMessagesOrMessagePage(exciseRegistrationNumber: String,

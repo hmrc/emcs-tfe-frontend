@@ -47,7 +47,7 @@
     pageTitle = titleNoForm(messages("viewAllMessages.title", request.messageStatistics.countOfAllMessages)),
     maybeShowActiveTrader = None,
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, models.PageSection.Messages)),
-    fullWidthContent = true
+    noMainContentLayout = true
 ) {
 
     <div class="govuk-grid-row">
@@ -65,7 +65,7 @@
             </div>
         }
 
-        <div class="govuk-grid-column-full">
+        <div id=messages-main-content class="govuk-grid-column-full">
              @h1() {
                  @messages("viewAllMessages.heading", request.messageStatistics.countOfAllMessages)
              }

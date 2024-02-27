@@ -69,6 +69,8 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
         DEFAULT_MAX_ROWS
       )
 
+      println(allMessages.messages.size)
+
       if (search.index > totalNumberOfPages) {
         Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1))).withSession(session)
       } else {

@@ -49,6 +49,7 @@
         timeout: Boolean = true,
         showSignOut: Boolean = true,
         fullWidthContent: Boolean = false,
+        noMainContentLayout: Boolean = false,
         additionalCss: Html = Html(""),
         additionalScripts: Html = Html(""),
         beforeContentBlock: Option[Html] = None
@@ -111,7 +112,7 @@
     scriptsBlock       = Some(hmrcScripts(
         scriptsBlock = Some(scripts)
     )),
-    mainContentLayout = if(fullWidthContent) Some(fullWidthMainContent(_)) else Some(defaultMainContent(_))
+    mainContentLayout = if (noMainContentLayout) None else if(fullWidthContent) Some(fullWidthMainContent(_)) else Some(defaultMainContent(_))
 )(content)
 
 @{
