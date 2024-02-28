@@ -29,41 +29,12 @@ import viewmodels.govuk.TagFluency
 import javax.inject.Inject
 
 
-class DeleteMessageHelper @Inject()() extends DateUtils with TagFluency {
-
-  //scalastyle:off
-  def getMessageTitleKey(message: Message): String =
-    (message.messageType, message.sequenceNumber, message.messageRole, message.relatedMessageType) match {
-      case ("IE801", Some(1), 0, _) => s"deleteMessage.${message.messageType}.first.label"
-      case ("IE801", _, 0, _) => s"deleteMessage.${message.messageType}.further.label"
-      case ("IE802", _, 1, _) => s"deleteMessage.${message.messageType}.cod.label"
-      case ("IE802", _, 2, _) => s"deleteMessage.${message.messageType}.ror.label"
-      case ("IE802", _, 3, _) => s"deleteMessage.${message.messageType}.des.label"
-      case ("IE803", _, 1, _) => s"deleteMessage.${message.messageType}.diverted.label"
-      case ("IE803", _, 2, _) => s"deleteMessage.${message.messageType}.split.label"
-      case ("IE840", _, 1, _) => s"deleteMessage.${message.messageType}.first.label"
-      case ("IE840", _, 2, _) => s"deleteMessage.${message.messageType}.complementary.label"
-      case ("IE704", _, _, Some(relatedMessageType)) => IE704MessageTitleKey(relatedMessageType)
-      case _ => s"deleteMessage.${message.messageType}.label"
-    }
-
-  private def IE704MessageTitleKey(relatedMessageType: String): String = {
-    relatedMessageType match {
-      case x @"IE810" =>  s"deleteMessage.IE704.$x.label"
-      case x @"IE813" => s"deleteMessage.IE704.$x.label"
-      case x @"IE815" => s"deleteMessage.IE704.$x.label"
-      case x @"IE818" => s"deleteMessage.IE704.$x.label"
-      case x @"IE819" => s"deleteMessage.IE704.$x.label"
-      case x @"IE825" => s"deleteMessage.IE704.$x.label"
-      case x @"IE837" => s"deleteMessage.IE704.$x.label"
-      case x @"IE871" => s"deleteMessage.IE704.$x.label"
-    }
-  }
+class DeleteMessageHelper @Inject()(messagesHelper: MessagesHelper) extends DateUtils with TagFluency {
 
   def constructMessageInformation(message: Message)(implicit messages: Messages): SummaryList = {
     SummaryList(
       rows = Seq(
-        SummaryListRow(key = Key(content = Text(messages("deleteMessage.table.message.label"))), value = Value(Text(messages(getMessageTitleKey(message))))),
+        SummaryListRow(key = Key(content = Text(messages("deleteMessage.table.message.label"))), value = Value(Text(messages(messagesHelper.messageDescriptionKey(message))))),
         SummaryListRow(key = Key(content = Text(messages("deleteMessage.table.arc.label"))), value = Value(Text(messages(messages(message.arc.getOrElse("")))))),
         SummaryListRow(key = Key(content = Text(messages("deleteMessage.table.lrn.label"))), value = Value(Text(messages(messages(message.lrn.getOrElse("")))))),
         SummaryListRow(key = Key(content = Text(messages("deleteMessage.table.dateAndTimeReceived.label"))), value = Value(Text(message.dateCreatedOnCore.formatDateTimeForUIOutput())))
@@ -75,7 +46,7 @@ class DeleteMessageHelper @Inject()() extends DateUtils with TagFluency {
   def options(fromPage: Page)(implicit messages: Messages): Seq[RadioItem] = {
     val key = fromPage match {
       case ViewAllMessagesPage => "deleteMessage.fromMessageInbox.no"
-      case ViewMessagePage | _ => "deleteMessage.fromMessagePage.no"
+      case _ => "deleteMessage.fromMessagePage.no"
     }
 
     Seq(

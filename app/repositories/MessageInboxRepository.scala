@@ -98,12 +98,11 @@ class MessageInboxRepositoryImpl @Inject()(
           .headOption()
     }
 
-  // TODO confirm delete method and method return type
-  def delete(ern: String, uniqueMessageIdentifier: Long): Future[Option[MessageCache]] =
+  def delete(ern: String, uniqueMessageIdentifier: Long): Future[Boolean] =
     keepAlive(ern, uniqueMessageIdentifier).flatMap(_ => {
       collection
-        .findOneAndDelete(by(ern, uniqueMessageIdentifier))
-        .headOption()
+        .deleteOne(by(ern, uniqueMessageIdentifier))
+        .toFuture().map(_ => true)
     })
 }
 
@@ -112,6 +111,5 @@ trait MessageInboxRepository {
 
   def get(ern: String, uniqueMessageIdentifier: Long): Future[Option[MessageCache]]
 
-  // TODO confirm delete method and method return type
-  def delete(ern: String, uniqueMessageIdentifier: Long): Future[Option[MessageCache]]
+  def delete(ern: String, uniqueMessageIdentifier: Long): Future[Boolean]
 }

@@ -30,7 +30,7 @@ import play.api.mvc._
 import services.{DeleteMessageService, GetMessagesService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import viewmodels.helpers.messages.DeleteMessageHelper
+import viewmodels.helpers.messages.{DeleteMessageHelper, MessagesHelper}
 import views.html.messages.DeleteMessage
 
 import javax.inject.Inject
@@ -45,6 +45,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                         formProvider: DeleteMessageFormProvider,
                                         val view: DeleteMessage,
                                         val deleteMessageHelper: DeleteMessageHelper,
+                                        val messagesHelper: MessagesHelper,
                                         errorHandler: ErrorHandler)
                                        (implicit val executionContext: ExecutionContext)
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
@@ -81,7 +82,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
           } else {
             returnToAllMessagesOrMessagePage(exciseRegistrationNumber, uniqueMessageIdentifier)
           }
-        }
+        } // TODO recoverwith?
       )
     }
 
@@ -101,7 +102,8 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
             ))
           ).addingToSession(
             // used to avoid another call to the getMessagesService in the onSubmit method, as we can set the message title here
-            TEMP_DELETE_MESSAGE_TITLE -> mcc.messagesApi.messages("default")(deleteMessageHelper.getMessageTitleKey(messageCache.message))
+            TEMP_DELETE_MESSAGE_TITLE -> messagesHelper.messageDescriptionKey(messageCache.message)
+            //  mcc.messagesApi.messages("default")(deleteMessageHelper.getMessageTitleKey(messageCache.message))
           )
         )
       case None => // TODO check this...

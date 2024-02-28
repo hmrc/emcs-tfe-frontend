@@ -31,18 +31,17 @@ class DeleteMessageService @Inject()(deleteMessageConnector: DeleteMessageConnec
                                      messageInboxRepository: MessageInboxRepository)
                                     (implicit ec: ExecutionContext) {
 
-  def deleteMessage(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)(implicit hc: HeaderCarrier): Future[DeleteMessageResponse] = {
+  def deleteMessage(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)
+                   (implicit hc: HeaderCarrier): Future[DeleteMessageResponse] = {
 
     deleteMessageConnector.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier).flatMap {
       case Right(deleteMessageResponse) =>
         if (deleteMessageResponse.recordsAffected == 1) {
-          // TODO - does this delete the user's local copy of messages?
-          messageInboxRepository.delete(exciseRegistrationNumber, uniqueMessageIdentifier).map(_ => {
+          messageInboxRepository.delete(exciseRegistrationNumber, uniqueMessageIdentifier).map(x => {
             deleteMessageResponse
           })
         } else {
-          // TODO return an error here?
-          Future.successful(deleteMessageResponse)
+          Future(deleteMessageResponse)
         }
 
       case Left(errorResponse) =>

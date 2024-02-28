@@ -21,7 +21,7 @@ import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction
 import models.messages.MessagesSearchOptions
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DraftMovementService, GetMessagesService, GetMovementService}
+import services.{DraftMovementService, DeleteMessageService, GetMessagesService, GetMovementService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logging
 import views.html.messages.ViewMessage
@@ -38,6 +38,7 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       getMessagesService: GetMessagesService,
                                       getMovementService: GetMovementService,
                                       draftMovementService: DraftMovementService,
+                                      deleteMessageService: DeleteMessageService,
                                       val view: ViewMessage,
                                       errorHandler: ErrorHandler,
                                       appConfig: AppConfig
@@ -72,11 +73,18 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
         case Some(msg) =>
           msg.errorMessage match {
-            case Some(errorMessageResponse) if errorMessageResponse.relatedMessageType.contains("IE815") && errorMessageResponse.ie704.body.attributes.exists(_.lrn.isDefined) =>
-              draftMovementService.putErrorMessagesAndMarkMovementAsDraft(ern, errorMessageResponse).map {
-                case Some(draftId) => Redirect(appConfig.emcsTfeCreateMovementTaskListUrl(ern, draftId))
-                case None => InternalServerError(errorHandler.internalServerErrorTemplate)
-              }
+            case Some(errorMessageResponse) if errorMessageResponse.relatedMessageType.contains("IE815") &&
+              errorMessageResponse.ie704.body.attributes.exists(_.lrn.isDefined) =>
+              deleteMessageService.deleteMessage(ern, uniqueMessageIdentifier).flatMap(response => {
+                if (response.recordsAffected == 1) {
+                  draftMovementService.putErrorMessagesAndMarkMovementAsDraft(ern, errorMessageResponse).map {
+                    case Some(draftId) => Redirect(appConfig.emcsTfeCreateMovementTaskListUrl(ern, draftId))
+                    case None => InternalServerError(errorHandler.internalServerErrorTemplate)
+                  }
+                } else {
+                  Future(InternalServerError(errorHandler.standardErrorTemplate()))
+                }
+              })
             case _ =>
               logger.warn(s"[removeMessageAndRedirectToDraftMovement] - Message type was not IE815 or LRN did not exist for ERN: $ern and message ID: $uniqueMessageIdentifier - showing not found page")
               Future(NotFound(errorHandler.notFoundTemplate))

@@ -35,7 +35,7 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.helpers.messages.DeleteMessageHelper
+import viewmodels.helpers.messages.{DeleteMessageHelper, MessagesHelper}
 import views.html.messages.DeleteMessage
 
 import java.time.Instant
@@ -57,6 +57,8 @@ class DeleteMessageControllerSpec extends SpecBase
 
   lazy val view = app.injector.instanceOf[DeleteMessage]
 
+  lazy val messagesHelper =  new MessagesHelper()
+
   lazy val controller: DeleteMessageController = new DeleteMessageController(
     mcc = app.injector.instanceOf[MessagesControllerComponents],
     auth = FakeSuccessAuthAction,
@@ -66,7 +68,8 @@ class DeleteMessageControllerSpec extends SpecBase
     deleteMessageService = mockDeleteMessagesService,
     formProvider = formProvider,
     view = view,
-    deleteMessageHelper = new DeleteMessageHelper(),
+    deleteMessageHelper = new DeleteMessageHelper(messagesHelper),
+    messagesHelper = messagesHelper,
     errorHandler = errorHandler,
   )
 

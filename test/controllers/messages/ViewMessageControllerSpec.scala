@@ -20,9 +20,10 @@ import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
 import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
-import mocks.services.{MockDraftMovementService, MockGetMessagesService, MockGetMovementService}
+import mocks.services.{MockDeleteMessageService, MockDraftMovementService, MockGetMessagesService, MockGetMovementService}
 import models.messages.{MessageCache, MessagesSearchOptions}
 import models.requests.DataRequest
+import models.response.emcsTfe.messages.DeleteMessageResponse
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
@@ -40,6 +41,7 @@ class ViewMessageControllerSpec extends SpecBase
   with FakeAuthAction
   with MockGetMessagesService
   with MockGetMovementService
+  with MockDeleteMessageService
   with MockDraftMovementService
   with GetSubmissionFailureMessageFixtures {
 
@@ -61,6 +63,7 @@ class ViewMessageControllerSpec extends SpecBase
     getMessagesService = mockGetMessagesService,
     getMovementService = mockGetMovementService,
     draftMovementService = mockDraftMovementService,
+    deleteMessageService = mockDeleteMessagesService,
     view = view,
     errorHandler = errorHandler,
     appConfig = appConfig
@@ -113,6 +116,10 @@ class ViewMessageControllerSpec extends SpecBase
         MockGetMessagesService
           .getMessage(testErn, testMessageId)
           .returns(Future.successful(Some(testMessageFromCache)))
+
+        MockDeleteMessagesService
+          .deleteMessage(testErn, testMessageId)
+          .returns(Future.successful(DeleteMessageResponse(recordsAffected = 1)))
 
         MockDraftMovementService
           .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)

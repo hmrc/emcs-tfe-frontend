@@ -230,39 +230,6 @@ viewMovement.document.documentReference = Reference
 viewMovement.document.documentDescription = Description
 viewMovement.document.notProvided = Not provided
 
-
-deleteMessage.IE801.first.label = Movement created
-deleteMessage.IE801.further.label = Update to movement
-deleteMessage.IE802.cod.label = Reminder to provide change of destination
-deleteMessage.IE802.ror.label = Report of receipt due
-deleteMessage.IE802.des.label = Reminder to provide destination
-deleteMessage.IE803.diverted.label = Diverted movement
-deleteMessage.IE803.split.label = Notification of split movement
-deleteMessage.IE807.label = Movement intercepted
-deleteMessage.IE810.label = Cancellation
-deleteMessage.IE813.label = Change of destination submitted
-deleteMessage.IE818.label = Report of receipt submitted
-deleteMessage.IE819.label = Alert or rejection submitted
-deleteMessage.IE829.label = Customs acceptance of movement for export
-deleteMessage.IE837.label = Explanation for delay submitted
-deleteMessage.IE839.label = Customs rejection of movement for export
-deleteMessage.IE840.first.label = First notification of event
-deleteMessage.IE840.complementary.label = Complementary notification of event
-deleteMessage.IE871.label = Explanation for a shortage or excess
-deleteMessage.IE881.label = Manual closure response
-deleteMessage.IE905.label = Manual closure response of a movement
-
-deleteMessage.IE704.IE810.label = Error with cancellation
-deleteMessage.IE704.IE813.label = Error with change of destination
-deleteMessage.IE704.IE815.label = Error with movement submission
-deleteMessage.IE704.IE818.label = Error with report of receipt
-deleteMessage.IE704.IE819.label = Error with alert or rejection
-deleteMessage.IE704.IE825.label = Error with split movement
-deleteMessage.IE704.IE837.label = Error with explanation for a delay
-deleteMessage.IE704.IE871.label = Error with explanation for a shortage or excess
-
-
-
 deleteMessage.error.required = Select yes if you would like to delete the message
 deleteMessage.heading = Are you sure you want to delete this message?
 

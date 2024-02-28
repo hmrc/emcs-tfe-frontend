@@ -38,11 +38,13 @@ import views.{BaseSelectors, ViewBehaviours}
     val sortBySelectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
     val sortButton = "#sortBySubmit"
 
-    val messageRow = (i: Int) => s"#messages-main-content > table > tbody > tr:nth-child($i) > th > a"
-    val messageHintRow = (i: Int) => s"#messages-main-content > table > tbody > tr:nth-child($i) > th > p"
-    val statusRow = (i: Int) => s"#messages-main-content > table > tbody > tr:nth-child($i) > td:nth-child(2) > strong"
-    val dateOfMessageRow = (i: Int) => s"#messages-main-content > table > tbody > tr:nth-child($i) > td:nth-child(3)"
-    val actionRow = (i: Int) => s"#messages-main-content > table > tbody > tr:nth-child($i) > td:nth-child(4) > a"
+    val tableSelector = "#main-content > div > div > div"
+
+    val messageRow = (i: Int) => s"$tableSelector > table > tbody > tr:nth-child($i) > th > a"
+    val messageHintRow = (i: Int) => s"$tableSelector > table > tbody > tr:nth-child($i) > th > p"
+    val statusRow = (i: Int) => s"$tableSelector > table > tbody > tr:nth-child($i) > td:nth-child(2) > strong"
+    val dateOfMessageRow = (i: Int) => s"$tableSelector > table > tbody > tr:nth-child($i) > td:nth-child(3)"
+    val actionRow = (i: Int) => s"$tableSelector > table > tbody > tr:nth-child($i) > td:nth-child(4) > a"
 
     val paginationLink = (i: Int) => s"#main-content nav > ul > li:nth-child($i) > a"
     val nextLink = ".govuk-pagination__next a"
