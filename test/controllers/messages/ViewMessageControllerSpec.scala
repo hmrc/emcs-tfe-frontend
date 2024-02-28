@@ -20,7 +20,8 @@ import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
 import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
-import mocks.services.{MockGetMessagesService, MockGetMovementService}
+import mocks.config.MockAppConfig
+import mocks.services.{MockDraftMovementService, MockGetMessagesService, MockGetMovementService}
 import models.messages.{MessageCache, MessagesSearchOptions}
 import models.requests.DataRequest
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
@@ -40,6 +41,7 @@ class ViewMessageControllerSpec extends SpecBase
   with FakeAuthAction
   with MockGetMessagesService
   with MockGetMovementService
+  with MockDraftMovementService
   with GetSubmissionFailureMessageFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -59,8 +61,10 @@ class ViewMessageControllerSpec extends SpecBase
     betaAllowList = new FakeBetaAllowListAction,
     getMessagesService = mockGetMessagesService,
     getMovementService = mockGetMovementService,
+    draftMovementService = mockDraftMovementService,
     view = view,
-    errorHandler = errorHandler
+    errorHandler = errorHandler,
+    appConfig = appConfig
   )
 
   val testMessageId = 1234
@@ -105,18 +109,22 @@ class ViewMessageControllerSpec extends SpecBase
 
     "the message ID relates to a movement submission in error" should {
 
-      "delete the message and redirect to CaM to 'revive' the draft" in {
+      "call the draft movement service to delete the message and redirect to CaM to 'revive' the draft" in {
 
         MockGetMessagesService
           .getMessage(testErn, testMessageId)
           .returns(Future.successful(Some(testMessageFromCache)))
+
+        MockDraftMovementService
+          .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
+          .returns(Future.successful(Some(testDraftId)))
 
         //TODO: add in mock for delete message call
 
         val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
 
         status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result).value shouldBe testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+        redirectLocation(result).value shouldBe appConfig.emcsTfeCreateMovementTaskListUrl(testErn, testDraftId)
       }
     }
 
@@ -145,6 +153,24 @@ class ViewMessageControllerSpec extends SpecBase
         val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
 
         status(result) shouldBe Status.NOT_FOUND
+      }
+    }
+
+    "one of the backend calls to 'revive' the movement fails" should {
+
+      "return an ISE response" in {
+
+        MockGetMessagesService
+          .getMessage(testErn, testMessageId)
+          .returns(Future.successful(Some(testMessageFromCache)))
+
+        MockDraftMovementService
+          .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
+          .returns(Future.successful(None))
+
+        val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
     }
   }

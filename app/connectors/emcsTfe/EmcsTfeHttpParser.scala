@@ -17,8 +17,9 @@
 package connectors.emcsTfe
 
 import connectors.BaseConnectorUtils
-import models.response.{ErrorConstants, ErrorResponse, JsonValidationError, NotFoundError, UnexpectedDownstreamResponseError}
+import models.response._
 import play.api.http.Status.OK
+import play.api.libs.json.Writes
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -48,8 +49,13 @@ trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
   }
 
   def get(url: String, queryParams: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
-    http.GET[Either[ErrorResponse, A]](url, queryParams)(EmcsTfeReads, hc, ec)
+    http.GET[Either[ErrorResponse, A]](url, queryParams)
 
   def putEmpty(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
     http.PUTString(url, "")
+
+  def put[I](url: String, body: I)
+               (implicit hc: HeaderCarrier, ec: ExecutionContext, writes: Writes[I]): Future[Either[ErrorResponse, A]] =
+    http.PUT[I, Either[ErrorResponse, A]](url, body)
+
 }

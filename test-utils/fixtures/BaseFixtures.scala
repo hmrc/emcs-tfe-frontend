@@ -24,6 +24,7 @@ import play.api.libs.json.{JsValue, Json}
 trait BaseFixtures {
 
   val testErn = "GBWKTestErn"
+  val testDraftId = "21c76f80-fae5-4c2c-a18a-30736c30e865"
   val testArc = "ARC"
   val testCredId = "cred1234567891"
   val testInternalId = "int1234567891"
