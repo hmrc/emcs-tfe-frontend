@@ -79,7 +79,7 @@ class ViewMessageHelper @Inject()(
         Empty.asHtml
     }
 
-
+  //scalastyle:off cyclomatic.complexity method.length
   def constructActions(messageCache: MessageCache, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages): Html = {
     val message = messageCache.message
     lazy val reportOfReceiptLink: Html = link(
