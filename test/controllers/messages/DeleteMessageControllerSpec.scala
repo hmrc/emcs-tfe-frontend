@@ -18,7 +18,7 @@ package controllers.messages
 
 import base.SpecBase
 import config.SessionKeys
-import controllers.messages.routes.ViewAllMessagesController
+import controllers.messages.routes.{ViewAllMessagesController, ViewMessageController}
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
 import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
@@ -29,13 +29,11 @@ import models.requests.DataRequest
 import models.response.emcsTfe.messages.DeleteMessageResponse
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import pages.{ViewAllMessagesPage, ViewMessagePage}
-import play.api.data.Form
 import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, RequestHeader, Result}
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
-import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.messages.DeleteMessageHelper
 import views.html.messages.DeleteMessage
@@ -101,7 +99,7 @@ class DeleteMessageControllerSpec extends SpecBase
           view(
             testMessageFromCache.message,
             formProvider(),
-            ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url,
+            ViewMessageController.onPageLoad(testErn, testMessageId).url,
             ViewMessagePage
           ).toString()
       }

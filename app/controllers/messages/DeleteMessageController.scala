@@ -96,7 +96,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
             Ok(view(
               messageCache.message,
               form = form,
-              returnToMessagesUrl = ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
+              returnToMessagesUrl = returnUrl(fromPage, exciseRegistrationNumber, uniqueMessageIdentifier),
               fromPage
             ))
           ).addingToSession(
@@ -124,10 +124,19 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
 
   private def pageFromSession(pageFromSession: Option[String]): Page = {
     pageFromSession match {
-      case Some(ViewMessagePage.toString) => ViewMessagePage
-      case Some(ViewAllMessagesPage.toString) | _ => ViewAllMessagesPage
+      case Some(ViewAllMessagesPage.toString) => ViewAllMessagesPage
+      case _ => ViewMessagePage
     }
   }
+
+  private def returnUrl(fromPage: Page,
+                        exciseRegistrationNumber: String,
+                        uniqueMessageIdentifier: Long): String =
+    fromPage match {
+      case ViewAllMessagesPage => ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url
+      case _ => ViewMessageController.onPageLoad(exciseRegistrationNumber, uniqueMessageIdentifier).url
+    }
+
 
   private def removeFromPageSessionValue(call: Result)(implicit request: RequestHeader): Result = call.removingFromSession(FROM_PAGE)
 

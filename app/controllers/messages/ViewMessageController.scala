@@ -61,7 +61,7 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
           )
         case _ =>
           Future.successful(
-            Redirect(routes.ViewAllMessagesController.onPageLoad(request.ern, MessagesSearchOptions())).withSession(sessionWithFromPageSet)
+            Redirect(routes.ViewAllMessagesController.onPageLoad(request.ern, MessagesSearchOptions()))
           )
       }
     }

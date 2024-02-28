@@ -20,7 +20,6 @@ import base.SpecBase
 import fixtures.MessagesFixtures
 import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
-import models.messages.MessagesSearchOptions
 import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import uk.gov.hmrc.http.HeaderCarrier

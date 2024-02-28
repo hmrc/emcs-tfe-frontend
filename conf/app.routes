@@ -26,9 +26,9 @@ GET        /trader/:ern/movements                                           cont
 POST       /trader/:ern/movements                                           controllers.ViewAllMovementsController.onSubmit(ern: String, search: MovementListSearchOptions)
 
 GET        /trader/:ern/messages                                            controllers.messages.ViewAllMessagesController.onPageLoad(ern: String, search: models.messages.MessagesSearchOptions)
-GET        /trader/:ern/message/:uniqueMessageIdentifier/view                controllers.messages.ViewMessageController.onPageLoad(ern: String, uniqueMessageIdentifier: Long)
+GET        /trader/:ern/message/:uniqueMessageIdentifier/view               controllers.messages.ViewMessageController.onPageLoad(ern: String, uniqueMessageIdentifier: Long)
+GET        /trader/:ern/message/:uniqueMessageIdentifier/draft-movement     controllers.messages.ViewMessageController.removeMessageAndRedirectToDraftMovement(ern: String, uniqueMessageIdentifier: Long)
 
-GET        /trader/:ern/message/:uniqueMessageIdentifier/draft-movement      controllers.messages.ViewMessageController.removeMessageAndRedirectToDraftMovement(ern: String, uniqueMessageIdentifier: Long)
 
 GET        /trader/:exciseRegistrationNumber/message/:uniqueMessageIdentifier/delete      controllers.messages.DeleteMessageController.onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)
 POST       /trader/:exciseRegistrationNumber/message/:uniqueMessageIdentifier/delete      controllers.messages.DeleteMessageController.onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)
