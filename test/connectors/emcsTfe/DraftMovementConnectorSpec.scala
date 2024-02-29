@@ -42,7 +42,7 @@ class DraftMovementConnectorSpec extends SpecBase
       "downstream call is successful" in {
 
         MockHttpClient
-          .get(s"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/$testErn/$testDraftId/mark-as-draft")
+          .putEmpty(s"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/$testErn/$testDraftId/mark-as-draft")
           .returns(Future.successful(Right(DraftId(testDraftId))))
 
         connector.markMovementAsDraft(testErn, testDraftId).futureValue mustBe Right(DraftId(testDraftId))
@@ -54,7 +54,7 @@ class DraftMovementConnectorSpec extends SpecBase
       "when downstream call fails" in {
 
         MockHttpClient
-          .get(s"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/$testErn/$testDraftId/mark-as-draft")
+          .putEmpty(s"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/$testErn/$testDraftId/mark-as-draft")
           .returns(Future.successful(Left(JsonValidationError)))
 
         connector.markMovementAsDraft(testErn, testDraftId).futureValue mustBe Left(JsonValidationError)

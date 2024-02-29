@@ -36,7 +36,7 @@ class DraftMovementConnector @Inject()(val http: HttpClient,
   def markMovementAsDraft(ern: String, draftId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, DraftId]] = {
     def url: String = s"$baseUrl/user-answers/create-movement/$ern/$draftId/mark-as-draft"
 
-    get(url)
+    putEmpty(url)
       .recover {
         case JsResultException(errors) =>
           logger.warn(s"[markMovementAsDraft] Bad JSON response from emcs-tfe: " + errors)

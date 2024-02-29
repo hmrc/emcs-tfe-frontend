@@ -25,7 +25,7 @@ class DraftMovementConnectorISpec extends IntegrationBaseSpec with GetSubmission
     "return a response model when the server responds OK" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(url))
+        put(urlEqualTo(url))
           .willReturn(aResponse().withStatus(OK).withBody(Json.stringify(Json.obj(
             "draftId" -> testDraftId
           ))))
@@ -37,7 +37,7 @@ class DraftMovementConnectorISpec extends IntegrationBaseSpec with GetSubmission
     "must fail when the server responds with any other status" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(url))
+        put(urlEqualTo(url))
           .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR))
       )
 
@@ -47,7 +47,7 @@ class DraftMovementConnectorISpec extends IntegrationBaseSpec with GetSubmission
     "must fail when the server responds with a body that can't be parsed to the expected response model" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(url))
+        put(urlEqualTo(url))
           .willReturn(aResponse().withStatus(OK).withBody(Json.stringify(Json.obj(
             "x" -> "y"
           ))))
@@ -59,7 +59,7 @@ class DraftMovementConnectorISpec extends IntegrationBaseSpec with GetSubmission
     "must fail when the connection fails" in {
 
       wireMockServer.stubFor(
-        get(urlEqualTo(url))
+        put(urlEqualTo(url))
           .willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE))
       )
 

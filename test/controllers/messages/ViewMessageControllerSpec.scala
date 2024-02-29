@@ -20,7 +20,6 @@ import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
 import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
-import mocks.config.MockAppConfig
 import mocks.services.{MockDraftMovementService, MockGetMessagesService, MockGetMovementService}
 import models.messages.{MessageCache, MessagesSearchOptions}
 import models.requests.DataRequest
