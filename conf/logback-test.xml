@@ -4,19 +4,19 @@
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/emcs-tfe-frontend.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>[%highlight(%.-4level)] %message %date{ISO8601} %n</pattern>
+            <pattern>[%highlight(%.-4level)] %message %n</pattern>
         </encoder>
     </appender>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>[%highlight(%.-4level)] %message %date{ISO8601} %n</pattern>
+            <pattern>[%highlight(%.-4level)] %message %n</pattern>
         </encoder>
     </appender>
 
     <appender name="STDOUT_IGNORE_NETTY" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>[%highlight(%.-4level)] %message %date{ISO8601} %n</pattern>
+            <pattern>[%highlight(%.-4level)] %message %n</pattern>
         </encoder>
     </appender>
 
@@ -60,7 +60,7 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="FILE"/>
     </root>
 </configuration>

@@ -41,6 +41,15 @@ class ViewMessageHelper @Inject()(
                                    warning_text: warning_text,
                                    h2: h2) extends DateUtils with TagFluency {
 
+  def constructSplitMessageErrorContent(message: MessageCache)(implicit messages: Messages): Html = {
+    message.errorMessage.map { errMsg =>
+      errMsg.relatedMessageType match {
+        case Some("IE825") => p()(Html(messages(s"messages.IE704.IE825.error.p")))
+        case _ => Empty.asHtml
+      }
+    }.getOrElse(Empty.asHtml)
+  }
+
   def constructMovementInformation(messageCache: MessageCache)(implicit messages: Messages): Html = {
     val is704ForIE815 = messageCache.errorMessage.exists(_.relatedMessageType.contains("IE815"))
     //In some cases (according to QA data) the LRN may not be in the message itself, but it's in the error message so we may

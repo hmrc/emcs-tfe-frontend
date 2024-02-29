@@ -641,6 +641,14 @@ class ViewMessageSpec extends ViewSpecBase
 
     "for a IE825 related message type" must {
 
+      def splitMovementContentTest(pIndex: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(pIndex) -> English.splitMovementError
+          )
+        )
+      }
+
       "render the correct content (when non-fixable) - portal" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = ie704PortalSubmission,
@@ -649,7 +657,8 @@ class ViewMessageSpec extends ViewSpecBase
         implicit val doc: Document = asDocument(ie704ErrorSplitMovementIE825.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorSplitMovementIE825)
         errorRowsTest(failureMessageResponse)
-        helplineLinkTest(1)
+        splitMovementContentTest(1)
+        helplineLinkTest(2)
         movementActionsLinksTest()
       }
 
@@ -660,8 +669,9 @@ class ViewMessageSpec extends ViewSpecBase
         implicit val doc: Document = asDocument(ie704ErrorSplitMovementIE825.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorSplitMovementIE825)
         errorRowsTest(failureMessageResponse)
-        thirdPartySubmissionTest(1)
-        helplineLinkTest(2)
+        splitMovementContentTest(1)
+        thirdPartySubmissionTest(2)
+        helplineLinkTest(3)
         movementActionsLinksTest()
       }
     }

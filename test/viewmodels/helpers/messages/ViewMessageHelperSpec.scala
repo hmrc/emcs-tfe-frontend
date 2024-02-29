@@ -27,6 +27,7 @@ import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Text, Value}
 import uk.gov.hmrc.govukfrontend.views.html.components._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import views.html.components._
 
@@ -733,37 +734,37 @@ class ViewMessageHelperSpec extends SpecBase
     "return the correct content for an IE810 error" in {
       helper.contentForFixingError("IE810", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorCancellationIE810)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
-          Html("If you still want to"),
-          link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement", id = Some("cancel-movement")),
-          Html(msgs("you can submit a new cancellation with the errors corrected."))
+          Html(ViewMessageMessages.English.cancelMovementPreLink),
+          link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), ViewMessageMessages.English.cancelMovementLink, id = Some("cancel-movement")),
+          Html(msgs(ViewMessageMessages.English.cancelMovementPostLink))
         ))),
         p()(HtmlFormat.fill(Seq(
-          Html(msgs("However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to")),
-          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true, id = Some("submit-change-destination"))
+          Html(msgs(ViewMessageMessages.English.changeDestinationPreLink)),
+          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.changeDestinationLink, withFullStop = true, id = Some("submit-change-destination"))
         )))
       )
     }
 
     "return the correct content for an IE837 error" in {
       helper.contentForFixingError("IE837", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorExplainDelayIE837)) mustBe Seq(p()(HtmlFormat.fill(Seq(
-        Html("You need to"),
-        link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true, id = Some("submit-new-explanation-for-delay"))
+        Html(ViewMessageMessages.English.submitNewExplainDelayPreLink),
+        link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), ViewMessageMessages.English.submitNewExplainDelayLink, withFullStop = true, id = Some("submit-new-explanation-for-delay"))
       ))))
     }
 
     "return the correct content for an IE871 error" in {
       helper.contentForFixingError("IE871", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorExplainShortageOrExcessIE871)) mustBe Seq(p()(HtmlFormat.fill(Seq(
-        Html("You need to"),
-        link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
+        Html(ViewMessageMessages.English.submitNewExplanationOfShortageOrExcessPreLink),
+        link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), ViewMessageMessages.English.submitNewExplanationOfShortageOrExcessLink, withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
       ))))
     }
 
     "return the correct content for an IE818 error" in {
       helper.contentForFixingError("IE818", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorReportOfReceiptIE818)) mustBe Seq(p()(HtmlFormat.fill(Seq(
-        Html("You need to"),
+        Html(ViewMessageMessages.English.submitNewReportOfReceiptPreLink),
         link(
           link = appConfig.emcsTfeReportAReceiptUrl(testErn, testArc),
-          messageKey = "submit a new report of receipt",
+          messageKey = ViewMessageMessages.English.submitNewReportOfReceiptLink,
           withFullStop = true,
           id = Some("submit-a-new-report-of-receipt")
         )
@@ -776,10 +777,6 @@ class ViewMessageHelperSpec extends SpecBase
         link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection", id = Some("submit-a-new-alert-rejection")),
         Html("of this movement.")
       ))))
-    }
-
-    "return the correct content for an IE825 error" in {
-      helper.contentForFixingError("IE825", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorSplitMovementIE825)) mustBe Seq.empty
     }
 
     "return the correct content for an IE813 error" in {
@@ -807,21 +804,21 @@ class ViewMessageHelperSpec extends SpecBase
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p()(HtmlFormat.fill(Seq(
-            Html("If you still want to"),
-            link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement", id = Some("cancel-movement")),
-            Html(msgs("you can submit a new cancellation with the errors corrected."))
+            Html(ViewMessageMessages.English.cancelMovementPreLink),
+            link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), ViewMessageMessages.English.cancelMovementLink, id = Some("cancel-movement")),
+            Html(msgs(ViewMessageMessages.English.cancelMovementPostLink))
           ))),
           p()(HtmlFormat.fill(Seq(
-            Html(msgs("However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to")),
-            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true, id = Some("submit-change-destination"))
+            Html(msgs(ViewMessageMessages.English.changeDestinationPreLink)),
+            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.changeDestinationLink, withFullStop = true, id = Some("submit-change-destination"))
           ))),
           p() {
-            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+            Html(ViewMessageMessages.English.thirdParty)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -835,23 +832,22 @@ class ViewMessageHelperSpec extends SpecBase
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p()(HtmlFormat.fill(Seq(
-            Html("If you still want to"),
-            link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), "cancel this movement", id = Some("cancel-movement")),
-            Html(msgs("you can submit a new cancellation with the errors corrected."))
+            Html(ViewMessageMessages.English.cancelMovementPreLink),
+            link(appConfig.emcsTfeCancelMovementUrl(testErn, testArc), ViewMessageMessages.English.cancelMovementLink, id = Some("cancel-movement")),
+            Html(msgs(ViewMessageMessages.English.cancelMovementPostLink))
           ))),
           p()(HtmlFormat.fill(Seq(
-            Html(msgs("However you can only cancel a movement up to the date and time recorded on the electronic administrative document (eAD). If the date and time on the eAD has passed, you can choose to")),
-            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a change of destination", withFullStop = true, id = Some("submit-change-destination"))
+            Html(msgs(ViewMessageMessages.English.changeDestinationPreLink)),
+            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.changeDestinationLink, withFullStop = true, id = Some("submit-change-destination"))
           ))),
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
       }
-
     }
 
     "for an IE837" must {
@@ -864,17 +860,17 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("You need to"),
-              link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true, id = Some("submit-new-explanation-for-delay"))
+              Html(ViewMessageMessages.English.submitNewExplainDelayPreLink),
+              link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), ViewMessageMessages.English.submitNewExplainDelayLink, withFullStop = true, id = Some("submit-new-explanation-for-delay"))
             ))
           },
           p() {
-            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+            Html(ViewMessageMessages.English.thirdParty)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -889,19 +885,18 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("You need to"),
-              link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), "submit a new explanation of a delay", withFullStop = true, id = Some("submit-new-explanation-for-delay"))
+              Html(ViewMessageMessages.English.submitNewExplainDelayPreLink),
+              link(appConfig.emcsTfeExplainDelayUrl(testErn, testArc), ViewMessageMessages.English.submitNewExplainDelayLink, withFullStop = true, id = Some("submit-new-explanation-for-delay"))
             ))
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
       }
-
     }
 
     "for an IE871" must {
@@ -914,17 +909,17 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("You need to"),
-              link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
+              Html(ViewMessageMessages.English.submitNewExplanationOfShortageOrExcessPreLink),
+              link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), ViewMessageMessages.English.submitNewExplanationOfShortageOrExcessLink, withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
             ))
           },
           p() {
-            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+            Html(ViewMessageMessages.English.thirdParty)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -939,19 +934,18 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("You need to"),
-              link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), "submit a new explanation of a shortage or excess", withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
+              Html(ViewMessageMessages.English.submitNewExplanationOfShortageOrExcessPreLink),
+              link(appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc), ViewMessageMessages.English.submitNewExplanationOfShortageOrExcessLink, withFullStop = true, id = Some("submit-a-new-explanation-for-shortage-or-excess"))
             ))
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
       }
-
     }
 
     "for an IE818" must {
@@ -964,22 +958,22 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("You need to"),
+              Html(ViewMessageMessages.English.submitNewReportOfReceiptPreLink),
               link(
                 link = appConfig.emcsTfeReportAReceiptUrl(testErn, testArc),
-                messageKey = "submit a new report of receipt",
+                messageKey = ViewMessageMessages.English.submitNewReportOfReceiptLink,
                 withFullStop = true,
                 id = Some("submit-a-new-report-of-receipt")
               )
             ))
           },
           p() {
-            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+            Html(ViewMessageMessages.English.thirdParty)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -994,10 +988,10 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("You need to"),
+              Html(ViewMessageMessages.English.submitNewReportOfReceiptPreLink),
               link(
                 link = appConfig.emcsTfeReportAReceiptUrl(testErn, testArc),
-                messageKey = "submit a new report of receipt",
+                messageKey = ViewMessageMessages.English.submitNewReportOfReceiptLink,
                 withFullStop = true,
                 id = Some("submit-a-new-report-of-receipt")
               )
@@ -1005,8 +999,8 @@ class ViewMessageHelperSpec extends SpecBase
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1024,18 +1018,18 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("To correct any errors you must"),
-              link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection", id = Some("submit-a-new-alert-rejection")),
-              Html("of this movement.")
+              Html(ViewMessageMessages.English.submitNewAlertRejectionPreLink),
+              link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), ViewMessageMessages.English.submitNewAlertRejectionLink, id = Some("submit-a-new-alert-rejection")),
+              Html(ViewMessageMessages.English.submitNewAlertRejectionPostLink)
             ))
           },
           p() {
-            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+            Html(ViewMessageMessages.English.thirdParty)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1050,15 +1044,15 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("To correct any errors you must"),
-              link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection", id = Some("submit-a-new-alert-rejection")),
-              Html("of this movement.")
+              Html(ViewMessageMessages.English.submitNewAlertRejectionPreLink),
+              link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), ViewMessageMessages.English.submitNewAlertRejectionLink, id = Some("submit-a-new-alert-rejection")),
+              Html(ViewMessageMessages.English.submitNewAlertRejectionPostLink)
             ))
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1075,12 +1069,12 @@ class ViewMessageHelperSpec extends SpecBase
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorSplitMovementIE825.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
-            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+            Html(ViewMessageMessages.English.thirdParty)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1095,8 +1089,8 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1114,22 +1108,22 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("You need to"),
+              Html(ViewMessageMessages.English.submitNewChangeDestinationPreLink),
               link(
                 link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
-                messageKey = "submit a new change of destination",
+                messageKey = ViewMessageMessages.English.submitNewChangeDestinationLink,
                 withFullStop = true,
                 id = Some("submit-change-destination")
               )
             ))
           },
           p() {
-            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+            Html(ViewMessageMessages.English.thirdParty)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1144,10 +1138,10 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("You need to"),
+              Html(ViewMessageMessages.English.submitNewChangeDestinationPreLink),
               link(
                 link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
-                messageKey = "submit a new change of destination",
+                messageKey = ViewMessageMessages.English.submitNewChangeDestinationLink,
                 withFullStop = true,
                 id = Some("submit-change-destination")
               )
@@ -1155,8 +1149,8 @@ class ViewMessageHelperSpec extends SpecBase
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1181,17 +1175,17 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or"),
+              Html(ViewMessageMessages.English.thirdPartyOr),
               link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
             ))
           },
           p() {
-            Html("An ARC will only be created for a movement once it has been successfully submitted.")
+            Html(ViewMessageMessages.English.arcText)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1213,17 +1207,17 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("At least one of these errors cannot be fixed, so you need to"),
-              link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+              Html(ViewMessageMessages.English.submitNewMovementMultipleErrorsPreLink),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
             ))
           },
           p() {
-            Html("An ARC will only be created for a movement once it has been successfully submitted.")
+            Html(ViewMessageMessages.English.arcText)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1244,17 +1238,17 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("The error cannot be fixed, so you need to"),
-              link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+              Html(ViewMessageMessages.English.submitNewMovementSingularErrorPreLink),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
             ))
           },
           p() {
-            Html("An ARC will only be created for a movement once it has been successfully submitted.")
+            Html(ViewMessageMessages.English.arcText)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1405,6 +1399,51 @@ class ViewMessageHelperSpec extends SpecBase
 
       val testMessageCache = MessageCache(testErn, ie819ReceivedAlert.message, None)
       helper.showWarningTextIfFixableIE805(testMessageCache) mustBe Html("")
+    }
+  }
+
+  ".constructSplitMessageErrorContent" must {
+
+    "return the correct content for IE825" in {
+
+      val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+        relatedMessageType = Some("IE825")
+      )
+
+      val result = helper.constructSplitMessageErrorContent(MessageCache(
+        ern = testErn,
+        message = ie704ErrorSplitMovementIE825.message,
+        errorMessage = Some(failureMessageResponse)
+      ))
+
+      removeNewLines(result.toString()) mustBe
+        removeNewLines(p()(Html(ViewMessageMessages.English.splitMovementError)).toString())
+    }
+
+    "return empty Html when there is no relatedMessageType" in {
+
+      val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+        relatedMessageType = None
+      )
+
+      val result = helper.constructSplitMessageErrorContent(MessageCache(
+        ern = testErn,
+        message = ie704ErrorSplitMovementIE825.message,
+        errorMessage = Some(failureMessageResponse)
+      ))
+
+      result mustBe Empty.asHtml
+    }
+
+    "return empty Html when there is no error message" in {
+
+      val result = helper.constructSplitMessageErrorContent(MessageCache(
+        ern = testErn,
+        message = ie704ErrorSplitMovementIE825.message,
+        errorMessage = None
+      ))
+
+      result mustBe Empty.asHtml
     }
   }
 }
