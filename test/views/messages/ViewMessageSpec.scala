@@ -736,6 +736,15 @@ class ViewMessageSpec extends ViewSpecBase
         )
       }
 
+      def thirdPartySubmissionTest(index: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(index) -> English.ie815thirdParty,
+            Selectors.link(index) -> English.ie815thirdPartyLink
+          )
+        )
+      }
+
       "render the correct content (when non-fixable) - portal (singular)" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = ie704PortalSubmission.copy(
@@ -793,7 +802,6 @@ class ViewMessageSpec extends ViewSpecBase
         )
         implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
-        errorRowsTest(failureMessageResponse)
         thirdPartySubmissionTest(1)
         arcContentTest(2)
         helplineLinkTest(3)

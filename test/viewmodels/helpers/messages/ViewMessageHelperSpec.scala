@@ -614,9 +614,11 @@ class ViewMessageHelperSpec extends SpecBase
 
     "build a summary list of all the errors in the failure message (code -> description where the error is not mapped to a custom value) - and a heading" when {
       "the error code is unmatched" in {
-        val message = MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(getSubmissionFailureMessageResponseModel.copy(IE704ModelFixtures.ie704ModelModel.copy(
-          body = IE704BodyFixtures.ie704BodyModel.copy(
-            functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy("12345")))))
+        val message = MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(getSubmissionFailureMessageResponseModel.copy(
+          relatedMessageType = Some("IE810"),
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(
+              functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy("12345"))))),
         ))
         val result = helper.constructErrors(message)
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -630,18 +632,48 @@ class ViewMessageHelperSpec extends SpecBase
         )).toString())
       }
     }
+
+    "show nothing for an IE815" when {
+      "it's not a portal submission" in {
+        val message = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(getSubmissionFailureMessageResponseModel.copy(IE704ModelFixtures.ie704ModelModel.copy(
+          body = IE704BodyFixtures.ie704BodyModel.copy(
+            functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy("4403")))))
+        ))
+        val result = helper.constructErrors(message)
+        result mustBe Html("")
+      }
+
+      "there are no non-fixable errors" in {
+        val message = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(getSubmissionFailureMessageResponseModel.copy(IE704ModelFixtures.ie704ModelModel.copy(
+          header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL1234")),
+          body = IE704BodyFixtures.ie704BodyModel.copy(
+            functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy("4404")))))
+        ))
+        val result = helper.constructErrors(message)
+        result mustBe Html("")
+      }
+    }
   }
 
   ".contentForSubmittedVia3rdParty" must {
 
     "return the correct content when the submission was made via a 3rd party" in {
-      helper.contentForSubmittedVia3rdParty(isPortalSubmission = false) mustBe Seq(p() {
+      helper.contentForSubmittedVia3rdParty(isPortalSubmission = false, relatedMessageType = "IE810", testErn) mustBe Seq(p() {
         Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
       })
     }
 
+    "return the correct content when the submission was made via a 3rd party (IE815)" in {
+      helper.contentForSubmittedVia3rdParty(isPortalSubmission = false, relatedMessageType = "IE815", testErn) mustBe Seq(p() {
+        HtmlFormat.fill(Seq(
+          Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or"),
+          link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+        ))
+      })
+    }
+
     "return an empty list when the submission was not made by a 3rd party" in {
-      helper.contentForSubmittedVia3rdParty(isPortalSubmission = true) mustBe Seq.empty
+      helper.contentForSubmittedVia3rdParty(isPortalSubmission = true, relatedMessageType = "IE810", testErn) mustBe Seq.empty
     }
 
   }
@@ -1148,7 +1180,10 @@ class ViewMessageHelperSpec extends SpecBase
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
-            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+            HtmlFormat.fill(Seq(
+              Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or"),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+            ))
           },
           p() {
             Html("An ARC will only be created for a movement once it has been successfully submitted.")
@@ -1239,7 +1274,10 @@ class ViewMessageHelperSpec extends SpecBase
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
-            Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+            HtmlFormat.fill(Seq(
+              Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or"),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+            ))
           },
           p() {
             Html("An ARC will only be created for a movement once it has been successfully submitted.")

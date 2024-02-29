@@ -80,6 +80,9 @@ object ViewMessageMessages {
     val warningTextWhenFixable = "If you delete this message you will not be able to access the original draft movement details and must create a new movement."
 
     val arcText = "An ARC will only be created for a movement once it has been successfully submitted."
+
+    val ie815thirdParty = "If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or"
+    val ie815thirdPartyLink = "create a new movement"
   }
 
   object English extends ViewMessages
