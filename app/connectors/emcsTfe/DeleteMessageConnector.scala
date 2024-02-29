@@ -17,7 +17,7 @@
 package connectors.emcsTfe
 
 import config.AppConfig
-import models.response.emcsTfe.messages.{DeleteMessageResponse, MessageDeletedResponse}
+import models.response.emcsTfe.messages.{DeleteMessageResponse}
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DeleteMessageConnector @Inject()(val http: HttpClient, config: AppConfig) extends EmcsTfeHttpParser[DeleteMessageResponse] {
 
-  override implicit val reads: Reads[DeleteMessageResponse] = MessageDeletedResponse.fmt
+  override implicit val reads: Reads[DeleteMessageResponse] = DeleteMessageResponse.fmt
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 

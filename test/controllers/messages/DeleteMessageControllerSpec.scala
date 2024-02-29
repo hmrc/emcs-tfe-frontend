@@ -18,7 +18,7 @@ package controllers.messages
 
 import base.SpecBase
 import config.SessionKeys
-import controllers.messages.routes.{ViewAllMessagesController, ViewMessageController}
+import controllers.messages.routes.ViewAllMessagesController
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
 import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
@@ -58,7 +58,7 @@ class DeleteMessageControllerSpec extends SpecBase
 
   lazy val view = app.injector.instanceOf[DeleteMessage]
 
-  lazy val messagesHelper =  new MessagesHelper()
+  lazy val messagesHelper = new MessagesHelper()
 
   lazy val controller: DeleteMessageController = new DeleteMessageController(
     mcc = app.injector.instanceOf[MessagesControllerComponents],

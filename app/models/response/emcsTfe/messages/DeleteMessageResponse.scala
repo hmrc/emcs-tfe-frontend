@@ -20,6 +20,6 @@ import play.api.libs.json.{Format, Json}
 
 case class DeleteMessageResponse(recordsAffected: Int)
 
-object MessageDeletedResponse {
-  implicit val fmt: Format[DeleteMessageResponse] = Json.format
+object DeleteMessageResponse {
+  implicit val fmt: Format[DeleteMessageResponse] = Json.format[DeleteMessageResponse]
 }
