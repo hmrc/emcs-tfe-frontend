@@ -17,7 +17,7 @@
 package controllers.messages
 
 import config.ErrorHandler
-import config.SessionKeys.{DELETED_MESSAGE_TITLE, FROM_PAGE}
+import config.SessionKeys.{DELETED_MESSAGE_DESCRIPTION_KEY, FROM_PAGE}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions.DEFAULT_MAX_ROWS
 import models.messages.{MessagesSearchOptions, MessagesSortingSelectOption}
@@ -51,7 +51,7 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
           Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1))).withSession(session)
         )
       } else {
-        renderView(Ok, ern, search, session, request.session.get(DELETED_MESSAGE_TITLE))
+        renderView(Ok, ern, search, session, request.session.get(DELETED_MESSAGE_DESCRIPTION_KEY))
       }
     }
   }
@@ -60,7 +60,7 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
                          ern: String,
                          search: MessagesSearchOptions,
                          session: Session,
-                         maybeDeletedMessageTitle: Option[String])(implicit request: DataRequest[_]): Future[Result] = {
+                         maybeDeletedMessageDescriptionKey: Option[String])(implicit request: DataRequest[_]): Future[Result] = {
 
     getMessagesService.getMessages(ern, Some(search)).map { allMessages =>
 
@@ -78,7 +78,7 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
             allMessages = allMessages.messages,
             totalNumberOfPages = totalNumberOfPages,
             searchOptions = search,
-            maybeDeletedPageTitle = maybeDeletedMessageTitle
+            maybeDeletedMessageDescriptionKey = maybeDeletedMessageDescriptionKey
           )
         ).withSession(session)
       }
@@ -99,13 +99,13 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
   }
 
   // Set the FROM_PAGE session variable used by the delete message controller.
-  // If DELETED_MESSAGE_TITLE variable is set, unset it, so the 'Success Message Deleted' banner does not show when we visit
+  // If DELETED_MESSAGE_DESCRIPTION_KEY variable is set, unset it, so the 'Success Message Deleted' banner does not show when we visit
   // this page, if the user has not deleted a message.
   private def amendSession(previousSession: Session): Session = {
     val session = previousSession + (FROM_PAGE -> ViewAllMessagesPage.toString)
 
-    if (previousSession.get(DELETED_MESSAGE_TITLE).isDefined) {
-      session - DELETED_MESSAGE_TITLE
+    if (previousSession.get(DELETED_MESSAGE_DESCRIPTION_KEY).isDefined) {
+      session - DELETED_MESSAGE_DESCRIPTION_KEY
     } else {
       session
     }

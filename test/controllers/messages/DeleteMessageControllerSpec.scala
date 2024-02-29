@@ -125,7 +125,6 @@ class DeleteMessageControllerSpec extends SpecBase
   }
 
   "POST" when {
-
     "the user does not select a form option" in {
       val formKeyValue = "value" -> ""
 
@@ -192,7 +191,7 @@ class DeleteMessageControllerSpec extends SpecBase
 
       status(result) shouldBe Status.SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url)
-      //      await(result).session.get(SessionKeys.DELETED_MESSAGE_TITLE) TODO test RequestHeader?
+      //      await(result).session.get(SessionKeys.DELETED_MESSAGE_DESCRIPTION_KEY) TODO test RequestHeader?
     }
 
     "the user selects 'Yes, delete this message', and the message is not deleted" in {
@@ -210,7 +209,6 @@ class DeleteMessageControllerSpec extends SpecBase
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
     }
-
 
   }
 

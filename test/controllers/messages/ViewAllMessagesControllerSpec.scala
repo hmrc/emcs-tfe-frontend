@@ -221,12 +221,12 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
         redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions(index = 1)).url)
       }
 
-      "show deleted message success banner, if the DELETED_MESSAGE_TITLE session key set" in {
-        val deletedMessageTitle = "Alert or rejection received"
+      "show deleted message success banner, if the DELETED_MESSAGE_DESCRIPTION_KEY session variable is set" in {
+        val deletedMessageDescriptionKey = "messages.IE837.true.1.description"
 
         implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
           FakeRequest("GET", "/")
-            .withSession(SessionKeys.DELETED_MESSAGE_TITLE -> deletedMessageTitle)
+            .withSession(SessionKeys.DELETED_MESSAGE_DESCRIPTION_KEY -> deletedMessageDescriptionKey)
 
         val messagesResponse = constructMessageResponse(numberOfMessages = 0)
         val search = MessagesSearchOptions()
@@ -243,7 +243,7 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
           allMessages = messagesResponse.messages,
           totalNumberOfPages = 1,
           searchOptions = search,
-          maybeDeletedPageTitle = Some(deletedMessageTitle)
+          maybeDeletedMessageDescriptionKey = Some(deletedMessageDescriptionKey)
         ).toString()
       }
     }

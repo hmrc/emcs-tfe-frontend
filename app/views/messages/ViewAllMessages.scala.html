@@ -40,7 +40,7 @@
     allMessages: Seq[Message],
     totalNumberOfPages: Int,
     searchOptions: MessagesSearchOptions,
-    maybeDeletedPageTitle: Option[String] = None
+    maybeDeletedMessageDescriptionKey: Option[String] = None
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
@@ -50,14 +50,14 @@
     fullWidthContent = true
 ) {
 
-    @if(maybeDeletedPageTitle.isDefined && maybeDeletedPageTitle.get != ""){
+    @if(maybeDeletedMessageDescriptionKey.isDefined && maybeDeletedMessageDescriptionKey.get != ""){
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
                 @{
                     notificationBanner(
                         NotificationBanner(
                             title = messages("deleteMessage.successMessageTitle"),
-                            content = messages("deleteMessage.successMessagePart") + ": " + messages(maybeDeletedPageTitle.get),
+                            content = messages("deleteMessage.successMessagePart") + ": " + messages(maybeDeletedMessageDescriptionKey.get),
                             classes = "govuk-notification-banner--success"
                         )
                     )

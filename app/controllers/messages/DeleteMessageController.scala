@@ -17,7 +17,7 @@
 package controllers.messages
 
 import config.ErrorHandler
-import config.SessionKeys.{DELETED_MESSAGE_TITLE, FROM_PAGE, TEMP_DELETE_MESSAGE_TITLE}
+import config.SessionKeys.{DELETED_MESSAGE_DESCRIPTION_KEY, FROM_PAGE, TEMP_DELETE_MESSAGE_DESCRIPTION_KEY}
 import controllers.messages.routes.{ViewAllMessagesController, ViewMessageController}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import forms.DeleteMessageFormProvider
@@ -73,8 +73,8 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
               case deleteMessageResponse if deleteMessageResponse.recordsAffected == 1 =>
                 // redirect to all messages page to show success banner, add the deleted message title to session for the banner title
                 Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
-                  .addingToSession(DELETED_MESSAGE_TITLE -> request.session.get(TEMP_DELETE_MESSAGE_TITLE).getOrElse(""))
-                  .removingFromSession(TEMP_DELETE_MESSAGE_TITLE)
+                  .addingToSession(DELETED_MESSAGE_DESCRIPTION_KEY -> request.session.get(TEMP_DELETE_MESSAGE_DESCRIPTION_KEY).getOrElse(""))
+                  .removingFromSession(TEMP_DELETE_MESSAGE_DESCRIPTION_KEY)
 
               case _ =>
                 InternalServerError(errorHandler.internalServerErrorTemplate(request))
@@ -102,7 +102,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
             ))
           ).addingToSession(
             // used to avoid another call to the getMessagesService in the onSubmit method, as we can set the message title here
-            TEMP_DELETE_MESSAGE_TITLE -> messagesHelper.messageDescriptionKey(messageCache.message)
+            TEMP_DELETE_MESSAGE_DESCRIPTION_KEY -> messagesHelper.messageDescriptionKey(messageCache.message)
             //  mcc.messagesApi.messages("default")(deleteMessageHelper.getMessageTitleKey(messageCache.message))
           )
         )
