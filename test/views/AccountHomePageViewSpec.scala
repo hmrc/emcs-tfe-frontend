@@ -17,6 +17,8 @@
 package views
 
 import base.SpecBase
+import controllers.routes
+import models.MovementFilterUndischargedOption.Undischarged
 import models.MovementListSearchOptions
 import models.common.RoleType._
 import models.messages.MessagesSearchOptions
@@ -87,8 +89,8 @@ class AccountHomePageViewSpec extends SpecBase {
           movementsLinks.get(0).getElementsByTag("a").attr("href") mustBe controllers.routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()).url
 
           movementsLinks.get(1).text mustBe "Undischarged movements"
-          //TODO link location when built
-          movementsLinks.get(1).getElementsByTag("a").attr("href") mustBe testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+          movementsLinks.get(1).getElementsByTag("a").attr("href") mustBe
+            routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions( undischargedMovements = Some(Undischarged) )).url
 
           if (roleType.isConsignor) {
             movementsLinks.get(2).text mustBe "Draft movements"

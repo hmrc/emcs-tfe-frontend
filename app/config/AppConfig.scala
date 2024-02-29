@@ -21,6 +21,7 @@ import play.api.Configuration
 import play.api.mvc.RequestHeader
 import controllers.routes
 import featureswitch.core.config._
+import models.MovementFilterUndischargedOption.Undischarged
 import models.MovementListSearchOptions
 import models.messages.MessagesSearchOptions
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -54,8 +55,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def emcsTfeMessagesUrl(ern: String): String = controllers.messages.routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).url
 
-  // TODO: update with new URL when MOV01 filters are created
-  def emcsTfeUndischargedMovementsUrl(@unused ern: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+  def emcsTfeUndischargedMovementsUrl(ern: String): String =
+    routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions( undischargedMovements = Some(Undischarged) )).url
 
   private lazy val contactHost = configuration.get[String]("contact-frontend.host")
 
