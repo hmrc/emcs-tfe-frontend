@@ -37,7 +37,7 @@ class DeleteMessageService @Inject()(deleteMessageConnector: DeleteMessageConnec
     deleteMessageConnector.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier).flatMap {
       case Right(deleteMessageResponse) =>
         if (deleteMessageResponse.recordsAffected == 1) {
-          messageInboxRepository.delete(exciseRegistrationNumber, uniqueMessageIdentifier).map(x => {
+          messageInboxRepository.delete(exciseRegistrationNumber, uniqueMessageIdentifier).map(_ => {
             deleteMessageResponse
           })
         } else {

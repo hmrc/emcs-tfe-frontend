@@ -34,6 +34,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.messages.{DeleteMessageHelper, MessagesHelper}
 import views.html.messages.DeleteMessage
@@ -121,7 +122,6 @@ class DeleteMessageControllerSpec extends SpecBase
       }
     }
 
-
   }
 
   "POST" when {
@@ -208,7 +208,7 @@ class DeleteMessageControllerSpec extends SpecBase
       val result: Future[Result] = controller.onSubmit(testErn, testMessageId)(fakeRequest)
 
       status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-      // Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest) TODO the title is different?
+      Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
     }
 
 

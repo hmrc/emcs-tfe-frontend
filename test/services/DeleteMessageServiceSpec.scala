@@ -20,6 +20,7 @@ import base.SpecBase
 import fixtures.ItemFixtures
 import mocks.connectors.MockDeleteMessageConnector
 import mocks.repositories.MockMessageInboxRepository
+import models.response.{DeleteMessageException, JsonValidationError}
 import models.response.emcsTfe.messages.DeleteMessageResponse
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -35,8 +36,7 @@ class DeleteMessageServiceSpec extends SpecBase with ItemFixtures with MockDelet
 
   ".deleteMessage" must {
     "return DeleteMessageResponse " when {
-      "Connector returns success from..." in {
-
+      "Connector returns success with 1 record deleted." in {
         MockMessageInboxRepository.delete(testErn, testUniqueMessageIdentifier).returns(
           Future.successful(true)
         )
@@ -46,23 +46,30 @@ class DeleteMessageServiceSpec extends SpecBase with ItemFixtures with MockDelet
         )
 
         testService.deleteMessage(testErn, testUniqueMessageIdentifier)(hc).futureValue mustBe DeleteMessageResponse(1)
-
       }
+
+      "Connector returns success, but no records deleted" in {
+        MockDeleteMessageConnector.deleteMessage(testErn, testUniqueMessageIdentifier).returns(
+          Future.successful(Right(DeleteMessageResponse(recordsAffected = 0)))
+        )
+
+        testService.deleteMessage(testErn, testUniqueMessageIdentifier)(hc).futureValue mustBe DeleteMessageResponse(0)
+      }
+
     }
 
-    "throw" when {
-      "..." in {
-
-        MockMessageInboxRepository.delete(testErn, testUniqueMessageIdentifier).returns(
-          Future.successful(true)
-        )
+    "return DeleteMessageException " when {
+      "When the DeleteMessageConnector returns a JsonValidationError" in {
 
         MockDeleteMessageConnector.deleteMessage(testErn, testUniqueMessageIdentifier).returns(
-          Future.successful(Right(DeleteMessageResponse(recordsAffected = 1)))
+          Future.successful(Left(JsonValidationError))
         )
 
-        testService.deleteMessage(testErn, testUniqueMessageIdentifier)(hc).futureValue mustBe DeleteMessageResponse(1)
+        val result = intercept[Exception] {
+          await(testService.deleteMessage(testErn, testUniqueMessageIdentifier)(hc))
+        }
 
+        result mustBe DeleteMessageException("Error deleting message 1234 for trader GBWKTestErn: JSON validation error")
       }
     }
   }

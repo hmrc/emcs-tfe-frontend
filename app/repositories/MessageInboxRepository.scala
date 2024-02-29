@@ -102,7 +102,8 @@ class MessageInboxRepositoryImpl @Inject()(
     keepAlive(ern, uniqueMessageIdentifier).flatMap(_ => {
       collection
         .deleteOne(by(ern, uniqueMessageIdentifier))
-        .toFuture().map(_ => true)
+        .toFuture()
+        .map(_ => true)
     })
 }
 

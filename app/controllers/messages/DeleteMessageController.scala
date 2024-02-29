@@ -77,12 +77,12 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                   .removingFromSession(TEMP_DELETE_MESSAGE_TITLE)
 
               case _ =>
-                InternalServerError(errorHandler.standardErrorTemplate())
+                InternalServerError(errorHandler.internalServerErrorTemplate(request))
             }
           } else {
             returnToAllMessagesOrMessagePage(exciseRegistrationNumber, uniqueMessageIdentifier)
           }
-        } // TODO recoverwith?
+        }
       )
     }
 
@@ -93,7 +93,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
     getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).flatMap {
       case Some(messageCache) =>
         Future(
-          removeFromPageSessionValue(
+          amendSession(
             Ok(view(
               messageCache.message,
               form = form,
@@ -108,7 +108,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
         )
       case None => // TODO check this...
         Future(
-          removeFromPageSessionValue(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
+          amendSession(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
         )
     }
 
@@ -118,9 +118,9 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
     Future(
       pageFromSession(dr.session.get(FROM_PAGE)) match {
         case ViewAllMessagesPage =>
-          removeFromPageSessionValue(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
+          amendSession(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
         case _ =>
-          removeFromPageSessionValue(Redirect(ViewMessageController.onPageLoad(exciseRegistrationNumber, uniqueMessageIdentifier)))
+          amendSession(Redirect(ViewMessageController.onPageLoad(exciseRegistrationNumber, uniqueMessageIdentifier)))
       }
     )
 
@@ -140,6 +140,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
     }
 
 
-  private def removeFromPageSessionValue(call: Result)(implicit request: RequestHeader): Result = call.removingFromSession(FROM_PAGE)
+  // remove the FROM_PAGE variable when navigating away from this page, as it's no longer needed
+  private def amendSession(call: Result)(implicit request: RequestHeader): Result = call.removingFromSession(FROM_PAGE)
 
 }

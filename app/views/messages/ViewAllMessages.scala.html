@@ -50,7 +50,7 @@
     fullWidthContent = true
 ) {
 
-    @if(maybeDeletedPageTitle.isDefined){
+    @if(maybeDeletedPageTitle.isDefined && maybeDeletedPageTitle.get != ""){
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
                 @{
