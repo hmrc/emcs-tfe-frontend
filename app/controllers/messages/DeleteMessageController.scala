@@ -93,13 +93,13 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
     getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).flatMap {
       case Some(messageCache) =>
         Future(
-          amendSession(
-            Ok(view(
+          Ok(
+            view(
               messageCache.message,
               form = form,
-              returnToMessagesUrl = returnUrl(fromPage, exciseRegistrationNumber, uniqueMessageIdentifier),
+              returnToMessagesUrl = ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
               fromPage
-            ))
+            )
           ).addingToSession(
             // used to avoid another call to the getMessagesService in the onSubmit method, as we can set the message title here
             TEMP_DELETE_MESSAGE_DESCRIPTION_KEY -> messagesHelper.messageDescriptionKey(messageCache.message)
@@ -129,14 +129,6 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
       case _ => ViewMessagePage
     }
   }
-
-  private def returnUrl(fromPage: Page,
-                        exciseRegistrationNumber: String,
-                        uniqueMessageIdentifier: Long): String =
-    fromPage match {
-      case ViewAllMessagesPage => ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url
-      case _ => ViewMessageController.onPageLoad(exciseRegistrationNumber, uniqueMessageIdentifier).url
-    }
 
 
   // remove the FROM_PAGE variable when navigating away from this page, as it's no longer needed

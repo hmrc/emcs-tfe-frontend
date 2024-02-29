@@ -17,7 +17,7 @@
 package views.messages
 
 import base.ViewSpecBase
-import controllers.messages.routes.{ViewAllMessagesController, ViewMessageController}
+import controllers.messages.routes.ViewAllMessagesController
 import fixtures.MessagesFixtures
 import fixtures.messages.ViewAllMessagesMessages.English
 import forms.DeleteMessageFormProvider
@@ -31,7 +31,6 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import views.html.messages.DeleteMessage
 import views.{BaseSelectors, ViewBehaviours}
-
 
 class DeleteMessageViewSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures {
 
@@ -75,16 +74,11 @@ class DeleteMessageViewSpec extends ViewSpecBase with ViewBehaviours with Messag
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))
 
   def viewAsDocument(previousPage: Page): Document = {
-    val returnUrl = previousPage match {
-      case ViewAllMessagesPage => ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url
-      case _ => ViewMessageController.onPageLoad(testErn, testUniqueMessageIdentifier).url
-    }
-
     Jsoup.parse(
       view(
         message = message1,
         form = formProvider(),
-        returnToMessagesUrl = returnUrl,
+        returnToMessagesUrl = ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url,
         previousPage
       ).toString()
     )
@@ -106,14 +100,14 @@ class DeleteMessageViewSpec extends ViewSpecBase with ViewBehaviours with Messag
     Selectors.returnToMessages -> "Return to messages"
   )
 
-  val returnUrl = "/emcs/account/trader/GBWKTestErn/messages?sortBy=dateReceivedD&index=1"
-
   "DeleteMessageView" when {
+
+    val returnUrl = "/emcs/account/trader/GBWKTestErn/messages?sortBy=dateReceivedD&index=1"
 
     "render correctly, if the user has arrived from the ViewAllMessagesPage" must {
       implicit val document = viewAsDocument(previousPage = ViewAllMessagesPage)
 
-      // TODO find correct assertion! document.select(Selectors.returnToMessages).attr("href") shouldEqual  returnUrl
+      document.select(Selectors.returnToMessages).attr("href") mustBe returnUrl
 
       behave like pageWithExpectedElementsAndMessages(
         expectedElementsAndMessages ++ Seq(Selectors.noRadio -> "No, return to all messages")
@@ -121,10 +115,9 @@ class DeleteMessageViewSpec extends ViewSpecBase with ViewBehaviours with Messag
     }
 
     "render correctly, if the user has arrived from the ViewMessagePage" must {
-
       implicit val document = viewAsDocument(previousPage = ViewMessagePage)
 
-      // TODO find correct assertion!  document.select(Selectors.returnToMessages).attr("href") shouldEqual returnUrl
+      document.select(Selectors.returnToMessages).attr("href") mustBe returnUrl
 
       behave like pageWithExpectedElementsAndMessages(
         expectedElementsAndMessages ++ Seq(Selectors.noRadio -> "No, return to message")

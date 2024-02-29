@@ -17,7 +17,7 @@
 package viewmodels.helpers.messages
 
 import models.response.emcsTfe.messages.Message
-import pages.{Page, ViewAllMessagesPage, ViewMessagePage}
+import pages.{Page, ViewAllMessagesPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text

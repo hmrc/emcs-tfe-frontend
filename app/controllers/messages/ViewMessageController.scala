@@ -17,8 +17,11 @@
 package controllers.messages
 
 import config.{AppConfig, ErrorHandler}
+import config.ErrorHandler
+import config.SessionKeys.FROM_PAGE
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions
+import pages.ViewMessagePage
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DraftMovementService, DeleteMessageService, GetMessagesService, GetMovementService}
@@ -28,8 +31,6 @@ import views.html.messages.ViewMessage
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import config.SessionKeys.FROM_PAGE
-import pages.ViewMessagePage
 
 class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       val auth: AuthAction,

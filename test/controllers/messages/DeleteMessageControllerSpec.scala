@@ -103,7 +103,7 @@ class DeleteMessageControllerSpec extends SpecBase
           view(
             testMessageFromCache.message,
             formProvider(),
-            ViewMessageController.onPageLoad(testErn, testMessageId).url,
+            ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url,
             ViewMessagePage
           ).toString()
       }
