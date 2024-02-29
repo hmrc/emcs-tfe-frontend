@@ -82,7 +82,7 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                     case None => InternalServerError(errorHandler.internalServerErrorTemplate)
                   }
                 } else {
-                  Future(InternalServerError(errorHandler.standardErrorTemplate()))
+                  Future(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
                 }
               })
             case _ =>
