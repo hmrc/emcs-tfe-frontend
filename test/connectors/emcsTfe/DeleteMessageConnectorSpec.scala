@@ -26,7 +26,13 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeleteMessageConnectorSpec extends SpecBase with Status with MimeTypes with HeaderNames with MockAppConfig with MockHttpClient with MessagesFixtures {
+class DeleteMessageConnectorSpec extends SpecBase
+  with Status
+  with MimeTypes
+  with HeaderNames
+  with MockAppConfig
+  with MockHttpClient
+  with MessagesFixtures {
 
   trait Test {
     implicit val hc: HeaderCarrier = HeaderCarrier()
