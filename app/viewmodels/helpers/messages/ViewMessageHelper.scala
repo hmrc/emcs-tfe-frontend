@@ -169,7 +169,7 @@ class ViewMessageHelper @Inject()(
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
           contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission) ++
-            contentForSubmittedVia3rdParty(isPortalSubmission, relatedMessageType, msgCache.ern) ++
+            contentForSubmittedVia3rdParty(isPortalSubmission, relatedMessageType, msgCache.ern, msgCache.message.arc.getOrElse("")) ++
             Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
             contentForContactingHelpdesk())
         case _ => Html("")
@@ -250,7 +250,7 @@ class ViewMessageHelper @Inject()(
           link(appConfig.emcsTfeAlertOrRejectionUrl(ern, arc), "messages.IE704.IE819.fixError.link", id = Some("submit-a-new-alert-rejection")),
           Html(messages("messages.IE704.IE819.fixError.text.2"))
         ))))
-      case "IE813" =>
+      case "IE813" if isPortalSubmission =>
         Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.IE704.IE813.fixError.text")),
           link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.IE704.IE813.fixError.link", id = Some("submit-change-destination"), withFullStop = true)
@@ -259,13 +259,17 @@ class ViewMessageHelper @Inject()(
     }
   }
 
-  private[helpers] def contentForSubmittedVia3rdParty(isPortalSubmission: Boolean, relatedMessageType: String, ern: String)
+  private[helpers] def contentForSubmittedVia3rdParty(isPortalSubmission: Boolean, relatedMessageType: String, ern: String, arc: String = "")
                                                      (implicit messages: Messages): Seq[Html] = {
     if (!isPortalSubmission) {
       relatedMessageType match {
         case "IE815" => Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.submittedViaThirdParty.ie815")),
           link(appConfig.emcsTfeCreateMovementUrl(ern), "messages.submittedViaThirdParty.ie815.link", id = Some("create-a-new-movement"), withFullStop = true)
+        ))))
+        case "IE813" => Seq(p()(HtmlFormat.fill(Seq(
+          Html(messages("messages.submittedViaThirdParty.ie813")),
+          link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.submittedViaThirdParty.ie813.link", id = Some("change-destination"), withFullStop = true)
         ))))
         case _ => Seq(p()(Html(messages("messages.submittedViaThirdParty"))))
       }

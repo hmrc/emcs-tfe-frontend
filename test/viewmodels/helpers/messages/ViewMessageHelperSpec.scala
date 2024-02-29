@@ -673,6 +673,15 @@ class ViewMessageHelperSpec extends SpecBase
       })
     }
 
+    "return the correct content when the submission was made via a 3rd party (IE813)" in {
+      helper.contentForSubmittedVia3rdParty(isPortalSubmission = false, relatedMessageType = "IE813", testErn, testArc) mustBe Seq(p() {
+        HtmlFormat.fill(Seq(
+          Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or you can"),
+          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "messages.submittedViaThirdParty.ie813.link", id = Some("change-destination"), withFullStop = true)
+        ))
+      })
+    }
+
     "return an empty list when the submission was not made by a 3rd party" in {
       helper.contentForSubmittedVia3rdParty(isPortalSubmission = true, relatedMessageType = "IE810", testErn) mustBe Seq.empty
     }
@@ -780,7 +789,7 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "return the correct content for an IE813 error" in {
-      helper.contentForFixingError("IE813", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorChangeDestinationIE813)) mustBe Seq(p()(HtmlFormat.fill(Seq(
+      helper.contentForFixingError("IE813", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = true)(implicitly, messageCache(ie704ErrorChangeDestinationIE813)) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html("You need to"),
         link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a new change of destination", id = Some("submit-change-destination"), withFullStop = true)
       ))))
@@ -1108,17 +1117,14 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html(ViewMessageMessages.English.submitNewChangeDestinationPreLink),
+              Html(ViewMessageMessages.English.ie813thirdParty),
               link(
                 link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
-                messageKey = ViewMessageMessages.English.submitNewChangeDestinationLink,
+                messageKey = ViewMessageMessages.English.ie813thirdPartyLink,
                 withFullStop = true,
-                id = Some("submit-change-destination")
+                id = Some("change-destination")
               )
             ))
-          },
-          p() {
-            Html(ViewMessageMessages.English.thirdParty)
           },
           p() {
             HtmlFormat.fill(Seq(
