@@ -103,7 +103,6 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
           ).addingToSession(
             // used to avoid another call to the getMessagesService in the onSubmit method, as we can set the message title here
             TEMP_DELETE_MESSAGE_DESCRIPTION_KEY -> messagesHelper.messageDescriptionKey(messageCache.message)
-            //  mcc.messagesApi.messages("default")(deleteMessageHelper.getMessageTitleKey(messageCache.message))
           )
         )
       case None => // TODO check this...
