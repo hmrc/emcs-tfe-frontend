@@ -32,19 +32,21 @@ import views.html.messages.ViewAllMessages
 import views.{BaseSelectors, ViewBehaviours}
 
 
-  class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures {
+class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures {
 
   object Selectors extends BaseSelectors {
     val sortBySelectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
     val sortButton = "#sortBySubmit"
 
-    val tableSelector = "#main-content > div > div > div"
+    val successBannerSelector = "#main-content > div > div > div > div > div"
 
-    val messageRow = (i: Int) => s"$tableSelector > table > tbody > tr:nth-child($i) > th > a"
-    val messageHintRow = (i: Int) => s"$tableSelector > table > tbody > tr:nth-child($i) > th > p"
-    val statusRow = (i: Int) => s"$tableSelector > table > tbody > tr:nth-child($i) > td:nth-child(2) > strong"
-    val dateOfMessageRow = (i: Int) => s"$tableSelector > table > tbody > tr:nth-child($i) > td:nth-child(3)"
-    val actionRow = (i: Int) => s"$tableSelector > table > tbody > tr:nth-child($i) > td:nth-child(4) > a"
+    val tableSelector = "#main-content > div > div > div > table"
+
+    val messageRow = (i: Int) => s"$tableSelector > tbody > tr:nth-child($i) > th > a"
+    val messageHintRow = (i: Int) => s"$tableSelector > tbody > tr:nth-child($i) > th > p"
+    val statusRow = (i: Int) => s"$tableSelector > tbody > tr:nth-child($i) > td:nth-child(2) > strong"
+    val dateOfMessageRow = (i: Int) => s"$tableSelector  > tbody > tr:nth-child($i) > td:nth-child(3)"
+    val actionRow = (i: Int) => s"$tableSelector > tbody > tr:nth-child($i) > td:nth-child(4) > a"
 
     val paginationLink = (i: Int) => s"#main-content nav > ul > li:nth-child($i) > a"
     val nextLink = ".govuk-pagination__next a"
@@ -62,49 +64,62 @@ import views.{BaseSelectors, ViewBehaviours}
 
   lazy val table: table = app.injector.instanceOf[table]
 
-  def asDocument(totalPages: Int)(implicit messages: Messages): Document = Jsoup.parse(view(
-    sortSelectItems = MessagesSortingSelectOption.constructSelectItems(),
-    allMessages = getMessageResponse.messages,
-    totalNumberOfPages = totalPages,
-    searchOptions = MessagesSearchOptions()
-  ).toString())
+  def asDocument(totalPages: Int, maybeDeletedMessageDescriptionKey: Option[String] = None)(implicit messages: Messages): Document =
+    Jsoup.parse(view(
+      sortSelectItems = MessagesSortingSelectOption.constructSelectItems(),
+      allMessages = getMessageResponse.messages,
+      totalNumberOfPages = totalPages,
+      searchOptions = MessagesSearchOptions(),
+      maybeDeletedMessageDescriptionKey = maybeDeletedMessageDescriptionKey
+    ).toString())
 
 
-    "when being rendered with no pagination" should {
+  "when being rendered with no pagination" should {
 
-      "show the correct sort-by and table of messages" when {
+    val expectedElementsForNoPagination = Seq(
+      Selectors.title -> English.title,
+      Selectors.h1 -> English.heading,
 
-        implicit val doc: Document = asDocument(1)
+      Selectors.label("sortBy") -> English.sortByLabel,
+      Selectors.sortBySelectOption(1) -> English.sortMessageTypeA,
+      Selectors.sortBySelectOption(2) -> English.sortMessageTypeD,
+      Selectors.sortBySelectOption(3) -> English.sortDateReceivedA,
+      Selectors.sortBySelectOption(4) -> English.sortDateReceivedD,
+      Selectors.sortBySelectOption(5) -> English.sortIdentifierA,
+      Selectors.sortBySelectOption(6) -> English.sortIdentifierD,
+      Selectors.sortBySelectOption(7) -> English.sortReadIndicatorA,
+      Selectors.sortBySelectOption(8) -> English.sortReadIndicatorD,
+      Selectors.sortButton -> English.sortByButton,
 
-        behave like pageWithExpectedElementsAndMessages(Seq(
-          Selectors.title -> English.title,
-          Selectors.h1 -> English.heading,
+      Selectors.messageRow(1) -> "Alert or rejection received",
+      Selectors.messageHintRow(1) -> "ARC1001",
+      Selectors.statusRow(1) -> "UNREAD",
+      Selectors.dateOfMessageRow(1) -> "5 January 2024",
+      Selectors.actionRow(1) -> "Delete",
 
-          Selectors.label("sortBy") -> English.sortByLabel,
-          Selectors.sortBySelectOption(1) -> English.sortMessageTypeA,
-          Selectors.sortBySelectOption(2) -> English.sortMessageTypeD,
-          Selectors.sortBySelectOption(3) -> English.sortDateReceivedA,
-          Selectors.sortBySelectOption(4) -> English.sortDateReceivedD,
-          Selectors.sortBySelectOption(5) -> English.sortIdentifierA,
-          Selectors.sortBySelectOption(6) -> English.sortIdentifierD,
-          Selectors.sortBySelectOption(7) -> English.sortReadIndicatorA,
-          Selectors.sortBySelectOption(8) -> English.sortReadIndicatorD,
-          Selectors.sortButton -> English.sortByButton,
+      Selectors.messageRow(2) -> "Error with report of receipt",
+      Selectors.messageHintRow(2) -> "LRN1001",
+      Selectors.statusRow(2) -> "READ",
+      Selectors.dateOfMessageRow(2) -> "6 January 2024",
+      Selectors.actionRow(2) -> "Delete"
+    )
 
-          Selectors.messageRow(1) -> "Alert or rejection received",
-          Selectors.messageHintRow(1) -> "ARC1001",
-          Selectors.statusRow(1) -> "UNREAD",
-          Selectors.dateOfMessageRow(1) -> "5 January 2024",
-          Selectors.actionRow(1) -> "Delete",
+    "show the correct sort-by and table of messages" when {
 
-          Selectors.messageRow(2) -> "Error with report of receipt",
-          Selectors.messageHintRow(2) -> "LRN1001",
-          Selectors.statusRow(2) -> "READ",
-          Selectors.dateOfMessageRow(2) -> "6 January 2024",
-          Selectors.actionRow(2) -> "Delete"
-        ))
-      }
+      implicit val doc: Document = asDocument(1)
+
+      behave like pageWithExpectedElementsAndMessages(expectedElementsForNoPagination)
     }
+
+    "show the success banner" when {
+      implicit val doc: Document = asDocument(1, Some("messages.IE871.true.0.description"))
+      val successNotificationBanner = Seq(
+        Selectors.successBannerSelector -> "Success Message deleted: Explanation for a shortage or excess submitted successfully"
+      )
+
+      behave like pageWithExpectedElementsAndMessages(expectedElementsForNoPagination ++ successNotificationBanner)
+    }
+  }
 
   "when being rendered with pagination" should {
 

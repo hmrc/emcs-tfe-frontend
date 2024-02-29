@@ -80,12 +80,7 @@ class ViewMessageControllerSpec extends SpecBase
     lastUpdated = Instant.now
   )
 
-  val testMessageFromCacheWithIE871MessageType = MessageCache(
-    ern = testErn,
-    message = message1.copy(uniqueMessageIdentifier = testMessageId, messageType = "IE871"),
-    errorMessage = Some(GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel),
-    lastUpdated = Instant.now
-  )
+
 
   "GET /trader/:ern/message/:uniqueMessageIdentifier/view" when {
 
@@ -105,13 +100,20 @@ class ViewMessageControllerSpec extends SpecBase
     "service call to get message returns a Some(MessageCache) with an IE871 message type" should {
       "render the view" in {
 
-        MockGetMovementService
-          .getRawMovement(testErn, arc = "ARC1001")
-          .returns(Future.successful(getMovementResponseModel))
+        val testMessageFromCacheWithIE871MessageType = MessageCache(
+          ern = testErn,
+          message = message1.copy(uniqueMessageIdentifier = testMessageId, messageType = "IE871"),
+          errorMessage = Some(GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel),
+          lastUpdated = Instant.now
+        )
 
         MockGetMessagesService
           .getMessage(testErn, testMessageId)
           .returns(Future.successful(Some(testMessageFromCacheWithIE871MessageType)))
+
+        MockGetMovementService
+          .getRawMovement(testErn, arc = "ARC1001")
+          .returns(Future.successful(getMovementResponseModel))
 
         val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
 
