@@ -465,7 +465,8 @@ class ViewMessageSpec extends ViewSpecBase
       "render the correct content (when non-fixable) - portal" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE810")
+          relatedMessageType = Some("IE810"),
+          isTFESubmission = true
         )
         implicit val doc: Document = asDocument(ie704ErrorCancellationIE810.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorCancellationIE810)
@@ -503,7 +504,8 @@ class ViewMessageSpec extends ViewSpecBase
       "render the correct content (when non-fixable) - portal" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE837")
+          relatedMessageType = Some("IE837"),
+          isTFESubmission = true
         )
         implicit val doc: Document = asDocument(ie704ErrorExplainDelayIE837.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorExplainDelayIE837)
@@ -541,7 +543,8 @@ class ViewMessageSpec extends ViewSpecBase
       "render the correct content (when non-fixable) - portal" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE871")
+          relatedMessageType = Some("IE871"),
+          isTFESubmission = true
         )
         implicit val doc: Document = asDocument(ie704ErrorExplainShortageOrExcessIE871.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorExplainShortageOrExcessIE871)
@@ -579,7 +582,8 @@ class ViewMessageSpec extends ViewSpecBase
       "render the correct content (when non-fixable) - portal" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE818")
+          relatedMessageType = Some("IE818"),
+          isTFESubmission = true
         )
         implicit val doc: Document = asDocument(ie704ErrorReportOfReceiptIE818.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorReportOfReceiptIE818)
@@ -617,7 +621,8 @@ class ViewMessageSpec extends ViewSpecBase
       "render the correct content (when non-fixable) - portal" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE819")
+          relatedMessageType = Some("IE819"),
+          isTFESubmission = true
         )
         implicit val doc: Document = asDocument(ie704ErrorAlertRejectionIE819.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorAlertRejectionIE819)
@@ -652,7 +657,8 @@ class ViewMessageSpec extends ViewSpecBase
       "render the correct content (when non-fixable) - portal" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = ie704PortalSubmission,
-          relatedMessageType = Some("IE825")
+          relatedMessageType = Some("IE825"),
+          isTFESubmission = true
         )
         implicit val doc: Document = asDocument(ie704ErrorSplitMovementIE825.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorSplitMovementIE825)
@@ -698,7 +704,8 @@ class ViewMessageSpec extends ViewSpecBase
       "render the correct content (when non-fixable) - portal" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE813")
+          relatedMessageType = Some("IE813"),
+          isTFESubmission = true
         )
         implicit val doc: Document = asDocument(ie704ErrorChangeDestinationIE813.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorChangeDestinationIE813)
@@ -772,7 +779,8 @@ class ViewMessageSpec extends ViewSpecBase
               )
             )
           ),
-          relatedMessageType = Some("IE815")
+          relatedMessageType = Some("IE815"),
+          isTFESubmission = true
         )
         implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
@@ -794,7 +802,8 @@ class ViewMessageSpec extends ViewSpecBase
               )
             )
           ),
-          relatedMessageType = Some("IE815")
+          relatedMessageType = Some("IE815"),
+          isTFESubmission = true
         )
         implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
@@ -829,7 +838,8 @@ class ViewMessageSpec extends ViewSpecBase
       "render the correct content (when fixable) - portal" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 =ie704PortalSubmission,
-          relatedMessageType = Some("IE815")
+          relatedMessageType = Some("IE815"),
+          isTFESubmission = true
         )
         implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)

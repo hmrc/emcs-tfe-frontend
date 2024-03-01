@@ -17,7 +17,7 @@
 package connectors.emcsTfe
 
 import base.SpecBase
-import fixtures.{GetMovementResponseFixtures, GetSubmissionFailureMessageFixtures}
+import fixtures.GetSubmissionFailureMessageFixtures
 import mocks.connectors.MockHttpClient
 import models.response.JsonValidationError
 import models.response.emcsTfe.draftMovement.DraftId

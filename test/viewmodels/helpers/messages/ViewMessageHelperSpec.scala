@@ -648,7 +648,8 @@ class ViewMessageHelperSpec extends SpecBase
         val message = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(getSubmissionFailureMessageResponseModel.copy(IE704ModelFixtures.ie704ModelModel.copy(
           header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL1234")),
           body = IE704BodyFixtures.ie704BodyModel.copy(
-            functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy("4404")))))
+            functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy("4404")))),
+          isTFESubmission = true)
         ))
         val result = helper.constructErrors(message)
         result mustBe Html("")
@@ -835,7 +836,8 @@ class ViewMessageHelperSpec extends SpecBase
       "return the correct content when the errors are non-fixable, portal submission" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE810")
+          relatedMessageType = Some("IE810"),
+          isTFESubmission = true
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -887,7 +889,8 @@ class ViewMessageHelperSpec extends SpecBase
       "return the correct content when the errors are non-fixable, portal submission" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE837")
+          relatedMessageType = Some("IE837"),
+          isTFESubmission = true
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorExplainDelayIE837.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -936,7 +939,8 @@ class ViewMessageHelperSpec extends SpecBase
       "return the correct content when the errors are non-fixable, portal submission" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE871")
+          relatedMessageType = Some("IE871"),
+          isTFESubmission = true
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorExplainShortageOrExcessIE871.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -990,7 +994,8 @@ class ViewMessageHelperSpec extends SpecBase
       "return the correct content when the errors are non-fixable, portal submission" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE818")
+          relatedMessageType = Some("IE818"),
+          isTFESubmission = true
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorReportOfReceiptIE818.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -1046,7 +1051,8 @@ class ViewMessageHelperSpec extends SpecBase
       "return the correct content when the errors are non-fixable, portal submission" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE819")
+          relatedMessageType = Some("IE819"),
+          isTFESubmission = true
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorAlertRejectionIE819.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -1091,7 +1097,8 @@ class ViewMessageHelperSpec extends SpecBase
       "return the correct content when the errors are non-fixable, portal submission" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = ie704PortalSubmission,
-          relatedMessageType = Some("IE825")
+          relatedMessageType = Some("IE825"),
+          isTFESubmission = true
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorSplitMovementIE825.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -1137,7 +1144,8 @@ class ViewMessageHelperSpec extends SpecBase
       "return the correct content when the errors are non-fixable, portal submission" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704PortalSubmission,
-          relatedMessageType = Some("IE813")
+          relatedMessageType = Some("IE813"),
+          isTFESubmission = true
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorChangeDestinationIE813.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -1206,7 +1214,8 @@ class ViewMessageHelperSpec extends SpecBase
               )
             )
           ),
-          relatedMessageType = Some("IE815")
+          relatedMessageType = Some("IE815"),
+          isTFESubmission = true
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -1237,7 +1246,8 @@ class ViewMessageHelperSpec extends SpecBase
               )
             )
           ),
-          relatedMessageType = Some("IE815")
+          relatedMessageType = Some("IE815"),
+          isTFESubmission = true
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -1300,7 +1310,8 @@ class ViewMessageHelperSpec extends SpecBase
               )
             )
           ),
-          relatedMessageType = Some("IE815")
+          relatedMessageType = Some("IE815"),
+          isTFESubmission = true
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -1370,7 +1381,8 @@ class ViewMessageHelperSpec extends SpecBase
               )
             )
           ),
-          relatedMessageType = Some("IE815")
+          relatedMessageType = Some("IE815"),
+          isTFESubmission = true
         )
         val testMessageCache = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse))
         helper.showWarningTextIfFixableIE815(testMessageCache) mustBe warningText(Html(msgs("messages.IE704.IE815.fixError.fixable.warning")))
@@ -1408,7 +1420,8 @@ class ViewMessageHelperSpec extends SpecBase
               )
             )
           ),
-          relatedMessageType = Some("IE810")
+          relatedMessageType = Some("IE810"),
+          isTFESubmission = true
         )
         val testMessageCache = MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(failureMessageResponse))
         helper.showWarningTextIfFixableIE815(testMessageCache) mustBe Html("")

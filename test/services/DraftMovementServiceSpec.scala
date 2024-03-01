@@ -21,7 +21,7 @@ import fixtures.GetSubmissionFailureMessageFixtures
 import mocks.connectors.MockDraftMovementConnector
 import models.response.JsonValidationError
 import models.response.emcsTfe.draftMovement.DraftId
-import models.response.emcsTfe.messages.submissionFailure.IE704FunctionalError
+import models.response.emcsTfe.messages.submissionFailure.{GetSubmissionFailureMessageResponse, IE704FunctionalError}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +35,9 @@ class DraftMovementServiceSpec extends SpecBase with MockDraftMovementConnector 
 
   ".putErrorMessagesAndMarkMovementAsDraft" should {
 
-    val errors: Seq[IE704FunctionalError] = GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel.ie704.body.functionalError
+    val errorResponse: GetSubmissionFailureMessageResponse = GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel.copy(ie704 = IE704ModelFixtures.ie704ModelModel.copy(header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some(testDraftId))))
+
+    val errors: Seq[IE704FunctionalError] = errorResponse.ie704.body.functionalError
 
     "return Some(_)" when {
 
@@ -44,10 +46,10 @@ class DraftMovementServiceSpec extends SpecBase with MockDraftMovementConnector 
         MockDraftMovementConnector.markMovementAsDraft(testErn, testDraftId).returns(Future.successful(Right(DraftId(testDraftId))))
 
         MockDraftMovementConnector
-          .putErrorMessagesAndReturnDraftId(testErn, testLrn, errors)
+          .putErrorMessagesAndReturnDraftId(testErn, testDraftId, errors)
           .returns(Future.successful(Right(DraftId(testDraftId))))
 
-        val result = testService.putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel).futureValue
+        val result = testService.putErrorMessagesAndMarkMovementAsDraft(testErn, errorResponse).futureValue
 
         result mustBe Some(testDraftId)
       }
@@ -58,10 +60,10 @@ class DraftMovementServiceSpec extends SpecBase with MockDraftMovementConnector 
       "inserting the error messages fail" in {
 
         MockDraftMovementConnector
-          .putErrorMessagesAndReturnDraftId(testErn, testLrn, errors)
+          .putErrorMessagesAndReturnDraftId(testErn, testDraftId, errors)
           .returns(Future.successful(Left(JsonValidationError)))
 
-        val result = testService.putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel).futureValue
+        val result = testService.putErrorMessagesAndMarkMovementAsDraft(testErn, errorResponse).futureValue
 
         result mustBe None
       }
@@ -69,12 +71,12 @@ class DraftMovementServiceSpec extends SpecBase with MockDraftMovementConnector 
       "inserting the error messages fail is successful but marking the movement as a draft fails" in {
 
         MockDraftMovementConnector
-          .putErrorMessagesAndReturnDraftId(testErn, testLrn, errors)
+          .putErrorMessagesAndReturnDraftId(testErn, testDraftId, errors)
           .returns(Future.successful(Right(DraftId(testDraftId))))
 
         MockDraftMovementConnector.markMovementAsDraft(testErn, testDraftId).returns(Future.successful(Left(JsonValidationError)))
 
-        val result = testService.putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel).futureValue
+        val result = testService.putErrorMessagesAndMarkMovementAsDraft(testErn, errorResponse).futureValue
 
         result mustBe None
       }

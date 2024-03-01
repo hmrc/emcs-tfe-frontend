@@ -28,19 +28,19 @@ class DraftMovementService @Inject()(draftMovementConnector: DraftMovementConnec
 
   def putErrorMessagesAndMarkMovementAsDraft(ern: String, getSubmissionFailureMessageResponse: GetSubmissionFailureMessageResponse)
                                             (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[String]] = {
-    val lrn = getSubmissionFailureMessageResponse.ie704.body.attributes.get.lrn.get
+    val correlationId = getSubmissionFailureMessageResponse.ie704.header.correlationIdentifier.getOrElse("")
     val errorMessages = getSubmissionFailureMessageResponse.ie704.body.functionalError
     //TODO: delete message (ETFE-2855)
-    draftMovementConnector.putErrorMessagesAndReturnDraftId(ern, lrn, errorMessages).flatMap {
+    draftMovementConnector.putErrorMessagesAndReturnDraftId(ern, correlationId, errorMessages).flatMap {
       case Right(draftId) =>
         draftMovementConnector.markMovementAsDraft(ern, draftId.value).map {
           case Right(_) => Some(draftId.value)
           case Left(error) =>
-            logger.warn(s"[removeMessageAndRedirectToDraftMovement] - Failed to mark movement as draft for ERN: $ern and draft ID: $draftId with error: ${error.message}")
+            logger.warn(s"[putErrorMessagesAndMarkMovementAsDraft] - Failed to mark movement as draft for ERN: $ern and draft ID: $draftId with error: ${error.message}")
             None
         }
       case Left(error) =>
-        logger.warn(s"[removeMessageAndRedirectToDraftMovement] - Failed to insert error messages for for ERN: $ern and LRN: $lrn with error: ${error.message}")
+        logger.warn(s"[putErrorMessagesAndMarkMovementAsDraft] - Failed to insert error messages for for ERN: $ern and correlation ID: $correlationId with error: ${error.message}")
         Future(None)
     }
   }

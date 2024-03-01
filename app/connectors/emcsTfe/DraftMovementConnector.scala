@@ -47,9 +47,9 @@ class DraftMovementConnector @Inject()(val http: HttpClient,
       }
   }
 
-  def putErrorMessagesAndReturnDraftId(ern: String, lrn: String, errors: Seq[IE704FunctionalError])
+  def putErrorMessagesAndReturnDraftId(ern: String, correlationId: String, errors: Seq[IE704FunctionalError])
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, DraftId]] = {
-    def url: String = s"$baseUrl/user-answers/create-movement/$ern/$lrn/error-messages"
+    def url: String = s"$baseUrl/user-answers/create-movement/$ern/$correlationId/error-messages"
 
     put(url, errors)
       .recover {

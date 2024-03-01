@@ -137,12 +137,14 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
           )
         )
       ),
-      relatedMessageType = Some("IE815")
+      relatedMessageType = Some("IE815"),
+      isTFESubmission = false
     )
 
     val getSubmissionFailureMessageResponseJson: JsValue = Json.obj(
       "ie704" -> IE704ModelFixtures.ie704ModelJson,
-      "relatedMessageType" -> "IE815"
+      "relatedMessageType" -> "IE815",
+      "isTFESubmission" -> false
     )
   }
 }

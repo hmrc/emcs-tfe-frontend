@@ -42,10 +42,6 @@ class ViewMessageHelper @Inject()(
                                    warning_text: warning_text,
                                    h2: h2) extends DateUtils with TagFluency {
 
-  // If the correlation ID starts with PORTAL then it has been submitted via the frontend
-  private def isPortalSubmission(failureMessage: GetSubmissionFailureMessageResponse) =
-    failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
-
   def constructSplitMessageErrorContent(message: MessageCache)(implicit messages: Messages): Html = {
     message.errorMessage.map { errMsg =>
       errMsg.relatedMessageType match {
@@ -144,15 +140,15 @@ class ViewMessageHelper @Inject()(
 
   def constructErrors(message: MessageCache)(implicit messages: Messages): Html = {
     message.errorMessage.map {
-      submissionFailureMessage => {
-        val allErrorCodes = submissionFailureMessage.ie704.body.functionalError.map(_.errorType)
+      failureMessage => {
+        val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
         val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
-        submissionFailureMessage.relatedMessageType match {
-          case Some("IE815") if numberOfNonFixableErrors == 0 || !isPortalSubmission(submissionFailureMessage) => Html("")
+        failureMessage.relatedMessageType match {
+          case Some("IE815") if numberOfNonFixableErrors == 0 || !failureMessage.isTFESubmission => Html("")
           case _ => HtmlFormat.fill(Seq(
             h2("messages.errors.heading"),
             summary_list(
-              submissionFailureMessage.ie704.body.functionalError.map { error =>
+              failureMessage.ie704.body.functionalError.map { error =>
                 val mappedErrorMessage = Some(s"messages.IE704.error.${error.errorType}").filter(messages.isDefinedAt)
                 error.errorType -> mappedErrorMessage.map(messages(_)).getOrElse(error.errorReason)
               }
@@ -170,8 +166,8 @@ class ViewMessageHelper @Inject()(
       val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
-          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission(failureMessage)) ++
-            contentForSubmittedVia3rdParty(isPortalSubmission(failureMessage), relatedMessageType, msgCache.ern, msgCache.message.arc.getOrElse("")) ++
+          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, failureMessage.isTFESubmission) ++
+            contentForSubmittedVia3rdParty(failureMessage.isTFESubmission, relatedMessageType, msgCache.ern, msgCache.message.arc.getOrElse("")) ++
             Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
             contentForContactingHelpdesk())
         case _ => Html("")
@@ -182,10 +178,10 @@ class ViewMessageHelper @Inject()(
 
   def showWarningTextIfFixableIE815(messageCache: MessageCache)(implicit messages: Messages): Html = {
     messageCache.errorMessage.map {
-      errorMessage =>
-        val allErrorCodes = errorMessage.ie704.body.functionalError.map(_.errorType)
+      failureMessage =>
+        val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
         val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
-        if(numberOfNonFixableErrors == 0 && errorMessage.relatedMessageType.contains("IE815") && isPortalSubmission(errorMessage)) {
+        if(numberOfNonFixableErrors == 0 && failureMessage.relatedMessageType.contains("IE815") && failureMessage.isTFESubmission) {
           warning_text(Html(messages("messages.IE704.IE815.fixError.fixable.warning")))
         } else {
           Html("")
