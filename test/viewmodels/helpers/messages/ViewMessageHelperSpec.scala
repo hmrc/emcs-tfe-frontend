@@ -660,15 +660,15 @@ class ViewMessageHelperSpec extends SpecBase
 
     "return the correct content when the submission was made via a 3rd party" in {
       helper.contentForSubmittedVia3rdParty(isPortalSubmission = false, relatedMessageType = "IE810", testErn) mustBe Seq(p() {
-        Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.")
+        Html(ViewMessageMessages.English.thirdParty)
       })
     }
 
     "return the correct content when the submission was made via a 3rd party (IE815)" in {
       helper.contentForSubmittedVia3rdParty(isPortalSubmission = false, relatedMessageType = "IE815", testErn) mustBe Seq(p() {
         HtmlFormat.fill(Seq(
-          Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or"),
-          link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+          Html(ViewMessageMessages.English.ie815thirdParty),
+          link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.ie815thirdPartyLink, id = Some("create-a-new-movement"), withFullStop = true)
         ))
       })
     }
@@ -676,8 +676,8 @@ class ViewMessageHelperSpec extends SpecBase
     "return the correct content when the submission was made via a 3rd party (IE813)" in {
       helper.contentForSubmittedVia3rdParty(isPortalSubmission = false, relatedMessageType = "IE813", testErn, testArc) mustBe Seq(p() {
         HtmlFormat.fill(Seq(
-          Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or you can"),
-          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "messages.submittedViaThirdParty.ie813.link", id = Some("change-destination"), withFullStop = true)
+          Html(ViewMessageMessages.English.ie813thirdParty),
+          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.ie813thirdPartyLink, id = Some("change-destination"), withFullStop = true)
         ))
       })
     }
@@ -693,8 +693,8 @@ class ViewMessageHelperSpec extends SpecBase
     "return the correct content" in {
       helper.contentForContactingHelpdesk() mustBe Seq(p() {
         HtmlFormat.fill(Seq(
-          link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-          Html("if you need more help or advice.")
+          link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+          Html(ViewMessageMessages.English.helplinePostLink)
         ))
       })
     }
@@ -708,21 +708,20 @@ class ViewMessageHelperSpec extends SpecBase
       helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
           link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
-            "Update and resubmit the movement", id = Some("update-draft-movement"), withFullStop = true)
+            ViewMessageMessages.English.updateMovementLink.dropRight(1), id = Some("update-draft-movement"), withFullStop = true)
         )))
       )
     }
 
     "return the correct content for an IE815 error - fixable (3rd party)" in {
-      //TODO: update when IE815 submission failure message is played (ETFE-3437)
       helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq()
     }
 
     "return the correct content for an IE815 error - non-fixable (singular - portal submission)" in {
       helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
-          Html("The error cannot be fixed, so you need to"),
-          link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+          Html(ViewMessageMessages.English.submitNewMovementSingularErrorPreLink),
+          link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
         )))
       )
     }
@@ -730,8 +729,8 @@ class ViewMessageHelperSpec extends SpecBase
     "return the correct content for an IE815 error - non-fixable (plural - portal submission)" in {
       helper.contentForFixingError("IE815", numberOfErrors = 3, numberOfNonFixableErrors = 2, isPortalSubmission = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
-          Html("At least one of these errors cannot be fixed, so you need to"),
-          link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+          Html(ViewMessageMessages.English.submitNewMovementMultipleErrorsPreLink),
+          link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
         )))
       )
     }
@@ -782,16 +781,16 @@ class ViewMessageHelperSpec extends SpecBase
 
     "return the correct content for an IE819 error" in {
       helper.contentForFixingError("IE819", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = false)(implicitly, messageCache(ie704ErrorAlertRejectionIE819)) mustBe Seq(p()(HtmlFormat.fill(Seq(
-        Html("To correct any errors you must"),
-        link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), "submit a new alert or rejection", id = Some("submit-a-new-alert-rejection")),
-        Html("of this movement.")
+        Html(ViewMessageMessages.English.submitNewAlertRejectionPreLink),
+        link(appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc), ViewMessageMessages.English.submitNewAlertRejectionLink, id = Some("submit-a-new-alert-rejection")),
+        Html(ViewMessageMessages.English.submitNewAlertRejectionPostLink)
       ))))
     }
 
     "return the correct content for an IE813 error" in {
       helper.contentForFixingError("IE813", numberOfErrors = 1, numberOfNonFixableErrors = 1, isPortalSubmission = true)(implicitly, messageCache(ie704ErrorChangeDestinationIE813)) mustBe Seq(p()(HtmlFormat.fill(Seq(
-        Html("You need to"),
-        link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), "submit a new change of destination", id = Some("submit-change-destination"), withFullStop = true)
+        Html(ViewMessageMessages.English.submitNewChangeDestinationPreLink),
+        link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.submitNewChangeDestinationLink, id = Some("submit-change-destination"), withFullStop = true)
       ))))
     }
 
@@ -1182,7 +1181,7 @@ class ViewMessageHelperSpec extends SpecBase
           p() {
             HtmlFormat.fill(Seq(
               Html(ViewMessageMessages.English.thirdPartyOr),
-              link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
             ))
           },
           p() {
@@ -1275,17 +1274,17 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html("If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or"),
-              link(appConfig.emcsTfeCreateMovementUrl(testErn), "create a new movement", id = Some("create-a-new-movement"), withFullStop = true)
+              Html(ViewMessageMessages.English.thirdPartyOr),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
             ))
           },
           p() {
-            Html("An ARC will only be created for a movement once it has been successfully submitted.")
+            Html(ViewMessageMessages.English.arcText)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1307,15 +1306,15 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
-              "Update and resubmit the movement", id = Some("update-draft-movement"), withFullStop = true)
+              ViewMessageMessages.English.updateMovementLink.dropRight(1), id = Some("update-draft-movement"), withFullStop = true)
           },
           p() {
-            Html("An ARC will only be created for a movement once it has been successfully submitted.")
+            Html(ViewMessageMessages.English.arcText)
           },
           p() {
             HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, "Contact the HMRC excise helpline", id = Some("contactHmrc"), isExternal = true),
-              Html("if you need more help or advice.")
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
             ))
           }
         )).toString())
@@ -1358,11 +1357,30 @@ class ViewMessageHelperSpec extends SpecBase
     }
   }
 
-  ".showWarningTextIfFixableIE805" when {
+  ".showWarningTextIfFixableIE815" when {
 
-    "there are no non-fixable errors" should {
+    "there are no non-fixable errors for an IE815 and its a portal submission" should {
 
       "render the correct warning text" in {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = IE704ModelFixtures.ie704PortalSubmission.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(
+              functionalError = Seq(
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4410", errorReason = "The excise warehouse you have entered is not approved on SEED to receive this product. Please check that the correct excise product code is input and amend your entry.")
+              )
+            )
+          ),
+          relatedMessageType = Some("IE815")
+        )
+        val testMessageCache = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse))
+        helper.showWarningTextIfFixableIE815(testMessageCache) mustBe warningText(Html(msgs("messages.IE704.IE815.fixError.fixable.warning")))
+      }
+
+    }
+
+    "there are no non-fixable errors for an IE815 but its not a portal submission" should {
+
+      "render empty HTML" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = IE704ModelFixtures.ie704ModelModel.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
@@ -1374,37 +1392,56 @@ class ViewMessageHelperSpec extends SpecBase
           relatedMessageType = Some("IE815")
         )
         val testMessageCache = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse))
-        helper.showWarningTextIfFixableIE805(testMessageCache) mustBe warningText(Html(msgs("messages.IE704.IE815.fixError.fixable.warning")))
+        helper.showWarningTextIfFixableIE815(testMessageCache) mustBe Html("")
       }
 
     }
-  }
 
-  "there are at least 1 non-fixable error" should {
+    "there are no non-fixable errors but the error message does not relate to an IE815" should {
 
-    "return empty HTML" in {
-      val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
-        ie704 = IE704ModelFixtures.ie704ModelModel.copy(
-          body = IE704BodyFixtures.ie704BodyModel.copy(
-            functionalError = Seq(
-              IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4410", errorReason = "The excise warehouse you have entered is not approved on SEED to receive this product. Please check that the correct excise product code is input and amend your entry."),
-              IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry.")
+      "render empty HTML" in {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = IE704ModelFixtures.ie704PortalSubmission.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(
+              functionalError = Seq(
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4410", errorReason = "The excise warehouse you have entered is not approved on SEED to receive this product. Please check that the correct excise product code is input and amend your entry.")
+              )
             )
-          )
-        ),
-        relatedMessageType = Some("IE815")
-      )
-      val testMessageCache = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse))
-      helper.showWarningTextIfFixableIE805(testMessageCache) mustBe Html("")
+          ),
+          relatedMessageType = Some("IE810")
+        )
+        val testMessageCache = MessageCache(testErn, ie704ErrorCancellationIE810.message, Some(failureMessageResponse))
+        helper.showWarningTextIfFixableIE815(testMessageCache) mustBe Html("")
+
+      }
     }
-  }
 
-  "no error message is defined" should {
+    "there are at least 1 non-fixable error" should {
 
-    "return empty HTML" in {
+      "return empty HTML" in {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = IE704ModelFixtures.ie704ModelModel.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(
+              functionalError = Seq(
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4410", errorReason = "The excise warehouse you have entered is not approved on SEED to receive this product. Please check that the correct excise product code is input and amend your entry."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry.")
+              )
+            )
+          ),
+          relatedMessageType = Some("IE815")
+        )
+        val testMessageCache = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse))
+        helper.showWarningTextIfFixableIE815(testMessageCache) mustBe Html("")
+      }
+    }
 
-      val testMessageCache = MessageCache(testErn, ie819ReceivedAlert.message, None)
-      helper.showWarningTextIfFixableIE805(testMessageCache) mustBe Html("")
+    "no error message is defined" should {
+
+      "return empty HTML" in {
+
+        val testMessageCache = MessageCache(testErn, ie819ReceivedAlert.message, None)
+        helper.showWarningTextIfFixableIE815(testMessageCache) mustBe Html("")
+      }
     }
   }
 

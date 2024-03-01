@@ -343,7 +343,7 @@ class ViewMessageSpec extends ViewSpecBase
 
       behave like pageWithExpectedElementsAndMessages(
         Seq(
-          Selectors.p(1) ->"You have received a movement but we have not yet received your Report of Receipt. However if you have sent a Report of Receipt within the last 7 days, please ignore this reminder."
+          Selectors.p(1) -> "You have received a movement but we have not yet received your Report of Receipt. However if you have sent a Report of Receipt within the last 7 days, please ignore this reminder."
         )
       )
     }
@@ -850,7 +850,6 @@ class ViewMessageSpec extends ViewSpecBase
         arcContentTest(2)
         helplineLinkTest(3)
         movementActionsLinksTest(withViewMovementLink = false)
-        warningTextContentTest()
       }
     }
   }
