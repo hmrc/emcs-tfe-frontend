@@ -82,6 +82,9 @@ object ViewMessageMessages {
     val submitNewChangeDestinationPreLink = "You need to"
     val submitNewChangeDestinationLink = "submit a new change of destination"
     val submitNewChangeDestination = s"$submitNewChangeDestinationPreLink $submitNewChangeDestinationLink."
+
+    val ie813thirdParty = "If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or you can"
+    val ie813thirdPartyLink = "submit a new change of destination"
   }
 
   sealed trait IE815SubmissionFailureMessages {
