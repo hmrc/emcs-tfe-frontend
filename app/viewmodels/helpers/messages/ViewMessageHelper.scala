@@ -21,6 +21,7 @@ import models.messages.MessageCache
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.messages.Message
+import models.response.emcsTfe.messages.submissionFailure.GetSubmissionFailureMessageResponse
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
@@ -40,6 +41,10 @@ class ViewMessageHelper @Inject()(
                                    summary_list: summary_list,
                                    warning_text: warning_text,
                                    h2: h2) extends DateUtils with TagFluency {
+
+  // If the correlation ID starts with PORTAL then it has been submitted via the frontend
+  private def isPortalSubmission(failureMessage: GetSubmissionFailureMessageResponse) =
+    failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
 
   def constructSplitMessageErrorContent(message: MessageCache)(implicit messages: Messages): Html = {
     message.errorMessage.map { errMsg =>
@@ -141,10 +146,9 @@ class ViewMessageHelper @Inject()(
     message.errorMessage.map {
       submissionFailureMessage => {
         val allErrorCodes = submissionFailureMessage.ie704.body.functionalError.map(_.errorType)
-        val isPortalSubmission: Boolean = submissionFailureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
         val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
         submissionFailureMessage.relatedMessageType match {
-          case Some("IE815") if numberOfNonFixableErrors == 0 || !isPortalSubmission => Html("")
+          case Some("IE815") if numberOfNonFixableErrors == 0 || !isPortalSubmission(submissionFailureMessage) => Html("")
           case _ => HtmlFormat.fill(Seq(
             h2("messages.errors.heading"),
             summary_list(
@@ -162,14 +166,12 @@ class ViewMessageHelper @Inject()(
   def constructFixErrorsContent(messageCache: MessageCache)(implicit messages: Messages): Html = {
     implicit val msgCache: MessageCache = messageCache
     messageCache.errorMessage.map { failureMessage =>
-      // If the correlation ID starts with PORTAL then it has been submitted via the frontend
-      val isPortalSubmission: Boolean = failureMessage.ie704.header.correlationIdentifier.exists(_.toUpperCase.startsWith("PORTAL"))
       val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
       val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
-          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission) ++
-            contentForSubmittedVia3rdParty(isPortalSubmission, relatedMessageType, msgCache.ern, msgCache.message.arc.getOrElse("")) ++
+          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, isPortalSubmission(failureMessage)) ++
+            contentForSubmittedVia3rdParty(isPortalSubmission(failureMessage), relatedMessageType, msgCache.ern, msgCache.message.arc.getOrElse("")) ++
             Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
             contentForContactingHelpdesk())
         case _ => Html("")
@@ -178,12 +180,12 @@ class ViewMessageHelper @Inject()(
 
   }
 
-  def showWarningTextIfFixableIE805(messageCache: MessageCache)(implicit messages: Messages): Html = {
+  def showWarningTextIfFixableIE815(messageCache: MessageCache)(implicit messages: Messages): Html = {
     messageCache.errorMessage.map {
       errorMessage =>
         val allErrorCodes = errorMessage.ie704.body.functionalError.map(_.errorType)
         val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
-        if(numberOfNonFixableErrors == 0) {
+        if(numberOfNonFixableErrors == 0 && errorMessage.relatedMessageType.contains("IE815") && isPortalSubmission(errorMessage)) {
           warning_text(Html(messages("messages.IE704.IE815.fixError.fixable.warning")))
         } else {
           Html("")
