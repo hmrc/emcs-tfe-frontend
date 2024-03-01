@@ -105,7 +105,6 @@ class ViewMessageHelper @Inject()(
       link = "#print-dialogue", messageKey = "viewMessage.link.printMessage.description", id = Some("print-link")
     )
     lazy val deleteMessageLink: Html = link(
-      //TODO: implement link in ETFE-2855
       link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, message.uniqueMessageIdentifier).url,
       messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
     )
