@@ -191,7 +191,6 @@ class DeleteMessageControllerSpec extends SpecBase
 
       status(result) shouldBe Status.SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url)
-      //      await(result).session.get(SessionKeys.DELETED_MESSAGE_DESCRIPTION_KEY) TODO test RequestHeader?
     }
 
     "the user selects 'Yes, delete this message', and the message is not deleted" in {
