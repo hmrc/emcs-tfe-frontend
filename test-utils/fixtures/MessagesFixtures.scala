@@ -237,6 +237,12 @@ trait MessagesFixtures extends BaseFixtures {
     reportOfReceiptLink = true
   )
 
+  val ie881ReceivedManualClosure = TestMessage(
+    message = createMessage("IE881").copy(messageRole = 0, submittedByRequestingTrader = false),
+    messageTitle = "Manual closure",
+    messageSubTitle = None
+  )
+
   val ie704ErrorCancellationIE810 = TestMessage(
     message = createMessage("IE704", optRelatedMessageType = Some("IE810")).copy(messageRole = 0, submittedByRequestingTrader = true, arc = Some(testArc)),
     messageTitle = "Error with cancellation",
