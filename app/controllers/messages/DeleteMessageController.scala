@@ -105,7 +105,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
             TEMP_DELETE_MESSAGE_DESCRIPTION_KEY -> messagesHelper.messageDescriptionKey(messageCache.message)
           )
         )
-      case None => // TODO check this...
+      case None =>
         Future(
           amendSession(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
         )
