@@ -22,9 +22,5 @@ case class DraftId(value: String)
 
 object DraftId {
 
-  implicit val reads: Reads[DraftId] = for {
-    draftId <- (__ \ "draftId").read[String]
-  } yield {
-    DraftId(draftId)
-  }
+  implicit val reads: Reads[DraftId] = (__ \ "draftId").read[String].map(DraftId(_))
 }
