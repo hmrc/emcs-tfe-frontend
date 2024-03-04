@@ -96,7 +96,8 @@ class ViewMessageSpec extends ViewSpecBase
     ie813ReceivedChangeDestination, ie813SubmittedChangeDestination,
     ie829ReceivedCustomsAcceptance,
     ie837SubmittedExplainDelayROR, ie837SubmittedExplainDelayCOD,
-    ie839ReceivedCustomsRejection
+    ie839ReceivedCustomsRejection,
+    ie881ReceivedManualClosure
   ).foreach { msg =>
 
     s"when being rendered with a ${msg.message.messageType} ${msg.messageTitle} ${msg.messageSubTitle} msg" should {
@@ -392,6 +393,18 @@ class ViewMessageSpec extends ViewSpecBase
       behave like pageWithExpectedElementsAndMessages(
         Seq(
           Selectors.p(1) -> "Your movement has been rejected for export."
+        )
+      )
+    }
+  }
+
+  s"when an IE881 message" should {
+    "contain other information" when {
+      implicit val doc: Document = asDocument(ie881ReceivedManualClosure.message)
+
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.p(1) -> "The movement has been manually closed by the member state of the consignor due to a problem."
         )
       )
     }

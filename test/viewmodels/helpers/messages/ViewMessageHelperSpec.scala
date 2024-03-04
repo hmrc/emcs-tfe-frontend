@@ -582,6 +582,37 @@ class ViewMessageHelperSpec extends SpecBase
             )
           )
       }
+      "when processing an IE881 notification" in {
+        val testMessageCache = MessageCache(testErn, ie881ReceivedManualClosure.message, None)
+
+        val result: Html = helper.constructActions(testMessageCache, None)
+
+        result mustBe
+          HtmlFormat.fill(
+            Seq(
+              list(
+                extraClasses = Some("govuk-!-display-none-print"),
+                content = Seq(
+                  link(
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
+                    messageKey = "viewMessage.link.viewMovement.description",
+                    id = Some("view-movement")
+                  ),
+                  link(
+                    link = "#print-dialogue",
+                    messageKey = "viewMessage.link.printMessage.description",
+                    id = Some("print-link")
+                  ),
+                  link(
+                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    messageKey = "viewMessage.link.deleteMessage.description",
+                    id = Some("delete-message")
+                  )
+                )
+              )
+            )
+          )
+      }
     }
   }
 
