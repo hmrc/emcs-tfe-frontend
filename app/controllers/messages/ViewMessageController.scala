@@ -16,13 +16,14 @@
 
 package controllers.messages
 
-import config.ErrorHandler
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{GetMessagesService, GetMovementService}
+import services.{DraftMovementService, GetMessagesService, GetMovementService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logging
 import views.html.messages.ViewMessage
 
 import javax.inject.Inject
@@ -34,9 +35,11 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       val betaAllowList: BetaAllowListAction,
                                       getMessagesService: GetMessagesService,
                                       getMovementService: GetMovementService,
+                                      draftMovementService: DraftMovementService,
                                       val view: ViewMessage,
-                                      errorHandler: ErrorHandler
-                                     )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                      errorHandler: ErrorHandler,
+                                      appConfig: AppConfig
+                                     )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport with Logging {
 
   private val messagesThatNeedMovement = Seq("IE871")
 
@@ -63,9 +66,17 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
   def removeMessageAndRedirectToDraftMovement(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] =
     authorisedDataRequestAsync(ern) { implicit request =>
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
-        case Some(msg) if msg.errorMessage.exists(_.relatedMessageType.contains("IE815")) =>
-          //TODO: delete message (ETFE-2855) then route to 'revive' draft movement controller on CaM
-          Future(Redirect(testOnly.controllers.routes.UnderConstructionController.onPageLoad()))
+        case Some(msg) =>
+          msg.errorMessage match {
+            case Some(errorMessageResponse) if errorMessageResponse.relatedMessageType.contains("IE815") && errorMessageResponse.ie704.body.attributes.exists(_.lrn.isDefined) =>
+              draftMovementService.putErrorMessagesAndMarkMovementAsDraft(ern, errorMessageResponse).map {
+                case Some(draftId) => Redirect(appConfig.emcsTfeCreateMovementTaskListUrl(ern, draftId))
+                case None => InternalServerError(errorHandler.internalServerErrorTemplate)
+              }
+            case _ =>
+              logger.warn(s"[removeMessageAndRedirectToDraftMovement] - Message type was not IE815 or LRN did not exist for ERN: $ern and message ID: $uniqueMessageIdentifier - showing not found page")
+              Future(NotFound(errorHandler.notFoundTemplate))
+          }
         case _ => Future(NotFound(errorHandler.notFoundTemplate))
       }
     }

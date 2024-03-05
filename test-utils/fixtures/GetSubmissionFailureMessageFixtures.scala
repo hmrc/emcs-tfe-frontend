@@ -47,13 +47,13 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
     val ie704AttributesModel: IE704Attributes = IE704Attributes(
       arc = Some("22XI00000000000366000"),
       sequenceNumber = Some(1),
-      lrn = Some("lrnie8155639253")
+      lrn = Some(testLrn)
     )
 
     val ie704AttributesJson: JsValue = Json.obj(
       "arc" -> "22XI00000000000366000",
       "sequenceNumber" -> 1,
-      "lrn" -> "lrnie8155639253",
+      "lrn" -> testLrn,
     )
   }
 
@@ -137,12 +137,14 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
           )
         )
       ),
-      relatedMessageType = Some("IE815")
+      relatedMessageType = Some("IE815"),
+      isTFESubmission = false
     )
 
     val getSubmissionFailureMessageResponseJson: JsValue = Json.obj(
       "ie704" -> IE704ModelFixtures.ie704ModelJson,
-      "relatedMessageType" -> "IE815"
+      "relatedMessageType" -> "IE815",
+      "isTFESubmission" -> false
     )
   }
 }

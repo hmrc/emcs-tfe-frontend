@@ -16,17 +16,17 @@
 
 package config
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import play.api.mvc.RequestHeader
 import controllers.routes
 import featureswitch.core.config._
 import models.MovementFilterUndischargedOption.Undischarged
 import models.MovementListSearchOptions
 import models.messages.MessagesSearchOptions
+import play.api.Configuration
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.net.URLEncoder
+import javax.inject.{Inject, Singleton}
 import scala.annotation.unused
 import scala.concurrent.duration.Duration
 
@@ -99,6 +99,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def emcsTfeCreateMovementUrl(ern: String): String =
     servicesConfig.getString("urls.emcsTfeCreateMovement") + s"/trader/$ern"
+
+  def emcsTfeCreateMovementTaskListUrl(ern: String, draftId: String): String =
+    servicesConfig.getString("urls.emcsTfeCreateMovement") + s"/trader/$ern/draft/$draftId/draft-movement"
 
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")

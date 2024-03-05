@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package models.response.emcsTfe.messages.submissionFailure
+package models.response.emcsTfe.draftMovement
 
-import play.api.libs.json._
+import base.SpecBase
+import play.api.libs.json.Json
 
-case class GetSubmissionFailureMessageResponse(ie704: IE704Model, relatedMessageType: Option[String], isTFESubmission: Boolean)
+class DraftIdSpec extends SpecBase {
 
-object GetSubmissionFailureMessageResponse {
+  "DraftId" should {
 
-  implicit val format: Format[GetSubmissionFailureMessageResponse] = Json.format[GetSubmissionFailureMessageResponse]
-
+    "de-serialise from JSON as expected" in {
+      Json.obj("draftId" -> testDraftId).as[DraftId] mustBe DraftId(testDraftId)
+    }
+  }
 }

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package models.response.emcsTfe.messages.submissionFailure
+package models.response.emcsTfe.draftMovement
 
 import play.api.libs.json._
 
-case class GetSubmissionFailureMessageResponse(ie704: IE704Model, relatedMessageType: Option[String], isTFESubmission: Boolean)
+case class DraftId(value: String)
 
-object GetSubmissionFailureMessageResponse {
+object DraftId {
 
-  implicit val format: Format[GetSubmissionFailureMessageResponse] = Json.format[GetSubmissionFailureMessageResponse]
-
+  implicit val reads: Reads[DraftId] = (__ \ "draftId").read[String].map(DraftId(_))
 }
