@@ -17,11 +17,11 @@
 package controllers.messages
 
 import config.ErrorHandler
-import config.SessionKeys.{DELETED_MESSAGE_DESCRIPTION_KEY, FROM_PAGE, TEMP_DELETE_MESSAGE_DESCRIPTION_KEY}
+import config.SessionKeys.{DELETED_MESSAGE_DESCRIPTION_KEY, FROM_PAGE}
 import controllers.messages.routes.{ViewAllMessagesController, ViewMessageController}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import forms.DeleteMessageFormProvider
-import models.messages.MessagesSearchOptions
+import models.messages.{MessageCache, MessagesSearchOptions}
 import models.requests.DataRequest
 import pages.{Page, ViewAllMessagesPage, ViewMessagePage}
 import play.api.data.Form
@@ -69,21 +69,28 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
         },
         userSelectsDeleteMessage => {
           if (userSelectsDeleteMessage) {
-            deleteMessageService.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier) map {
-              case deleteMessageResponse if deleteMessageResponse.recordsAffected == 1 =>
-                // redirect to all messages page to show success banner, add the deleted message title to session for the banner title
-                Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
-                  .addingToSession(DELETED_MESSAGE_DESCRIPTION_KEY -> request.session.get(TEMP_DELETE_MESSAGE_DESCRIPTION_KEY).getOrElse(""))
-                  .removingFromSession(TEMP_DELETE_MESSAGE_DESCRIPTION_KEY)
-
-              case _ =>
-                InternalServerError(errorHandler.internalServerErrorTemplate(request))
-            }
+            deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier)
           } else {
             returnToAllMessagesOrMessagePage(exciseRegistrationNumber, uniqueMessageIdentifier)
           }
         }
       )
+    }
+
+  private def deleteMessage(exciseRegistrationNumber: String,
+                            uniqueMessageIdentifier: Long)(implicit request: DataRequest[_]): Future[Result] =
+    getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier) flatMap {
+      case Some(messageCache: MessageCache) =>
+        deleteMessageService.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier) map {
+          case deleteMessageResponse if deleteMessageResponse.recordsAffected == 1 =>
+            // redirect to all messages page to show success banner, add the deleted message title to session for the banner title
+            Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
+              .flashing(DELETED_MESSAGE_DESCRIPTION_KEY -> messagesHelper.messageDescriptionKey(messageCache.message))
+          case _ =>
+            InternalServerError(errorHandler.internalServerErrorTemplate(request))
+        }
+      case _ =>
+        Future(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
     }
 
   def renderView(exciseRegistrationNumber: String,
@@ -93,17 +100,12 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
     getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier).flatMap {
       case Some(messageCache) =>
         Future(
-          Ok(
-            view(
-              messageCache.message,
-              form = form,
-              returnToMessagesUrl = ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
-              fromPage
-            )
-          ).addingToSession(
-            // used to avoid another call to the getMessagesService in the onSubmit method, as we can set the message title here
-            TEMP_DELETE_MESSAGE_DESCRIPTION_KEY -> messagesHelper.messageDescriptionKey(messageCache.message)
-          )
+          Ok(view(
+            messageCache.message,
+            form = form,
+            returnToMessagesUrl = ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
+            fromPage
+          ))
         )
       case None =>
         Future(
@@ -129,7 +131,6 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
       case _ => ViewMessagePage
     }
   }
-
 
   // remove the FROM_PAGE variable when navigating away from this page, as it's no longer needed
   private def amendSession(call: Result)(implicit request: RequestHeader): Result = call.removingFromSession(FROM_PAGE)

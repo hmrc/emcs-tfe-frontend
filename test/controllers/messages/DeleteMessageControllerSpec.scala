@@ -178,6 +178,10 @@ class DeleteMessageControllerSpec extends SpecBase
     }
 
     "the user selects 'Yes, delete this message', and the message is deleted" in {
+      MockGetMessagesService
+        .getMessage(testErn, testMessageId)
+        .returns(Future.successful(Some(testMessageFromCache)))
+
       MockDeleteMessagesService
         .deleteMessage(testErn, testMessageId)
         .returns(Future.successful(DeleteMessageResponse(recordsAffected = 1)))
@@ -194,6 +198,10 @@ class DeleteMessageControllerSpec extends SpecBase
     }
 
     "the user selects 'Yes, delete this message', and the message is not deleted" in {
+      MockGetMessagesService
+        .getMessage(testErn, testMessageId)
+        .returns(Future.successful(Some(testMessageFromCache)))
+
       MockDeleteMessagesService
         .deleteMessage(testErn, testMessageId)
         .returns(Future.successful(DeleteMessageResponse(recordsAffected = 0)))

@@ -226,7 +226,7 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
 
         implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
           FakeRequest("GET", "/")
-            .withSession(SessionKeys.DELETED_MESSAGE_DESCRIPTION_KEY -> deletedMessageDescriptionKey)
+            .withFlash(SessionKeys.DELETED_MESSAGE_DESCRIPTION_KEY -> deletedMessageDescriptionKey)
 
         val messagesResponse = constructMessageResponse(numberOfMessages = 0)
         val search = MessagesSearchOptions()
