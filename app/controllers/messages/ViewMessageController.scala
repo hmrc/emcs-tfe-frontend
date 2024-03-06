@@ -74,8 +74,7 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
         case Some(msg) =>
           msg.errorMessage match {
-            case Some(errorMessageResponse) if errorMessageResponse.relatedMessageType.contains("IE815") &&
-              errorMessageResponse.ie704.body.attributes.exists(_.lrn.isDefined) =>
+            case Some(errorMessageResponse) if errorMessageResponse.relatedMessageType.contains("IE815") =>
               deleteMessageService.deleteMessage(ern, uniqueMessageIdentifier).flatMap(response => {
                 if (response.recordsAffected == 1) {
                   draftMovementService.putErrorMessagesAndMarkMovementAsDraft(ern, errorMessageResponse).map {

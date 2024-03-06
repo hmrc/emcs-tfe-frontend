@@ -80,8 +80,6 @@ class ViewMessageControllerSpec extends SpecBase
     lastUpdated = Instant.now
   )
 
-
-
   "GET /trader/:ern/message/:uniqueMessageIdentifier/view" when {
 
     "service call to get message returns a Some(MessageCache)" should {
@@ -154,8 +152,6 @@ class ViewMessageControllerSpec extends SpecBase
           .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
           .returns(Future.successful(Some(testDraftId)))
 
-        //TODO: add in mock for delete message call
-
         val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
 
         status(result) shouldBe Status.SEE_OTHER
@@ -217,6 +213,10 @@ class ViewMessageControllerSpec extends SpecBase
         MockGetMessagesService
           .getMessage(testErn, testMessageId)
           .returns(Future.successful(Some(testMessageFromCache)))
+
+        MockDeleteMessagesService
+          .deleteMessage(testErn, testMessageId)
+          .returns(Future.successful(DeleteMessageResponse(recordsAffected = 1)))
 
         MockDraftMovementService
           .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
