@@ -99,12 +99,10 @@ class MessageInboxRepositoryImpl @Inject()(
     }
 
   def delete(ern: String, uniqueMessageIdentifier: Long): Future[Boolean] =
-    keepAlive(ern, uniqueMessageIdentifier).flatMap(_ => {
       collection
         .deleteOne(by(ern, uniqueMessageIdentifier))
         .toFuture()
         .map(_ => true)
-    })
 }
 
 trait MessageInboxRepository {

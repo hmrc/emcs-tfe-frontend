@@ -44,24 +44,25 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
 
   def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] = {
     authorisedWithData(ern).async { implicit request =>
-      val session = amendSession(request.session)
 
       if (search.index <= 0) {
         Future.successful(
-          Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1))).withSession(session)
+          Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
         )
       } else {
-        renderView(Ok, ern, search, session)
+        renderView(Ok, ern, search)
       }
     }
   }
 
   private def renderView(status: Status,
                          ern: String,
-                         search: MessagesSearchOptions,
-                         session: Session)(implicit request: DataRequest[_]): Future[Result] = {
+                         search: MessagesSearchOptions)(implicit request: DataRequest[_]): Future[Result] = {
 
     getMessagesService.getMessages(ern, Some(search)).map { allMessages =>
+
+      // Set the FROM_PAGE session variable used by the delete message controller
+      val session = request.session + (FROM_PAGE -> ViewAllMessagesPage.toString)
 
       val totalNumberOfPages: Int = calculatePageCount(
         allMessages.totalNumberOfMessagesAvailable.toInt,
@@ -96,8 +97,5 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
       totalNumberOfMessagesAvailable / maximumRowsPerPage
     }
   }
-
-  // Set the FROM_PAGE session variable used by the delete message controller
-  private def amendSession(previousSession: Session): Session = previousSession + (FROM_PAGE -> ViewAllMessagesPage.toString)
 
 }
