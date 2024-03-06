@@ -104,6 +104,22 @@ class MovementListSearchOptionsSpec extends SpecBase {
 
         actualResult mustBe expectedResult
       }
+
+      "invalid query parameters are supplied" in {
+        val expectedResult = Some(Right(MovementListSearchOptions(
+          traderRole = None,
+          undischargedMovements = None,
+          movementStatus = None
+        )))
+
+        val actualResult = MovementListSearchOptions.queryStringBinder.bind("search", Map(
+          "traderRole" -> Seq("ADMIN"),
+          "undischargedMovements" -> Seq("YES"),
+          "movementStatus" -> Seq("RunningLate"),
+        ))
+
+        actualResult mustBe expectedResult
+      }
     }
 
     "unbind QueryString to URL format" in {
