@@ -230,6 +230,25 @@ viewMovement.document.documentReference = Reference
 viewMovement.document.documentDescription = Description
 viewMovement.document.notProvided = Not provided
 
+deleteMessage.error.required = Select yes if you would like to delete the message
+deleteMessage.heading = Are you sure you want to delete this message?
+
+deleteMessage.yes = Yes, delete this message
+deleteMessage.fromMessagePage.no = No, return to message
+deleteMessage.fromMessageInbox.no = No, return to all messages
+
+deleteMessage.successMessageTitle = Success
+deleteMessage.successMessagePart = Message deleted
+
+deleteMessage.returnToMessages = Return to messages
+
+deleteMessage.title = Delete message
+deleteMessage.table.message.label = Message
+deleteMessage.table.arc.label = Administrative reference code
+deleteMessage.table.lrn.label = Local reference number
+deleteMessage.table.dateAndTimeReceived.label = Date and time received
+
+
 itemDetails.itemDetailsCardTitle = Item details
 itemDetails.packagingTypeCardTitle = Packaging type {0}
 itemDetails.key.commodityCode = Commodity code
@@ -325,6 +344,7 @@ activeTrader.link = Change trader type
 
 site.govuk = GOV.UK
 site.back = Back
+site.confirm = Confirm
 
 viewAllMovements.title = Movements
 viewAllMovements.heading = Movements
@@ -418,6 +438,7 @@ viewMessage.link.explainShortageExcess.description = Submit explanation for a sh
 viewMessage.link.viewMovement.description = View movement
 viewMessage.link.printMessage.description = Print message
 viewMessage.link.deleteMessage.description = Delete message
+
 
 messages.IE801.false.0.description = First notification of movement
 messages.IE801.false.0.paragraph = There is a new movement on its way to you.

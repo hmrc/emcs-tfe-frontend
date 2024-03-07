@@ -19,16 +19,18 @@ package controllers.messages
 import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
-import fixtures.{GetSubmissionFailureMessageFixtures, MessagesFixtures}
-import mocks.services.{MockDraftMovementService, MockGetMessagesService, MockGetMovementService}
+import fixtures.{GetMovementResponseFixtures, GetSubmissionFailureMessageFixtures, MessagesFixtures}
+import mocks.services.{MockDeleteMessageService, MockDraftMovementService, MockGetMessagesService, MockGetMovementService}
 import models.messages.{MessageCache, MessagesSearchOptions}
 import models.requests.DataRequest
+import models.response.emcsTfe.messages.DeleteMessageResponse
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.messages.ViewMessage
 
@@ -40,8 +42,10 @@ class ViewMessageControllerSpec extends SpecBase
   with FakeAuthAction
   with MockGetMessagesService
   with MockGetMovementService
+  with MockDeleteMessageService
   with MockDraftMovementService
-  with GetSubmissionFailureMessageFixtures {
+  with GetSubmissionFailureMessageFixtures
+  with GetMovementResponseFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -61,6 +65,7 @@ class ViewMessageControllerSpec extends SpecBase
     getMessagesService = mockGetMessagesService,
     getMovementService = mockGetMovementService,
     draftMovementService = mockDraftMovementService,
+    deleteMessageService = mockDeleteMessagesService,
     view = view,
     errorHandler = errorHandler,
     appConfig = appConfig
@@ -90,6 +95,31 @@ class ViewMessageControllerSpec extends SpecBase
       }
     }
 
+    "service call to get message returns a Some(MessageCache) with an IE871 message type" should {
+      "render the view" in {
+
+        val testMessageFromCacheWithIE871MessageType = MessageCache(
+          ern = testErn,
+          message = message1.copy(uniqueMessageIdentifier = testMessageId, messageType = "IE871"),
+          errorMessage = Some(GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel),
+          lastUpdated = Instant.now
+        )
+
+        MockGetMessagesService
+          .getMessage(testErn, testMessageId)
+          .returns(Future.successful(Some(testMessageFromCacheWithIE871MessageType)))
+
+        MockGetMovementService
+          .getRawMovement(testErn, arc = "ARC1001")
+          .returns(Future.successful(getMovementResponseModel))
+
+        val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
+
+        status(result) shouldBe Status.OK
+        contentAsString(result) shouldBe view(testMessageFromCacheWithIE871MessageType, None).toString()
+      }
+    }
+
     "service call to get message returns a None" should {
       "redirect back to the messages inbox" in {
         MockGetMessagesService
@@ -114,11 +144,13 @@ class ViewMessageControllerSpec extends SpecBase
           .getMessage(testErn, testMessageId)
           .returns(Future.successful(Some(testMessageFromCache)))
 
+        MockDeleteMessagesService
+          .deleteMessage(testErn, testMessageId)
+          .returns(Future.successful(DeleteMessageResponse(recordsAffected = 1)))
+
         MockDraftMovementService
           .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
           .returns(Future.successful(Some(testDraftId)))
-
-        //TODO: add in mock for delete message call
 
         val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
 
@@ -131,13 +163,13 @@ class ViewMessageControllerSpec extends SpecBase
 
       "return a Not Found response" in {
 
-          MockGetMessagesService
-            .getMessage(testErn, testMessageId)
-            .returns(Future.successful(Some(testMessageFromCache.copy(errorMessage = None))))
+        MockGetMessagesService
+          .getMessage(testErn, testMessageId)
+          .returns(Future.successful(Some(testMessageFromCache.copy(errorMessage = None))))
 
-          val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+        val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
 
-          status(result) shouldBe Status.NOT_FOUND
+        status(result) shouldBe Status.NOT_FOUND
       }
     }
 
@@ -155,6 +187,25 @@ class ViewMessageControllerSpec extends SpecBase
       }
     }
 
+    "no records were deleted" should {
+
+      "return an Internal Server error response with the correct error handler template" in {
+
+        MockGetMessagesService
+          .getMessage(testErn, testMessageId)
+          .returns(Future.successful(Some(testMessageFromCache)))
+
+        MockDeleteMessagesService
+          .deleteMessage(testErn, testMessageId)
+          .returns(Future.successful(DeleteMessageResponse(recordsAffected = 0)))
+
+        val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+      }
+    }
+
     "one of the backend calls to 'revive' the movement fails" should {
 
       "return an ISE response" in {
@@ -162,6 +213,10 @@ class ViewMessageControllerSpec extends SpecBase
         MockGetMessagesService
           .getMessage(testErn, testMessageId)
           .returns(Future.successful(Some(testMessageFromCache)))
+
+        MockDeleteMessagesService
+          .deleteMessage(testErn, testMessageId)
+          .returns(Future.successful(DeleteMessageResponse(recordsAffected = 1)))
 
         MockDraftMovementService
           .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)

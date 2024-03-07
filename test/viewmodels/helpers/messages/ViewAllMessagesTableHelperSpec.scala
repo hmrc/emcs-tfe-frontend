@@ -84,7 +84,7 @@ class ViewAllMessagesTableHelperSpec extends SpecBase with MessagesFixtures with
                     TableRow(
                       content = HtmlContent(
                         link(
-                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          link = controllers.messages.routes.DeleteMessageController.onPageLoad(testErn, message1.uniqueMessageIdentifier).url,
                           messageKey = "Delete"
                         )
                       )
@@ -114,7 +114,7 @@ class ViewAllMessagesTableHelperSpec extends SpecBase with MessagesFixtures with
                     TableRow(
                       content = HtmlContent(
                         link(
-                          link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                          link = controllers.messages.routes.DeleteMessageController.onPageLoad(testErn, message2.uniqueMessageIdentifier).url,
                           messageKey = "Delete"
                         )
                       )

@@ -31,14 +31,16 @@
         govukPagination : GovukPagination,
         govukButton: GovukButton,
         tableHelper: ViewAllMessagesTableHelper,
-        paginationHelper: MessagesPaginationHelper
+        paginationHelper: MessagesPaginationHelper,
+        notificationBanner: GovukNotificationBanner
 )
 
 @(
     sortSelectItems: Seq[SelectItem],
     allMessages: Seq[Message],
     totalNumberOfPages: Int,
-    searchOptions: MessagesSearchOptions
+    searchOptions: MessagesSearchOptions,
+    maybeDeletedMessageDescriptionKey: Option[String] = None
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
@@ -48,45 +50,63 @@
     fullWidthContent = true
 ) {
 
-     @h1() {
-         @messages("viewAllMessages.heading", request.messageStatistics.countOfAllMessages)
-     }
+    @if(maybeDeletedMessageDescriptionKey.isDefined && maybeDeletedMessageDescriptionKey.get != ""){
+        <div class="govuk-grid-row govuk-!-padding-right-3 govuk-!-padding-left-3">
+            <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
+                @{
+                    notificationBanner(
+                        NotificationBanner(
+                            title = messages("deleteMessage.successMessageTitle"),
+                            content = messages("deleteMessage.successMessagePart") + ": " + messages(maybeDeletedMessageDescriptionKey.get),
+                            classes = "govuk-notification-banner--success"
+                        )
+                    )
+                }
+            </div>
+        </div>
+    }
 
-     <div class="inbox">
-        @p(classes = "govuk-body-l") {
-             @messages("viewAllMessages.totalNumberOfMessages", request.messageStatistics.countOfNewMessages)
+    <div class="govuk-grid-row govuk-!-padding-right-3 govuk-!-padding-left-3">
+         @h1() {
+             @messages("viewAllMessages.heading", request.messageStatistics.countOfAllMessages)
          }
 
-        <form>
-            <div style="display: inline-flex; align-items: flex-end;">
-                @govukSelect(Select(
-                    items = sortSelectItems,
-                    name = "sortBy",
-                    id = "sortBy",
-                    label = Label(
-                        content = Text(messages("viewAllMessages.sort.label")),
-                        classes = "govuk-!-display-inline govuk-!-padding-right-2"
-                    ),
-                    classes = "govuk-!-display-inline"
-                ))
+         <div class="inbox">
+            @p(classes = "govuk-body-l") {
+                 @messages("viewAllMessages.totalNumberOfMessages", request.messageStatistics.countOfNewMessages)
+             }
 
-                @govukButton(
-                    ButtonViewModel(Text(messages("viewAllMessages.sort.button")))
-                            .withCssClass("govuk-!-margin-left-2")
-                            .withId("sortBySubmit")
-                )
+            <form>
+                <div style="display: inline-flex; align-items: flex-end;">
+                    @govukSelect(Select(
+                        items = sortSelectItems,
+                        name = "sortBy",
+                        id = "sortBy",
+                        label = Label(
+                            content = Text(messages("viewAllMessages.sort.label")),
+                            classes = "govuk-!-display-inline govuk-!-padding-right-2"
+                        ),
+                        classes = "govuk-!-display-inline"
+                    ))
 
-                <input type="hidden" name="index" value="@{searchOptions.index}"/>
-            </div>
-        </form>
+                    @govukButton(
+                        ButtonViewModel(Text(messages("viewAllMessages.sort.button")))
+                                .withCssClass("govuk-!-margin-left-2")
+                                .withId("sortBySubmit")
+                    )
+
+                    <input type="hidden" name="index" value="@{searchOptions.index}"/>
+                </div>
+            </form>
+        </div>
+
+        @tableHelper.constructTable(allMessages)
+
+        @govukPagination(
+            paginationHelper.constructPagination(totalNumberOfPages, request.ern, searchOptions)
+        )
+
     </div>
-
-    @tableHelper.constructTable(allMessages)
-
-    @govukPagination(
-        paginationHelper.constructPagination(totalNumberOfPages, request.ern, searchOptions)
-    )
-
 }
 
 @{

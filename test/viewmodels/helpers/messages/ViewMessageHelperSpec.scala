@@ -163,7 +163,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -199,7 +199,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -230,7 +230,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -266,7 +266,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -302,7 +302,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -335,7 +335,7 @@ class ViewMessageHelperSpec extends SpecBase
                       id = Some("print-link")
                     ),
                     link(
-                      link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                      link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                       messageKey = "viewMessage.link.deleteMessage.description",
                       id = Some("delete-message")
                     )
@@ -376,7 +376,7 @@ class ViewMessageHelperSpec extends SpecBase
                       id = Some("print-link")
                     ),
                     link(
-                      link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                      link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                       messageKey = "viewMessage.link.deleteMessage.description",
                       id = Some("delete-message")
                     )
@@ -408,7 +408,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -444,7 +444,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -475,7 +475,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -506,7 +506,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -537,7 +537,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -573,7 +573,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -604,7 +604,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testUniqueMessageIdentifier).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )

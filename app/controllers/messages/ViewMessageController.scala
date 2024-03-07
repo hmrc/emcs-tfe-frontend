@@ -17,11 +17,14 @@
 package controllers.messages
 
 import config.{AppConfig, ErrorHandler}
+import config.ErrorHandler
+import config.SessionKeys.FROM_PAGE
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions
+import pages.ViewMessagePage
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DraftMovementService, GetMessagesService, GetMovementService}
+import services.{DraftMovementService, DeleteMessageService, GetMessagesService, GetMovementService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logging
 import views.html.messages.ViewMessage
@@ -36,6 +39,7 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       getMessagesService: GetMessagesService,
                                       getMovementService: GetMovementService,
                                       draftMovementService: DraftMovementService,
+                                      deleteMessageService: DeleteMessageService,
                                       val view: ViewMessage,
                                       errorHandler: ErrorHandler,
                                       appConfig: AppConfig
@@ -46,14 +50,16 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
   def onPageLoad(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
     authorisedDataRequestAsync(ern) { implicit request =>
 
+      val sessionWithFromPageSet = request.session + (FROM_PAGE -> ViewMessagePage.toString)
+
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
         case Some(msg) if messagesThatNeedMovement.contains(msg.message.messageType) && msg.message.arc.isDefined =>
           getMovementService.getRawMovement(ern, msg.message.arc.get).map { movement =>
-            Ok(view(msg, Some(movement)))
+            Ok(view(msg, Some(movement))).withSession(sessionWithFromPageSet)
           }
         case Some(msg) =>
           Future.successful(
-            Ok(view(msg, None))
+            Ok(view(msg, None)).withSession(sessionWithFromPageSet)
           )
         case _ =>
           Future.successful(
@@ -68,11 +74,17 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
         case Some(msg) =>
           msg.errorMessage match {
-            case Some(errorMessageResponse) if errorMessageResponse.relatedMessageType.contains("IE815") && errorMessageResponse.ie704.body.attributes.exists(_.lrn.isDefined) =>
-              draftMovementService.putErrorMessagesAndMarkMovementAsDraft(ern, errorMessageResponse).map {
-                case Some(draftId) => Redirect(appConfig.emcsTfeCreateMovementTaskListUrl(ern, draftId))
-                case None => InternalServerError(errorHandler.internalServerErrorTemplate)
-              }
+            case Some(errorMessageResponse) if errorMessageResponse.relatedMessageType.contains("IE815") =>
+              deleteMessageService.deleteMessage(ern, uniqueMessageIdentifier).flatMap(response => {
+                if (response.recordsAffected == 1) {
+                  draftMovementService.putErrorMessagesAndMarkMovementAsDraft(ern, errorMessageResponse).map {
+                    case Some(draftId) => Redirect(appConfig.emcsTfeCreateMovementTaskListUrl(ern, draftId))
+                    case None => InternalServerError(errorHandler.internalServerErrorTemplate)
+                  }
+                } else {
+                  Future(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+                }
+              })
             case _ =>
               logger.warn(s"[removeMessageAndRedirectToDraftMovement] - Message type was not IE815 or LRN did not exist for ERN: $ern and message ID: $uniqueMessageIdentifier - showing not found page")
               Future(NotFound(errorHandler.notFoundTemplate))

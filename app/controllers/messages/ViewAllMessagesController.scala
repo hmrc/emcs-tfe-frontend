@@ -17,12 +17,14 @@
 package controllers.messages
 
 import config.ErrorHandler
+import config.SessionKeys.{DELETED_MESSAGE_DESCRIPTION_KEY, FROM_PAGE}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions.DEFAULT_MAX_ROWS
 import models.messages.{MessagesSearchOptions, MessagesSortingSelectOption}
 import models.requests.DataRequest
+import pages.ViewAllMessagesPage
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result, Session}
 import services.GetMessagesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.messages.ViewAllMessages
@@ -36,12 +38,13 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
                                           val betaAllowList: BetaAllowListAction,
                                           getMessagesService: GetMessagesService,
                                           val view: ViewAllMessages,
-                                          errorHandler: ErrorHandler
-                                         )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                          errorHandler: ErrorHandler)
+                                         (implicit val executionContext: ExecutionContext)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
-
-  def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] =
+  def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] = {
     authorisedWithData(ern).async { implicit request =>
+
       if (search.index <= 0) {
         Future.successful(
           Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
@@ -50,27 +53,34 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
         renderView(Ok, ern, search)
       }
     }
+  }
 
-  private def renderView(status: Status, ern: String, search: MessagesSearchOptions)(implicit request: DataRequest[_]): Future[Result] = {
+  private def renderView(status: Status,
+                         ern: String,
+                         search: MessagesSearchOptions)(implicit request: DataRequest[_]): Future[Result] = {
 
     getMessagesService.getMessages(ern, Some(search)).map { allMessages =>
 
-      val totalNumberOfPages : Int = calculatePageCount(
-          allMessages.totalNumberOfMessagesAvailable.toInt,
-          DEFAULT_MAX_ROWS
-        )
+      // Set the FROM_PAGE session variable used by the delete message controller
+      val session = request.session + (FROM_PAGE -> ViewAllMessagesPage.toString)
+
+      val totalNumberOfPages: Int = calculatePageCount(
+        allMessages.totalNumberOfMessagesAvailable.toInt,
+        DEFAULT_MAX_ROWS
+      )
 
       if (search.index > totalNumberOfPages) {
-        Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1)))
+        Redirect(routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions(index = 1))).withSession(session)
       } else {
         status(
           view(
             sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
             allMessages = allMessages.messages,
             totalNumberOfPages = totalNumberOfPages,
-            searchOptions = search
+            searchOptions = search,
+            maybeDeletedMessageDescriptionKey = request.flash.get(DELETED_MESSAGE_DESCRIPTION_KEY)
           )
-        )
+        ).withSession(session)
       }
     } recover {
       case _ =>
@@ -87,4 +97,5 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
       totalNumberOfMessagesAvailable / maximumRowsPerPage
     }
   }
+
 }

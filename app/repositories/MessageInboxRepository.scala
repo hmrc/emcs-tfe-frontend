@@ -66,6 +66,7 @@ class MessageInboxRepositoryImpl @Inject()(
       Filters.equal("ern", ern),
       Filters.equal("message.uniqueMessageIdentifier", uniqueMessageIdentifier)
     )
+
   def set(message: MessageCache): Future[Boolean] = {
 
     val updatedMessage = message copy (lastUpdated = Instant.now)
@@ -96,10 +97,18 @@ class MessageInboxRepositoryImpl @Inject()(
           .find(by(ern, uniqueMessageIdentifier))
           .headOption()
     }
+
+  def delete(ern: String, uniqueMessageIdentifier: Long): Future[Boolean] =
+      collection
+        .deleteOne(by(ern, uniqueMessageIdentifier))
+        .toFuture()
+        .map(_ => true)
 }
 
 trait MessageInboxRepository {
   def set(aMessage: MessageCache): Future[Boolean]
 
   def get(ern: String, uniqueMessageIdentifier: Long): Future[Option[MessageCache]]
+
+  def delete(ern: String, uniqueMessageIdentifier: Long): Future[Boolean]
 }

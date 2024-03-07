@@ -32,5 +32,9 @@ trait MockGetMovementService extends MockFactory {
     def getMovement(ern: String, arc: String): CallHandler3[String, String, HeaderCarrier, Future[GetMovementResponse]] =
       (mockGetMovementService.getMovement(_: String, _: String)(_: HeaderCarrier))
         .expects(ern, arc, *)
+
+    def getRawMovement(ern: String, arc: String): CallHandler3[String, String, HeaderCarrier, Future[GetMovementResponse]] =
+      (mockGetMovementService.getRawMovement(_: String, _: String)(_: HeaderCarrier))
+        .expects(ern, arc, *)
   }
 }

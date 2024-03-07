@@ -22,6 +22,7 @@ import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.messages.Message
 import models.response.emcsTfe.messages.submissionFailure.GetSubmissionFailureMessageResponse
+import pages.ViewMessagePage
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
@@ -78,7 +79,7 @@ class ViewMessageHelper @Inject()(
         Empty.asHtml
     }
 
-
+  //scalastyle:off cyclomatic.complexity method.length
   def constructActions(messageCache: MessageCache, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages): Html = {
     val message = messageCache.message
     lazy val reportOfReceiptLink: Html = link(
@@ -104,8 +105,8 @@ class ViewMessageHelper @Inject()(
       link = "#print-dialogue", messageKey = "viewMessage.link.printMessage.description", id = Some("print-link")
     )
     lazy val deleteMessageLink: Html = link(
-      //TODO: implement link in ETFE-2855
-      link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url, messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
+      link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, message.uniqueMessageIdentifier).url,
+      messageKey = "viewMessage.link.deleteMessage.description", id = Some("delete-message")
     )
     val actionLinks = (message.messageType, message.submittedByRequestingTrader, message.messageRole,
       messageCache.errorMessage.flatMap(_.relatedMessageType)) match {

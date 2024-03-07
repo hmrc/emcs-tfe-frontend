@@ -40,5 +40,10 @@ trait MockMessageInboxRepository extends MockFactory {
       (mockMessageInboxSessionRepository.get(_: String, _: Long))
         .expects(ern, uniqueMessageIdentifier)
     }
+
+    def delete(ern: String, uniqueMessageIdentifier: Long): CallHandler2[String, Long, Future[Boolean]] = {
+      (mockMessageInboxSessionRepository.delete(_: String, _: Long))
+        .expects(ern, uniqueMessageIdentifier)
+    }
   }
 }
