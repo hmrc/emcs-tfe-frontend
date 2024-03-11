@@ -19,6 +19,7 @@ package models
 import models.MovementListSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS}
 import models.MovementSortingSelectOption.ArcAscending
 import play.api.mvc.QueryStringBindable
+import utils.Logging
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -107,7 +108,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
 
 }
 
-object MovementListSearchOptions {
+object MovementListSearchOptions extends Logging {
 
   private[models] def localDateToString(ld: LocalDate): String =
     s"${f"${ld.getDayOfMonth}%02d"}/${f"${ld.getMonthValue}%02d"}/${f"${ld.getYear}%04d"}" // pad day, month and year with leading zeros as needed
@@ -162,22 +163,30 @@ object MovementListSearchOptions {
           dateOfReceiptFrom <- bindStringWithDefault("dateOfReceiptFrom", stringBinder, params)
           dateOfReceiptTo <- bindStringWithDefault("dateOfReceiptTo", stringBinder, params)
         } yield {
-          MovementListSearchOptions(
-            searchKey = searchKey.map(MovementSearchSelectOption(_)),
-            searchValue = searchValue,
-            sortBy = MovementSortingSelectOption(sortOrder),
-            traderRole = traderRole.map(MovementFilterDirectionOption(_)),
-            undischargedMovements = undischargedMovements.map(MovementFilterUndischargedOption(_)),
-            movementStatus = movementStatus.map(MovementFilterStatusOption(_)),
-            exciseProductCode = exciseProductCode,
-            countryOfOrigin = countryOfOrigin,
-            dateOfDispatchFrom = dateOfDispatchFrom.map(stringToLocalDate),
-            dateOfDispatchTo = dateOfDispatchTo.map(stringToLocalDate),
-            dateOfReceiptFrom = dateOfReceiptFrom.map(stringToLocalDate),
-            dateOfReceiptTo = dateOfReceiptTo.map(stringToLocalDate),
-            index = index,
-            maxRows = DEFAULT_MAX_ROWS
-          )
+          try {
+            MovementListSearchOptions(
+              searchKey = searchKey.map(MovementSearchSelectOption(_)),
+              searchValue = searchValue,
+              sortBy = MovementSortingSelectOption(sortOrder),
+              traderRole = traderRole.map(MovementFilterDirectionOption(_)),
+              undischargedMovements = undischargedMovements.map(MovementFilterUndischargedOption(_)),
+              movementStatus = movementStatus.map(MovementFilterStatusOption(_)),
+              exciseProductCode = exciseProductCode,
+              countryOfOrigin = countryOfOrigin,
+              dateOfDispatchFrom = dateOfDispatchFrom.map(stringToLocalDate),
+              dateOfDispatchTo = dateOfDispatchTo.map(stringToLocalDate),
+              dateOfReceiptFrom = dateOfReceiptFrom.map(stringToLocalDate),
+              dateOfReceiptTo = dateOfReceiptTo.map(stringToLocalDate),
+              index = index,
+              maxRows = DEFAULT_MAX_ROWS
+            )
+          } catch {
+            case iae: IllegalArgumentException =>
+              logger.warn(s"[queryStringBinder] - ${iae.getMessage}")
+              MovementListSearchOptions()
+            case e: Throwable =>
+              throw e
+          }
         })
       }
 
