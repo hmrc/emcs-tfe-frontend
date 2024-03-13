@@ -38,7 +38,7 @@ class BetaAllowListActionImpl @Inject()(betaAllowListConnector: BetaAllowListCon
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     if (config.betaAllowListCheckingEnabled) {
-      betaAllowListConnector.check(request.ern).map {
+      betaAllowListConnector.check(request.ern, config.betaCheckServiceName).map {
         case Right(true) => Right(request)
         case Right(false) =>
           logger.info(s"[refine] User with ern: '${request.ern}' was not on the allow-list")
