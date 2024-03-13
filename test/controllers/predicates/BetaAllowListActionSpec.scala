@@ -43,7 +43,8 @@ class BetaAllowListActionSpec extends SpecBase with MockFactory with MockBetaAll
 
     if(enabled) {
       MockedAppConfig.betaAllowListCheckingEnabled.returns(true)
-      MockBetaAllowListConnector.check(testErn)
+      MockedAppConfig.betaCheckServiceName.returns("navhub")
+      MockBetaAllowListConnector.check(testErn, "navhub")
         .returns(Future.successful(connectorResponse))
     } else {
       MockedAppConfig.betaAllowListCheckingEnabled.returns(false)

@@ -43,7 +43,7 @@ class BetaAllowListConnectorSpec extends SpecBase
           url = s"${appConfig.emcsTfeBaseUrl}/beta/eligibility/$testErn/navHub"
         ).returns(Future.successful(Right(true)))
 
-        connector.check(testErn).futureValue mustBe Right(true)
+        connector.check(testErn, appConfig.betaCheckServiceName).futureValue mustBe Right(true)
       }
     }
 
@@ -55,7 +55,7 @@ class BetaAllowListConnectorSpec extends SpecBase
           url = s"${appConfig.emcsTfeBaseUrl}/beta/eligibility/$testErn/navHub"
         ).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-        connector.check(testErn).futureValue mustBe Left(UnexpectedDownstreamResponseError)
+        connector.check(testErn, appConfig.betaCheckServiceName).futureValue mustBe Left(UnexpectedDownstreamResponseError)
       }
     }
   }

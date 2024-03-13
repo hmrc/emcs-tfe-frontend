@@ -39,7 +39,7 @@ class BetaAllowListConnectorISpec
           .willReturn(aResponse().withStatus(OK))
       )
 
-      connector.check(testErn).futureValue mustBe Right(true)
+      connector.check(testErn, appConfig.betaCheckServiceName).futureValue mustBe Right(true)
     }
 
     "must return false when the server responds NOT_FOUND" in {
@@ -50,7 +50,7 @@ class BetaAllowListConnectorISpec
           .willReturn(aResponse().withStatus(NOT_FOUND))
       )
 
-      connector.check(testErn).futureValue mustBe Right(false)
+      connector.check(testErn, appConfig.betaCheckServiceName).futureValue mustBe Right(false)
     }
 
     "must fail when the server responds with any other status" in {
@@ -61,7 +61,7 @@ class BetaAllowListConnectorISpec
           .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR))
       )
 
-      connector.check(testErn).futureValue mustBe Left(UnexpectedDownstreamResponseError)
+      connector.check(testErn, appConfig.betaCheckServiceName).futureValue mustBe Left(UnexpectedDownstreamResponseError)
     }
 
     "must fail when the connection fails" in {
@@ -72,7 +72,7 @@ class BetaAllowListConnectorISpec
           .willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE))
       )
 
-      connector.check(testErn).futureValue mustBe Left(UnexpectedDownstreamResponseError)
+      connector.check(testErn, appConfig.betaCheckServiceName).futureValue mustBe Left(UnexpectedDownstreamResponseError)
     }
   }
 }
