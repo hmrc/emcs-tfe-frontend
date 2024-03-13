@@ -668,6 +668,8 @@ messages.IE704.IE815.fixError.nonFixable.text.singular = The error cannot be fix
 messages.IE704.IE815.fixError.nonFixable.text.plural = At least one of these errors cannot be fixed, so you need to
 messages.IE704.IE815.fixError.nonFixable.link.createNewMovement = create a new movement
 
+messages.IE704.IE815.fixError.fixable.draftExpired = This draft movement has been deleted because it was not resubmitted within 30 days.
+messages.IE704.IE815.fixError.fixable.draftExpired.createNewLink = Create a new movement
 messages.IE704.IE815.fixError.fixable.link = Update and resubmit the movement
 messages.IE704.IE815.fixError.fixable.warning = If you delete this message you will not be able to access the original draft movement details and must create a new movement.
 

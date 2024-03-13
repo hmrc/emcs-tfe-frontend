@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.emcsTfe.DraftMovementConnector
+import connectors.emcsTfe.{CheckDraftMovementConnector, DraftMovementConnector}
 import models.response.emcsTfe.messages.submissionFailure.GetSubmissionFailureMessageResponse
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
@@ -24,7 +24,20 @@ import utils.Logging
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DraftMovementService @Inject()(draftMovementConnector: DraftMovementConnector) extends Logging {
+class DraftMovementService @Inject()(draftMovementConnector: DraftMovementConnector,
+                                     checkDraftMovementConnector: CheckDraftMovementConnector) extends Logging {
+
+  def checkDraftMovementExists(ern: String, getSubmissionFailureMessageResponse: GetSubmissionFailureMessageResponse)
+                              (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[Boolean]] = {
+    getSubmissionFailureMessageResponse.ie704.header.correlationIdentifier.map { correlationId =>
+      checkDraftMovementConnector.checkDraftMovementExists(ern, correlationId).map {
+        case Right(response) => Some(response.value)
+        case Left(error) =>
+          logger.warn(s"[checkDraftMovementExists] - Failed check if a draft exists for ERN: $ern and submittedDraftId: $correlationId with error: ${error.message}")
+          None
+      }
+    }.getOrElse(Future(None))
+  }
 
   def putErrorMessagesAndMarkMovementAsDraft(ern: String, getSubmissionFailureMessageResponse: GetSubmissionFailureMessageResponse)
                                             (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[String]] = {

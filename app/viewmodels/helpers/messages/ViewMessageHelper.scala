@@ -160,14 +160,14 @@ class ViewMessageHelper @Inject()(
     }.getOrElse(Html(""))
   }
 
-  def constructFixErrorsContent(messageCache: MessageCache)(implicit messages: Messages): Html = {
+  def constructFixErrorsContent(messageCache: MessageCache, draftMovementExists: Option[Boolean] = None)(implicit messages: Messages): Html = {
     implicit val msgCache: MessageCache = messageCache
     messageCache.errorMessage.map { failureMessage =>
       val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
       val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
-          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, failureMessage.isTFESubmission) ++
+          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, failureMessage.isTFESubmission, draftMovementExists) ++
             contentForSubmittedVia3rdParty(failureMessage.isTFESubmission, relatedMessageType, msgCache.ern, msgCache.message.arc.getOrElse("")) ++
             Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
             contentForContactingHelpdesk())
@@ -191,17 +191,28 @@ class ViewMessageHelper @Inject()(
   }
 
   //scalastyle:off
-  private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, isPortalSubmission: Boolean)
+  private[helpers] def contentForFixingError(messageType: String,
+                                             numberOfErrors: Int,
+                                             numberOfNonFixableErrors: Int,
+                                             isPortalSubmission: Boolean,
+                                             draftMovementExists: Option[Boolean] = None)
                                              (implicit messages: Messages, messageCache: MessageCache): Seq[Html] = {
     val ern = messageCache.ern
     val arc = messageCache.message.arc.getOrElse("")
     val uniqueMessageId = messageCache.message.uniqueMessageIdentifier
     messageType match {
-      case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission =>
+      case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission && draftMovementExists.contains(true) =>
         Seq(
           p()(HtmlFormat.fill(Seq(
             link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(ern, uniqueMessageId).url,
               "messages.IE704.IE815.fixError.fixable.link", id = Some("update-draft-movement"), withFullStop = true)
+          )))
+        )
+      case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission && draftMovementExists.contains(false) =>
+        Seq(
+          p()(HtmlFormat.fill(Seq(
+            Html(messages("messages.IE704.IE815.fixError.fixable.draftExpired")),
+            link(appConfig.emcsTfeCreateMovementUrl(ern), "messages.IE704.IE815.fixError.fixable.draftExpired.createNewLink", id = Some("create-a-new-movement"), withFullStop = true)
           )))
         )
       case "IE815" if isPortalSubmission =>

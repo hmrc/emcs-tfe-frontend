@@ -29,6 +29,11 @@ trait MockDraftMovementService extends MockFactory {
   lazy val mockDraftMovementService: DraftMovementService = mock[DraftMovementService]
 
   object MockDraftMovementService {
+
+    def checkDraftMovementExists(ern: String, getSubmissionFailureMessageResponse: GetSubmissionFailureMessageResponse): CallHandler4[String, GetSubmissionFailureMessageResponse, ExecutionContext, HeaderCarrier, Future[Option[Boolean]]] =
+      (mockDraftMovementService.checkDraftMovementExists(_: String, _: GetSubmissionFailureMessageResponse)(_: ExecutionContext, _: HeaderCarrier))
+        .expects(ern, getSubmissionFailureMessageResponse, *, *)
+
     def putErrorMessagesAndMarkMovementAsDraft(ern: String, getSubmissionFailureMessageResponse: GetSubmissionFailureMessageResponse): CallHandler4[String, GetSubmissionFailureMessageResponse, ExecutionContext, HeaderCarrier, Future[Option[String]]] =
       (mockDraftMovementService.putErrorMessagesAndMarkMovementAsDraft(_: String, _: GetSubmissionFailureMessageResponse)(_: ExecutionContext, _: HeaderCarrier))
         .expects(ern, getSubmissionFailureMessageResponse, *, *)

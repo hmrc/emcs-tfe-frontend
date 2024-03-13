@@ -17,7 +17,7 @@
 package connectors.emcsTfe
 
 import base.SpecBase
-import fixtures.MovementListFixtures
+import fixtures.{GetMovementResponseFixtures, MovementListFixtures}
 import mocks.connectors.MockHttpClient
 import models.response.emcsTfe.GetMovementListResponse
 import models.response.{JsonValidationError, NotFoundError, UnexpectedDownstreamResponseError}
@@ -28,6 +28,7 @@ import uk.gov.hmrc.http.{HttpClient, HttpResponse}
 class EmcsTfeHttpParserSpec
   extends SpecBase
     with MovementListFixtures
+    with GetMovementResponseFixtures
     with MockHttpClient {
 
   lazy val httpParser = new EmcsTfeHttpParser[GetMovementListResponse] {

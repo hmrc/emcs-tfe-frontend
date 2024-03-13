@@ -96,6 +96,8 @@ object ViewMessageMessages {
     val submitNewMovementSingularError = s"$submitNewMovementSingularErrorPreLink $createNewMovementLink."
     val submitNewMovementMultipleErrors = s"$submitNewMovementMultipleErrorsPreLink $createNewMovementLink."
 
+    val expiredDraftCreateNewLink = "Create a new movement"
+    val expiredDraft = "This draft movement has been deleted because it was not resubmitted within 30 days."
     val updateMovementLink = "Update and resubmit the movement."
     val warningTextWhenFixable = "If you delete this message you will not be able to access the original draft movement details and must create a new movement."
 

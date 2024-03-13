@@ -36,7 +36,7 @@
         paginationHelper: MessagesPaginationHelper
 )
 
-@(message: MessageCache, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages)
+@(message: MessageCache, movement: Option[GetMovementResponse], draftMovementExists: Option[Boolean] = None)(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
     pageTitle = titleNoForm(messages(messageHelper.messageDescriptionKey(message.message))),
@@ -63,7 +63,7 @@
 
     @viewMessageHelper.constructErrors(message)
 
-    @viewMessageHelper.constructFixErrorsContent(message)
+    @viewMessageHelper.constructFixErrorsContent(message, draftMovementExists)
 
     @viewMessageHelper.constructAdditionalInformation(message.message, movement)
 

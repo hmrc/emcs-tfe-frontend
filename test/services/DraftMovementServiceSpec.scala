@@ -18,20 +18,71 @@ package services
 
 import base.SpecBase
 import fixtures.GetSubmissionFailureMessageFixtures
-import mocks.connectors.MockDraftMovementConnector
-import models.response.JsonValidationError
-import models.response.emcsTfe.draftMovement.DraftId
+import mocks.connectors.{MockCheckDraftMovementConnector, MockDraftMovementConnector}
+import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
+import models.response.emcsTfe.draftMovement.{DraftExists, DraftId}
 import models.response.emcsTfe.messages.submissionFailure.{GetSubmissionFailureMessageResponse, IE704FunctionalError}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DraftMovementServiceSpec extends SpecBase with MockDraftMovementConnector with GetSubmissionFailureMessageFixtures {
+class DraftMovementServiceSpec extends SpecBase
+  with MockDraftMovementConnector
+  with MockCheckDraftMovementConnector
+  with GetSubmissionFailureMessageFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.global
 
-  lazy val testService = new DraftMovementService(mockDraftMovementConnector)
+  lazy val testService = new DraftMovementService(mockDraftMovementConnector, mockCheckDraftMovementConnector)
+
+  ".checkDraftMovementExists" should {
+
+    val errorResponse: GetSubmissionFailureMessageResponse =
+      GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel.copy(ie704 = IE704ModelFixtures.ie704ModelModel.copy(header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some(testDraftId))))
+
+    val errorResponseNoCorrelation: GetSubmissionFailureMessageResponse =
+      GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel.copy(ie704 = IE704ModelFixtures.ie704ModelModel.copy(header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = None)))
+
+    "return Some(true)" when {
+
+      "the connector returns that a draft exists" in {
+
+        MockCheckDraftMovementConnector.checkDraftMovementExists(testErn, testDraftId).returns(Future.successful(Right(DraftExists(true))))
+
+        val result = testService.checkDraftMovementExists(testErn, errorResponse).futureValue
+        result mustBe Some(true)
+      }
+    }
+
+    "return Some(false)" when {
+
+      "the connector returns that a draft DOES NOT exist" in {
+
+        MockCheckDraftMovementConnector.checkDraftMovementExists(testErn, testDraftId).returns(Future.successful(Right(DraftExists(false))))
+
+        val result = testService.checkDraftMovementExists(testErn, errorResponse).futureValue
+        result mustBe Some(false)
+      }
+    }
+
+    "return None" when {
+
+      "retrieving the draft fails unexpectedly" in {
+
+        MockCheckDraftMovementConnector.checkDraftMovementExists(testErn, testDraftId).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+        val result = testService.checkDraftMovementExists(testErn, errorResponse).futureValue
+        result mustBe None
+      }
+
+      "no correlation ID exists in the 704 message" in {
+
+        val result = testService.checkDraftMovementExists(testErn, errorResponseNoCorrelation).futureValue
+        result mustBe None
+      }
+    }
+  }
 
   ".putErrorMessagesAndMarkMovementAsDraft" should {
 

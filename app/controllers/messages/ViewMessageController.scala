@@ -58,9 +58,16 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
             Ok(view(msg, Some(movement))).withSession(sessionWithFromPageSet)
           }
         case Some(msg) =>
-          Future.successful(
-            Ok(view(msg, None)).withSession(sessionWithFromPageSet)
-          )
+          msg.errorMessage match {
+            case Some(errorMessageResponse) if errorMessageResponse.relatedMessageType.contains("IE815") =>
+              draftMovementService.checkDraftMovementExists(ern, errorMessageResponse).map { movementExists =>
+                Ok(view(msg, None, movementExists)).withSession(sessionWithFromPageSet)
+              }
+            case _ =>
+              Future.successful(
+                Ok(view(msg, None)).withSession(sessionWithFromPageSet)
+              )
+          }
         case _ =>
           Future.successful(
             Redirect(routes.ViewAllMessagesController.onPageLoad(request.ern, MessagesSearchOptions()))

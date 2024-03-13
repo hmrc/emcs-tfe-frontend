@@ -65,7 +65,8 @@ class ViewMessageSpec extends ViewSpecBase
   def asDocument(
                   message: Message,
                   optErrorMessage: Option[GetSubmissionFailureMessageResponse] = None,
-                  optMovement: Option[GetMovementResponse] = None
+                  optMovement: Option[GetMovementResponse] = None,
+                  optDraftMovementExists: Option[Boolean] = None
                 )
                 (implicit messages: Messages): Document = Jsoup.parse(view(
     MessageCache(
@@ -73,7 +74,8 @@ class ViewMessageSpec extends ViewSpecBase
       message = message,
       errorMessage = optErrorMessage
     ),
-    movement = optMovement
+    movement = optMovement,
+    draftMovementExists = optDraftMovementExists
   ).toString())
 
   def movementActionsLinksTest(withViewMovementLink: Boolean = true)(implicit doc: Document): Unit = {
@@ -766,6 +768,14 @@ class ViewMessageSpec extends ViewSpecBase
         )
       }
 
+      def draftExpiredContentTest(pIndex: Int)(implicit doc: Document): Unit = {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.p(pIndex) -> (English.expiredDraft + " " + English.expiredDraftCreateNewLink)
+          )
+        )
+      }
+
       def warningTextContentTest()(implicit doc: Document): Unit = {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
@@ -848,15 +858,30 @@ class ViewMessageSpec extends ViewSpecBase
         movementActionsLinksTest(withViewMovementLink = false)
       }
 
-      "render the correct content (when fixable) - portal" when {
+      "render the correct content (when fixable) - portal (draft movement exists)" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 =ie704PortalSubmission,
           relatedMessageType = Some("IE815"),
           isTFESubmission = true
         )
-        implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
+        implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse), optDraftMovementExists = Some(true))
         movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
         updateMovementDraftContentTest(1)
+        arcContentTest(2)
+        helplineLinkTest(3)
+        movementActionsLinksTest(withViewMovementLink = false)
+        warningTextContentTest()
+      }
+
+      "render the correct content (when fixable) - portal (draft movement DOES NOT exist)" when {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = ie704PortalSubmission,
+          relatedMessageType = Some("IE815"),
+          isTFESubmission = true
+        )
+        implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse), optDraftMovementExists = Some(false))
+        movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
+        draftExpiredContentTest(1)
         arcContentTest(2)
         helplineLinkTest(3)
         movementActionsLinksTest(withViewMovementLink = false)

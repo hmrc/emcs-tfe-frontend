@@ -737,10 +737,19 @@ class ViewMessageHelperSpec extends SpecBase
     def messageCache(testMessage: TestMessage): MessageCache = MessageCache(testErn, testMessage.message, Some(getSubmissionFailureMessageResponseModel))
 
     "return the correct content for an IE815 error - fixable (portal)" in {
-      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
+      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = true, draftMovementExists = Some(true))(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
           link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
             ViewMessageMessages.English.updateMovementLink.dropRight(1), id = Some("update-draft-movement"), withFullStop = true)
+        )))
+      )
+    }
+
+    "return the correct content for an IE815 error - fixable (portal) - but the Draft has expired" in {
+      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, isPortalSubmission = true, draftMovementExists = Some(false))(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
+        p()(HtmlFormat.fill(Seq(
+          Html(ViewMessageMessages.English.expiredDraft),
+          link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.expiredDraftCreateNewLink, id = Some("create-a-new-movement"), withFullStop = true)
         )))
       )
     }
@@ -1331,7 +1340,7 @@ class ViewMessageHelperSpec extends SpecBase
         )).toString())
       }
 
-      "return the correct content when the errors are fixable, portal submission" in {
+      "return the correct content when the errors are fixable, portal submission (draft movement exists)" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = ie704PortalSubmission.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
@@ -1344,11 +1353,44 @@ class ViewMessageHelperSpec extends SpecBase
           relatedMessageType = Some("IE815"),
           isTFESubmission = true
         )
-        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)), draftMovementExists = Some(true))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
               ViewMessageMessages.English.updateMovementLink.dropRight(1), id = Some("update-draft-movement"), withFullStop = true)
+          },
+          p() {
+            Html(ViewMessageMessages.English.arcText)
+          },
+          p() {
+            HtmlFormat.fill(Seq(
+              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
+              Html(ViewMessageMessages.English.helplinePostLink)
+            ))
+          }
+        )).toString())
+      }
+
+      "return the correct content when the errors are fixable, portal submission (draft movement DOES NOT exist)" in {
+        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
+          ie704 = ie704PortalSubmission.copy(
+            body = IE704BodyFixtures.ie704BodyModel.copy(
+              functionalError = Seq(
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4406", errorReason = "The place of delivery you have entered is not recognised by SEED. Please amend your entry."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4407", errorReason = "The quantitiy entered exceeds the amount approved for this Temporary Consignment Authorisation (TCA). Please check and amend your entry."),
+              )
+            )
+          ),
+          relatedMessageType = Some("IE815"),
+          isTFESubmission = true
+        )
+        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)), draftMovementExists = Some(false))
+        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p() {
+            HtmlFormat.fill(Seq(
+              Html(ViewMessageMessages.English.expiredDraft),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.expiredDraftCreateNewLink, id = Some("create-a-new-movement"), withFullStop = true)
+            ))
           },
           p() {
             Html(ViewMessageMessages.English.arcText)

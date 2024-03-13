@@ -82,16 +82,21 @@ class ViewMessageControllerSpec extends SpecBase
 
   "GET /trader/:ern/message/:uniqueMessageIdentifier/view" when {
 
-    "service call to get message returns a Some(MessageCache)" should {
-      "render the view" in {
+    "service call to get message returns a Some(MessageCache) with 704 relating to IE815" should {
+      "call emcs-tfe to check whether the draft movement still exists and render the view" in {
+
         MockGetMessagesService
           .getMessage(testErn, testMessageId)
           .returns(Future.successful(Some(testMessageFromCache)))
 
+        MockDraftMovementService
+          .checkDraftMovementExists(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
+          .returns(Future.successful(Some(true)))
+
         val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(testMessageFromCache, None).toString()
+        contentAsString(result) shouldBe view(testMessageFromCache, None, Some(true)).toString()
       }
     }
 
