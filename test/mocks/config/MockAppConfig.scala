@@ -28,6 +28,7 @@ trait MockAppConfig extends MockFactory {
     def traderKnownFactsReferenceDataBaseUrl: CallHandler[String] = (() => mockAppConfig.traderKnownFactsReferenceDataBaseUrl).expects()
     def betaCheckServiceName: CallHandler[String] = (() => mockAppConfig.betaCheckServiceName).expects()
     def betaAllowListCheckingEnabled: CallHandler0[Boolean] = (() => mockAppConfig.betaAllowListCheckingEnabled).expects()
+    def emcsLegacyMessageInboxUrl(ern: String): CallHandler0[String] = (() => mockAppConfig.emcsLegacyMessageInboxUrl(ern)).expects()
   }
 
 }
