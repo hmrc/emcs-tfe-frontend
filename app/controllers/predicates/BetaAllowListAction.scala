@@ -19,7 +19,7 @@ package controllers.predicates
 import config.{AppConfig, ErrorHandler}
 import connectors.betaAllowList.BetaAllowListConnector
 import models.auth.UserRequest
-import play.api.mvc.Results.{InternalServerError, Redirect}
+import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
@@ -31,26 +31,33 @@ import scala.concurrent.{ExecutionContext, Future}
 class BetaAllowListActionImpl @Inject()(betaAllowListConnector: BetaAllowListConnector,
                                         errorHandler: ErrorHandler,
                                         config: AppConfig)
-                                       (implicit val executionContext: ExecutionContext) extends BetaAllowListAction {
+                                       (implicit val ec: ExecutionContext) extends BetaAllowListAction with Logging {
 
-  override protected def refine[A](request: UserRequest[A]): Future[Either[Result, UserRequest[A]]] = {
+  override def apply(betaGuard: (String, Result)): ActionRefiner[UserRequest, UserRequest] = new ActionRefiner[UserRequest, UserRequest] {
 
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    override def executionContext: ExecutionContext = ec
 
-    if (config.betaAllowListCheckingEnabled) {
-      betaAllowListConnector.check(request.ern, config.betaCheckServiceName).map {
-        case Right(true) => Right(request)
-        case Right(false) =>
-          logger.info(s"[refine] User with ern: '${request.ern}' was not on the allow-list")
-          Left(Redirect(controllers.errors.routes.NotOnBetaListController.unauthorised()))
-        case Left(_) =>
-          logger.warn(s"[refine] Unable to check if user is on allow-list as unexpected error returned from emcs-tfe")
-          Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+    override def refine[A](request: UserRequest[A]): Future[Either[Result, UserRequest[A]]] = {
+
+      implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
+      if (config.betaAllowListCheckingEnabled) {
+        betaAllowListConnector.check(request.ern, betaGuard._1).map {
+          case Right(true) => Right(request)
+          case Right(false) =>
+            logger.info(s"[refine] User with ern: '${request.ern}' was not on the `${betaGuard._1}` allow-list")
+            Left(betaGuard._2)
+          case Left(_) =>
+            logger.warn(s"[refine] Unable to check if user is on the `${betaGuard._1}` allow-list as unexpected error returned from emcs-tfe")
+            Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+        }
+      } else {
+        Future.successful(Right(request))
       }
-    } else {
-      Future.successful(Right(request))
     }
   }
 }
 
-trait BetaAllowListAction extends ActionRefiner[UserRequest, UserRequest] with Logging
+trait BetaAllowListAction {
+  def apply(betaGuard: (String, Result)): ActionRefiner[UserRequest, UserRequest]
+}
