@@ -32,7 +32,7 @@ trait AuthActionHelper {
   private def authorised(ern: String): ActionBuilder[UserRequest, AnyContent] =
     auth(ern) andThen betaAllowList
 
-  def authorisedWithData(ern: String): ActionBuilder[DataRequest, AnyContent] =
+  private def authorisedWithData(ern: String): ActionBuilder[DataRequest, AnyContent] =
     authorised(ern) andThen getData()
 
   def authorisedDataRequest(ern: String)(block: DataRequest[_] => Result): Action[AnyContent] =

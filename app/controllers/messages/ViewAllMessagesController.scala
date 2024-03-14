@@ -43,7 +43,7 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] = {
-    authorisedWithData(ern).async { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
 
       if (search.index <= 0) {
         Future.successful(
