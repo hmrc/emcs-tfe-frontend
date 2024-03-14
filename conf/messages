@@ -669,9 +669,16 @@ messages.IE704.IE818.fixError.link = submit a new report of receipt
 messages.IE704.IE815.fixError.nonFixable.text.singular = The error cannot be fixed, so you need to
 messages.IE704.IE815.fixError.nonFixable.text.plural = At least one of these errors cannot be fixed, so you need to
 messages.IE704.IE815.fixError.nonFixable.link.createNewMovement = create a new movement
+messages.IE704.IE815.fixError.nonFixable.software = However, if you used commercial software for your submission, please correct these errors with the same software that you used for the submission.
 
 messages.IE704.IE815.fixError.fixable.link = Update and resubmit the movement
-messages.IE704.IE815.fixError.fixable.warning = If you delete this message you will not be able to access the original draft movement details and must create a new movement.
+messages.IE704.IE815.fixError.fixable.warning = If you delete this message you will not be able to access the original draft movement details from EMCS and must create a new movement.
+messages.IE704.IE815.fixError.fixable.expired.p1 = This draft movement is not available on EMCS. This is because:
+messages.IE704.IE815.fixError.fixable.expired.bullet1 = the draft was not updated and resubmitted on EMCS within 30 days, or
+messages.IE704.IE815.fixError.fixable.expired.bullet2 = commercial software was used for the submission
+messages.IE704.IE815.fixError.fixable.expired.p2.preLink = If you still want to move these goods, you need to
+messages.IE704.IE815.fixError.fixable.expired.p2.link = create a new movement
+messages.IE704.IE815.fixError.fixable.expired.p2.afterLink = or correct the errors with the same software you used for the submission.
 
 messages.IE704.IE815.arc.text = An ARC will only be created for a movement once it has been successfully submitted.
 
