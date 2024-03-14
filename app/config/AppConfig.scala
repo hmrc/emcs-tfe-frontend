@@ -30,6 +30,7 @@ import javax.inject.{Inject, Singleton}
 import scala.annotation.unused
 import scala.concurrent.duration.Duration
 
+// scalastyle:off
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configuration) extends FeatureSwitching {
 
@@ -105,6 +106,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def emcsLegacyMessageInboxUrl(ern: String): String =
     servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern/messages"
+
+  def emcsLegacyHomeUrl(ern: String): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern"
 
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")

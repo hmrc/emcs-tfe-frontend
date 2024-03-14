@@ -27,4 +27,7 @@ trait BetaChecks {
 
   def messageInboxBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
     Some("messageInbox" -> Redirect(appConfig.emcsLegacyMessageInboxUrl(ern)))
+
+  def homeBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
+    Some("home" -> Redirect(appConfig.emcsLegacyHomeUrl(ern)))
 }
