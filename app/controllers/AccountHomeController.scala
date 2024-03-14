@@ -16,6 +16,8 @@
 
 package controllers
 
+import config.AppConfig
+import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.common.RoleType
 import play.api.i18n.I18nSupport
@@ -24,21 +26,24 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.AccountHomeView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
                                       view: AccountHomeView,
                                       val auth: AuthAction,
                                       val getData: DataRetrievalAction,
                                       val betaAllowList: BetaAllowListAction
-                                     )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                     )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
 
   def viewAccountHome(exciseRegistrationNumber: String): Action[AnyContent] = {
-    authorisedDataRequest(exciseRegistrationNumber) { implicit request =>
-      Ok(
-        view(
-          exciseRegistrationNumber,
-          RoleType.fromExciseRegistrationNumber(exciseRegistrationNumber)
+    authorisedDataRequestAsync(exciseRegistrationNumber, homeBetaGuard(exciseRegistrationNumber)) { implicit request =>
+      Future.successful(
+        Ok(
+          view(
+            exciseRegistrationNumber,
+            RoleType.fromExciseRegistrationNumber(exciseRegistrationNumber)
+          )
         )
       )
     }
