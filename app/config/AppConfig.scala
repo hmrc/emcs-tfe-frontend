@@ -51,8 +51,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def emcsTfeListMovementsUrl(ern: String): String = routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()).url
 
-  // TODO: update with new URL when MOV01 filters are created
-  def emcsTfeDraftMovementsUrl(@unused ern: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+  def emcsTfeDraftMovementsUrl(ern: String): String = controllers.drafts.routes.DraftsController.onPageLoad(ern).url
 
   def emcsTfeMessagesUrl(ern: String): String = controllers.messages.routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).url
 
@@ -109,6 +108,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def emcsLegacyHomeUrl(ern: String): String =
     servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern"
+
+  def emcsLegacyDraftsUrl(ern: String): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern/movement/drafts"
 
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")

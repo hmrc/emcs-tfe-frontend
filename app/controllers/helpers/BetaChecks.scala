@@ -30,4 +30,7 @@ trait BetaChecks {
 
   def homeBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
     Some("home" -> Redirect(appConfig.emcsLegacyHomeUrl(ern)))
+
+  def draftsBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
+    Some("tfeDrafts" -> Redirect(appConfig.emcsLegacyDraftsUrl(ern)))
 }
