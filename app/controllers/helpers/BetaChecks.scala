@@ -16,6 +16,7 @@
 
 package controllers.helpers
 
+import config.AppConfig
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 
@@ -23,4 +24,7 @@ trait BetaChecks {
 
   def navigationHubBetaGuard(): (String, Result) =
       "navHub" -> Redirect(controllers.errors.routes.NotOnBetaListController.unauthorised())
+
+  def messageInboxBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
+    Some("messageInbox" -> Redirect(appConfig.emcsLegacyMessageInboxUrl(ern)))
 }

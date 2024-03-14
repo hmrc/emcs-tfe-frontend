@@ -103,6 +103,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def emcsTfeCreateMovementTaskListUrl(ern: String, draftId: String): String =
     servicesConfig.getString("urls.emcsTfeCreateMovement") + s"/trader/$ern/draft/$draftId/draft-movement"
 
+  def emcsLegacyMessageInboxUrl(ern: String): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern/messages"
+
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")
 
