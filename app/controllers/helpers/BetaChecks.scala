@@ -42,4 +42,8 @@ trait BetaChecks {
 
   def changeDestinationBetaGuard(ern: String, arc: String, ver: Int)(implicit appConfig: AppConfig): Option[(String, Result)] =
     Some("tfeChangeDestination" -> Redirect(appConfig.emcsLegacyChangeDestinationUrl(ern, arc, ver)))
+
+  def preValidateBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
+    Some("tfePreValidate" -> Redirect(appConfig.emcsLegacyPreValidateUrl(ern)))
+
 }
