@@ -143,7 +143,7 @@ class ViewMessageHelper @Inject()(
         val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
         val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
         failureMessage.relatedMessageType match {
-          case Some("IE815") if numberOfNonFixableErrors == 0 || !failureMessage.isTFESubmission => Html("")
+          case Some("IE815") if numberOfNonFixableErrors == 0 || !failureMessage.draftMovementExists => Html("")
           case _ => HtmlFormat.fill(Seq(
             h2("messages.errors.heading"),
             summary_list(
@@ -165,8 +165,8 @@ class ViewMessageHelper @Inject()(
       val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
-          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, failureMessage.isTFESubmission) ++
-            contentForSubmittedVia3rdParty(failureMessage.isTFESubmission, relatedMessageType, msgCache.ern, msgCache.message.arc.getOrElse("")) ++
+          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, failureMessage.draftMovementExists) ++
+            contentForSubmittedVia3rdParty(failureMessage.draftMovementExists, relatedMessageType, msgCache.ern, msgCache.message.arc.getOrElse("")) ++
             Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
             contentForContactingHelpdesk())
         case _ => Html("")
@@ -180,7 +180,7 @@ class ViewMessageHelper @Inject()(
       failureMessage =>
         val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
         val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
-        if(numberOfNonFixableErrors == 0 && failureMessage.relatedMessageType.contains("IE815") && failureMessage.isTFESubmission) {
+        if(numberOfNonFixableErrors == 0 && failureMessage.relatedMessageType.contains("IE815") && failureMessage.draftMovementExists) {
           warning_text(Html(messages("messages.IE704.IE815.fixError.fixable.warning")))
         } else {
           Html("")
