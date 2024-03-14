@@ -774,16 +774,18 @@ class ViewMessageSpec extends ViewSpecBase
         )
       }
 
-      def thirdPartySubmissionTest(index: Int)(implicit doc: Document): Unit = {
+      def fixableDraftMovementDoesNotExistTest()(implicit doc: Document): Unit = {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
-            Selectors.p(index) -> English.ie815thirdParty,
-            Selectors.link(index) -> English.ie815thirdPartyLink
+            Selectors.p(1) -> English.fixableDraftExpiredP1,
+            Selectors.bullet(1) -> English.fixableDraftExpiredBullet1,
+            Selectors.bullet(2) -> English.fixableDraftExpiredBullet2,
+            Selectors.p(2) -> English.fixableDraftExpiredP2
           )
         )
       }
 
-      "render the correct content (when non-fixable) - portal (singular)" when {
+      "render the correct content (when non-fixable) - draft movement exists (singular)" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = ie704PortalSubmission.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
@@ -804,7 +806,7 @@ class ViewMessageSpec extends ViewSpecBase
         movementActionsLinksTest(withViewMovementLink = false)
       }
 
-      "render the correct content (when non-fixable) - portal (plural)" when {
+      "render the correct content (when non-fixable plural) - draft movement exists" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = ie704PortalSubmission.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
@@ -827,13 +829,11 @@ class ViewMessageSpec extends ViewSpecBase
         movementActionsLinksTest(withViewMovementLink = false)
       }
 
-      "render the correct content (when non-fixable) - 3rd party" when {
+      "render the correct content (when non-fixable - singular) - draft movement does not exist" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = IE704ModelFixtures.ie704ModelModel.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
               functionalError = Seq(
-                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4402", errorReason = "This Local Reference Number (LRN) you have entered has been used before. Please enter a unique LRN."),
-                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4403", errorReason = "The consignor Excise Registration Number you have entered is not recognised by SEED. Please amend your entry."),
                 IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry.")
               )
             )
@@ -842,13 +842,14 @@ class ViewMessageSpec extends ViewSpecBase
         )
         implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
-        thirdPartySubmissionTest(1)
+        errorRowsTest(failureMessageResponse)
+        submitNewMovementContentTest(1, isSingularWording = true)
         arcContentTest(2)
         helplineLinkTest(3)
         movementActionsLinksTest(withViewMovementLink = false)
       }
 
-      "render the correct content (when fixable) - portal" when {
+      "render the correct content (when fixable) - draft movement exists" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 =ie704PortalSubmission,
           relatedMessageType = Some("IE815"),
@@ -863,15 +864,15 @@ class ViewMessageSpec extends ViewSpecBase
         warningTextContentTest()
       }
 
-      "render the correct content (when fixable) - 3rd party" when {
+      "render the correct content (when fixable) - draft movement does not exist" when {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           relatedMessageType = Some("IE815")
         )
         implicit val doc: Document = asDocument(ie704ErrorCreateMovementIE815.message, optErrorMessage = Some(failureMessageResponse))
         movementInformationTest(ie704ErrorCreateMovementIE815, withArc = false)
-        thirdPartySubmissionTest(1)
-        arcContentTest(2)
-        helplineLinkTest(3)
+        fixableDraftMovementDoesNotExistTest()
+        arcContentTest(3)
+        helplineLinkTest(4)
         movementActionsLinksTest(withViewMovementLink = false)
       }
     }

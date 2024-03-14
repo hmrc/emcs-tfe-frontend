@@ -48,6 +48,7 @@ class ViewMessageHelperSpec extends SpecBase
   lazy val list: list = app.injector.instanceOf[list]
   lazy val h2: h2 = app.injector.instanceOf[h2]
   lazy val p: p = app.injector.instanceOf[p]
+  lazy val bullets: bullets = app.injector.instanceOf[bullets]
   lazy val warningText: warning_text = app.injector.instanceOf[warning_text]
   lazy val govukSummaryList: GovukSummaryList = app.injector.instanceOf[GovukSummaryList]
 
@@ -666,16 +667,7 @@ class ViewMessageHelperSpec extends SpecBase
     }
 
     "show nothing for an IE815" when {
-      "it's not a portal submission" in {
-        val message = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(getSubmissionFailureMessageResponseModel.copy(IE704ModelFixtures.ie704ModelModel.copy(
-          body = IE704BodyFixtures.ie704BodyModel.copy(
-            functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy("4403")))))
-        ))
-        val result = helper.constructErrors(message)
-        result mustBe Html("")
-      }
-
-      "there are no non-fixable errors" in {
+      "there are no non-fixable errors AND the draft exists" in {
         val message = MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(getSubmissionFailureMessageResponseModel.copy(IE704ModelFixtures.ie704ModelModel.copy(
           header = IE704HeaderFixtures.ie704HeaderModel.copy(correlationIdentifier = Some("PORTAL1234")),
           body = IE704BodyFixtures.ie704BodyModel.copy(
@@ -696,13 +688,10 @@ class ViewMessageHelperSpec extends SpecBase
       })
     }
 
-    "return the correct content when the submission was made via a 3rd party (IE815)" in {
-      helper.contentForSubmittedVia3rdParty(draftMovementExists = false, relatedMessageType = "IE815", testErn) mustBe Seq(p() {
-        HtmlFormat.fill(Seq(
-          Html(ViewMessageMessages.English.ie815thirdParty),
-          link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.ie815thirdPartyLink, id = Some("create-a-new-movement"), withFullStop = true)
-        ))
-      })
+    //TODO: It's not possible to know if submission was via 3rd Party when we move to EIS.
+    //      So these tests will be removed long term as part of a future alignment story. For now, return no content for IE815 only.
+    "return no content when the submission was made via a 3rd party (IE815)" in {
+      helper.contentForSubmittedVia3rdParty(draftMovementExists = false, relatedMessageType = "IE815", testErn) mustBe Seq()
     }
 
     "return the correct content when the submission was made via a 3rd party (IE813)" in {
@@ -736,7 +725,7 @@ class ViewMessageHelperSpec extends SpecBase
 
     def messageCache(testMessage: TestMessage): MessageCache = MessageCache(testErn, testMessage.message, Some(getSubmissionFailureMessageResponseModel))
 
-    "return the correct content for an IE815 error - fixable (portal)" in {
+    "return the correct content for an IE815 error - fixable with draft movement (draftMovementExists = true)" in {
       helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, draftMovementExists = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
           link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
@@ -745,30 +734,40 @@ class ViewMessageHelperSpec extends SpecBase
       )
     }
 
-    "return the correct content for an IE815 error - fixable (3rd party)" in {
-      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, draftMovementExists = false)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq()
+    "return the correct content for an IE815 error - fixable no draft movement (draftMovementExists = false)" in {
+      helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, draftMovementExists = false)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe
+        Seq(
+          p()(Html(ViewMessageMessages.English.fixableDraftExpiredP1)),
+          bullets(Seq(
+            Html(ViewMessageMessages.English.fixableDraftExpiredBullet1),
+            Html(ViewMessageMessages.English.fixableDraftExpiredBullet2)
+          )),
+          p()(HtmlFormat.fill(Seq(
+            Html(ViewMessageMessages.English.fixableDraftExpiredP2PreLink),
+            link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.fixableDraftExpiredP2Link, id = Some("create-a-new-movement"), withFullStop = false),
+            Html(ViewMessageMessages.English.fixableDraftExpiredP2AfterLink)
+          )))
+        )
     }
 
-    "return the correct content for an IE815 error - non-fixable (singular - portal submission)" in {
+    "return the correct content for an IE815 error - non-fixable (singular)" in {
       helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 1, draftMovementExists = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
           Html(ViewMessageMessages.English.submitNewMovementSingularErrorPreLink),
-          link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
+          link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true),
+          Html(ViewMessageMessages.English.submitNewMovementSoftware)
         )))
       )
     }
 
-    "return the correct content for an IE815 error - non-fixable (plural - portal submission)" in {
+    "return the correct content for an IE815 error - non-fixable (plural)" in {
       helper.contentForFixingError("IE815", numberOfErrors = 3, numberOfNonFixableErrors = 2, draftMovementExists = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
         p()(HtmlFormat.fill(Seq(
           Html(ViewMessageMessages.English.submitNewMovementMultipleErrorsPreLink),
-          link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
+          link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true),
+          Html(ViewMessageMessages.English.submitNewMovementSoftware)
         )))
       )
-    }
-
-    "return the correct content for an IE815 error - non-fixable (third party)" in {
-      helper.contentForFixingError("IE815", numberOfErrors = 3, numberOfNonFixableErrors = 2, draftMovementExists = false)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq()
     }
 
     "return the correct content for an IE810 error" in {
@@ -1204,7 +1203,7 @@ class ViewMessageHelperSpec extends SpecBase
 
     "for an IE815" must {
 
-      "return the correct content when the errors are non-fixable, 3rd party submission" in {
+      "return the correct content when the error is non-fixable (singular)" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = IE704ModelFixtures.ie704ModelModel.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
@@ -1219,8 +1218,9 @@ class ViewMessageHelperSpec extends SpecBase
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
             HtmlFormat.fill(Seq(
-              Html(ViewMessageMessages.English.thirdPartyOr),
-              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
+              Html(ViewMessageMessages.English.submitNewMovementSingularErrorPreLink),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true),
+              Html(ViewMessageMessages.English.submitNewMovementSoftware)
             ))
           },
           p() {
@@ -1235,7 +1235,7 @@ class ViewMessageHelperSpec extends SpecBase
         )).toString())
       }
 
-      "return the correct content when the errors are non-fixable, portal submission (plural)" in {
+      "return the correct content when the errors are non-fixable (plural)" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = ie704PortalSubmission.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
@@ -1253,7 +1253,8 @@ class ViewMessageHelperSpec extends SpecBase
           p() {
             HtmlFormat.fill(Seq(
               Html(ViewMessageMessages.English.submitNewMovementMultipleErrorsPreLink),
-              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true),
+              Html(ViewMessageMessages.English.submitNewMovementSoftware)
             ))
           },
           p() {
@@ -1268,39 +1269,7 @@ class ViewMessageHelperSpec extends SpecBase
         )).toString())
       }
 
-      "return the correct content when the errors are non-fixable, portal submission (singular)" in {
-        val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
-          ie704 = ie704PortalSubmission.copy(
-            body = IE704BodyFixtures.ie704BodyModel.copy(
-              functionalError = Seq(
-                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4403", errorReason = "The consignor Excise Registration Number you have entered is not recognised by SEED. Please amend your entry.")
-              )
-            )
-          ),
-          relatedMessageType = Some("IE815"),
-          draftMovementExists = true
-        )
-        val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
-        removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
-          p() {
-            HtmlFormat.fill(Seq(
-              Html(ViewMessageMessages.English.submitNewMovementSingularErrorPreLink),
-              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
-            ))
-          },
-          p() {
-            Html(ViewMessageMessages.English.arcText)
-          },
-          p() {
-            HtmlFormat.fill(Seq(
-              link(appConfig.exciseHelplineUrl, ViewMessageMessages.English.helplineLink, id = Some("contactHmrc"), isExternal = true),
-              Html(ViewMessageMessages.English.helplinePostLink)
-            ))
-          }
-        )).toString())
-      }
-
-      "return the correct content when the errors are fixable, 3rd party submission" in {
+      "return the correct content when the errors are fixable, (draft does not exist)" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = IE704ModelFixtures.ie704ModelModel.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
@@ -1313,10 +1282,16 @@ class ViewMessageHelperSpec extends SpecBase
         )
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
+          p()(Html(ViewMessageMessages.English.fixableDraftExpiredP1)),
+          bullets(Seq(
+            Html(ViewMessageMessages.English.fixableDraftExpiredBullet1),
+            Html(ViewMessageMessages.English.fixableDraftExpiredBullet2)
+          )),
           p() {
             HtmlFormat.fill(Seq(
-              Html(ViewMessageMessages.English.thirdPartyOr),
-              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.createNewMovementLink, id = Some("create-a-new-movement"), withFullStop = true)
+              Html(ViewMessageMessages.English.fixableDraftExpiredP2PreLink),
+              link(appConfig.emcsTfeCreateMovementUrl(testErn), ViewMessageMessages.English.fixableDraftExpiredP2Link, id = Some("create-a-new-movement"), withFullStop = false),
+              Html(ViewMessageMessages.English.fixableDraftExpiredP2AfterLink)
             ))
           },
           p() {
@@ -1331,7 +1306,7 @@ class ViewMessageHelperSpec extends SpecBase
         )).toString())
       }
 
-      "return the correct content when the errors are fixable, portal submission" in {
+      "return the correct content when the errors are fixable, (draft exists)" in {
         val failureMessageResponse = getSubmissionFailureMessageResponseModel.copy(
           ie704 = ie704PortalSubmission.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(

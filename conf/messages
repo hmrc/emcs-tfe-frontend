@@ -686,8 +686,6 @@ messages.link.helpline = Contact the HMRC excise helpline
 messages.link.helpline.text = if you need more help or advice.
 
 messages.submittedViaThirdParty = If you used commercial software for your submission, please correct these errors with the same software that you used for the submission.
-messages.submittedViaThirdParty.ie815 = If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or
-messages.submittedViaThirdParty.ie815.link = create a new movement
 messages.submittedViaThirdParty.ie813 = If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or you can
 messages.submittedViaThirdParty.ie813.link = submit a new change of destination
 
