@@ -23,6 +23,10 @@ sealed trait BaseMessages { _: i18n =>
   def titleHelper(heading: String) = s"$heading - Excise Movement and Control System - GOV.UK"
   val opensInNewTab: String
   val lang: Lang
+
+  val prevalidateTraderCaption: String = "Prevalidate a trader"
+
+  val continue = "Continue"
 }
 
 trait BaseEnglish extends BaseMessages with EN {

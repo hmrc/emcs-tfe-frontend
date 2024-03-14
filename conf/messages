@@ -10,6 +10,7 @@ errorPage.message = Please try again in a few minutes.
 error.browser.title.prefix = Error:
 
 base.saveAndContinue = Save and continue
+base.continue = Continue
 base.saveMovement    = Save and return to movement
 base.opensInNewTab   = (opens in new tab)
 base.captionHiddenText = This section is
@@ -338,7 +339,8 @@ accountHome.undischargedMovementsLink = Undischarged movements
 accountHome.draftMovementsLink = Draft movements
 accountHome.createMovementLink = Create a new movement
 accountHome.prevalidate = Prevalidate
-accountHome.checkLink = Check Europa to find out if a trader can receive excise goods
+accountHome.checkLink = Check if a trader can receive excise goods
+accountHome.checkLink.europa = Check Europa to find out if a trader can receive excise goods
 
 activeTrader.link = Change trader type
 
@@ -694,3 +696,13 @@ notOnBetaList.notSignedUp.p1.preLink = You can choose to
 notOnBetaList.notSignedUp.p1.link = take part in the EMCS private beta research
 notOnBetaList.notSignedUp.p1.afterLink = if you are not already involved.
 notOnBetaList.notSignedUp.p2 = To take part you must currently submit EMCS receipts using the HMRC platform.
+
+# Prevalidate trader
+
+prevalidateTrader.caption = Prevalidate a trader
+
+# Prevalidate trader - start page
+prevalidateTrader.start.title = Check if a trader can receive excise goods
+prevalidateTrader.start.h1 = Check if a trader can receive excise goods
+prevalidateTrader.start.p1 = You can use this tool to check if the consignee is able to receive your goods. You will need their trader ID, such as an excise registration number (ERN) or temporary authorisation number.
+prevalidateTrader.start.button =

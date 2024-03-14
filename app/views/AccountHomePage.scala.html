@@ -40,57 +40,66 @@
 )(implicit request: DataRequest[_], messages: Messages)
 
 @roleTypeDescription = {
-  @messages(roleType.descriptionKey)
+@messages(roleType.descriptionKey)
 }
 
 @businessName = @{
-  request.traderKnownFacts.traderName
+    request.traderKnownFacts.traderName
 }
 
 @layout(
-  pageTitle = titleNoForm(businessName, Some("accountHome.caption")),
-  maybeShowActiveTrader = maybeShowActiveTrader(request),
-  maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, request.messageStatistics.countOfNewMessages, Home)),
-  fullWidthContent = true,
-  showBackLink = false
+    pageTitle = titleNoForm(businessName, Some("accountHome.caption")),
+    maybeShowActiveTrader = maybeShowActiveTrader(request),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, request.messageStatistics.countOfNewMessages, Home)),
+    fullWidthContent = true,
+    showBackLink = false
 ) {
-  @h2("accountHome.caption", classes = "govuk-caption-l hmrc-caption-l", hiddenContent = Some("base.captionHiddenText"))
-  @h1("govuk-heading-xl govuk-!-margin-bottom-1") {
-    @businessName
-  }
-  @p("govuk-caption-m govuk-!-margin-bottom-1 govuk-!-margin-top-0") {
-    @roleTypeDescription
-  }
-  @p("govuk-caption-m govuk-!-margin-0") {
-    @messages("accountHome.ern") @ern
-  }
-
-  @h2("accountHome.yourMessages", classes = "govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1")
-  @list(Seq(link(appConfig.emcsTfeMessagesUrl(ern), "accountHome.allMessagesLink", id = Some("all-messages-link"))))
-
-  @h2("accountHome.yourMovements", classes = "govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1")
-  @list(Seq(
-    link(appConfig.emcsTfeListMovementsUrl(ern), "accountHome.allMovementsLink", id = Some("all-movements-link")),
-    link(appConfig.emcsTfeUndischargedMovementsUrl(ern), "accountHome.undischargedMovementsLink", id = Some("undischarged-movements-link")),
-    if(roleType.isConsignor) {
-      link(appConfig.emcsTfeDraftMovementsUrl(ern), "accountHome.draftMovementsLink", id = Some("draft-movements-link"))
-    } else Html("")
-  ))
-
-  @if(roleType.isConsignor) {
-    @p() {
-      @link(appConfig.emcsTfeCreateMovementUrl(ern), "accountHome.createMovementLink", id = Some("create-movement-link"))
+    @h2("accountHome.caption", classes = "govuk-caption-l hmrc-caption-l", hiddenContent = Some("base.captionHiddenText"))
+    @h1("govuk-heading-xl govuk-!-margin-bottom-1") {
+        @businessName
     }
-  }
+    @p("govuk-caption-m govuk-!-margin-bottom-1 govuk-!-margin-top-0") {
+        @roleTypeDescription
+    }
+    @p("govuk-caption-m govuk-!-margin-0") {
+        @messages("accountHome.ern") @ern
+    }
 
-  @if(roleType.isNorthernIreland) {
-    @h2("accountHome.prevalidate", classes = "govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1")
+    @h2("accountHome.yourMessages", classes = "govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1")
+    @list(Seq(link(appConfig.emcsTfeMessagesUrl(ern), "accountHome.allMessagesLink", id = Some("all-messages-link"))))
+
+    @h2("accountHome.yourMovements", classes = "govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1")
     @list(Seq(
-      link(appConfig.europaCheckLink, "accountHome.checkLink", id = Some("check-link"))
+        link(appConfig.emcsTfeListMovementsUrl(ern), "accountHome.allMovementsLink", id = Some("all-movements-link")),
+        link(appConfig.emcsTfeUndischargedMovementsUrl(ern), "accountHome.undischargedMovementsLink", id = Some("undischarged-movements-link")),
+        if(roleType.isConsignor) {
+            link(appConfig.emcsTfeDraftMovementsUrl(ern), "accountHome.draftMovementsLink", id = Some("draft-movements-link"))
+        } else Html("")
     ))
-  }
+
+    @if(roleType.isConsignor) {
+        @p() {
+            @link(appConfig.emcsTfeCreateMovementUrl(ern), "accountHome.createMovementLink", id = Some("create-movement-link"))
+        }
+    }
+
+    @h2("accountHome.prevalidate", classes = "govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1")
+    @list(
+        //TODO: subject to change
+        if(roleType.isDutyPaid) {
+            Seq(
+                link(appConfig.europaCheckLink, "accountHome.checkLink.europa", id = Some("prevalidate-europa-link"))
+            )
+        } else {
+            Seq(
+                link(controllers.prevalidateTrader.routes.StartPrevalidateTraderController.onPageLoad(ern).url, "accountHome.checkLink", id = Some("prevalidate-tfe-link")),
+                link(appConfig.europaCheckLink, "accountHome.checkLink.europa", id = Some("prevalidate-europa-link")),
+            )
+        }
+    )
 }
 
+
 @{
-  //$COVERAGE-OFF$
+    //$COVERAGE-OFF$
 }
