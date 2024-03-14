@@ -16,21 +16,21 @@
 
 package controllers.predicates
 
-import play.api.mvc.{Action, ActionBuilder, AnyContent, Result}
+import controllers.helpers.BetaChecks
 import models.auth.UserRequest
 import models.requests.DataRequest
-
+import play.api.mvc.{Action, ActionBuilder, AnyContent, Result}
 
 import scala.concurrent.Future
 
-trait AuthActionHelper {
+trait AuthActionHelper extends BetaChecks {
 
   val auth: AuthAction
   val getData: DataRetrievalAction
   val betaAllowList: BetaAllowListAction
 
   private def authorised(ern: String): ActionBuilder[UserRequest, AnyContent] =
-    auth(ern) andThen betaAllowList
+    auth(ern) andThen betaAllowList(navigationHubBetaGuard())
 
   private def authorisedWithData(ern: String): ActionBuilder[DataRequest, AnyContent] =
     authorised(ern) andThen getData()
