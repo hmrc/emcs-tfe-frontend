@@ -103,19 +103,19 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
     servicesConfig.getString("urls.emcsTfeCreateMovement") + s"/trader/$ern/draft/$draftId/draft-movement"
 
   def emcsLegacyMessageInboxUrl(ern: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern/messages"
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/messages"
 
   def emcsLegacyHomeUrl(ern: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern"
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern"
 
   def emcsLegacyDraftsUrl(ern: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern/movement/drafts"
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movement/drafts"
 
   def emcsLegacySearchMovementsUrl(ern: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern/movements"
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movements"
 
   def emcsLegacyViewMovementUrl(ern: String, arc: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern/movement/$arc/history?movementtype=all"
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movement/$arc/history?movementtype=all"
 
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")
