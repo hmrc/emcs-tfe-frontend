@@ -61,8 +61,8 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
     )(ec, appConfig)
 
     MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
-    MockBetaAllowListConnector.check(testErn, "navHub").returns(Future.successful(Right(navHubEnabled)))
-    MockBetaAllowListConnector.check(testErn, "home").returns(Future.successful(Right(homeEnabled)))
+    MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(navHubEnabled)))
+    MockBetaAllowListConnector.check(testErn, "tfeHome").returns(Future.successful(Right(homeEnabled)))
   }
 
   "GET /trader/:exciseRegistrationNumber/account" when {
@@ -83,11 +83,6 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
     "user is NOT on the private beta list" should {
       "redirect to legacy at a glance page" in new Test(homeEnabled = false) {
         val result: Future[Result] = controller.viewAccountHome(testErn)(fakeRequest)
-
-        val expectedPage = accountHomePage(
-          ern = testErn,
-          roleType = GBWK
-        )
 
         status(result) mustBe Status.SEE_OTHER
         redirectLocation(result) shouldBe Some("http://localhost:8080/emcs/trader/GBWKTestErn")

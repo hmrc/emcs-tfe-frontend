@@ -27,7 +27,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.net.URLEncoder
 import javax.inject.{Inject, Singleton}
-import scala.annotation.unused
 import scala.concurrent.duration.Duration
 
 // scalastyle:off
@@ -141,6 +140,4 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def prevalidateTraderUserAnswersReplaceIndexes: Boolean = configuration.get[Boolean]("mongodb.prevalidateTraderUserAnswers.replaceIndexes")
 
   def betaAllowListCheckingEnabled: Boolean = isEnabled(CheckBetaAllowList)
-
-  def betaCheckServiceName: String = configuration.get[String]("beta.serviceName")
 }

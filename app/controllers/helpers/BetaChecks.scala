@@ -23,13 +23,13 @@ import play.api.mvc.Results.Redirect
 trait BetaChecks {
 
   def navigationHubBetaGuard(): (String, Result) =
-      "navHub" -> Redirect(controllers.errors.routes.NotOnBetaListController.unauthorised())
+    "tfeNavHub" -> Redirect(controllers.errors.routes.NotOnBetaListController.unauthorised())
 
   def messageInboxBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
-    Some("messageInbox" -> Redirect(appConfig.emcsLegacyMessageInboxUrl(ern)))
+    Some("tfeMessageInbox" -> Redirect(appConfig.emcsLegacyMessageInboxUrl(ern)))
 
   def homeBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
-    Some("home" -> Redirect(appConfig.emcsLegacyHomeUrl(ern)))
+    Some("tfeHome" -> Redirect(appConfig.emcsLegacyHomeUrl(ern)))
 
   def draftsBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
     Some("tfeDrafts" -> Redirect(appConfig.emcsLegacyDraftsUrl(ern)))
