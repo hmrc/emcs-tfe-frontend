@@ -66,8 +66,8 @@ class ViewAllMessagesControllerSpec
     )(ec, appConfig)
 
     MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
-    MockBetaAllowListConnector.check(testErn, "navHub").returns(Future.successful(Right(navHubEnabled)))
-    MockBetaAllowListConnector.check(testErn, "messageInbox").returns(Future.successful(Right(messageInboxEnabled)))
+    MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(navHubEnabled)))
+    MockBetaAllowListConnector.check(testErn, "tfeMessageInbox").returns(Future.successful(Right(messageInboxEnabled)))
   }
 
 

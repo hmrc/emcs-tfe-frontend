@@ -98,7 +98,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
     )(ec, appConfig)
 
     MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
-    MockBetaAllowListConnector.check(testErn, "navHub").returns(Future.successful(Right(navHubEnabled)))
+    MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(navHubEnabled)))
     MockBetaAllowListConnector.check(testErn, "tfeSearchMovements").returns(Future.successful(Right(searchMovementsEnabled)))
   }
 
