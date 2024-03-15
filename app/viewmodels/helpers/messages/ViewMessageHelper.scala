@@ -89,7 +89,7 @@ class ViewMessageHelper @Inject()(
       messageKey = "viewMessage.link.explainDelay.description", id = Some("submit-explain-delay")
     )
     lazy val changeDestinationLink: Html = link(
-      link = appConfig.emcsTfeChangeDestinationUrl(request.ern, message.arc.getOrElse("")),
+      link = controllers.cod.routes.ChangeOfDestinationController.onPageLoad(request.ern, message.arc.getOrElse(""), message.sequenceNumber.getOrElse(1)).url,
       messageKey = "viewMessage.link.changeDestination.description", id = Some("submit-change-destination")
     )
     lazy val explainShortageExcessLink: Html = link(
@@ -194,6 +194,7 @@ class ViewMessageHelper @Inject()(
                                             (implicit messages: Messages, messageCache: MessageCache): Seq[Html] = {
     val ern = messageCache.ern
     val arc = messageCache.message.arc.getOrElse("")
+    val ver = messageCache.message.sequenceNumber.getOrElse(1)
     val uniqueMessageId = messageCache.message.uniqueMessageIdentifier
     messageType match {
       case "IE815" if numberOfNonFixableErrors == 0 && draftMovementExists =>
@@ -233,7 +234,7 @@ class ViewMessageHelper @Inject()(
           ))),
           p()(HtmlFormat.fill(Seq(
             Html(messages("messages.IE704.IE810.fixError.changeDestination")),
-            link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.IE704.IE810.fixError.changeDestination.link", withFullStop = true, id = Some("submit-change-destination"))
+            link(controllers.cod.routes.ChangeOfDestinationController.onPageLoad(ern, arc, ver).url, "messages.IE704.IE810.fixError.changeDestination.link", withFullStop = true, id = Some("submit-change-destination"))
           )))
         )
       case "IE837" =>
@@ -265,13 +266,13 @@ class ViewMessageHelper @Inject()(
       case "IE813" if draftMovementExists =>
         Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.IE704.IE813.fixError.text")),
-          link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.IE704.IE813.fixError.link", id = Some("submit-change-destination"), withFullStop = true)
+          link(controllers.cod.routes.ChangeOfDestinationController.onPageLoad(ern, arc, ver).url, "messages.IE704.IE813.fixError.link", id = Some("submit-change-destination"), withFullStop = true)
         ))))
       case _ => Seq.empty
     }
   }
 
-  private[helpers] def contentForSubmittedVia3rdParty(draftMovementExists: Boolean, relatedMessageType: String, ern: String, arc: String = "")
+  private[helpers] def contentForSubmittedVia3rdParty(draftMovementExists: Boolean, relatedMessageType: String, ern: String, arc: String = "", ver: Int = 1)
                                                      (implicit messages: Messages): Seq[Html] = {
     if (!draftMovementExists) {
       relatedMessageType match {
@@ -280,7 +281,7 @@ class ViewMessageHelper @Inject()(
         case "IE815" => Seq()
         case "IE813" => Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.submittedViaThirdParty.ie813")),
-          link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.submittedViaThirdParty.ie813.link", id = Some("submit-change-destination"), withFullStop = true)
+          link(controllers.cod.routes.ChangeOfDestinationController.onPageLoad(ern, arc, ver).url, "messages.submittedViaThirdParty.ie813.link", id = Some("change-destination"), withFullStop = true)
         ))))
         case _ => Seq(p()(Html(messages("messages.submittedViaThirdParty"))))
       }

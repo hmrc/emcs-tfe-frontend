@@ -39,4 +39,7 @@ trait BetaChecks {
 
   def viewMovementBetaGuard(ern: String, arc: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
     Some("tfeViewMovement" -> Redirect(appConfig.emcsLegacyViewMovementUrl(ern, arc)))
+
+  def changeDestinationBetaGuard(ern: String, arc: String, ver: Int)(implicit appConfig: AppConfig): Option[(String, Result)] =
+    Some("tfeChangeDestination" -> Redirect(appConfig.emcsLegacyChangeDestinationUrl(ern, arc, ver)))
 }
