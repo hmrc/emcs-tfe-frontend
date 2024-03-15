@@ -107,14 +107,17 @@ class AccountHomePageViewSpec extends SpecBase {
             doc.getElementsByTag("p").text mustNot contain("Create a new movement")
           }
 
-
-          if (roleType.isNorthernIreland) {
-            doc.getElementsByTag("h2").get(3).text mustBe "Prevalidate"
+          doc.getElementsByTag("h2").get(3).text mustBe "Prevalidate"
+          if (roleType.isDutyPaid) {
             val prevalidateLinks = doc.getElementsByTag("ul").get(3).children
             prevalidateLinks.get(0).text mustBe "Check Europa to find out if a trader can receive excise goods"
             prevalidateLinks.get(0).getElementsByTag("a").get(0).attr("href") mustBe appConfig.europaCheckLink
           } else {
-            doc.getElementsByTag("h2").text mustNot contain("Prevalidate")
+            val prevalidateLinks = doc.getElementsByTag("ul").get(3).children
+            prevalidateLinks.get(0).text mustBe "Check if a trader can receive excise goods"
+            prevalidateLinks.get(0).getElementsByTag("a").get(0).attr("href") mustBe controllers.prevalidateTrader.routes.StartPrevalidateTraderController.onPageLoad(ern).url
+            prevalidateLinks.get(1).text mustBe "Check Europa to find out if a trader can receive excise goods"
+            prevalidateLinks.get(1).getElementsByTag("a").get(0).attr("href") mustBe appConfig.europaCheckLink
           }
         }
     }

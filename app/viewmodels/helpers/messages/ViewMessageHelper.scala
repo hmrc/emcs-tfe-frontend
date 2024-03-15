@@ -21,8 +21,6 @@ import models.messages.MessageCache
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.messages.Message
-import models.response.emcsTfe.messages.submissionFailure.GetSubmissionFailureMessageResponse
-import pages.ViewMessagePage
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty

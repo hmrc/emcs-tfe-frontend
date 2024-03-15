@@ -16,15 +16,14 @@
 
 package controllers.messages
 
-import config.{AppConfig, ErrorHandler}
-import config.ErrorHandler
 import config.SessionKeys.FROM_PAGE
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions
 import pages.ViewMessagePage
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{DraftMovementService, DeleteMessageService, GetMessagesService, GetMovementService}
+import services.{DeleteMessageService, DraftMovementService, GetMessagesService, GetMovementService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logging
 import views.html.messages.ViewMessage
