@@ -176,6 +176,11 @@ class ViewMessageHelperSpec extends SpecBase
       "when processing an IE829 notification" in {
         val testMessageCache = MessageCache(testErn, ie829ReceivedCustomsAcceptance.message, None)
 
+        val ern = request.ern
+        val arc = testMessageCache.message.arc.getOrElse("")
+        val ver = testMessageCache.message.sequenceNumber.getOrElse(1)
+        val umi = testMessageCache.message.uniqueMessageIdentifier
+
         val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
@@ -185,12 +190,12 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
+                    link = controllers.cod.routes.ChangeOfDestinationController.onPageLoad(ern, arc, ver).url,
                     messageKey = "viewMessage.link.changeDestination.description",
                     id = Some("submit-change-destination")
                   ),
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(ern, arc).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -200,7 +205,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(ern, umi).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -281,6 +286,11 @@ class ViewMessageHelperSpec extends SpecBase
 
         val result: Html = helper.constructActions(testMessageCache, None)
 
+        val ern = request.ern
+        val arc = testMessageCache.message.arc.getOrElse("")
+        val ver = testMessageCache.message.sequenceNumber.getOrElse(1)
+        val umi = testMessageCache.message.uniqueMessageIdentifier
+
         result mustBe
           HtmlFormat.fill(
             Seq(
@@ -288,12 +298,12 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
+                    link = controllers.cod.routes.ChangeOfDestinationController.onPageLoad(ern, arc, ver).url,
                     messageKey = "viewMessage.link.changeDestination.description",
                     id = Some("submit-change-destination")
                   ),
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(ern, arc).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
@@ -303,7 +313,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(ern, umi).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -421,6 +431,11 @@ class ViewMessageHelperSpec extends SpecBase
       "when processing an IE801 (submitted) submission" in {
         val testMessageCache = MessageCache(testErn, ie801SubmittedMovement.message, None)
 
+        val ern = request.ern
+        val arc = testMessageCache.message.arc.getOrElse("")
+        val ver = testMessageCache.message.sequenceNumber.getOrElse(1)
+        val umi = testMessageCache.message.uniqueMessageIdentifier
+
         val result: Html = helper.constructActions(testMessageCache, None)
 
         result mustBe
@@ -430,12 +445,12 @@ class ViewMessageHelperSpec extends SpecBase
                 extraClasses = Some("govuk-!-display-none-print"),
                 content = Seq(
                   link(
-                    link = controllers.routes.ViewMovementController.viewMovementOverview(request.ern, testMessageCache.message.arc.getOrElse("")).url,
+                    link = controllers.routes.ViewMovementController.viewMovementOverview(ern, arc).url,
                     messageKey = "viewMessage.link.viewMovement.description",
                     id = Some("view-movement")
                   ),
                   link(
-                    link = appConfig.emcsTfeChangeDestinationUrl(request.ern, testMessageCache.message.arc.getOrElse("")),
+                    link = controllers.cod.routes.ChangeOfDestinationController.onPageLoad(ern, arc, ver).url,
                     messageKey = "viewMessage.link.changeDestination.description",
                     id = Some("submit-change-destination")
                   ),
@@ -445,7 +460,7 @@ class ViewMessageHelperSpec extends SpecBase
                     id = Some("print-link")
                   ),
                   link(
-                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, testMessageCache.message.uniqueMessageIdentifier).url,
+                    link = controllers.messages.routes.DeleteMessageController.onPageLoad(ern, umi).url,
                     messageKey = "viewMessage.link.deleteMessage.description",
                     id = Some("delete-message")
                   )
@@ -698,7 +713,7 @@ class ViewMessageHelperSpec extends SpecBase
       helper.contentForSubmittedVia3rdParty(draftMovementExists = false, relatedMessageType = "IE813", testErn, testArc) mustBe Seq(p() {
         HtmlFormat.fill(Seq(
           Html(ViewMessageMessages.English.ie813thirdParty),
-          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.ie813thirdPartyLink, id = Some("submit-change-destination"), withFullStop = true)
+          link(controllers.cod.routes.ChangeOfDestinationController.onPageLoad(testErn, testArc, 1).url, ViewMessageMessages.English.ie813thirdPartyLink, id = Some("change-destination"), withFullStop = true)
         ))
       })
     }
@@ -779,7 +794,7 @@ class ViewMessageHelperSpec extends SpecBase
         ))),
         p()(HtmlFormat.fill(Seq(
           Html(msgs(ViewMessageMessages.English.changeDestinationPreLink)),
-          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.changeDestinationLink, withFullStop = true, id = Some("submit-change-destination"))
+          link(controllers.cod.routes.ChangeOfDestinationController.onPageLoad(testErn, testArc, 1).url, ViewMessageMessages.English.changeDestinationLink, withFullStop = true, id = Some("submit-change-destination"))
         )))
       )
     }
@@ -821,7 +836,7 @@ class ViewMessageHelperSpec extends SpecBase
     "return the correct content for an IE813 error" in {
       helper.contentForFixingError("IE813", numberOfErrors = 1, numberOfNonFixableErrors = 1, draftMovementExists = true)(implicitly, messageCache(ie704ErrorChangeDestinationIE813)) mustBe Seq(p()(HtmlFormat.fill(Seq(
         Html(ViewMessageMessages.English.submitNewChangeDestinationPreLink),
-        link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.submitNewChangeDestinationLink, id = Some("submit-change-destination"), withFullStop = true)
+        link(controllers.cod.routes.ChangeOfDestinationController.onPageLoad(testErn, testArc, 1).url, ViewMessageMessages.English.submitNewChangeDestinationLink, id = Some("submit-change-destination"), withFullStop = true)
       ))))
     }
 
@@ -849,7 +864,7 @@ class ViewMessageHelperSpec extends SpecBase
           ))),
           p()(HtmlFormat.fill(Seq(
             Html(msgs(ViewMessageMessages.English.changeDestinationPreLink)),
-            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.changeDestinationLink, withFullStop = true, id = Some("submit-change-destination"))
+            link(controllers.cod.routes.ChangeOfDestinationController.onPageLoad(testErn, testArc, 1).url, ViewMessageMessages.English.changeDestinationLink, withFullStop = true, id = Some("submit-change-destination"))
           ))),
           p() {
             Html(ViewMessageMessages.English.thirdParty)
@@ -878,7 +893,7 @@ class ViewMessageHelperSpec extends SpecBase
           ))),
           p()(HtmlFormat.fill(Seq(
             Html(msgs(ViewMessageMessages.English.changeDestinationPreLink)),
-            link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.changeDestinationLink, withFullStop = true, id = Some("submit-change-destination"))
+            link(controllers.cod.routes.ChangeOfDestinationController.onPageLoad(testErn, testArc, 1).url, ViewMessageMessages.English.changeDestinationLink, withFullStop = true, id = Some("submit-change-destination"))
           ))),
           p() {
             HtmlFormat.fill(Seq(
@@ -1155,7 +1170,7 @@ class ViewMessageHelperSpec extends SpecBase
             HtmlFormat.fill(Seq(
               Html(ViewMessageMessages.English.ie813thirdParty),
               link(
-                link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
+                link = controllers.cod.routes.ChangeOfDestinationController.onPageLoad(testErn, testArc, 1).url,
                 messageKey = ViewMessageMessages.English.ie813thirdPartyLink,
                 withFullStop = true,
                 id = Some("submit-change-destination")
@@ -1183,7 +1198,7 @@ class ViewMessageHelperSpec extends SpecBase
             HtmlFormat.fill(Seq(
               Html(ViewMessageMessages.English.submitNewChangeDestinationPreLink),
               link(
-                link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
+                link = controllers.cod.routes.ChangeOfDestinationController.onPageLoad(testErn, testArc, 1).url,
                 messageKey = ViewMessageMessages.English.submitNewChangeDestinationLink,
                 withFullStop = true,
                 id = Some("submit-change-destination")
