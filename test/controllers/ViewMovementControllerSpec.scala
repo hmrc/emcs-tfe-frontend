@@ -50,7 +50,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
     app.injector.instanceOf[ErrorHandler],
     mockViewMovementHelper,
     app.injector.instanceOf[TimelineHelper]
-  )
+  )(ec, appConfig)
 
   Seq(
     ".viewMovementOverview" -> (() => controller.viewMovementOverview(testErn, testArc)(fakeRequest)),

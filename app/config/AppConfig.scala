@@ -114,6 +114,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def emcsLegacySearchMovementsUrl(ern: String): String =
     servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern/movements"
 
+  def emcsLegacyViewMovementUrl(ern: String, arc: String): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/trader/$ern/movement/$arc/history?movementtype=all"
+
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")
 
