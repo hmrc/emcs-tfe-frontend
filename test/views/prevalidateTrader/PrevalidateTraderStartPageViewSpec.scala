@@ -29,7 +29,9 @@ import views.{BaseSelectors, ViewBehaviours}
 
 class PrevalidateTraderStartPageViewSpec extends ViewSpecBase with ViewBehaviours {
 
-  object Selectors extends BaseSelectors
+  object Selectors extends BaseSelectors {
+    val continueButton = "#continue-button"
+  }
 
   "PrevalidateTraderStartPageView" when {
 
@@ -50,6 +52,11 @@ class PrevalidateTraderStartPageViewSpec extends ViewSpecBase with ViewBehaviour
           Selectors.p(1) -> messagesForLanguage.p,
           Selectors.button -> messagesForLanguage.continue
         ))
+
+        "have a link to the PVT02 page consignee-trader-identification)" in {
+          //TODO: link to PVT02 (consignee-trader-identification) in ETFE-3431
+          doc.select(Selectors.continueButton).attr("href") mustBe testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+        }
       }
     }
   }

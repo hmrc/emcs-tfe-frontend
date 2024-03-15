@@ -24,7 +24,7 @@ import models.messages.{MessagesSearchOptions, MessagesSortingSelectOption}
 import models.requests.DataRequest
 import pages.ViewAllMessagesPage
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result, Session}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.GetMessagesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.messages.ViewAllMessages
