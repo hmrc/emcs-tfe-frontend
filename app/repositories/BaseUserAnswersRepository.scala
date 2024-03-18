@@ -16,7 +16,6 @@
 
 package repositories
 
-import config.AppConfig
 import models.UserAnswers
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model._
@@ -29,15 +28,17 @@ import utils.TimeMachine
 
 import java.time.Instant
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
 
-class UserAnswersRepositoryImpl @Inject()(implicit mongoComponent: MongoComponent,
-                                         appConfig: AppConfig,
-                                         time: TimeMachine,
-                                         ec: ExecutionContext)
+class BaseUserAnswersRepository(collectionName: String,
+                                ttl: Duration,
+                                replaceIndexes: Boolean)
+                               (implicit mongoComponent: MongoComponent,
+                                time: TimeMachine,
+                                ec: ExecutionContext)
   extends PlayMongoRepository[UserAnswers](
-    collectionName = "user-answers",
+    collectionName = collectionName,
     mongoComponent = mongoComponent,
     domainFormat = UserAnswers.format,
     indexes = Seq(
@@ -45,15 +46,15 @@ class UserAnswersRepositoryImpl @Inject()(implicit mongoComponent: MongoComponen
         Indexes.ascending(UserAnswers.lastUpdatedKey),
         IndexOptions()
           .name("lastUpdatedIdx")
-          .expireAfter(appConfig.userAnswersCacheTtl.toSeconds, TimeUnit.SECONDS)
+          .expireAfter(ttl.toSeconds, TimeUnit.SECONDS)
       ),
       IndexModel(
         Indexes.ascending(UserAnswers.ernKey),
         IndexOptions().name("uniqueIdx")
       )
     ),
-    replaceIndexes = appConfig.userAnswersReplaceIndexes
-  ) with UserAnswersRepository {
+    replaceIndexes = replaceIndexes
+  ) {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
@@ -99,14 +100,4 @@ class UserAnswersRepositoryImpl @Inject()(implicit mongoComponent: MongoComponen
       .deleteOne(by(ern))
       .toFuture()
       .map(_ => true)
-}
-
-trait UserAnswersRepository {
-  def keepAlive(ern: String): Future[Boolean]
-
-  def get(ern: String): Future[Option[UserAnswers]]
-
-  def set(answers: UserAnswers): Future[Boolean]
-
-  def remove(ern: String): Future[Boolean]
 }

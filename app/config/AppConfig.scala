@@ -125,8 +125,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def messagesCacheTtl: Duration = Duration(configuration.get[String]("mongodb.messages.TTL"))
   def messagesReplaceIndexes(): Boolean = configuration.get[Boolean]("mongodb.messages.replaceIndexes")
 
-  def userAnswersCacheTtl: Duration = Duration(configuration.get[String]("mongodb.userAnswers.TTL"))
-  def userAnswersReplaceIndexes: Boolean = configuration.get[Boolean]("mongodb.userAnswers.replaceIndexes")
+  def prevalidateTraderUserAnswersCacheTtl: Duration = Duration(configuration.get[String]("mongodb.prevalidateTraderUserAnswers.TTL"))
+  def prevalidateTraderUserAnswersReplaceIndexes: Boolean = configuration.get[Boolean]("mongodb.prevalidateTraderUserAnswers.replaceIndexes")
 
   def betaAllowListCheckingEnabled: Boolean = isEnabled(CheckBetaAllowList)
 

@@ -29,24 +29,19 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import scala.concurrent.ExecutionContext
 
-class UserAnswersRepositorySpec extends SpecBase
+trait BaseUserAnswersRepositorySpec extends SpecBase
   with PlayMongoRepositorySupport[UserAnswers]
   with CleanMongoCollectionSupport
   with IntegrationPatience
   with BeforeAndAfterAll {
+
+  val repository: BaseUserAnswersRepository
 
   implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   val instantNow = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   val userAnswers = UserAnswers(testErn, Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
   val timeMachine: TimeMachine = () => instantNow
-
-  lazy val repository: UserAnswersRepositoryImpl = new UserAnswersRepositoryImpl()(
-    mongoComponent = mongoComponent,
-    appConfig = appConfig,
-    time = timeMachine,
-    ec = ec
-  )
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
