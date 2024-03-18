@@ -93,7 +93,7 @@ class ConsigneeTraderIdentificationControllerSpec extends SpecBase with FakeAuth
       "form validation passes" when {
         "data saves to repository" must {
           "redirect" in {
-            // TODO: update when next page is build
+            // TODO: update when next page is built
             val request = FakeRequest(POST, routes.ConsigneeTraderIdentificationController.onPageLoad(testErn).url)
             val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "GB00123456789"))
 
