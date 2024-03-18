@@ -609,7 +609,7 @@ messages.IE704.error.4483 = Complementary information must be written in English
 messages.IE704.error.4484 = The submitter ID should indicate that the message is from a UK consignee
 messages.IE704.error.4485 = The submitter ID does not match the consignee ID on the movement
 messages.IE704.error.4486 = The message role does not match any value held on code list 73
-messages.IE704.error.4487 = The complementary information field cannot be blank when the explanation code is set to ’other’
+messages.IE704.error.4487 = The complementary information field cannot be blank when the explanation code is set to ‘other’
 messages.IE704.error.4488 = The submitter ID does not match the consignor ID on the movement
 messages.IE704.error.4490 = The ARC of the received message is not known
 messages.IE704.error.4492 = The message is out of sequence so cannot be processed
@@ -632,7 +632,7 @@ messages.IE704.error.4510 = You cannot split a movement to the same consignee ID
 messages.IE704.error.4511 = You can not use different package types to the downstream movement
 messages.IE704.error.4513 = The transport mode must be sea or inland waterway on original movement
 messages.IE704.error.4516 = Consignee trader ID is required unless the destination is an exempt organisation or unknown destination
-messages.IE704.error.4517 = The movement status must be ’accepted’ for an alert or rejection to be submitted
+messages.IE704.error.4517 = The movement status must be ‘accepted’ for an alert or rejection to be submitted
 messages.IE704.error.4518 = The consignee ID on the alert or rejection of the movement must match the consignee ID on the latest version of the movement
 messages.IE704.error.4519 = The movement status is invalid for a split movement
 messages.IE704.error.4520 = There must be no new consignee information if the destination for the split movement is unknown
@@ -646,7 +646,7 @@ messages.IE704.error.4527 = The tax warehouse of dispatch entered is not allowed
 messages.IE704.error.4528 = You cannot cancel a movement that has been split
 messages.IE704.error.4529 = You cannot cancel a deferred movement
 messages.IE704.error.4530 = The date of dispatch must not be in the future
-messages.IE704.error.4531 = The ’Alert or Rejection of E-AD Reason Code’ is invalid
+messages.IE704.error.4531 = The ‘Alert or Rejection of E-AD Reason Code’ is invalid
 messages.IE704.error.4601 = The type of transport must be sea transport or fixed transport installation if the latest version of the movement has no guarantee
 messages.IE704.error.4602 = All movements between the UK and EU require a guarantee except the movement of energy products
 messages.IE704.error.9005 = A GB trader can only raise movements to GB warehouse destinations and exports with a GB export office. NI traders cannot raise exports with a GB export office.
@@ -659,9 +659,6 @@ messages.IE704.IE810.fixError.changeDestination = However you can only cancel a 
 messages.IE704.IE810.fixError.changeDestination.link = submit a change of destination
 
 messages.IE704.IE825.error.p = Your split movement contained validation errors.
-
-messages.IE704.IE837.fixError.text = You need to
-messages.IE704.IE837.fixError.link = submit a new explanation of a delay
 
 messages.IE704.IE871.fixError.text = You need to
 messages.IE704.IE871.fixError.link = submit a new explanation of a shortage or excess
@@ -713,4 +710,13 @@ prevalidateTrader.caption = Prevalidate a trader
 prevalidateTrader.start.title = Check if a trader can receive excise goods
 prevalidateTrader.start.h1 = Check if a trader can receive excise goods
 prevalidateTrader.start.p1 = You can use this tool to check if the consignee is able to receive your goods. You will need their trader ID, such as an excise registration number (ERN) or temporary authorisation number.
-prevalidateTrader.start.button =
+
+# Prevalidate trader - consignee trader identification page
+prevalidateTrader.consigneeTraderIdentification.title = What is the consignee’s trader ID?
+prevalidateTrader.consigneeTraderIdentification.h1 = What is the consignee’s trader ID?
+prevalidateTrader.consigneeTraderIdentification.p1 = This could be an excise registration number (ERN) or a temporary authorisation reference for temporary consignees, sometimes known as a Temporary Consignment Authorisation (TCA) number.
+prevalidateTrader.consigneeTraderIdentification.label = Enter consignee trader ID
+prevalidateTrader.consigneeTraderIdentification.hint = The ID contains 13 characters, starting with 2 letters of the member state of the consignee, such as GBWK123456789
+prevalidateTrader.consigneeTraderIdentification.error.required = Enter the consignee trader ID
+prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters = Consignee trader ID must only contain letters and numbers
+prevalidateTrader.consigneeTraderIdentification.error.invalidRegex = Consignee trader ID must start with 2 capital letters followed by 11 numbers or mixed letters and numbers

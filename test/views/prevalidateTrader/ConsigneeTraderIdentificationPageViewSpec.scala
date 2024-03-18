@@ -17,46 +17,44 @@
 package views.prevalidateTrader
 
 import base.ViewSpecBase
-import fixtures.messages.prevalidateTrader.PrevalidateTraderStartMessages
+import fixtures.messages.prevalidateTrader.PrevalidateTraderConsigneeTraderIdentificationMessages
+import forms.ConsigneeTraderIdentificationFormProvider
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import views.html.prevalidateTrader.PrevalidateTraderStartPage
+import views.html.prevalidateTrader.ConsigneeTraderIdentificationPage
 import views.{BaseSelectors, ViewBehaviours}
 
-class PrevalidateTraderStartPageViewSpec extends ViewSpecBase with ViewBehaviours {
+class ConsigneeTraderIdentificationPageViewSpec extends ViewSpecBase with ViewBehaviours {
 
-  object Selectors extends BaseSelectors {
-    val continueButton = "#continue-button"
-  }
+  object Selectors extends BaseSelectors
 
-  "PrevalidateTraderStartPageView" when {
+  val formProvider = app.injector.instanceOf[ConsigneeTraderIdentificationFormProvider]
 
-    Seq(PrevalidateTraderStartMessages.English).foreach { messagesForLanguage =>
+  "ConsigneeTraderIdentificationPageView" when {
+
+    Seq(PrevalidateTraderConsigneeTraderIdentificationMessages.English).foreach { messagesForLanguage =>
 
       s"being rendered in lang code of '${messagesForLanguage.lang.code}'" should {
 
         implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
         implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
 
-        val view = app.injector.instanceOf[PrevalidateTraderStartPage]
+        val view = app.injector.instanceOf[ConsigneeTraderIdentificationPage]
 
-        implicit val doc: Document = Jsoup.parse(view().toString())
+        implicit val doc: Document = Jsoup.parse(view(formProvider(), testOnly.controllers.routes.UnderConstructionController.onPageLoad()).toString())
 
         behave like pageWithExpectedElementsAndMessages(Seq(
           Selectors.title -> messagesForLanguage.titleHelper(messagesForLanguage.title),
           Selectors.h1 -> messagesForLanguage.h1,
           Selectors.p(1) -> messagesForLanguage.p,
-          Selectors.button -> messagesForLanguage.continue
+          Selectors.button -> messagesForLanguage.saveAndContinue,
+          Selectors.label("value") -> messagesForLanguage.label,
+          Selectors.hint -> messagesForLanguage.hint,
         ))
-
-        "have a link to the PVT02 page consignee-trader-identification)" in {
-          doc.select(Selectors.continueButton).attr("href") mustBe
-            controllers.prevalidateTrader.routes.ConsigneeTraderIdentificationController.onSubmit(request.ern).url
-        }
       }
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-package fixtures.messages
-
-import play.api.i18n.Lang
-
-
-sealed trait BaseMessages { _: i18n =>
-  def titleHelper(heading: String) = s"$heading - Excise Movement and Control System - GOV.UK"
-  val opensInNewTab: String
-  val lang: Lang
-
-  val prevalidateTraderCaption: String = "Prevalidate a trader"
-
-  val continue = "Continue"
-  val saveAndContinue = "Save and continue"
+package object forms {
+  private[forms] val XSS_REGEX = "^(?s)(?!.*javascript)(?!.*[<>;:]).{1,}$"
+  private[forms] val ALPHANUMERIC_REGEX = "^(?s)(?=.*[A-Za-z0-9]).{1,}$"
+  private[forms] val EXCISE_NUMBER_REGEX = "[A-Z]{2}[a-zA-Z0-9]{11}"
 }
-
-trait BaseEnglish extends BaseMessages with EN {
-  override val opensInNewTab: String = "(opens in new tab)"
-}
-object BaseEnglish extends BaseEnglish

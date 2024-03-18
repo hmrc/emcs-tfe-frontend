@@ -37,8 +37,7 @@
     @p()(Html(messages("prevalidateTrader.start.p1")))
 
     @link(
-        //TODO: link to PVT02 (consignee-trader-identification) in ETFE-3431
-        link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+        link = controllers.prevalidateTrader.routes.ConsigneeTraderIdentificationController.onPageLoad(request.ern).url,
         messageKey = "base.continue",
         id = Some("continue-button"),
         classes = "govuk-button"

@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,25 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package fixtures.messages
+@import config.AppConfig
 
-import play.api.i18n.Lang
+@this(
+        govukButton: GovukButton,
+        appConfig: AppConfig
+)
 
+@(primaryKey: String = "base.saveAndContinue")(implicit messages: Messages)
 
-sealed trait BaseMessages { _: i18n =>
-  def titleHelper(heading: String) = s"$heading - Excise Movement and Control System - GOV.UK"
-  val opensInNewTab: String
-  val lang: Lang
+<div class="govuk-button-group">
 
-  val prevalidateTraderCaption: String = "Prevalidate a trader"
+  @govukButton(
+      ButtonViewModel(messages(primaryKey)).preventingDoubleClick().withId("submit")
+  )
 
-  val continue = "Continue"
-  val saveAndContinue = "Save and continue"
+</div>
+
+@{
+    //$COVERAGE-OFF$
 }
-
-trait BaseEnglish extends BaseMessages with EN {
-  override val opensInNewTab: String = "(opens in new tab)"
-}
-object BaseEnglish extends BaseEnglish
