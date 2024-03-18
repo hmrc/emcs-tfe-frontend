@@ -103,7 +103,7 @@ object ViewMessageMessages {
     val fixableDraftExpiredP2PreLink = "If you still want to move these goods, you need to"
     val fixableDraftExpiredP2Link = "create a new movement"
     val fixableDraftExpiredP2AfterLink = "or correct the errors with the same software you used for the submission."
-    val fixableDraftExpiredP2 = fixableDraftExpiredP2PreLink + " " + fixableDraftExpiredP2Link + " " + fixableDraftExpiredP2AfterLink
+    val fixableDraftExpiredP2 = s"$fixableDraftExpiredP2PreLink $fixableDraftExpiredP2Link $fixableDraftExpiredP2AfterLink"
 
     val updateMovementLink = "Update and resubmit the movement."
     val warningTextWhenFixable = "If you delete this message you will not be able to access the original draft movement details from EMCS and must create a new movement."
