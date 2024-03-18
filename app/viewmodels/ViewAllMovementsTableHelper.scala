@@ -16,6 +16,7 @@
 
 package viewmodels
 
+import models.MovementFilterDirectionOption
 import models.response.emcsTfe.GetMovementListItem
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
@@ -23,28 +24,29 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
 import utils.DateUtils
 import viewmodels.govuk.TagFluency
-import views.html.viewAllMovements.movementTableRowContent
+import views.html.viewAllMovements.MovementTableRowContent
 
 import javax.inject.Inject
 
-class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: movementTableRowContent) extends DateUtils with TagFluency {
+class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTableRowContent) extends DateUtils with TagFluency {
 
-  private[viewmodels] def dataRows(ern: String, movements: Seq[GetMovementListItem])
+  private[viewmodels] def dataRows(ern: String, movements: Seq[GetMovementListItem], directionFilterOption: MovementFilterDirectionOption)
                                   (implicit messages: Messages): Seq[Seq[TableRow]] =
     movements.map { movement =>
       Seq(
         TableRow(
-          content = HtmlContent(movementTableRowContent(ern, movement))
+          content = HtmlContent(movementTableRowContent(ern, movement, directionFilterOption))
         ),
         TableRow(
-          content = HtmlContent(new GovukTag().apply(movement.statusTag)),
+          content = HtmlContent(new GovukTag().apply(movement.statusTag())),
           classes = "govuk-!-text-align-right"
         )
       )
     }
 
-  def constructTable(ern: String, movements: Seq[GetMovementListItem])(implicit messages: Messages): Table =
+  def constructTable(ern: String, movements: Seq[GetMovementListItem], directionFilterOption: MovementFilterDirectionOption)
+                    (implicit messages: Messages): Table =
     Table(
-      rows = dataRows(ern, movements)(messages)
+      rows = dataRows(ern, movements, directionFilterOption)(messages)
     )
 }

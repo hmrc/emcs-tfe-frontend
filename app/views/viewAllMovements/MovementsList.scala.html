@@ -33,7 +33,7 @@
     helper: ViewAllMovementsTableHelper
 )
 
-@(ern: String, movements: Seq[GetMovementListItem], selectItems: Seq[SelectItem], pagination: Option[Pagination])(implicit messages: Messages)
+@(ern: String, movements: Seq[GetMovementListItem], selectItems: Seq[SelectItem], pagination: Option[Pagination], directionFilterOption: MovementFilterDirectionOption)(implicit messages: Messages)
 
     <div class="govuk-grid-column-two-thirds">
 
@@ -57,7 +57,7 @@
 
       </div>
 
-      @table(helper.constructTable(ern, movements))
+      @table(helper.constructTable(ern, movements, directionFilterOption))
 
       @pagination.map{ paginationLinks =>
           @govukPagination(paginationLinks)

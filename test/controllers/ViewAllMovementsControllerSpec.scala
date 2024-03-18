@@ -23,6 +23,7 @@ import fixtures.{ExciseProductCodeFixtures, MemberStatesFixtures, MovementListFi
 import forms.ViewAllMovementsFormProvider
 import mocks.connectors.{MockEmcsTfeConnector, MockGetExciseProductCodesConnector, MockGetMemberStatesConnector}
 import mocks.viewmodels.MockMovementPaginationHelper
+import models.MovementFilterDirectionOption._
 import models.MovementSortingSelectOption.{ArcAscending, Newest}
 import models._
 import models.requests.DataRequest
@@ -97,7 +98,8 @@ class ViewAllMovementsControllerSpec extends SpecBase
       movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
       exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
       countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
-      pagination = None
+      pagination = None,
+      directionFilterOption = All
     )
 
   private def successView(searchOptions: MovementListSearchOptions)(implicit request: DataRequest[_]): Html =

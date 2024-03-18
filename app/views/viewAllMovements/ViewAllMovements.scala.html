@@ -52,7 +52,8 @@
         movementStatusItems: Seq[SelectItem],
         exciseProductCodeSelectItems: Seq[SelectItem],
         countrySelectItems: Seq[SelectItem],
-        pagination: Option[Pagination]
+        pagination: Option[Pagination],
+        directionFilterOption: MovementFilterDirectionOption
 )(implicit request: DataRequest[_], messages: Messages)
 
 @searchFields = {
@@ -248,7 +249,7 @@
                 </aside>
             </div>
 
-            @movementList(ern, movements, sortSelectItems, pagination)
+            @movementList(ern, movements, sortSelectItems, pagination, directionFilterOption)
         </div>
     }
 }

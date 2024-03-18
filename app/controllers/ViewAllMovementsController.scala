@@ -26,7 +26,7 @@ import models.MovementListSearchOptions.DEFAULT_MAX_ROWS
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementListResponse
 import models.response.{ErrorResponse, NotFoundError}
-import models.{MovementFilterStatusOption, MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
+import models.{MovementFilterDirectionOption, MovementFilterStatusOption, MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -104,7 +104,8 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
           movementStatusItems = movementStatusItems,
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(exciseProductCodeOptions, None, searchOptions.exciseProductCode),
           countrySelectItems = SelectItemHelper.constructSelectItems(selectCountryOptions, None, searchOptions.countryOfOrigin),
-          pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions)
+          pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions),
+          directionFilterOption = searchOptions.traderRole.getOrElse(MovementFilterDirectionOption.All)
         ))
       }
 
@@ -115,13 +116,9 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
     }.merge
   }
 
-  private def calculatePageCount(movementList: GetMovementListResponse): Int = {
-    if (movementList.count == 0) {
-      1
-    } else if (movementList.count % DEFAULT_MAX_ROWS != 0) {
-      (movementList.count / DEFAULT_MAX_ROWS) + 1
-    } else {
-      movementList.count / DEFAULT_MAX_ROWS
-    }
+  private def calculatePageCount(movementList: GetMovementListResponse): Int = movementList.count match {
+    case 0 => 1
+    case count if count % DEFAULT_MAX_ROWS != 0 => (movementList.count / DEFAULT_MAX_ROWS) + 1
+    case _ => movementList.count / DEFAULT_MAX_ROWS
   }
 }

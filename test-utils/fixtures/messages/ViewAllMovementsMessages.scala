@@ -21,7 +21,6 @@ object ViewAllMovementsMessages {
   sealed trait ViewMessages { _: i18n =>
     val title: String = "Movements"
     val heading: String = "Movements"
-    def consignor(string: String): String = s"Consignor: $string"
     def dateOfDispatch(string: String): String = s"Date of dispatch: $string"
     val sortByLabel = "Sort by"
     val sortByButton = "Sort movements"
@@ -74,6 +73,10 @@ object ViewAllMovementsMessages {
     val filtersDay = "Day"
     val filtersMonth = "Month"
     val filtersYear = "Year"
+
+    val movementConsignee: String => String = ern => s"Consignee: $ern"
+    val movementConsignor: String => String = ern => s"Consignor: $ern"
+    val movementOtherTraderId: String => String = ern => s"Other trader ID: $ern"
 
   }
 

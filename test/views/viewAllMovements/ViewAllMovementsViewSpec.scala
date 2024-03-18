@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package views
+package views.viewAllMovements
 
 import base.ViewSpecBase
 import controllers.routes
 import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
 import forms.ViewAllMovementsFormProvider
+import models.MovementFilterDirectionOption.{All, GoodsIn, GoodsOut}
+import models._
 import models.requests.DataRequest
-import models.{MovementFilterStatusOption, MovementListSearchOptions, MovementSearchSelectOption, MovementSortingSelectOption}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
-import viewmodels.MovementsListTableHelper
 import viewmodels.helpers.SelectItemHelper
 import views.html.components.table
 import views.html.viewAllMovements.ViewAllMovements
+import views.{BaseSelectors, ViewBehaviours}
 
 
 class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with MovementListFixtures {
@@ -41,7 +42,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     val headingLinkRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > h2 > a"
 
     val sortBySelectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
-    val consignorRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > ul > li:nth-child(1)"
+    val otherTraderIdRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > ul > li:nth-child(1)"
     val dateOfDispatchRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > ul > li:nth-child(2)"
     val statusTagRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(2) > strong"
     val paginationLink = (i: Int) => s"#main-content nav > ul > li:nth-child($i) > a"
@@ -107,14 +108,14 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
   implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
   lazy val view: ViewAllMovements = app.injector.instanceOf[ViewAllMovements]
-  lazy val helper: MovementsListTableHelper = app.injector.instanceOf[MovementsListTableHelper]
   lazy val formProvider: ViewAllMovementsFormProvider = app.injector.instanceOf[ViewAllMovementsFormProvider]
 
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))
 
   lazy val table: table = app.injector.instanceOf[table]
 
-  def asDocument(pagination: Option[Pagination])(implicit messages: Messages): Document = Jsoup.parse(view(
+  def asDocument(pagination: Option[Pagination], direction: MovementFilterDirectionOption = All)
+                (implicit messages: Messages): Document = Jsoup.parse(view(
     form = formProvider(),
     action = routes.ViewAllMovementsController.onPageLoad("ern", MovementListSearchOptions()),
     ern = testErn,
@@ -124,7 +125,8 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     movementStatusItems = MovementFilterStatusOption.selectItems(None),
     exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_PRODUCT_CODE), None),
     countrySelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_COUNTRY), None),
-    pagination = pagination
+    pagination = pagination,
+    directionFilterOption = direction
   ).toString())
 
 
@@ -197,11 +199,11 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.sortBySelectOption(4) -> English.sortOldest,
         Selectors.sortButton -> English.sortByButton,
         Selectors.headingLinkRow(1) -> getMovementListResponse.movements(0).arc,
-        Selectors.consignorRow(1) -> English.consignor(getMovementListResponse.movements(0).otherTraderID),
+        Selectors.otherTraderIdRow(1) -> English.movementOtherTraderId(getMovementListResponse.movements(0).otherTraderID),
         Selectors.dateOfDispatchRow(1) -> English.dateOfDispatch(getMovementListResponse.movements(0).formattedDateOfDispatch),
         Selectors.statusTagRow(1) -> getMovementListResponse.movements(0).movementStatus,
         Selectors.headingLinkRow(2) -> getMovementListResponse.movements(1).arc,
-        Selectors.consignorRow(2) -> English.consignor(getMovementListResponse.movements(1).otherTraderID),
+        Selectors.otherTraderIdRow(2) -> English.movementOtherTraderId(getMovementListResponse.movements(1).otherTraderID),
         Selectors.dateOfDispatchRow(2) -> English.dateOfDispatch(getMovementListResponse.movements(1).formattedDateOfDispatch),
         Selectors.statusTagRow(2) -> getMovementListResponse.movements(1).movementStatus
       ))
@@ -209,6 +211,29 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
       "have the correct links for each movement" in {
         doc.select(Selectors.headingLinkRow(1)).attr("href") mustEqual getMovementListResponse.movements(0).viewMovementUrl(testErn).url
         doc.select(Selectors.headingLinkRow(2)).attr("href") mustEqual getMovementListResponse.movements(1).viewMovementUrl(testErn).url
+      }
+
+      "show the correct content based on direction filters" when {
+
+        Seq(
+          All -> English.movementOtherTraderId,
+          GoodsIn -> English.movementConsignor,
+          GoodsOut -> English.movementConsignee
+        ).foreach { directionAndExpectedMessage =>
+
+          s"direction is: ${directionAndExpectedMessage._1}" must {
+            behave like pageWithExpectedElementsAndMessages(Seq(
+              Selectors.headingLinkRow(1) -> getMovementListResponse.movements(0).arc,
+              Selectors.otherTraderIdRow(1) -> directionAndExpectedMessage._2(getMovementListResponse.movements(0).otherTraderID),
+              Selectors.dateOfDispatchRow(1) -> English.dateOfDispatch(getMovementListResponse.movements(0).formattedDateOfDispatch),
+              Selectors.statusTagRow(1) -> getMovementListResponse.movements(0).movementStatus,
+              Selectors.headingLinkRow(2) -> getMovementListResponse.movements(1).arc,
+              Selectors.otherTraderIdRow(2) -> directionAndExpectedMessage._2(getMovementListResponse.movements(1).otherTraderID),
+              Selectors.dateOfDispatchRow(2) -> English.dateOfDispatch(getMovementListResponse.movements(1).formattedDateOfDispatch),
+              Selectors.statusTagRow(2) -> getMovementListResponse.movements(1).movementStatus
+            ))(asDocument(None, direction = directionAndExpectedMessage._1))
+          }
+        }
       }
 
     }
@@ -244,11 +269,11 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.sortBySelectOption(4) -> English.sortOldest,
         Selectors.sortButton -> English.sortByButton,
         Selectors.headingLinkRow(1) -> getMovementListResponse.movements(0).arc,
-        Selectors.consignorRow(1) -> English.consignor(getMovementListResponse.movements(0).otherTraderID),
+        Selectors.otherTraderIdRow(1) -> English.movementOtherTraderId(getMovementListResponse.movements(0).otherTraderID),
         Selectors.dateOfDispatchRow(1) -> English.dateOfDispatch(getMovementListResponse.movements(0).formattedDateOfDispatch),
         Selectors.statusTagRow(1) -> getMovementListResponse.movements(0).movementStatus,
         Selectors.headingLinkRow(2) -> getMovementListResponse.movements(1).arc,
-        Selectors.consignorRow(2) -> English.consignor(getMovementListResponse.movements(1).otherTraderID),
+        Selectors.otherTraderIdRow(2) -> English.movementOtherTraderId(getMovementListResponse.movements(1).otherTraderID),
         Selectors.dateOfDispatchRow(2) -> English.dateOfDispatch(getMovementListResponse.movements(1).formattedDateOfDispatch),
         Selectors.statusTagRow(2) -> getMovementListResponse.movements(1).movementStatus
       ))
