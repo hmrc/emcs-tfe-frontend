@@ -19,7 +19,8 @@ package config
 import com.google.inject.AbstractModule
 import connectors.referenceData._
 import controllers.predicates._
-import repositories.{MessageInboxRepository, MessageInboxRepositoryImpl}
+import repositories.{MessageInboxRepository, MessageInboxRepositoryImpl, PreValidateTraderUserAnswersRepository}
+import utils.{TimeMachine, TimeMachineImpl}
 
 class Module extends AbstractModule {
 
@@ -34,5 +35,7 @@ class Module extends AbstractModule {
     bind(classOf[GetDocumentTypesConnector]).to(classOf[GetDocumentTypesConnectorImpl]).asEagerSingleton()
     bind(classOf[MessageInboxRepository]).to(classOf[MessageInboxRepositoryImpl]).asEagerSingleton()
     bind(classOf[BetaAllowListAction]).to(classOf[BetaAllowListActionImpl]).asEagerSingleton()
+    bind(classOf[TimeMachine]).to(classOf[TimeMachineImpl]).asEagerSingleton()
+    bind(classOf[PreValidateTraderUserAnswersRepository]).asEagerSingleton()
   }
 }
