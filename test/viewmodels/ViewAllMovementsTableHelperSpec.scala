@@ -14,57 +14,63 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.viewmodels
+package viewmodels
 
 import base.SpecBase
 import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
+import models.MovementFilterDirectionOption._
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
 import utils.DateUtils
-import viewmodels.ViewAllMovementsTableHelper
-import views.html.viewAllMovements.movementTableRowContent
+import views.html.viewAllMovements.MovementTableRowContent
 
 class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures with DateUtils {
 
-  lazy val movementTableRowContent = app.injector.instanceOf[movementTableRowContent]
+  lazy val movementTableRowContent = app.injector.instanceOf[MovementTableRowContent]
   lazy val helper: ViewAllMovementsTableHelper = new ViewAllMovementsTableHelper(movementTableRowContent)
   lazy val movements = getMovementListResponse.movements
 
-  "ViewAllMovementsTableHelper" when {
+  "ViewAllMovementsTableHelper" should {
 
     implicit val messages = messagesApi.preferred(Seq(English.lang))
 
     s"rendering for '${English.lang.code}' language code" when {
 
-      "calling .dataRows(ern: String, movements: Seq[GetMovementListItem])" must {
+      Seq(All, GoodsIn, GoodsOut).foreach { direction =>
 
-        "construct the expected data rows" in {
+        s"for direction: $direction" when {
 
-          helper.constructTable(testErn, movements) mustBe Table(
-            firstCellIsHeader = false,
-            rows = Seq(
-              Seq(
-                TableRow(
-                  content = HtmlContent(movementTableRowContent(testErn, movement1))
-                ),
-                TableRow(
-                  content = HtmlContent(new GovukTag().apply(movement1.statusTag())),
-                  classes = "govuk-!-text-align-right"
-                )
-              ),
-              Seq(
-                TableRow(
-                  content = HtmlContent(movementTableRowContent(testErn, movement2))
-                ),
-                TableRow(
-                  content = HtmlContent(new GovukTag().apply(movement2.statusTag())),
-                  classes = "govuk-!-text-align-right"
+          "calling .dataRows(ern: String, movements: Seq[GetMovementListItem])" must {
+
+            "construct the expected data rows" in {
+
+              helper.constructTable(testErn, movements, direction) mustBe Table(
+                firstCellIsHeader = false,
+                rows = Seq(
+                  Seq(
+                    TableRow(
+                      content = HtmlContent(movementTableRowContent(testErn, movement1, direction))
+                    ),
+                    TableRow(
+                      content = HtmlContent(new GovukTag().apply(movement1.statusTag())),
+                      classes = "govuk-!-text-align-right"
+                    )
+                  ),
+                  Seq(
+                    TableRow(
+                      content = HtmlContent(movementTableRowContent(testErn, movement2, direction))
+                    ),
+                    TableRow(
+                      content = HtmlContent(new GovukTag().apply(movement2.statusTag())),
+                      classes = "govuk-!-text-align-right"
+                    )
+                  )
                 )
               )
-            )
-          )
+            }
+          }
         }
       }
     }

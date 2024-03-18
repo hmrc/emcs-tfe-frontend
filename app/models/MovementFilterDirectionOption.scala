@@ -26,17 +26,25 @@ import viewmodels.govuk.checkbox._
 // TODO: ChRIS requires sentence-case, not lowercase (EIS requires lowercase)
 sealed trait MovementFilterDirectionOption extends SelectOptionModel {
   override val code: String = this.toString
+
+  val otherTraderIdMessageKey: String
 }
 
 object MovementFilterDirectionOption extends Enumerable.Implicits {
   case object GoodsIn extends WithName("consignee") with MovementFilterDirectionOption {
     override val displayName = "viewAllMovements.filters.direction.consignee"
+
+    override val otherTraderIdMessageKey: String = "viewAllMovements.otherTraderId.consignor"
   }
   case object GoodsOut extends WithName("consignor") with MovementFilterDirectionOption {
     override val displayName = "viewAllMovements.filters.direction.consignor"
+
+    override val otherTraderIdMessageKey: String = "viewAllMovements.otherTraderId.consignee"
   }
   case object All extends WithName("all") with MovementFilterDirectionOption {
     override val displayName = "viewAllMovements.filters.direction.all"
+
+    override val otherTraderIdMessageKey: String = "viewAllMovements.otherTraderId.default"
   }
 
   val values: Seq[MovementFilterDirectionOption] = Seq(GoodsIn, GoodsOut, All)

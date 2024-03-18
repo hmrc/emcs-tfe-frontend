@@ -23,7 +23,7 @@
     list: list
 )
 
-@(ern: String, movement: GetMovementListItem)(implicit messages: Messages)
+@(ern: String, movement: GetMovementListItem, directionFilterOption: MovementFilterDirectionOption)(implicit messages: Messages)
 
 <h2 class="govuk-!-margin-bottom-0">
     @link(
@@ -34,7 +34,7 @@
 </h2>
 
 @list(Seq(
-    Html(messages("viewAllMovements.consignor", movement.otherTraderID)),
+    Html(messages(directionFilterOption.otherTraderIdMessageKey, movement.otherTraderID)),
     Html(messages("viewAllMovements.dateOfDispatch", movement.formattedDateOfDispatch))
 ))
 
