@@ -18,7 +18,7 @@ package models.response.emcsTfe.messages.submissionFailure
 
 import play.api.libs.json._
 
-case class GetSubmissionFailureMessageResponse(ie704: IE704Model, relatedMessageType: Option[String], isTFESubmission: Boolean)
+case class GetSubmissionFailureMessageResponse(ie704: IE704Model, relatedMessageType: Option[String], draftMovementExists: Boolean)
 
 object GetSubmissionFailureMessageResponse {
 

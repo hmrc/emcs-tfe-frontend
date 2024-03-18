@@ -39,6 +39,7 @@ class ViewMessageHelper @Inject()(
                                    p: p,
                                    summary_list: summary_list,
                                    warning_text: warning_text,
+                                   bullets: bullets,
                                    h2: h2) extends DateUtils with TagFluency {
 
   def constructSplitMessageErrorContent(message: MessageCache)(implicit messages: Messages): Html = {
@@ -143,7 +144,7 @@ class ViewMessageHelper @Inject()(
         val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
         val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
         failureMessage.relatedMessageType match {
-          case Some("IE815") if numberOfNonFixableErrors == 0 || !failureMessage.isTFESubmission => Html("")
+          case Some("IE815") if numberOfNonFixableErrors == 0 && failureMessage.draftMovementExists => Html("")
           case _ => HtmlFormat.fill(Seq(
             h2("messages.errors.heading"),
             summary_list(
@@ -165,9 +166,9 @@ class ViewMessageHelper @Inject()(
       val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
       failureMessage.relatedMessageType match {
         case Some(relatedMessageType) => HtmlFormat.fill(
-          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, failureMessage.isTFESubmission) ++
-            contentForSubmittedVia3rdParty(failureMessage.isTFESubmission, relatedMessageType, msgCache.ern, msgCache.message.arc.getOrElse("")) ++
-            Seq(if(relatedMessageType == "IE815") Some(p()(Html(messages("messages.IE704.IE815.arc.text")))) else None).flatten ++
+          contentForFixingError(relatedMessageType, allErrorCodes.size, numberOfNonFixableErrors, failureMessage.draftMovementExists) ++
+            contentForSubmittedVia3rdParty(failureMessage.draftMovementExists, relatedMessageType, msgCache.ern, msgCache.message.arc.getOrElse("")) ++
+            Seq(Option.when(relatedMessageType == "IE815")(p()(Html(messages("messages.IE704.IE815.arc.text"))))).flatten ++
             contentForContactingHelpdesk())
         case _ => Html("")
       }
@@ -180,7 +181,7 @@ class ViewMessageHelper @Inject()(
       failureMessage =>
         val allErrorCodes = failureMessage.ie704.body.functionalError.map(_.errorType)
         val numberOfNonFixableErrors = allErrorCodes.count(!appConfig.recoverableErrorCodes.contains(_))
-        if(numberOfNonFixableErrors == 0 && failureMessage.relatedMessageType.contains("IE815") && failureMessage.isTFESubmission) {
+        if(numberOfNonFixableErrors == 0 && failureMessage.relatedMessageType.contains("IE815") && failureMessage.draftMovementExists) {
           warning_text(Html(messages("messages.IE704.IE815.fixError.fixable.warning")))
         } else {
           Html("")
@@ -189,24 +190,38 @@ class ViewMessageHelper @Inject()(
   }
 
   //scalastyle:off
-  private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, isPortalSubmission: Boolean)
-                                             (implicit messages: Messages, messageCache: MessageCache): Seq[Html] = {
+  private[helpers] def contentForFixingError(messageType: String, numberOfErrors: Int, numberOfNonFixableErrors: Int, draftMovementExists: Boolean)
+                                            (implicit messages: Messages, messageCache: MessageCache): Seq[Html] = {
     val ern = messageCache.ern
     val arc = messageCache.message.arc.getOrElse("")
     val uniqueMessageId = messageCache.message.uniqueMessageIdentifier
     messageType match {
-      case "IE815" if numberOfNonFixableErrors == 0 && isPortalSubmission =>
+      case "IE815" if numberOfNonFixableErrors == 0 && draftMovementExists =>
         Seq(
           p()(HtmlFormat.fill(Seq(
             link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(ern, uniqueMessageId).url,
               "messages.IE704.IE815.fixError.fixable.link", id = Some("update-draft-movement"), withFullStop = true)
           )))
         )
-      case "IE815" if isPortalSubmission =>
+      case "IE815" if numberOfNonFixableErrors > 0 =>
         Seq(
           p()(HtmlFormat.fill(Seq(
             Html(ViewUtils.pluralSingular("messages.IE704.IE815.fixError.nonFixable.text", numberOfErrors)),
-            link(appConfig.emcsTfeCreateMovementUrl(ern), "messages.IE704.IE815.fixError.nonFixable.link.createNewMovement", id = Some("create-a-new-movement"), withFullStop = true)
+            link(appConfig.emcsTfeCreateMovementUrl(ern), "messages.IE704.IE815.fixError.nonFixable.link.createNewMovement", id = Some("create-a-new-movement"), withFullStop = true),
+            Html(messages("messages.IE704.IE815.fixError.nonFixable.software"))
+          )))
+        )
+      case "IE815" if !draftMovementExists =>
+        Seq(
+          p()(Html(messages("messages.IE704.IE815.fixError.fixable.expired.p1"))),
+          bullets(Seq(
+            Html(messages("messages.IE704.IE815.fixError.fixable.expired.bullet1")),
+            Html(messages("messages.IE704.IE815.fixError.fixable.expired.bullet2"))
+          )),
+          p()(HtmlFormat.fill(Seq(
+            Html(messages("messages.IE704.IE815.fixError.fixable.expired.p2.preLink")),
+            link(appConfig.emcsTfeCreateMovementUrl(ern), "messages.IE704.IE815.fixError.fixable.expired.p2.link", id = Some("create-a-new-movement"), withFullStop = false),
+            Html(messages("messages.IE704.IE815.fixError.fixable.expired.p2.afterLink"))
           )))
         )
       case "IE810" =>
@@ -247,7 +262,7 @@ class ViewMessageHelper @Inject()(
           link(appConfig.emcsTfeAlertOrRejectionUrl(ern, arc), "messages.IE704.IE819.fixError.link", id = Some("submit-a-new-alert-rejection")),
           Html(messages("messages.IE704.IE819.fixError.text.2"))
         ))))
-      case "IE813" if isPortalSubmission =>
+      case "IE813" if draftMovementExists =>
         Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.IE704.IE813.fixError.text")),
           link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.IE704.IE813.fixError.link", id = Some("submit-change-destination"), withFullStop = true)
@@ -256,17 +271,16 @@ class ViewMessageHelper @Inject()(
     }
   }
 
-  private[helpers] def contentForSubmittedVia3rdParty(isPortalSubmission: Boolean, relatedMessageType: String, ern: String, arc: String = "")
+  private[helpers] def contentForSubmittedVia3rdParty(draftMovementExists: Boolean, relatedMessageType: String, ern: String, arc: String = "")
                                                      (implicit messages: Messages): Seq[Html] = {
-    if (!isPortalSubmission) {
+    if (!draftMovementExists) {
       relatedMessageType match {
-        case "IE815" => Seq(p()(HtmlFormat.fill(Seq(
-          Html(messages("messages.submittedViaThirdParty.ie815")),
-          link(appConfig.emcsTfeCreateMovementUrl(ern), "messages.submittedViaThirdParty.ie815.link", id = Some("create-a-new-movement"), withFullStop = true)
-        ))))
+        //It's not possible to know if it was submitted via 3rd Party with EIS.
+        //This method will be removed as part of future alignment tickets. For now, only deal with IE815 and set this content to Empty
+        case "IE815" => Seq()
         case "IE813" => Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.submittedViaThirdParty.ie813")),
-          link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.submittedViaThirdParty.ie813.link", id = Some("change-destination"), withFullStop = true)
+          link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.submittedViaThirdParty.ie813.link", id = Some("submit-change-destination"), withFullStop = true)
         ))))
         case _ => Seq(p()(Html(messages("messages.submittedViaThirdParty"))))
       }

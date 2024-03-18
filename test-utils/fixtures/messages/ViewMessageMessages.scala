@@ -92,17 +92,23 @@ object ViewMessageMessages {
 
     val submitNewMovementSingularErrorPreLink = "The error cannot be fixed, so you need to"
     val submitNewMovementMultipleErrorsPreLink = "At least one of these errors cannot be fixed, so you need to"
+    val submitNewMovementSoftware = "However, if you used commercial software for your submission, please correct these errors with the same software that you used for the submission."
     val createNewMovementLink = "create a new movement"
     val submitNewMovementSingularError = s"$submitNewMovementSingularErrorPreLink $createNewMovementLink."
     val submitNewMovementMultipleErrors = s"$submitNewMovementMultipleErrorsPreLink $createNewMovementLink."
 
+    val fixableDraftExpiredP1 = "This draft movement is not available on EMCS. This is because:"
+    val fixableDraftExpiredBullet1 = "the draft was not updated and resubmitted on EMCS within 30 days, or"
+    val fixableDraftExpiredBullet2 = "commercial software was used for the submission"
+    val fixableDraftExpiredP2PreLink = "If you still want to move these goods, you need to"
+    val fixableDraftExpiredP2Link = "create a new movement"
+    val fixableDraftExpiredP2AfterLink = "or correct the errors with the same software you used for the submission."
+    val fixableDraftExpiredP2 = s"$fixableDraftExpiredP2PreLink $fixableDraftExpiredP2Link $fixableDraftExpiredP2AfterLink"
+
     val updateMovementLink = "Update and resubmit the movement."
-    val warningTextWhenFixable = "If you delete this message you will not be able to access the original draft movement details and must create a new movement."
+    val warningTextWhenFixable = "If you delete this message you will not be able to access the original draft movement details from EMCS and must create a new movement."
 
     val arcText = "An ARC will only be created for a movement once it has been successfully submitted."
-
-    val ie815thirdParty = "If you used commercial software for your submission, please correct these errors with the same software that you used for the submission, or"
-    val ie815thirdPartyLink = "create a new movement"
   }
 
   object English extends ViewMessages
