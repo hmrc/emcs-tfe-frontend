@@ -698,7 +698,7 @@ class ViewMessageHelperSpec extends SpecBase
       helper.contentForSubmittedVia3rdParty(draftMovementExists = false, relatedMessageType = "IE813", testErn, testArc) mustBe Seq(p() {
         HtmlFormat.fill(Seq(
           Html(ViewMessageMessages.English.ie813thirdParty),
-          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.ie813thirdPartyLink, id = Some("change-destination"), withFullStop = true)
+          link(appConfig.emcsTfeChangeDestinationUrl(testErn, testArc), ViewMessageMessages.English.ie813thirdPartyLink, id = Some("submit-change-destination"), withFullStop = true)
         ))
       })
     }
@@ -1158,7 +1158,7 @@ class ViewMessageHelperSpec extends SpecBase
                 link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
                 messageKey = ViewMessageMessages.English.ie813thirdPartyLink,
                 withFullStop = true,
-                id = Some("change-destination")
+                id = Some("submit-change-destination")
               )
             ))
           },

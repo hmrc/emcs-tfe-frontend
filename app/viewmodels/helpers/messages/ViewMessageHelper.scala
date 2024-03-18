@@ -280,7 +280,7 @@ class ViewMessageHelper @Inject()(
         case "IE815" => Seq()
         case "IE813" => Seq(p()(HtmlFormat.fill(Seq(
           Html(messages("messages.submittedViaThirdParty.ie813")),
-          link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.submittedViaThirdParty.ie813.link", id = Some("change-destination"), withFullStop = true)
+          link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "messages.submittedViaThirdParty.ie813.link", id = Some("submit-change-destination"), withFullStop = true)
         ))))
         case _ => Seq(p()(Html(messages("messages.submittedViaThirdParty"))))
       }
