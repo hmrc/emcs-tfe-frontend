@@ -713,7 +713,7 @@ class ViewMessageHelperSpec extends SpecBase
       helper.contentForSubmittedVia3rdParty(draftMovementExists = false, relatedMessageType = "IE813", testErn, testArc) mustBe Seq(p() {
         HtmlFormat.fill(Seq(
           Html(ViewMessageMessages.English.ie813thirdParty),
-          link(controllers.cod.routes.ChangeOfDestinationController.onPageLoad(testErn, testArc, 1).url, ViewMessageMessages.English.ie813thirdPartyLink, id = Some("change-destination"), withFullStop = true)
+          link(controllers.cod.routes.ChangeOfDestinationController.onPageLoad(testErn, testArc, 1).url, ViewMessageMessages.English.ie813thirdPartyLink, id = Some("submit-change-destination"), withFullStop = true)
         ))
       })
     }
