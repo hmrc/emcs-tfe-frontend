@@ -17,16 +17,15 @@
 package controllers
 
 import models.common.Enumerable
-import models.requests.{DataRequest, UserAnswersRequest}
+import models.requests.UserAnswersRequest
 import pages.QuestionPage
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.libs.json.{Format, Reads}
-import play.api.mvc.{Call, Result}
+import play.api.libs.json.Format
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.Logging
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 trait BaseController extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Logging {
 

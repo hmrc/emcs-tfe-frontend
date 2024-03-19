@@ -23,19 +23,18 @@ import pages.QuestionPage
 import play.api.libs.json.{Format, Reads}
 import play.api.mvc.Result
 import queries.Derivable
-import repositories.BaseUserAnswersRepository
-import uk.gov.hmrc.http.HeaderCarrier
+import services.BaseUserAnswersService
 import utils.Logging
 
 import scala.concurrent.Future
 
 trait BaseNavigationController extends BaseController with Logging {
 
-  val userAnswersRepo: BaseUserAnswersRepository
+  val userAnswersService: BaseUserAnswersService
   val navigator: BaseNavigator
 
   def saveAndRedirect[A](page: QuestionPage[A], answer: A, currentAnswers: UserAnswers, mode: Mode)
-                        (implicit hc: HeaderCarrier, format: Format[A]): Future[Result] =
+                        (implicit format: Format[A]): Future[Result] =
     save(page, answer, currentAnswers).map { updatedAnswers =>
       Redirect(navigator.nextPage(page, mode, updatedAnswers))
     }
@@ -46,22 +45,22 @@ trait BaseNavigationController extends BaseController with Logging {
       Redirect(navigator.nextPage(page, mode, updatedAnswers))
     }
 
-  private def save[A](page: QuestionPage[A], answer: A, currentAnswers: UserAnswers)(implicit hc: HeaderCarrier, format: Format[A]): Future[UserAnswers] =
+  private def save[A](page: QuestionPage[A], answer: A, currentAnswers: UserAnswers)
+                     (implicit format: Format[A]): Future[UserAnswers] =
     if (currentAnswers.get[A](page).contains(answer)) {
       Future.successful(currentAnswers)
     } else {
       for {
         updatedAnswers <- Future.successful(currentAnswers.set(page, answer))
-        _ <- userAnswersRepo.set(updatedAnswers)
+        _ <- userAnswersService.set(updatedAnswers)
       } yield updatedAnswers
     }
 
-  def validateIndex[T, A](
-                           itemCount: Derivable[T, Int], idx: Index
-                         )(onSuccess: => A, onFailure: => A)(implicit request: UserAnswersRequest[_], reads: Reads[T]): A = {
+  def validateIndex[T, A](itemCount: Derivable[T, Int], idx: Index)
+                         (onSuccess: => A, onFailure: => A)
+                         (implicit request: UserAnswersRequest[_], reads: Reads[T]): A =
     request.userAnswers.get(itemCount) match {
       case Some(value) if idx.position >= 0 && idx.position < value => onSuccess
       case _ => onFailure
     }
-  }
 }

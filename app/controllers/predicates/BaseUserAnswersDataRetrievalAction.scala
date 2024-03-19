@@ -19,21 +19,17 @@ package controllers.predicates
 import models.requests.{DataRequest, UserAnswersRequest}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
-import repositories.{BaseUserAnswersRepository, PreValidateTraderUserAnswersRepository}
+import services.BaseUserAnswersService
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PreValidateTraderDataRetrievalAction @Inject()(override val userAnswers: PreValidateTraderUserAnswersRepository)
-                                                    (override implicit val executionContext: ExecutionContext) extends UserAnswersDataRetrievalAction
+trait BaseUserAnswersDataRetrievalAction extends ActionRefiner[DataRequest, UserAnswersRequest] {
 
-trait UserAnswersDataRetrievalAction extends ActionRefiner[DataRequest, UserAnswersRequest] {
-
-  val userAnswers: BaseUserAnswersRepository
+  val userAnswersService: BaseUserAnswersService
   implicit val executionContext: ExecutionContext
 
   override protected def refine[A](request: DataRequest[A]): Future[Either[Result, UserAnswersRequest[A]]] =
-    userAnswers.get(request.ern).map {
+    userAnswersService.get(request.ern).map {
       case Some(answers) => Right(UserAnswersRequest(request, answers))
       case _ => Left(Redirect(controllers.prevalidateTrader.routes.StartPrevalidateTraderController.onPageLoad(request.ern)))
     }

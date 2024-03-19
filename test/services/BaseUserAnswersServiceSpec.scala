@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package repositories
+package services
 
 import base.SpecBase
 import models.UserAnswers
-import org.mongodb.scala.model.Filters
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.IntegrationPatience
 import play.api.libs.json.Json
+import repositories.BaseUserAnswersRepository
 import uk.gov.hmrc.mongo.test.{CleanMongoCollectionSupport, PlayMongoRepositorySupport}
 import utils.TimeMachine
 
@@ -29,12 +29,13 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import scala.concurrent.ExecutionContext
 
-trait BaseUserAnswersRepositorySpec extends SpecBase
+trait BaseUserAnswersServiceSpec extends SpecBase
   with PlayMongoRepositorySupport[UserAnswers]
   with CleanMongoCollectionSupport
   with IntegrationPatience
   with BeforeAndAfterAll {
 
+  val service: BaseUserAnswersService
   val repository: BaseUserAnswersRepository
 
   implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
@@ -56,9 +57,8 @@ trait BaseUserAnswersRepositorySpec extends SpecBase
   ".set" must {
 
     "set the last updated time on the supplied user answers to `now`, and save them" in {
-
       val expectedResult = userAnswers copy (lastUpdated = instantNow)
-      val setResult = repository.set(userAnswers).futureValue
+      val setResult = service.set(userAnswers).futureValue
 
       setResult mustBe expectedResult
     }
@@ -69,10 +69,9 @@ trait BaseUserAnswersRepositorySpec extends SpecBase
     "there is a record for this id" must {
 
       "update the lastUpdated time and get the record" in {
-
         insert(userAnswers).futureValue
 
-        val result = repository.get(userAnswers.ern).futureValue
+        val result = service.get(userAnswers.ern).futureValue
         val expectedResult = userAnswers copy (lastUpdated = instantNow)
 
         result.value mustBe expectedResult
@@ -82,8 +81,7 @@ trait BaseUserAnswersRepositorySpec extends SpecBase
     "there is no record for this id" must {
 
       "return None" in {
-
-        repository.get("wrongErn").futureValue mustBe None
+        service.get("wrongErn").futureValue mustBe None
       }
     }
   }
@@ -91,46 +89,18 @@ trait BaseUserAnswersRepositorySpec extends SpecBase
   ".remove" must {
 
     "remove a record" in {
-
       insert(userAnswers).futureValue
 
-      val result = repository.remove(userAnswers.ern).futureValue
+      val result = service.remove(userAnswers).futureValue
 
       result mustBe true
-      repository.get(userAnswers.ern).futureValue mustBe None
+      service.get(userAnswers.ern).futureValue mustBe None
     }
 
     "return true when there is no record to remove" in {
-      val result = repository.remove(userAnswers.ern).futureValue
+      val result = service.remove(userAnswers).futureValue
 
       result mustBe true
-    }
-  }
-
-  ".keepAlive" when {
-
-    "there is a record for this id" must {
-
-      "update its lastUpdated to `now` and return true" in {
-
-        insert(userAnswers).futureValue
-
-        val result = repository.keepAlive(userAnswers.ern).futureValue
-
-        val expectedUpdatedAnswers = userAnswers copy (lastUpdated = instantNow)
-
-        result mustBe true
-        val updatedAnswers = find(Filters.equal("ern", userAnswers.ern)).futureValue.headOption.value
-        updatedAnswers mustBe expectedUpdatedAnswers
-      }
-    }
-
-    "there is no record for this id" must {
-
-      "return true" in {
-
-        repository.keepAlive("wrongErn").futureValue mustBe true
-      }
     }
   }
 }

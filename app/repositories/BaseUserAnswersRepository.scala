@@ -79,19 +79,18 @@ class BaseUserAnswersRepository(collectionName: String,
       ).headOption()
     )
 
-  def set(answers: UserAnswers): Future[Boolean] = {
+  def set(answers: UserAnswers): Future[UserAnswers] = {
 
     val updatedAnswers = answers copy (lastUpdated = time.instant())
 
     Mdc.preservingMdc(
       collection
-        .replaceOne(
+        .findOneAndReplace(
           filter = by(updatedAnswers.ern),
           replacement = updatedAnswers,
-          options = ReplaceOptions().upsert(true)
+          options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
         )
         .toFuture()
-        .map(_ => true)
     )
   }
 
