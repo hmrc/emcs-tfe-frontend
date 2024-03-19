@@ -18,7 +18,7 @@ package fixtures.messages.prevalidateTrader
 
 import fixtures.messages.BaseEnglish
 
-object PrevalidateTraderConsigneeTraderIdentificationMessages {
+object PrevalidateConsigneeTraderIdentificationMessages {
 
   sealed trait ViewMessages {
     val title: String = "What is the consignee’s trader ID?"

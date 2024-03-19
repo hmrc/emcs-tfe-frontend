@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package services
+package pages.prevalidateTrader
 
-import repositories.PreValidateTraderUserAnswersRepository
+import models.Index
+import pages.QuestionPage
+import play.api.libs.json.{JsObject, JsPath}
 
-import javax.inject.Inject
+case class PrevalidateProductCodePage(idx: Index) extends QuestionPage[JsObject] {
 
-class PreValidateTraderUserAnswersService @Inject()(override val userAnswersRepo: PreValidateTraderUserAnswersRepository) extends BaseUserAnswersService
+  override val path: JsPath = PrevalidateAddedProductCodesPage.path \ idx.position \ "epcCode"
+  
+}

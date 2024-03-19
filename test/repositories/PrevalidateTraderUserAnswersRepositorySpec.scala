@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package pages.prevalidateTrader
+package repositories
 
-import pages.QuestionPage
-import play.api.libs.json.{JsObject, JsPath}
+class PrevalidateTraderUserAnswersRepositorySpec extends BaseUserAnswersRepositorySpec {
 
-case object PreValidateAddedProductCodes extends QuestionPage[JsObject] {
-
-  override val path: JsPath = PreValidateTraderSection.path \ "addedProductCodes"
-  val max: Int = 10
-  
+  lazy val repository: BaseUserAnswersRepository = new PrevalidateTraderUserAnswersRepository(appConfig)(
+    mongoComponent = mongoComponent,
+    time = timeMachine,
+    ec = ec
+  )
 }

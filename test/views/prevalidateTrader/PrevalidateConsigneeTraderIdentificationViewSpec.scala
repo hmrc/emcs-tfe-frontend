@@ -17,33 +17,33 @@
 package views.prevalidateTrader
 
 import base.ViewSpecBase
-import fixtures.messages.prevalidateTrader.PrevalidateTraderConsigneeTraderIdentificationMessages
-import forms.ConsigneeTraderIdentificationFormProvider
+import fixtures.messages.prevalidateTrader.PrevalidateConsigneeTraderIdentificationMessages
+import forms.PrevalidateConsigneeTraderIdentificationFormProvider
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import views.html.prevalidateTrader.ConsigneeTraderIdentificationPage
+import views.html.prevalidateTrader.PrevalidateConsigneeTraderIdentificationView
 import views.{BaseSelectors, ViewBehaviours}
 
-class ConsigneeTraderIdentificationPageViewSpec extends ViewSpecBase with ViewBehaviours {
+class PrevalidateConsigneeTraderIdentificationViewSpec extends ViewSpecBase with ViewBehaviours {
 
   object Selectors extends BaseSelectors
 
-  val formProvider = app.injector.instanceOf[ConsigneeTraderIdentificationFormProvider]
+  val formProvider = app.injector.instanceOf[PrevalidateConsigneeTraderIdentificationFormProvider]
 
-  "ConsigneeTraderIdentificationPageView" when {
+  "PrevalidateConsigneeTraderIdentificationView" when {
 
-    Seq(PrevalidateTraderConsigneeTraderIdentificationMessages.English).foreach { messagesForLanguage =>
+    Seq(PrevalidateConsigneeTraderIdentificationMessages.English).foreach { messagesForLanguage =>
 
       s"being rendered in lang code of '${messagesForLanguage.lang.code}'" should {
 
         implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
         implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
 
-        val view = app.injector.instanceOf[ConsigneeTraderIdentificationPage]
+        val view = app.injector.instanceOf[PrevalidateConsigneeTraderIdentificationView]
 
         implicit val doc: Document = Jsoup.parse(view(formProvider(), testOnly.controllers.routes.UnderConstructionController.onPageLoad()).toString())
 

@@ -24,7 +24,7 @@ import queries.PreValidateTraderEPCCount
 
 import scala.concurrent.Future
 
-trait BasePreValidateNavigationController extends BaseNavigationController {
+trait BasePrevalidateNavigationController extends BaseNavigationController {
 
   def validateIndex(index: Index)(onSuccess: => Result)(implicit request: UserAnswersRequest[_]): Result = {
     super.validateIndex(PreValidateTraderEPCCount, index)(

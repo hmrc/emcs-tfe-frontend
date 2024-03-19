@@ -21,7 +21,7 @@ import play.api.data.Form
 
 import javax.inject.Inject
 
-class ConsigneeTraderIdentificationFormProvider @Inject() extends Mappings {
+class PrevalidateConsigneeTraderIdentificationFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(

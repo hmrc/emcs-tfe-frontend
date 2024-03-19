@@ -33,7 +33,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels.MovementPaginationHelper
 import viewmodels.helpers.SelectItemHelper
-import views.html.viewAllMovements.ViewAllMovements
+import views.html.viewAllMovements.ViewAllMovementsView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,7 +43,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                            getMovementListConnector: GetMovementListConnector,
                                            getExciseProductCodesConnector: GetExciseProductCodesConnector,
                                            getMemberStatesConnector: GetMemberStatesConnector,
-                                           view: ViewAllMovements,
+                                           view: ViewAllMovementsView,
                                            errorHandler: ErrorHandler,
                                            val auth: AuthAction,
                                            val getData: DataRetrievalAction,

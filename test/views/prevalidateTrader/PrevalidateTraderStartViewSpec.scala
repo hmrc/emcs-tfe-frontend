@@ -24,16 +24,16 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import views.html.prevalidateTrader.PrevalidateTraderStartPage
+import views.html.prevalidateTrader.PrevalidateTraderStartView
 import views.{BaseSelectors, ViewBehaviours}
 
-class PrevalidateTraderStartPageViewSpec extends ViewSpecBase with ViewBehaviours {
+class PrevalidateTraderStartViewSpec extends ViewSpecBase with ViewBehaviours {
 
   object Selectors extends BaseSelectors {
     val continueButton = "#continue-button"
   }
 
-  "PrevalidateTraderStartPageView" when {
+  "PrevalidateTraderStartView" when {
 
     Seq(PrevalidateTraderStartMessages.English).foreach { messagesForLanguage =>
 
@@ -42,7 +42,7 @@ class PrevalidateTraderStartPageViewSpec extends ViewSpecBase with ViewBehaviour
         implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
         implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
 
-        val view = app.injector.instanceOf[PrevalidateTraderStartPage]
+        val view = app.injector.instanceOf[PrevalidateTraderStartView]
 
         implicit val doc: Document = Jsoup.parse(view().toString())
 
@@ -55,7 +55,7 @@ class PrevalidateTraderStartPageViewSpec extends ViewSpecBase with ViewBehaviour
 
         "have a link to the PVT02 page consignee-trader-identification)" in {
           doc.select(Selectors.continueButton).attr("href") mustBe
-            controllers.prevalidateTrader.routes.ConsigneeTraderIdentificationController.onSubmit(request.ern).url
+            controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(request.ern).url
         }
       }
     }

@@ -24,7 +24,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class PreValidateTraderUserAnswersRepository @Inject()(appConfig: AppConfig)
+class PrevalidateTraderUserAnswersRepository @Inject()(appConfig: AppConfig)
                                                       (implicit mongoComponent: MongoComponent,
                                                        time: TimeMachine,
                                                        ec: ExecutionContext) extends BaseUserAnswersRepository(

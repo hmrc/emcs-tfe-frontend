@@ -32,7 +32,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
 import viewmodels.helpers.SelectItemHelper
 import views.html.components.table
-import views.html.viewAllMovements.ViewAllMovements
+import views.html.viewAllMovements.ViewAllMovementsView
 import views.{BaseSelectors, ViewBehaviours}
 
 
@@ -107,7 +107,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
 
   implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
-  lazy val view: ViewAllMovements = app.injector.instanceOf[ViewAllMovements]
+  lazy val view: ViewAllMovementsView = app.injector.instanceOf[ViewAllMovementsView]
   lazy val formProvider: ViewAllMovementsFormProvider = app.injector.instanceOf[ViewAllMovementsFormProvider]
 
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))

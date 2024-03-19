@@ -34,5 +34,5 @@ GET         /trader/:exciseRegistrationNumber/message/:uniqueMessageIdentifier/d
 POST        /trader/:exciseRegistrationNumber/message/:uniqueMessageIdentifier/delete        controllers.messages.DeleteMessageController.onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)
 
 GET         /trader/:ern/check-trader                                                        controllers.prevalidateTrader.StartPrevalidateTraderController.onPageLoad(ern: String)
-GET         /trader/:ern/consignee-trader-identification                                     controllers.prevalidateTrader.ConsigneeTraderIdentificationController.onPageLoad(ern: String)
-POST        /trader/:ern/consignee-trader-identification                                     controllers.prevalidateTrader.ConsigneeTraderIdentificationController.onSubmit(ern: String)
+GET         /trader/:ern/consignee-trader-identification                                     controllers.prevalidateTrader.PrevalidateConsigneeTraderIdentificationController.onPageLoad(ern: String)
+POST        /trader/:ern/consignee-trader-identification                                     controllers.prevalidateTrader.PrevalidateConsigneeTraderIdentificationController.onSubmit(ern: String)

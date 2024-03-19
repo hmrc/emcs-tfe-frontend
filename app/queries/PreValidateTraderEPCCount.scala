@@ -16,10 +16,10 @@
 
 package queries
 
-import pages.prevalidateTrader.PreValidateAddedProductCodes
+import pages.prevalidateTrader.PrevalidateAddedProductCodesPage
 import play.api.libs.json.{JsPath, JsValue}
 
 case object PreValidateTraderEPCCount extends Derivable[List[JsValue], Int] {
   override val derive: List[JsValue] => Int = _.size
-  override val path: JsPath = PreValidateAddedProductCodes.path
+  override val path: JsPath = PrevalidateAddedProductCodesPage.path
 }

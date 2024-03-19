@@ -16,10 +16,10 @@
 
 package controllers.predicates
 
-import services.PreValidateTraderUserAnswersService
+import services.PrevalidateTraderUserAnswersService
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class PreValidateTraderDataRetrievalAction @Inject()(override val userAnswersService: PreValidateTraderUserAnswersService)
+class PreValidateTraderDataRetrievalAction @Inject()(override val userAnswersService: PrevalidateTraderUserAnswersService)
                                                     (override implicit val executionContext: ExecutionContext) extends BaseUserAnswersDataRetrievalAction

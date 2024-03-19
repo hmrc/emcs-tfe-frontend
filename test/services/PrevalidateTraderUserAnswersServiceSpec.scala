@@ -16,15 +16,15 @@
 
 package services
 
-import repositories.PreValidateTraderUserAnswersRepository
+import repositories.PrevalidateTraderUserAnswersRepository
 
-class PreValidateTraderUserAnswersServiceSpec extends BaseUserAnswersServiceSpec {
+class PrevalidateTraderUserAnswersServiceSpec extends BaseUserAnswersServiceSpec {
 
-  override lazy val repository: PreValidateTraderUserAnswersRepository = new PreValidateTraderUserAnswersRepository(appConfig)(
+  override lazy val repository: PrevalidateTraderUserAnswersRepository = new PrevalidateTraderUserAnswersRepository(appConfig)(
     mongoComponent = mongoComponent,
     time = timeMachine,
     ec = ec
   )
 
-  override lazy val service: PreValidateTraderUserAnswersService = new PreValidateTraderUserAnswersService(repository)
+  override lazy val service: PrevalidateTraderUserAnswersService = new PrevalidateTraderUserAnswersService(repository)
 }

@@ -32,7 +32,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.messages.ViewMessage
+import views.html.messages.ViewMessageView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -51,7 +51,7 @@ class ViewMessageControllerSpec extends SpecBase
 
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
 
-  lazy val view = app.injector.instanceOf[ViewMessage]
+  lazy val view = app.injector.instanceOf[ViewMessageView]
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
 

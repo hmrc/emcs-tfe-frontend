@@ -16,12 +16,11 @@
 
 package pages.prevalidateTrader
 
-import models.Index
 import pages.QuestionPage
 import play.api.libs.json.{JsObject, JsPath}
 
-case class PreValidateProductCode(idx: Index) extends QuestionPage[JsObject] {
+case object PrevalidateTraderSection extends QuestionPage[JsObject] {
 
-  override val path: JsPath = PreValidateAddedProductCodes.path \ idx.position \ "epcCode"
+  override val path: JsPath = JsPath \ "preValidateTrader"
   
 }

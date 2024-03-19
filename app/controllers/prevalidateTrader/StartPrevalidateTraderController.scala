@@ -20,7 +20,7 @@ import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.prevalidateTrader.PrevalidateTraderStartPage
+import views.html.prevalidateTrader.PrevalidateTraderStartView
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -29,7 +29,7 @@ class StartPrevalidateTraderController @Inject()(mcc: MessagesControllerComponen
                                                  val auth: AuthAction,
                                                  val getData: DataRetrievalAction,
                                                  val betaAllowList: BetaAllowListAction,
-                                                 view: PrevalidateTraderStartPage
+                                                 view: PrevalidateTraderStartView
                                                 )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(ern: String): Action[AnyContent] =

@@ -24,7 +24,7 @@ import services.GetMovementService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels._
 import viewmodels.helpers.{TimelineHelper, ViewMovementHelper}
-import views.html.viewMovement.ViewMovementPage
+import views.html.viewMovement.ViewMovementView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -35,7 +35,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        val getData: DataRetrievalAction,
                                        val betaAllowList: BetaAllowListAction,
                                        getMovementService: GetMovementService,
-                                       viewMovementPage: ViewMovementPage,
+                                       view: ViewMovementView,
                                        errorHandler: ErrorHandler,
                                        helper: ViewMovementHelper,
                                        timelineHelper: TimelineHelper
@@ -71,7 +71,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       getMovementService.getMovement(exciseRegistrationNumber, arc).flatMap { movement =>
         helper.movementCard(currentSubNavigationTab, movement).map { movementCard =>
-          Ok(viewMovementPage(
+          Ok(view(
             ern = exciseRegistrationNumber,
             arc = arc,
             isConsignor = exciseRegistrationNumber == movement.consignorTrader.traderExciseNumber,

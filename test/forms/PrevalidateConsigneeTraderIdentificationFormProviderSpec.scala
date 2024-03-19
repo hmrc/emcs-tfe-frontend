@@ -19,12 +19,12 @@ package forms
 import forms.behaviours.FieldBehaviours
 import play.api.data.FormError
 
-class ConsigneeTraderIdentificationFormProviderSpec extends FieldBehaviours {
+class PrevalidateConsigneeTraderIdentificationFormProviderSpec extends FieldBehaviours {
   val requiredKey = "prevalidateTrader.consigneeTraderIdentification.error.required"
   val invalidRegexKey = "prevalidateTrader.consigneeTraderIdentification.error.invalidRegex"
   val invalidCharactersKey = "prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters"
 
-  val form  = new ConsigneeTraderIdentificationFormProvider()()
+  val form  = new PrevalidateConsigneeTraderIdentificationFormProvider()()
 
   ".value" - {
 

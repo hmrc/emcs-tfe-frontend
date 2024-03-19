@@ -27,10 +27,10 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import views.html.AccountHomePage
+import views.html.AccountHomeView
 
-class AccountHomePageViewSpec extends SpecBase {
-  lazy val page: AccountHomePage = app.injector.instanceOf[AccountHomePage]
+class AccountHomeViewSpec extends SpecBase {
+  lazy val page: AccountHomeView = app.injector.instanceOf[AccountHomeView]
   implicit lazy val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
   implicit lazy val messages: Messages = messagesApi.preferred(request)
 

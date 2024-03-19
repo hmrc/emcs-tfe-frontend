@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package repositories
+package services
 
-class PreValidateTraderUserAnswersRepositorySpec extends BaseUserAnswersRepositorySpec {
+import repositories.PrevalidateTraderUserAnswersRepository
 
-  lazy val repository: BaseUserAnswersRepository = new PreValidateTraderUserAnswersRepository(appConfig)(
-    mongoComponent = mongoComponent,
-    time = timeMachine,
-    ec = ec
-  )
-}
+import javax.inject.Inject
+
+class PrevalidateTraderUserAnswersService @Inject()(override val userAnswersRepo: PrevalidateTraderUserAnswersRepository) extends BaseUserAnswersService

@@ -29,7 +29,7 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.AccountHomePage
+import views.html.AccountHomeView
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,12 +41,12 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
     implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"))
     implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest)
 
-    lazy val accountHomePage: AccountHomePage = app.injector.instanceOf[AccountHomePage]
+    lazy val view: AccountHomeView = app.injector.instanceOf[AccountHomeView]
     lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
     val controller: AccountHomeController = new AccountHomeController(
       app.injector.instanceOf[MessagesControllerComponents],
-      accountHomePage,
+      view,
       FakeSuccessAuthAction,
       new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
       new FakeBetaAllowListAction
@@ -57,13 +57,13 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
     "return 200" in new Test {
       val result: Future[Result] = controller.viewAccountHome(testErn)(fakeRequest)
 
-      val expectedPage = accountHomePage(
+      val expectedView = view(
         ern = testErn,
         roleType = GBWK
       )
 
       status(result) mustBe Status.OK
-      contentAsString(result) mustBe expectedPage.toString()
+      contentAsString(result) mustBe expectedView.toString()
 
     }
   }

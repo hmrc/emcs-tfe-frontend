@@ -29,7 +29,7 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.ExciseNumbersPage
+import views.html.ExciseNumbersView
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -55,7 +55,7 @@ class IndexControllerSpec extends SpecBase with FakeSelectExciseNumbersAuthActio
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
     implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
 
-    val view = app.injector.instanceOf[ExciseNumbersPage]
+    val view = app.injector.instanceOf[ExciseNumbersView]
     val fakeAuthSuccess = new FakeSuccessSelectExciseNumbersAuthAction(enrolments)
 
     val controller: IndexController = new IndexController(

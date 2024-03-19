@@ -19,8 +19,9 @@ package pages.prevalidateTrader
 import pages.QuestionPage
 import play.api.libs.json.{JsObject, JsPath}
 
-case object PreValidateTraderSection extends QuestionPage[JsObject] {
+case object PrevalidateAddedProductCodesPage extends QuestionPage[JsObject] {
 
-  override val path: JsPath = JsPath \ "preValidateTrader"
+  override val path: JsPath = PrevalidateTraderSection.path \ "addedProductCodes"
+  val max: Int = 10
   
 }

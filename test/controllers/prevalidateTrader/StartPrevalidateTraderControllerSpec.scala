@@ -21,11 +21,11 @@ import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeData
 import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.prevalidateTrader.PrevalidateTraderStartPage
+import views.html.prevalidateTrader.PrevalidateTraderStartView
 
 class StartPrevalidateTraderControllerSpec extends SpecBase with FakeAuthAction {
 
-  lazy val view: PrevalidateTraderStartPage = app.injector.instanceOf[PrevalidateTraderStartPage]
+  lazy val view: PrevalidateTraderStartView = app.injector.instanceOf[PrevalidateTraderStartView]
 
   lazy val controller: StartPrevalidateTraderController = new StartPrevalidateTraderController(
     mcc = app.injector.instanceOf[MessagesControllerComponents],

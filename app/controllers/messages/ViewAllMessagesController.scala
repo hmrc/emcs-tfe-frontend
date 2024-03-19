@@ -27,7 +27,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.GetMessagesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.messages.ViewAllMessages
+import views.html.messages.ViewAllMessagesView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +37,7 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
                                           val getData: DataRetrievalAction,
                                           val betaAllowList: BetaAllowListAction,
                                           getMessagesService: GetMessagesService,
-                                          val view: ViewAllMessages,
+                                          val view: ViewAllMessagesView,
                                           errorHandler: ErrorHandler)
                                          (implicit val executionContext: ExecutionContext)
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport {

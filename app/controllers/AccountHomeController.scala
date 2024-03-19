@@ -21,13 +21,13 @@ import models.common.RoleType
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.AccountHomePage
+import views.html.AccountHomeView
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
-                                      accountHomePage: AccountHomePage,
+                                      view: AccountHomeView,
                                       val auth: AuthAction,
                                       val getData: DataRetrievalAction,
                                       val betaAllowList: BetaAllowListAction
@@ -36,7 +36,7 @@ class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
   def viewAccountHome(exciseRegistrationNumber: String): Action[AnyContent] = {
     authorisedDataRequest(exciseRegistrationNumber) { implicit request =>
       Ok(
-        accountHomePage(
+        view(
           exciseRegistrationNumber,
           RoleType.fromExciseRegistrationNumber(exciseRegistrationNumber)
         )

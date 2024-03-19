@@ -17,23 +17,23 @@
 package controllers.prevalidateTrader
 
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
-import forms.ConsigneeTraderIdentificationFormProvider
+import forms.PrevalidateConsigneeTraderIdentificationFormProvider
 import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.prevalidateTrader.ConsigneeTraderIdentificationPage
+import views.html.prevalidateTrader.PrevalidateConsigneeTraderIdentificationView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ConsigneeTraderIdentificationController @Inject()(mcc: MessagesControllerComponents,
-                                                        val auth: AuthAction,
-                                                        val getData: DataRetrievalAction,
-                                                        val betaAllowList: BetaAllowListAction,
-                                                        formProvider: ConsigneeTraderIdentificationFormProvider,
-                                                        view: ConsigneeTraderIdentificationPage
+class PrevalidateConsigneeTraderIdentificationController @Inject()(mcc: MessagesControllerComponents,
+                                                                   val auth: AuthAction,
+                                                                   val getData: DataRetrievalAction,
+                                                                   val betaAllowList: BetaAllowListAction,
+                                                                   formProvider: PrevalidateConsigneeTraderIdentificationFormProvider,
+                                                                   view: PrevalidateConsigneeTraderIdentificationView
                                                        )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(ern: String): Action[AnyContent] =
@@ -52,7 +52,7 @@ class ConsigneeTraderIdentificationController @Inject()(mcc: MessagesControllerC
   private def renderView(form: Form[_] = formProvider())(implicit request: DataRequest[_]) = {
     view(
       form = form,
-      action = controllers.prevalidateTrader.routes.ConsigneeTraderIdentificationController.onSubmit(request.ern)
+      action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(request.ern)
     )
   }
 
