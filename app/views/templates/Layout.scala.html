@@ -61,7 +61,7 @@
             hmrcTimeoutDialog(TimeoutDialog(
                 timeout             = Some(appConfig.timeout),
                 countdown           = Some(appConfig.countdown),
-                keepAliveUrl        = Some(routes.KeepAliveController.keepAlive.url),
+                keepAliveUrl        = Some(routes.KeepAliveController.keepAlive().url),
                 keepAliveButtonText = Some(messages("timeout.keepAlive")),
                 signOutUrl          = Some(appConfig.signOutUrl),
                 signOutButtonText   = Some(messages("timeout.signOut")),

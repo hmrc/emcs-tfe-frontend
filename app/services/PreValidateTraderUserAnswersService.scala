@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package pages
+package services
 
-import scala.language.implicitConversions
+import repositories.PreValidateTraderUserAnswersRepository
 
-trait Page
+import javax.inject.Inject
 
-object Page {
-  implicit def toString(page: Page): String = page.toString
-}
+class PreValidateTraderUserAnswersService @Inject()(override val userAnswersRepo: PreValidateTraderUserAnswersRepository) extends BaseUserAnswersService

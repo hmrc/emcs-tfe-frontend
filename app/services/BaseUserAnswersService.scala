@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-package pages
+package services
 
-import scala.language.implicitConversions
+import models.UserAnswers
+import repositories.BaseUserAnswersRepository
 
-trait Page
+import scala.concurrent.Future
 
-object Page {
-  implicit def toString(page: Page): String = page.toString
+trait BaseUserAnswersService {
+
+  val userAnswersRepo: BaseUserAnswersRepository
+
+  def get(ern: String): Future[Option[UserAnswers]] =
+    userAnswersRepo.get(ern)
+  def set(answers: UserAnswers): Future[UserAnswers] =
+    userAnswersRepo.set(answers)
+
+  def remove(answers: UserAnswers): Future[Boolean] =
+    userAnswersRepo.remove(answers.ern)
 }

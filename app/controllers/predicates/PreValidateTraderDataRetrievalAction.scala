@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package pages
+package controllers.predicates
 
-import scala.language.implicitConversions
+import services.PreValidateTraderUserAnswersService
 
-trait Page
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
-object Page {
-  implicit def toString(page: Page): String = page.toString
-}
+class PreValidateTraderDataRetrievalAction @Inject()(override val userAnswersService: PreValidateTraderUserAnswersService)
+                                                    (override implicit val executionContext: ExecutionContext) extends BaseUserAnswersDataRetrievalAction

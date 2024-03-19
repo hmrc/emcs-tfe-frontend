@@ -18,8 +18,9 @@ package base
 
 import config.{AppConfig, ErrorHandler}
 import fixtures.BaseFixtures
+import models.UserAnswers
 import models.auth.UserRequest
-import models.requests.DataRequest
+import models.requests.{DataRequest, UserAnswersRequest}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
@@ -46,5 +47,8 @@ trait SpecBase extends AnyWordSpecLike with Matchers with MockFactory with Optio
 
   def dataRequest[A](request: Request[A], ern: String = testErn): DataRequest[A] =
     DataRequest(userRequest(request, ern), testMinTraderKnownFacts, testMessageStatistics)
+
+  def userAnswersRequest[A](request: Request[A], userAnswers: UserAnswers = emptyUserAnswers): UserAnswersRequest[A] =
+    UserAnswersRequest(dataRequest(request, userAnswers.ern), userAnswers)
 
 }

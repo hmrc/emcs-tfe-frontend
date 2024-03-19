@@ -16,9 +16,14 @@
 
 package fixtures
 
+import models.UserAnswers
 import models.common.TraderKnownFacts
 import models.response.emcsTfe.GetMessageStatisticsResponse
 import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.Call
+
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 
 trait BaseFixtures {
@@ -32,6 +37,7 @@ trait BaseFixtures {
   val testLrn = "123"
   val testTraderName = "testTraderName"
   val testUniqueMessageIdentifier = 1234
+  val testOnwardRoute: Call = Call("GET", "/foo")
 
   val testDutyPaidErn = "XIPATestErn"
 
@@ -58,6 +64,12 @@ trait BaseFixtures {
        |   "countOfAllMessages" : 1,
        |   "countOfNewMessages" : 1
        |}""".stripMargin
+  )
+
+  val emptyUserAnswers: UserAnswers = UserAnswers(
+    ern = testErn,
+    data = Json.obj(),
+    lastUpdated = Instant.now().truncatedTo(ChronoUnit.MILLIS)
   )
 
 }

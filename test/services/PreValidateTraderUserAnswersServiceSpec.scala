@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package services
 
-import scala.language.implicitConversions
+import repositories.PreValidateTraderUserAnswersRepository
 
-trait Page
+class PreValidateTraderUserAnswersServiceSpec extends BaseUserAnswersServiceSpec {
 
-object Page {
-  implicit def toString(page: Page): String = page.toString
+  override lazy val repository: PreValidateTraderUserAnswersRepository = new PreValidateTraderUserAnswersRepository(appConfig)(
+    mongoComponent = mongoComponent,
+    time = timeMachine,
+    ec = ec
+  )
+
+  override lazy val service: PreValidateTraderUserAnswersService = new PreValidateTraderUserAnswersService(repository)
 }

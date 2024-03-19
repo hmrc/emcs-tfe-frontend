@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package pages
+package queries
 
-import scala.language.implicitConversions
+import pages.prevalidateTrader.PreValidateAddedProductCodes
+import play.api.libs.json.{JsPath, JsValue}
 
-trait Page
-
-object Page {
-  implicit def toString(page: Page): String = page.toString
+case object PreValidateTraderEPCCount extends Derivable[List[JsValue], Int] {
+  override val derive: List[JsValue] => Int = _.size
+  override val path: JsPath = PreValidateAddedProductCodes.path
 }
