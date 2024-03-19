@@ -20,21 +20,21 @@ import controllers.BaseNavigationController
 import models.Index
 import models.requests.UserAnswersRequest
 import play.api.mvc.Result
-import queries.PreValidateTraderEPCCount
+import queries.PrevalidateTraderEPCCount
 
 import scala.concurrent.Future
 
 trait BasePrevalidateNavigationController extends BaseNavigationController {
 
   def validateIndex(index: Index)(onSuccess: => Result)(implicit request: UserAnswersRequest[_]): Result = {
-    super.validateIndex(PreValidateTraderEPCCount, index)(
+    super.validateIndex(PrevalidateTraderEPCCount, index)(
       onSuccess,
       Redirect(controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(request.ern))
     )
   }
 
   def validateIndexAsync(index: Index)(onSuccess: => Future[Result])(implicit request: UserAnswersRequest[_]): Future[Result] = {
-    super.validateIndex(PreValidateTraderEPCCount, index)(
+    super.validateIndex(PrevalidateTraderEPCCount, index)(
       onSuccess,
       Future.successful(Redirect(controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(request.ern)))
     )

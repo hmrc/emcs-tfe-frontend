@@ -1,0 +1,94 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accessibleautocomplete.AccessibleAutocomplete
+@import views.html.helper.CSPNonce
+@import models.requests.UserAnswersRequest
+
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukInput: GovukInput,
+    govukButton: GovukButton,
+    govukSelect: GovukSelect,
+    h1: components.h1,
+    h2: components.h2,
+    p: components.p,
+    saveAndContinue: components.saveAndContinue,
+    autocompleteCss: HmrcAccessibleAutocompleteCss,
+    autocompleteJavascript: HmrcAccessibleAutocompleteJavascript
+)
+
+@(form: Form[_], action: Call, selectOptions: Seq[SelectItem], indexOfDocument: Index)(implicit request: UserAnswersRequest[_], messages: Messages)
+
+@scripts = {
+  @autocompleteJavascript()
+  <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("javascripts/autocomplete.min.js")'></script>
+}
+
+@layout(
+    pageTitle = title(form, messages("prevalidateTrader.exciseProductCode.title", indexOfDocument.displayIndex)),
+    maybeShowActiveTrader = maybeShowActiveTrader(request.request),
+    additionalCss = autocompleteCss(),
+    additionalScripts = scripts,
+    maybeShowNavigationBanner = None
+) {
+
+    @formHelper(action = action) {
+
+      @if(form.errors.nonEmpty) {
+          @govukErrorSummary(ErrorSummaryViewModel(form))
+      }
+
+      @h1(hiddenContent = Some(messages("subHeading.hidden")), captionMsg = Some("prevalidateTrader.caption"), classes = "govuk-heading-l")(
+          Html(messages("prevalidateTrader.exciseProductCode.heading"))
+      )
+
+      @p(){@messages("prevalidateTrader.exciseProductCode.paragraph")}
+
+      @govukSelect(
+        Select(
+          id = "excise-product-code",
+          name = "excise-product-code",
+          label = Label(
+            classes = "govuk-label--m",
+            isPageHeading = false,
+            content = Text(messages("prevalidateTrader.exciseProductCode.label", indexOfDocument.displayIndex))
+          ),
+          items = selectOptions,
+          errorMessage = form.errors("excise-product-code") match {
+            case Nil => None
+            case errors => Some(ErrorMessage(content = HtmlContent(errors.map(err => messages(err.message)).mkString("<br>"))))
+          }
+        ).asAccessibleAutocomplete(
+          Some(
+            AccessibleAutocomplete(
+              defaultValue = Some(""),
+              showAllValues = true
+            )
+          )
+        )
+      )
+
+      @saveAndContinue()(messages)
+    }
+}
+
+@{
+    //$COVERAGE-OFF$
+}

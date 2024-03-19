@@ -63,4 +63,13 @@ trait BaseNavigationController extends BaseController with Logging {
       case Some(value) if idx.position >= 0 && idx.position < value => onSuccess
       case _ => onFailure
     }
+
+  def validateIndexForJourneyEntry[T, A](
+                                          itemCount: Derivable[T, Int], idx: Index, max: Int = Int.MaxValue
+                                        )(onSuccess: => A, onFailure: => A)(implicit request: UserAnswersRequest[_], reads: Reads[T]): A =
+    request.userAnswers.get(itemCount) match {
+      case Some(value) if (idx.position >= 0 && idx.position <= value) && idx.position < max => onSuccess
+      case None if idx.position == 0 => onSuccess
+      case _ => onFailure
+    }
 }

@@ -17,7 +17,7 @@
 package controllers.prevalidateTrader
 
 import controllers.predicates._
-import forms.PrevalidateConsigneeTraderIdentificationFormProvider
+import forms.prevalidate.PrevalidateConsigneeTraderIdentificationFormProvider
 import models.NormalMode
 import models.requests.UserAnswersRequest
 import navigation.PrevalidateTraderNavigator

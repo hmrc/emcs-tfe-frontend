@@ -17,7 +17,7 @@
 package controllers.predicates
 
 import base.SpecBase
-import mocks.services.MockPreValidateUserAnswersService
+import mocks.services.MockPrevalidateUserAnswersService
 import models.UserAnswers
 import models.requests.UserAnswersRequest
 import org.scalamock.scalatest.MockFactory
@@ -30,7 +30,7 @@ import play.api.test.Helpers._
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-class PrevalidateTraderUserAnswersActionSpec extends SpecBase with MockFactory with MockPreValidateUserAnswersService {
+class PrevalidateTraderUserAnswersActionSpec extends SpecBase with MockFactory with MockPrevalidateUserAnswersService {
 
   implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
@@ -43,7 +43,7 @@ class PrevalidateTraderUserAnswersActionSpec extends SpecBase with MockFactory w
     })
   }
 
-  "PrevalidateTraderDataRetrievalAction" should {
+  "BetaAllowListAction" should {
 
     "when data is returned from the UserAnswersService" must {
 

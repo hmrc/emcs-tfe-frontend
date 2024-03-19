@@ -17,11 +17,13 @@
 package navigation
 
 import base.SpecBase
+import controllers.prevalidateTrader.routes
+import fixtures.ExciseProductCodeFixtures
 import models.{CheckMode, NormalMode}
 import pages.Page
-import pages.prevalidateTrader._
+import pages.prevalidateTrader.{PrevalidateConsigneeTraderIdentificationPage, PrevalidateEPCPage}
 
-class PrevalidateTraderNavigatorSpec extends SpecBase {
+class PrevalidateTraderNavigatorSpec extends SpecBase with ExciseProductCodeFixtures {
 
   val navigator = new PrevalidateTraderNavigator
 
@@ -29,34 +31,71 @@ class PrevalidateTraderNavigatorSpec extends SpecBase {
 
     "unknown page" must {
 
-      "go from a page that doesn't exist in the route map to AddToList" in {
+      "go from a page that doesn't exist to the Prevalidate Start Page" in {
 
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe
-          // TODO: update route
-          testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+          routes.PrevalidateTraderStartController.onPageLoad(testErn)
       }
     }
 
     "PrevalidateConsigneeTraderIdentificationPage" must {
 
-      "go to PrevalidateAddExciseProductCodePage" in {
+      "when no EPCs have been added yet" must {
 
-        val userAnswers = emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, "AB123456")
+        "go to PrevalidateAddExciseProductCodePage" in {
 
-        navigator.nextPage(PrevalidateConsigneeTraderIdentificationPage, NormalMode, userAnswers) mustBe
-          // TODO: update route
-          testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+          val userAnswers = emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, "AB123456")
+
+          navigator.nextPage(PrevalidateConsigneeTraderIdentificationPage, NormalMode, userAnswers) mustBe
+            routes.PrevalidateExciseProductCodeController.onPageLoad(testErn, testIndex1, NormalMode)
+        }
+      }
+
+      "when at least one EPC code has been added" must {
+
+        "go to PrevalidateAddToListPage" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(PrevalidateConsigneeTraderIdentificationPage, "AB123456")
+            .set(PrevalidateEPCPage(testIndex1), beerExciseProductCode)
+
+          navigator.nextPage(PrevalidateConsigneeTraderIdentificationPage, NormalMode, userAnswers) mustBe
+            // TODO: update route
+            testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+        }
       }
     }
-  }
 
-  "in Check mode" must {
-    "go to PrevalidateAddToListPage" in {
-      case object UnknownPage extends Page
-      navigator.nextPage(UnknownPage, CheckMode, emptyUserAnswers) mustBe
-        // TODO: update route
-        testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+      "for the PrevalidateEPCPage" must {
+
+        //TODO: Update to redirect to Add to List PVT-04
+        "must go to the Add to List page" in {
+
+          navigator.nextPage(PrevalidateEPCPage(testIndex1), NormalMode, emptyUserAnswers) mustBe
+            testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
+
+    "in Check mode" must {
+
+      //TODO: Update to redirect to Add to List PVT-04
+      "go from a page that doesn't exist in the edit route map to Add to List page" in {
+
+        case object UnknownPage extends Page
+        navigator.nextPage(UnknownPage, CheckMode, emptyUserAnswers) mustBe
+          testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+      }
+
+      "for the PrevalidateEPCPage" must {
+
+        //TODO: Update to redirect to Add to List PVT-04
+        "must go to the Add to List page" in {
+
+          navigator.nextPage(PrevalidateEPCPage(testIndex1), NormalMode, emptyUserAnswers) mustBe
+            testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
     }
   }
 }

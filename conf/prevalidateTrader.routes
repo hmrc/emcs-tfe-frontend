@@ -1,0 +1,10 @@
+GET        /trader/:ern/check-trader                                                      controllers.prevalidateTrader.PrevalidateTraderStartController.onPageLoad(ern: String)
+POST       /trader/:ern/check-trader                                                      controllers.prevalidateTrader.PrevalidateTraderStartController.onSubmit(ern: String)
+
+GET        /trader/:ern/check-trader/consignee-trader-identification                      controllers.prevalidateTrader.PrevalidateConsigneeTraderIdentificationController.onPageLoad(ern: String)
+POST       /trader/:ern/check-trader/consignee-trader-identification                      controllers.prevalidateTrader.PrevalidateConsigneeTraderIdentificationController.onSubmit(ern: String)
+
+GET        /trader/:ern/check-trader/:idx/add-excise-product-code                         controllers.prevalidateTrader.PrevalidateExciseProductCodeController.onPageLoad(ern: String, idx: Index, mode: Mode = NormalMode)
+POST       /trader/:ern/check-trader/:idx/add-excise-product-code                         controllers.prevalidateTrader.PrevalidateExciseProductCodeController.onSubmit(ern: String, idx: Index, mode: Mode = NormalMode)
+GET        /trader/:ern/check-trader/:idx/add-excise-product-code/change                  controllers.prevalidateTrader.PrevalidateExciseProductCodeController.onPageLoad(ern: String, idx: Index, mode: Mode = CheckMode)
+POST       /trader/:ern/check-trader/:idx/add-excise-product-code/change                  controllers.prevalidateTrader.PrevalidateExciseProductCodeController.onSubmit(ern: String, idx: Index, mode: Mode = CheckMode)

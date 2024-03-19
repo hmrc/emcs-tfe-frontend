@@ -66,7 +66,6 @@ class ViewMovementHelper @Inject()(
   private[helpers] def constructMovementView(movementResponse: GetMovementResponse)
                                             (implicit request: DataRequest[_], messages: Messages): Html = {
 
-
     val userRole = RoleType.fromExciseRegistrationNumber(request.ern)
 
     val movementTypeValue = getMovementTypeForMovementView(movementResponse)

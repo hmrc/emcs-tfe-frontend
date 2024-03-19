@@ -1,39 +1,29 @@
 # microservice specific routes
 
-->          /hmrc-frontend                                                                   hmrcfrontend.Routes
+->         /hmrc-frontend                                                                 hmrcfrontend.Routes
 
-->          /errors                                                                          error.Routes
+->         /errors                                                                        error.Routes
 
-GET         /assets/*file                                                                    controllers.Assets.versioned(path = "/public", file: Asset)
+GET        /assets/*file                                                                  controllers.Assets.versioned(path = "/public", file: Asset)
 
-GET         /refresh-session                                                                 controllers.KeepAliveController.keepAlive()
+GET        /refresh-session                                                               controllers.KeepAliveController.keepAlive()
 
-GET         /                                                                                controllers.IndexController.exciseNumber()
+GET        /                                                                              controllers.IndexController.exciseNumber()
 
-GET         /trader/:exciseRegistrationNumber/movement/:arc/overview                         controllers.ViewMovementController.viewMovementOverview(exciseRegistrationNumber, arc)
-GET         /trader/:exciseRegistrationNumber/movement/:arc/movement                         controllers.ViewMovementController.viewMovementMovement(exciseRegistrationNumber, arc)
-GET         /trader/:exciseRegistrationNumber/movement/:arc/delivery                         controllers.ViewMovementController.viewMovementDelivery(exciseRegistrationNumber, arc)
-GET         /trader/:exciseRegistrationNumber/movement/:arc/guarantor                        controllers.ViewMovementController.viewMovementGuarantor(exciseRegistrationNumber, arc)
-GET         /trader/:exciseRegistrationNumber/movement/:arc/transport                        controllers.ViewMovementController.viewMovementTransport(exciseRegistrationNumber, arc)
-GET         /trader/:exciseRegistrationNumber/movement/:arc/items                            controllers.ViewMovementController.viewMovementItems(exciseRegistrationNumber, arc)
-GET         /trader/:exciseRegistrationNumber/movement/:arc/documents                        controllers.ViewMovementController.viewMovementDocuments(exciseRegistrationNumber, arc)
+GET        /trader/:ern/movement/:arc/overview                                            controllers.ViewMovementController.viewMovementOverview(ern, arc)
+GET        /trader/:ern/movement/:arc/movement                                            controllers.ViewMovementController.viewMovementMovement(ern, arc)
+GET        /trader/:ern/movement/:arc/delivery                                            controllers.ViewMovementController.viewMovementDelivery(ern, arc)
+GET        /trader/:ern/movement/:arc/guarantor                                           controllers.ViewMovementController.viewMovementGuarantor(ern, arc)
+GET        /trader/:ern/movement/:arc/transport                                           controllers.ViewMovementController.viewMovementTransport(ern, arc)
+GET        /trader/:ern/movement/:arc/items                                               controllers.ViewMovementController.viewMovementItems(ern, arc)
+GET        /trader/:ern/movement/:arc/documents                                           controllers.ViewMovementController.viewMovementDocuments(ern, arc)
 
-GET         /trader/:exciseRegistrationNumber/movement/:arc/item/:idx/details                controllers.ItemDetailsController.onPageLoad(exciseRegistrationNumber, arc, idx: Int)
+GET        /trader/:ern/movement/:arc/item/:idx/details                                   controllers.ItemDetailsController.onPageLoad(ern, arc, idx: Int)
 
-GET         /trader/:exciseRegistrationNumber/account                                        controllers.AccountHomeController.viewAccountHome(exciseRegistrationNumber)
+GET        /trader/:ern/account                                                           controllers.AccountHomeController.viewAccountHome(ern)
 
-GET         /trader/:ern/movements                                                           controllers.ViewAllMovementsController.onPageLoad(ern: String, search: MovementListSearchOptions)
-POST        /trader/:ern/movements                                                           controllers.ViewAllMovementsController.onSubmit(ern: String, search: MovementListSearchOptions)
+GET        /trader/:ern/movements                                                         controllers.ViewAllMovementsController.onPageLoad(ern: String, search: MovementListSearchOptions)
+POST       /trader/:ern/movements                                                         controllers.ViewAllMovementsController.onSubmit(ern: String, search: MovementListSearchOptions)
 
-GET         /trader/:ern/messages                                                            controllers.messages.ViewAllMessagesController.onPageLoad(ern: String, search: models.messages.MessagesSearchOptions)
-GET         /trader/:ern/message/:uniqueMessageIdentifier/view                               controllers.messages.ViewMessageController.onPageLoad(ern: String, uniqueMessageIdentifier: Long)
-GET         /trader/:ern/message/:uniqueMessageIdentifier/draft-movement                     controllers.messages.ViewMessageController.removeMessageAndRedirectToDraftMovement(ern: String, uniqueMessageIdentifier: Long)
-
-
-GET         /trader/:exciseRegistrationNumber/message/:uniqueMessageIdentifier/delete        controllers.messages.DeleteMessageController.onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)
-POST        /trader/:exciseRegistrationNumber/message/:uniqueMessageIdentifier/delete        controllers.messages.DeleteMessageController.onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)
-
-GET         /trader/:ern/check-trader                                                        controllers.prevalidateTrader.PrevalidateTraderStartController.onPageLoad(ern: String)
-POST        /trader/:ern/check-trader                                                        controllers.prevalidateTrader.PrevalidateTraderStartController.onSubmit(ern: String)
-GET         /trader/:ern/check-trader/consignee-trader-identification                        controllers.prevalidateTrader.PrevalidateConsigneeTraderIdentificationController.onPageLoad(ern: String)
-POST        /trader/:ern/check-trader/consignee-trader-identification                        controllers.prevalidateTrader.PrevalidateConsigneeTraderIdentificationController.onSubmit(ern: String)
+->         /   message.Routes
+->         /   prevalidateTrader.Routes

@@ -23,7 +23,7 @@ import services.{BaseUserAnswersService, PrevalidateTraderUserAnswersService}
 
 import scala.concurrent.Future
 
-trait MockPreValidateUserAnswersService extends MockUserAnswersService {
+trait MockPrevalidateUserAnswersService extends MockUserAnswersService {
   override lazy val mockUserAnswersService: PrevalidateTraderUserAnswersService = mock[PrevalidateTraderUserAnswersService]
 }
 

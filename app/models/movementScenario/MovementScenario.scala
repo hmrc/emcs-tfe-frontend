@@ -34,6 +34,7 @@ object MovementScenario extends Enumerable.Implicits with Logging {
 
   //noinspection ScalaStyle - Cyclomatic Complexity
   def getMovementScenarioFromMovement(movementResponse: GetMovementResponse): MovementScenario = {
+    logger.debug(s"[getMovementScenarioFromMovement] destinationType: ${movementResponse.destinationType}")
     movementResponse.destinationType match {
       case DestinationType.TaxWarehouse =>
           if (movementResponse.deliveryPlaceTrader.map(_.traderExciseNumber).exists(RoleType.isGB) ||

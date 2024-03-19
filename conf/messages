@@ -720,3 +720,11 @@ prevalidateTrader.consigneeTraderIdentification.hint = The ID contains 13 charac
 prevalidateTrader.consigneeTraderIdentification.error.required = Enter the consignee trader ID
 prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters = Consignee trader ID must only contain letters and numbers
 prevalidateTrader.consigneeTraderIdentification.error.invalidRegex = Consignee trader ID must start with 2 capital letters followed by 11 numbers or mixed letters and numbers
+
+# Prevalidate trader - EPC page
+prevalidateTrader.exciseProductCode.select.defaultValue = Choose excise product code
+prevalidateTrader.exciseProductCode.title = Add excise product codes (EPC)
+prevalidateTrader.exciseProductCode.heading = Add excise product codes (EPC)
+prevalidateTrader.exciseProductCode.paragraph = Add an excise product code for the goods you want to check. You will have the chance to add more codes later.
+prevalidateTrader.exciseProductCode.label = Excise product code {0}
+prevalidateTrader.exciseProductCode.error.required = Select an excise product code to check

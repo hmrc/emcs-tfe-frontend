@@ -29,7 +29,7 @@ trait MockGetExciseProductCodesService extends MockFactory {
   lazy val mockGetExciseProductCodesService: GetExciseProductCodesService = mock[GetExciseProductCodesService]
 
   object MockGetExciseProductCodesService {
-    def getMemberStates(): CallHandler1[HeaderCarrier, Future[Seq[ExciseProductCode]]] =
+    def getExciseProductCodes(): CallHandler1[HeaderCarrier, Future[Seq[ExciseProductCode]]] =
       (mockGetExciseProductCodesService.getExciseProductCodes()(_: HeaderCarrier))
         .expects(*)
   }

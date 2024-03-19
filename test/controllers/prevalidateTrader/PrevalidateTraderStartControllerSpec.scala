@@ -18,7 +18,7 @@ package controllers.prevalidateTrader
 
 import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
-import mocks.services.MockPreValidateUserAnswersService
+import mocks.services.MockPrevalidateUserAnswersService
 import models.UserAnswers
 import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
@@ -27,7 +27,7 @@ import views.html.prevalidateTrader.PrevalidateTraderStartView
 
 import scala.concurrent.Future
 
-class PrevalidateTraderStartControllerSpec extends SpecBase with FakeAuthAction with MockPreValidateUserAnswersService {
+class PrevalidateTraderStartControllerSpec extends SpecBase with FakeAuthAction with MockPrevalidateUserAnswersService {
 
   lazy val view: PrevalidateTraderStartView = app.injector.instanceOf[PrevalidateTraderStartView]
 

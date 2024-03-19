@@ -18,8 +18,8 @@ package controllers.prevalidateTrader
 
 import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction, PrevalidateTraderDataRetrievalAction}
-import forms.PrevalidateConsigneeTraderIdentificationFormProvider
-import mocks.services.MockPreValidateUserAnswersService
+import forms.prevalidate.PrevalidateConsigneeTraderIdentificationFormProvider
+import mocks.services.MockPrevalidateUserAnswersService
 import navigation.FakeNavigators.FakePrevalidateNavigator
 import pages.prevalidateTrader.PrevalidateConsigneeTraderIdentificationPage
 import play.api.data.FormError
@@ -30,7 +30,7 @@ import views.html.prevalidateTrader.PrevalidateConsigneeTraderIdentificationView
 
 import scala.concurrent.Future
 
-class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase with FakeAuthAction with MockPreValidateUserAnswersService {
+class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase with FakeAuthAction with MockPrevalidateUserAnswersService {
 
   lazy val view: PrevalidateConsigneeTraderIdentificationView = app.injector.instanceOf[PrevalidateConsigneeTraderIdentificationView]
   lazy val formProvider: PrevalidateConsigneeTraderIdentificationFormProvider = app.injector.instanceOf[PrevalidateConsigneeTraderIdentificationFormProvider]

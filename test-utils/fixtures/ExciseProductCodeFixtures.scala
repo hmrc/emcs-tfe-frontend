@@ -21,29 +21,40 @@ import models.ExciseProductCode
 
 trait ExciseProductCodeFixtures {
 
+  val testEpcWine = "W200"
+  val testEpcBeer = "B000"
+  val testEpcTobacco: String = "T200"
+
+  val tobaccoExciseProductCode = ExciseProductCode(
+    code = testEpcTobacco,
+    description = "Tobacco",
+    category = "T",
+    categoryDescription = "Tobacco"
+  )
+
   val beerExciseProductCode = ExciseProductCode(
-    code = "B000",
+    code = testEpcBeer,
     description = "Beer",
     category = "B",
     categoryDescription = "Beer"
   )
 
   val wineExciseProductCode = ExciseProductCode(
-    code = "W200",
+    code = testEpcWine,
     description = "Still wine and still fermented beverages other than wine and beer",
     category = "W",
     categoryDescription = "Wine and fermented beverages other than wine and beer"
   )
 
   val beerExciseProductCodeJson = Json.obj(
-    "code" -> "B000",
+    "code" -> testEpcBeer,
     "description" -> "Beer",
     "category" -> "B",
     "categoryDescription" -> "Beer"
   )
 
   val wineExciseProductCodeJson = Json.obj(
-    "code" -> "W200",
+    "code" -> testEpcWine,
     "description" -> "Still wine and still fermented beverages other than wine and beer",
     "category" -> "W",
     "categoryDescription" -> "Wine and fermented beverages other than wine and beer"

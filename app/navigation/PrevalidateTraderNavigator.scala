@@ -16,26 +16,39 @@
 
 package navigation
 
-import models.{CheckMode, Mode, NormalMode, UserAnswers}
+import controllers.prevalidateTrader.routes
+import models.{CheckMode, Index, Mode, NormalMode, UserAnswers}
 import pages.Page
-import pages.prevalidateTrader.PrevalidateConsigneeTraderIdentificationPage
+import pages.prevalidateTrader.{PrevalidateConsigneeTraderIdentificationPage, PrevalidateEPCPage}
 import play.api.mvc.Call
+import queries.PrevalidateTraderEPCCount
 
 import javax.inject.Inject
 
 class PrevalidateTraderNavigator @Inject() extends BaseNavigator {
 
   private[navigation] val normalRoutes: Page => UserAnswers => Call = {
+
     case PrevalidateConsigneeTraderIdentificationPage => (userAnswers: UserAnswers) =>
+      userAnswers.get(PrevalidateTraderEPCCount) match {
+        case None | Some(0) =>
+          routes.PrevalidateExciseProductCodeController.onPageLoad(userAnswers.ern, Index(0), NormalMode)
+        case _ =>
+          //TODO: Update to route to Add to List page when built PVT-04
+          testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+      }
+
+    case PrevalidateEPCPage(idx) => (userAnswers: UserAnswers) =>
+      //TODO: Update to route to Add to List page when built PVT-04
       testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+
     case _ => (userAnswers: UserAnswers) =>
-      //TODO: Route to Add to List page
-      testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+      routes.PrevalidateTraderStartController.onPageLoad(userAnswers.ern)
   }
 
   private[navigation] val checkRouteMap: Page => UserAnswers => Call = {
     case _ => (userAnswers: UserAnswers) =>
-      //TODO: Route to Add to List pages
+      //TODO: Update to route to Add to List page when built PVT-04
       testOnly.controllers.routes.UnderConstructionController.onPageLoad()
   }
 

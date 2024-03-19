@@ -16,7 +16,7 @@
 
 package fixtures
 
-import models.UserAnswers
+import models.{Index, UserAnswers}
 import models.common.TraderKnownFacts
 import models.response.emcsTfe.GetMessageStatisticsResponse
 import play.api.libs.json.{JsValue, Json}
@@ -38,6 +38,8 @@ trait BaseFixtures {
   val testTraderName = "testTraderName"
   val testUniqueMessageIdentifier = 1234
   val testOnwardRoute: Call = Call("GET", "/foo")
+  val testIndex1 = Index(0)
+  val testIndex2 = Index(1)
 
   val testDutyPaidErn = "XIPATestErn"
 

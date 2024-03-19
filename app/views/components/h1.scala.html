@@ -14,9 +14,20 @@
  * limitations under the License.
  *@
 
-@this()
+@this(
+        h2: components.h2
+)
 
-@(classes: String = "govuk-heading-xl", id: Option[String] = None)(msg: Html)
+@(
+        classes: String = "govuk-heading-xl",
+        id: Option[String] = None,
+        captionMsg: Option[String] = None,
+        hiddenContent: Option[String] = None
+)(msg: Html)(implicit messages: Messages)
+
+@captionMsg.map { caption =>
+ @h2(caption, "govuk-caption-xl", hiddenContent = hiddenContent)
+}
 
 <h1 @id.map(value => s"id=$value") class="@classes">@msg</h1>
 
