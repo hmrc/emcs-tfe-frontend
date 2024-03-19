@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package pages
+package navigation
 
-import scala.language.implicitConversions
+import models.{Mode, UserAnswers}
+import pages.Page
+import play.api.mvc.Call
 
-trait Page
+abstract class BaseNavigator {
 
-object Page {
-  implicit def toString(page: Page): String = page.toString
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call
+
 }
