@@ -48,6 +48,11 @@ class RoleTypeSpec extends SpecBase {
           fromExciseRegistrationNumber("XI00TestErn") mustBe XI00
         }
       }
+      "the ERN begins with GB00" must {
+        s"return $GB00" in {
+          fromExciseRegistrationNumber("GB00TestErn") mustBe GB00
+        }
+      }
       "the ERN begins with XITC" must {
         s"return $XITC" in {
           fromExciseRegistrationNumber("XITCTestErn") mustBe XITC

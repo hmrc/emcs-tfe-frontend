@@ -25,12 +25,15 @@ object RoleType extends Logging {
     case "GBRC" => GBRC
     case "XIRC" => XIRC
     case "XI00" => XI00
+    case "GB00" => GB00
     case "XITC" => XITC
     case "XIPA" => XIPA
     case "XIPB" => XIPB
     case "XIPC" => XIPC
     case "XIPD" => XIPD
-    case invalidPrefix => throw new IllegalArgumentException(s"Invalid exciseRegistrationNumber prefix: $invalidPrefix")
+    case invalidPrefix =>
+      logger.error(s"[fromExciseRegistrationNumber] Invalid exciseRegistrationNumber prefix: $invalidPrefix")
+      throw new IllegalArgumentException(s"Invalid exciseRegistrationNumber prefix: $invalidPrefix")
 
   }
 
@@ -88,6 +91,15 @@ object RoleType extends Logging {
     override val countryCode = "XI"
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
+    override val isConsignor: Boolean = false
+    override val isDutyPaid: Boolean = false
+  }
+
+  case object GB00 extends RoleType {
+    override val descriptionKey = "accountHome.roleType.GB00"
+    override val countryCode = "GB"
+    override val isNorthernIreland: Boolean = false
+    override val isGreatBritain: Boolean = true
     override val isConsignor: Boolean = false
     override val isDutyPaid: Boolean = false
   }
