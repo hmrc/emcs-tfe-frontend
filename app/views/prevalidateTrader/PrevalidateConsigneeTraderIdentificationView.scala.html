@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import models.requests.DataRequest
+@import models.requests.UserAnswersRequest
 @import views.html.components._
 @import views.html.templates.Layout
 
@@ -30,9 +30,9 @@
         govukErrorSummary: GovukErrorSummary,
         govukButton: GovukButton
 )
-@(form: Form[_], action: Call)(implicit request: DataRequest[_], messages: Messages)
+@(form: Form[_], action: Call)(implicit request: UserAnswersRequest[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("prevalidateTrader.consigneeTraderIdentification.title")), maybeShowActiveTrader = maybeShowActiveTrader(request), maybeShowNavigationBanner = None) {
+@layout(pageTitle = titleNoForm(messages("prevalidateTrader.consigneeTraderIdentification.title")), maybeShowActiveTrader = maybeShowActiveTrader(request.request), maybeShowNavigationBanner = None) {
 
     @formHelper(action) {
 

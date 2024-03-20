@@ -19,7 +19,7 @@ package views.prevalidateTrader
 import base.ViewSpecBase
 import fixtures.messages.prevalidateTrader.PrevalidateConsigneeTraderIdentificationMessages
 import forms.PrevalidateConsigneeTraderIdentificationFormProvider
-import models.requests.DataRequest
+import models.requests.UserAnswersRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
@@ -41,7 +41,7 @@ class PrevalidateConsigneeTraderIdentificationViewSpec extends ViewSpecBase with
       s"being rendered in lang code of '${messagesForLanguage.lang.code}'" should {
 
         implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
-        implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
+        implicit val request: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(FakeRequest())
 
         val view = app.injector.instanceOf[PrevalidateConsigneeTraderIdentificationView]
 

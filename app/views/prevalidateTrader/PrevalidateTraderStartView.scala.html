@@ -23,9 +23,10 @@
         h1: h1,
         h2: h2,
         p: p,
-        link: link
+        continue: saveAndContinue,
+        formHelper: FormWithCSRF
 )
-@()(implicit request: DataRequest[_], messages: Messages)
+@(action: Call)(implicit request: DataRequest[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("prevalidateTrader.start.title")), maybeShowActiveTrader = maybeShowActiveTrader(request), maybeShowNavigationBanner = None) {
 
@@ -36,12 +37,9 @@
 
     @p()(Html(messages("prevalidateTrader.start.p1")))
 
-    @link(
-        link = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(request.ern).url,
-        messageKey = "base.continue",
-        id = Some("continue-button"),
-        classes = "govuk-button"
-    )
+    @formHelper(action = action) {
+        @continue("base.continue")
+    }
 }
 
 @{

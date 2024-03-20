@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package navigation
+package pages.prevalidateTrader
 
-import models.{Mode, UserAnswers}
-import pages._
-import play.api.mvc.Call
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-object FakeNavigators {
-
-  class FakeNavigator(desiredRoute: Call) extends BaseNavigator {
-    override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-      desiredRoute
-  }
-
-  class FakePrevalidateNavigator(desiredRoute: Call) extends PrevalidateTraderNavigator {
-    override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-      desiredRoute
-  }
+case object PrevalidateConsigneeTraderIdentificationPage extends QuestionPage[String] {
+  override val toString: String = "consigneeTraderIdentification"
+  override val path: JsPath = PrevalidateTraderSection.path \ toString
 }

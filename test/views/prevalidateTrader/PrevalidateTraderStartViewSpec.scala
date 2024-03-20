@@ -44,7 +44,7 @@ class PrevalidateTraderStartViewSpec extends ViewSpecBase with ViewBehaviours {
 
         val view = app.injector.instanceOf[PrevalidateTraderStartView]
 
-        implicit val doc: Document = Jsoup.parse(view().toString())
+        implicit val doc: Document = Jsoup.parse(view(testOnwardRoute).toString())
 
         behave like pageWithExpectedElementsAndMessages(Seq(
           Selectors.title -> messagesForLanguage.titleHelper(messagesForLanguage.title),
@@ -52,11 +52,6 @@ class PrevalidateTraderStartViewSpec extends ViewSpecBase with ViewBehaviours {
           Selectors.p(1) -> messagesForLanguage.p,
           Selectors.button -> messagesForLanguage.continue
         ))
-
-        "have a link to the PVT02 page consignee-trader-identification)" in {
-          doc.select(Selectors.continueButton).attr("href") mustBe
-            controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(request.ern).url
-        }
       }
     }
   }

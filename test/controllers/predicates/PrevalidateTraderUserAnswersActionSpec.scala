@@ -30,11 +30,11 @@ import play.api.test.Helpers._
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-class PreValidateTraderUserAnswersActionSpec extends SpecBase with MockFactory with MockPreValidateUserAnswersService {
+class PrevalidateTraderUserAnswersActionSpec extends SpecBase with MockFactory with MockPreValidateUserAnswersService {
 
   implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
-  lazy val action: PreValidateTraderDataRetrievalAction = new PreValidateTraderDataRetrievalAction(mockUserAnswersService)
+  lazy val action: PrevalidateTraderDataRetrievalAction = new PrevalidateTraderDataRetrievalAction(mockUserAnswersService)
 
   class Harness() {
 
@@ -43,7 +43,7 @@ class PreValidateTraderUserAnswersActionSpec extends SpecBase with MockFactory w
     })
   }
 
-  "BetaAllowListAction" should {
+  "PrevalidateTraderDataRetrievalAction" should {
 
     "when data is returned from the UserAnswersService" must {
 
@@ -55,10 +55,10 @@ class PreValidateTraderUserAnswersActionSpec extends SpecBase with MockFactory w
 
     "when data is NOT returned from the UserAnswersService" must {
 
-      "must Redirect to the PreValidate Start controller" in new Harness() {
+      "must Redirect to the Prevalidate Start controller" in new Harness() {
         MockUserAnswersService.get(testErn).returns(Future.successful(None))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.prevalidateTrader.routes.StartPrevalidateTraderController.onPageLoad(testErn).url)
+        redirectLocation(result) mustBe Some(controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(testErn).url)
       }
     }
   }

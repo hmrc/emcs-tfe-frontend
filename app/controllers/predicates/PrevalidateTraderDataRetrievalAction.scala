@@ -21,5 +21,5 @@ import services.PrevalidateTraderUserAnswersService
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class PreValidateTraderDataRetrievalAction @Inject()(override val userAnswersService: PrevalidateTraderUserAnswersService)
+class PrevalidateTraderDataRetrievalAction @Inject()(override val userAnswersService: PrevalidateTraderUserAnswersService)
                                                     (override implicit val executionContext: ExecutionContext) extends BaseUserAnswersDataRetrievalAction

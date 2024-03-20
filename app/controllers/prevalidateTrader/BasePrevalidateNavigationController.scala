@@ -29,14 +29,14 @@ trait BasePrevalidateNavigationController extends BaseNavigationController {
   def validateIndex(index: Index)(onSuccess: => Result)(implicit request: UserAnswersRequest[_]): Result = {
     super.validateIndex(PreValidateTraderEPCCount, index)(
       onSuccess,
-      Redirect(controllers.prevalidateTrader.routes.StartPrevalidateTraderController.onPageLoad(request.ern))
+      Redirect(controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(request.ern))
     )
   }
 
   def validateIndexAsync(index: Index)(onSuccess: => Future[Result])(implicit request: UserAnswersRequest[_]): Future[Result] = {
     super.validateIndex(PreValidateTraderEPCCount, index)(
       onSuccess,
-      Future.successful(Redirect(controllers.prevalidateTrader.routes.StartPrevalidateTraderController.onPageLoad(request.ern)))
+      Future.successful(Redirect(controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(request.ern)))
     )
   }
 }

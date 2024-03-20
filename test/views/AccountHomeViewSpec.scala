@@ -116,7 +116,7 @@ class AccountHomeViewSpec extends SpecBase {
           } else {
             val prevalidateLinks = doc.getElementsByTag("ul").get(3).children
             prevalidateLinks.get(0).text mustBe "Check if a trader can receive excise goods"
-            prevalidateLinks.get(0).getElementsByTag("a").get(0).attr("href") mustBe controllers.prevalidateTrader.routes.StartPrevalidateTraderController.onPageLoad(ern).url
+            prevalidateLinks.get(0).getElementsByTag("a").get(0).attr("href") mustBe controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(ern).url
             prevalidateLinks.get(1).text mustBe "Check Europa to find out if a trader can receive excise goods"
             prevalidateLinks.get(1).getElementsByTag("a").get(0).attr("href") mustBe appConfig.europaCheckLink
           }

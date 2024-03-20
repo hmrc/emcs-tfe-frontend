@@ -17,24 +17,32 @@
 package controllers.prevalidateTrader
 
 import base.SpecBase
-import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
+import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction, PrevalidateTraderDataRetrievalAction}
 import forms.PrevalidateConsigneeTraderIdentificationFormProvider
+import mocks.services.MockPreValidateUserAnswersService
+import navigation.FakeNavigators.FakePrevalidateNavigator
+import pages.prevalidateTrader.PrevalidateConsigneeTraderIdentificationPage
 import play.api.data.FormError
 import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.prevalidateTrader.PrevalidateConsigneeTraderIdentificationView
 
-class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase with FakeAuthAction {
+import scala.concurrent.Future
+
+class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase with FakeAuthAction with MockPreValidateUserAnswersService {
 
   lazy val view: PrevalidateConsigneeTraderIdentificationView = app.injector.instanceOf[PrevalidateConsigneeTraderIdentificationView]
   lazy val formProvider: PrevalidateConsigneeTraderIdentificationFormProvider = app.injector.instanceOf[PrevalidateConsigneeTraderIdentificationFormProvider]
 
   lazy val controller: PrevalidateConsigneeTraderIdentificationController = new PrevalidateConsigneeTraderIdentificationController(
-    mcc = app.injector.instanceOf[MessagesControllerComponents],
+    controllerComponents = app.injector.instanceOf[MessagesControllerComponents],
     auth = FakeSuccessAuthAction,
     getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
     betaAllowList = new FakeBetaAllowListAction,
+    userAnswersAction = new PrevalidateTraderDataRetrievalAction(mockUserAnswersService),
+    userAnswersService = mockUserAnswersService,
+    navigator = new FakePrevalidateNavigator(testOnwardRoute),
     formProvider = formProvider,
     view = view
   )
@@ -45,6 +53,8 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase wi
 
       "render the view" in {
 
+        MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+
         val request = FakeRequest(GET, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
         val result = controller.onPageLoad(testErn)(request)
 
@@ -52,7 +62,7 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase wi
         contentAsString(result) mustEqual view(
           form = formProvider(),
           action = routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-        )(dataRequest(request), messages(request)).toString
+        )(userAnswersRequest(request), messages(request)).toString
       }
     }
 
@@ -61,6 +71,9 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase wi
       "form validation fails" must {
 
         "render the view when bad value" in {
+
+          MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+
           val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
           val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "<beans />"))
 
@@ -72,10 +85,13 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase wi
           contentAsString(result) mustEqual view(
             form = form,
             action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-          )(dataRequest(request), messages(request)).toString
+          )(userAnswersRequest(request), messages(request)).toString
         }
 
         "render the view when form missing" in {
+
+          MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+
           val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
           val result = controller.onSubmit(testErn)(request)
 
@@ -86,19 +102,27 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase wi
           contentAsString(result) mustEqual view(
             form = form,
             action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-          )(dataRequest(request), messages(request)).toString
+          )(userAnswersRequest(request), messages(request)).toString
         }
       }
 
       "form validation passes" when {
         "data saves to repository" must {
           "redirect" in {
-            // TODO: update when next page is built
+
+            MockUserAnswersService
+              .get(testErn)
+              .returns(Future.successful(Some(emptyUserAnswers)))
+
+            MockUserAnswersService
+              .set(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, "GB00123456789"))
+              .returns(Future.successful(emptyUserAnswers))
+
             val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
             val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "GB00123456789"))
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+            redirectLocation(result).value mustEqual testOnwardRoute.url
           }
         }
       }

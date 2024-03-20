@@ -33,6 +33,7 @@ GET         /trader/:ern/message/:uniqueMessageIdentifier/draft-movement        
 GET         /trader/:exciseRegistrationNumber/message/:uniqueMessageIdentifier/delete        controllers.messages.DeleteMessageController.onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)
 POST        /trader/:exciseRegistrationNumber/message/:uniqueMessageIdentifier/delete        controllers.messages.DeleteMessageController.onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long)
 
-GET         /trader/:ern/check-trader                                                        controllers.prevalidateTrader.StartPrevalidateTraderController.onPageLoad(ern: String)
+GET         /trader/:ern/check-trader                                                        controllers.prevalidateTrader.PrevalidateTraderStartController.onPageLoad(ern: String)
+POST        /trader/:ern/check-trader                                                        controllers.prevalidateTrader.PrevalidateTraderStartController.onSubmit(ern: String)
 GET         /trader/:ern/consignee-trader-identification                                     controllers.prevalidateTrader.PrevalidateConsigneeTraderIdentificationController.onPageLoad(ern: String)
 POST        /trader/:ern/consignee-trader-identification                                     controllers.prevalidateTrader.PrevalidateConsigneeTraderIdentificationController.onSubmit(ern: String)

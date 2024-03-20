@@ -31,7 +31,15 @@ import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{MessagesControllerComponents, Request}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 
-trait SpecBase extends AnyWordSpecLike with Matchers with MockFactory with OptionValues with ScalaFutures with BaseFixtures with FutureAwaits with DefaultAwaitTimeout with GuiceOneAppPerSuite {
+trait SpecBase extends AnyWordSpecLike
+  with Matchers
+  with MockFactory
+  with OptionValues
+  with ScalaFutures
+  with BaseFixtures
+  with FutureAwaits
+  with DefaultAwaitTimeout
+  with GuiceOneAppPerSuite {
 
   lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
   lazy implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
