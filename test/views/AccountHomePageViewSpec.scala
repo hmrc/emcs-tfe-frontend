@@ -41,6 +41,7 @@ class AccountHomePageViewSpec extends SpecBase {
       GBRC -> "Registered consignor located in Great Britain",
       XIRC -> "Registered consignor located in Northern Ireland",
       XI00 -> "Registered consignee located in Northern Ireland",
+      GB00 -> "Tax warehouse or premises located in Great Britain",
       XITC -> "Temporary registered consignee located in Northern Ireland",
       XIPA -> "Certified consignor located in Northern Ireland",
       XIPB -> "Certified consignee located in Northern Ireland",

@@ -324,6 +324,7 @@ accountHome.roleType.XIWK = Excise warehousekeeper located in Northern Ireland
 accountHome.roleType.GBRC = Registered consignor located in Great Britain
 accountHome.roleType.XIRC = Registered consignor located in Northern Ireland
 accountHome.roleType.XI00 = Registered consignee located in Northern Ireland
+accountHome.roleType.GB00 = Tax warehouse or premises located in Great Britain
 accountHome.roleType.XITC = Temporary registered consignee located in Northern Ireland
 accountHome.roleType.XIPA = Certified consignor located in Northern Ireland
 accountHome.roleType.XIPB = Certified consignee located in Northern Ireland
