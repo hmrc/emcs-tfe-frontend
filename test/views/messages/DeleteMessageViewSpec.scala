@@ -29,7 +29,7 @@ import pages.{Page, ViewAllMessagesPage, ViewMessagePage}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import views.html.messages.DeleteMessage
+import views.html.messages.DeleteMessageView
 import views.{BaseSelectors, ViewBehaviours}
 
 class DeleteMessageViewSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures {
@@ -68,7 +68,7 @@ class DeleteMessageViewSpec extends ViewSpecBase with ViewBehaviours with Messag
 
   implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
-  lazy val view: DeleteMessage = app.injector.instanceOf[DeleteMessage]
+  lazy val view: DeleteMessageView = app.injector.instanceOf[DeleteMessageView]
   lazy val formProvider: DeleteMessageFormProvider = new DeleteMessageFormProvider
 
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))

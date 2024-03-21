@@ -28,14 +28,14 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels._
 import viewmodels.helpers.ViewMovementHelper
-import views.html.viewMovement.ViewMovementPage
+import views.html.viewMovement.ViewMovementView
 
 import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with GetMovementResponseFixtures {
+class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMovementResponseFixtures {
 
-  val page: ViewMovementPage = app.injector.instanceOf[ViewMovementPage]
+  val view: ViewMovementView = app.injector.instanceOf[ViewMovementView]
   val helper: ViewMovementHelper = app.injector.instanceOf[ViewMovementHelper]
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -56,7 +56,7 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
     def historyTimelineLink(i: Int) = s"main #history > ol > li:nth-child($i) > h2 > a"
   }
 
-  "The ViewMovementPageView" when {
+  "The ViewMovementView" when {
 
     Seq(English) foreach { messagesForLanguage =>
 
@@ -66,7 +66,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
 
           "display the navigation and overview card" when {
 
-            val view = app.injector.instanceOf[ViewMovementPage]
             implicit val doc: Document = Jsoup.parse(
               view(
                 testErn,
@@ -100,7 +99,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
           }
 
           "display the action links for a consignor" when {
-            val view = app.injector.instanceOf[ViewMovementPage]
             implicit val doc: Document = Jsoup.parse(
               view(
                 testErn,
@@ -124,7 +122,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
           }
 
           "display the action links for a consignee" when {
-            val view = app.injector.instanceOf[ViewMovementPage]
             implicit val doc: Document = Jsoup.parse(
               view(
                 testErn,
@@ -149,8 +146,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
           }
 
           "display history timeline events" when {
-            val view = app.injector.instanceOf[ViewMovementPage]
-
             val eventDate = LocalDateTime.now()
 
             implicit val doc: Document = Jsoup.parse(
@@ -179,8 +174,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
         }
 
         "render the movement tab" when {
-
-          val view = app.injector.instanceOf[ViewMovementPage]
           implicit val doc: Document = Jsoup.parse(
             view(
               testErn,
@@ -222,8 +215,6 @@ class ViewMovementPageViewSpec extends ViewSpecBase with ViewBehaviours with Get
 
         "rendering the Delivery tab" should {
           "display the navigation and delivery cards" when {
-
-            val view = app.injector.instanceOf[ViewMovementPage]
             implicit val doc: Document = Jsoup.parse(
               view(
                 testErn,

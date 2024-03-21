@@ -27,10 +27,10 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import views.html.AccountHomePage
+import views.html.AccountHomeView
 
-class AccountHomePageViewSpec extends SpecBase {
-  lazy val page: AccountHomePage = app.injector.instanceOf[AccountHomePage]
+class AccountHomeViewSpec extends SpecBase {
+  lazy val page: AccountHomeView = app.injector.instanceOf[AccountHomeView]
   implicit lazy val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
   implicit lazy val messages: Messages = messagesApi.preferred(request)
 
@@ -116,7 +116,7 @@ class AccountHomePageViewSpec extends SpecBase {
           } else {
             val prevalidateLinks = doc.getElementsByTag("ul").get(3).children
             prevalidateLinks.get(0).text mustBe "Check if a trader can receive excise goods"
-            prevalidateLinks.get(0).getElementsByTag("a").get(0).attr("href") mustBe controllers.prevalidateTrader.routes.StartPrevalidateTraderController.onPageLoad(ern).url
+            prevalidateLinks.get(0).getElementsByTag("a").get(0).attr("href") mustBe controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(ern).url
             prevalidateLinks.get(1).text mustBe "Check Europa to find out if a trader can receive excise goods"
             prevalidateLinks.get(1).getElementsByTag("a").get(0).attr("href") mustBe appConfig.europaCheckLink
           }

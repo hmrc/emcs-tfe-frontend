@@ -30,10 +30,10 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import viewmodels.helpers.messages._
-import views.html.messages.ViewMessage
+import views.html.messages.ViewMessageView
 import views.{BaseSelectors, ViewBehaviours}
 
-class ViewMessageSpec extends ViewSpecBase
+class ViewMessageViewSpec extends ViewSpecBase
   with ViewBehaviours
   with MessagesFixtures
   with GetMovementResponseFixtures
@@ -43,7 +43,7 @@ class ViewMessageSpec extends ViewSpecBase
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/message")
   implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
-  lazy val view: ViewMessage = app.injector.instanceOf[ViewMessage]
+  lazy val view: ViewMessageView = app.injector.instanceOf[ViewMessageView]
   lazy val helper: MessagesHelper = app.injector.instanceOf[MessagesHelper]
   lazy val viewMessageHelper: ViewMessageHelper = app.injector.instanceOf[ViewMessageHelper]
 

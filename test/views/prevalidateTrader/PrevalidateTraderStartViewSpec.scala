@@ -24,16 +24,16 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import views.html.prevalidateTrader.PrevalidateTraderStartPage
+import views.html.prevalidateTrader.PrevalidateTraderStartView
 import views.{BaseSelectors, ViewBehaviours}
 
-class PrevalidateTraderStartPageViewSpec extends ViewSpecBase with ViewBehaviours {
+class PrevalidateTraderStartViewSpec extends ViewSpecBase with ViewBehaviours {
 
   object Selectors extends BaseSelectors {
     val continueButton = "#continue-button"
   }
 
-  "PrevalidateTraderStartPageView" when {
+  "PrevalidateTraderStartView" when {
 
     Seq(PrevalidateTraderStartMessages.English).foreach { messagesForLanguage =>
 
@@ -42,9 +42,9 @@ class PrevalidateTraderStartPageViewSpec extends ViewSpecBase with ViewBehaviour
         implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
         implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
 
-        val view = app.injector.instanceOf[PrevalidateTraderStartPage]
+        val view = app.injector.instanceOf[PrevalidateTraderStartView]
 
-        implicit val doc: Document = Jsoup.parse(view().toString())
+        implicit val doc: Document = Jsoup.parse(view(testOnwardRoute).toString())
 
         behave like pageWithExpectedElementsAndMessages(Seq(
           Selectors.title -> messagesForLanguage.titleHelper(messagesForLanguage.title),
@@ -52,11 +52,6 @@ class PrevalidateTraderStartPageViewSpec extends ViewSpecBase with ViewBehaviour
           Selectors.p(1) -> messagesForLanguage.p,
           Selectors.button -> messagesForLanguage.continue
         ))
-
-        "have a link to the PVT02 page consignee-trader-identification)" in {
-          //TODO: link to PVT02 (consignee-trader-identification) in ETFE-3431
-          doc.select(Selectors.continueButton).attr("href") mustBe testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
-        }
       }
     }
   }

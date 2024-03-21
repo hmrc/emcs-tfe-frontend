@@ -24,8 +24,8 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import java.time.Instant
 
 final case class UserAnswers(ern: String,
-                             data: JsObject,
-                             lastUpdated: Instant) {
+                             data: JsObject = Json.obj(),
+                             lastUpdated: Instant = Instant.now()) {
 
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
     Reads.optionNoError(Reads.at(page.path)).reads(data).asOpt.flatten

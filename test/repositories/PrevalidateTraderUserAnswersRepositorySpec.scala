@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package navigation
+package repositories
 
-import models.{Mode, UserAnswers}
-import pages._
-import play.api.mvc.Call
+class PrevalidateTraderUserAnswersRepositorySpec extends BaseUserAnswersRepositorySpec {
 
-object FakeNavigators {
-
-  class FakeNavigator(desiredRoute: Call) extends BaseNavigator {
-    override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-      desiredRoute
-  }
-
-  class FakePrevalidateNavigator(desiredRoute: Call) extends PrevalidateTraderNavigator {
-    override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-      desiredRoute
-  }
+  lazy val repository: BaseUserAnswersRepository = new PrevalidateTraderUserAnswersRepository(appConfig)(
+    mongoComponent = mongoComponent,
+    time = timeMachine,
+    ec = ec
+  )
 }

@@ -31,7 +31,7 @@ import play.api.test.Helpers.status
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.TimelineHelper
-import views.html.viewMovement.ViewMovementPage
+import views.html.viewMovement.ViewMovementView
 
 import scala.concurrent.Future
 
@@ -46,7 +46,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
     new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
     new FakeBetaAllowListAction,
     mockGetMovementService,
-    app.injector.instanceOf[ViewMovementPage],
+    app.injector.instanceOf[ViewMovementView],
     app.injector.instanceOf[ErrorHandler],
     mockViewMovementHelper,
     app.injector.instanceOf[TimelineHelper]

@@ -39,7 +39,7 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.SelectItemHelper
-import views.html.viewAllMovements.ViewAllMovements
+import views.html.viewAllMovements.ViewAllMovementsView
 
 import scala.concurrent.Future
 
@@ -61,7 +61,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
 
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
 
-  lazy val view = app.injector.instanceOf[ViewAllMovements]
+  lazy val view = app.injector.instanceOf[ViewAllMovementsView]
   lazy val formProvider = app.injector.instanceOf[ViewAllMovementsFormProvider]
 
   val selectItemList = SelectItemHelper.constructSelectItems(MovementSortingSelectOption.values, None, None)

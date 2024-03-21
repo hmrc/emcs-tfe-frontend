@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package navigation
+package controllers.predicates
 
-import models.{Mode, UserAnswers}
-import pages._
-import play.api.mvc.Call
+import services.PrevalidateTraderUserAnswersService
 
-object FakeNavigators {
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
-  class FakeNavigator(desiredRoute: Call) extends BaseNavigator {
-    override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-      desiredRoute
-  }
-
-  class FakePrevalidateNavigator(desiredRoute: Call) extends PrevalidateTraderNavigator {
-    override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-      desiredRoute
-  }
-}
+class PrevalidateTraderDataRetrievalAction @Inject()(override val userAnswersService: PrevalidateTraderUserAnswersService)
+                                                    (override implicit val executionContext: ExecutionContext) extends BaseUserAnswersDataRetrievalAction

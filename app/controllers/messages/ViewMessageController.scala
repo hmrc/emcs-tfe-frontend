@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DeleteMessageService, DraftMovementService, GetMessagesService, GetMovementService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logging
-import views.html.messages.ViewMessage
+import views.html.messages.ViewMessageView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,7 +39,7 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       getMovementService: GetMovementService,
                                       draftMovementService: DraftMovementService,
                                       deleteMessageService: DeleteMessageService,
-                                      val view: ViewMessage,
+                                      val view: ViewMessageView,
                                       errorHandler: ErrorHandler,
                                       appConfig: AppConfig
                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport with Logging {

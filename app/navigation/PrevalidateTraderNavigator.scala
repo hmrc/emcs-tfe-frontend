@@ -18,22 +18,25 @@ package navigation
 
 import models.{CheckMode, Mode, NormalMode, UserAnswers}
 import pages.Page
+import pages.prevalidateTrader.PrevalidateConsigneeTraderIdentificationPage
 import play.api.mvc.Call
 
 import javax.inject.Inject
 
-class PreValidateTraderNavigator @Inject() extends BaseNavigator {
+class PrevalidateTraderNavigator @Inject() extends BaseNavigator {
 
-  private val normalRoutes: Page => UserAnswers => Call = {
+  private[navigation] val normalRoutes: Page => UserAnswers => Call = {
+    case PrevalidateConsigneeTraderIdentificationPage => (userAnswers: UserAnswers) =>
+      testOnly.controllers.routes.UnderConstructionController.onPageLoad()
     case _ => (userAnswers: UserAnswers) =>
       //TODO: Route to Add to List page
-      ???
+      testOnly.controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   private[navigation] val checkRouteMap: Page => UserAnswers => Call = {
     case _ => (userAnswers: UserAnswers) =>
       //TODO: Route to Add to List pages
-      ???
+      testOnly.controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {

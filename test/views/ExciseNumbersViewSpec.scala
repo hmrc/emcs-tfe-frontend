@@ -23,10 +23,10 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
-import views.html.ExciseNumbersPage
+import views.html.ExciseNumbersView
 import views.html.components.link
 
-class ExciseNumbersPageViewSpec extends ViewSpecBase with ViewBehaviours {
+class ExciseNumbersViewSpec extends ViewSpecBase with ViewBehaviours {
 
   object Selectors extends BaseSelectors {
     val multipleErnsText = "#multiple-emcs-numbers"
@@ -35,10 +35,10 @@ class ExciseNumbersPageViewSpec extends ViewSpecBase with ViewBehaviours {
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/excise-numbers")
 
-  lazy val page: ExciseNumbersPage = app.injector.instanceOf[ExciseNumbersPage]
+  lazy val page: ExciseNumbersView = app.injector.instanceOf[ExciseNumbersView]
   lazy val link: link = app.injector.instanceOf[link]
 
-  "The ExciseNumbersPage view" when {
+  "The ExciseNumbers view" when {
 
     Seq(ExciseNumbersMessages.English) foreach { viewMessages =>
 

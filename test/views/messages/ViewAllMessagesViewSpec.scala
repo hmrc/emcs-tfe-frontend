@@ -28,7 +28,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import viewmodels.helpers.messages.{MessagesPaginationHelper, ViewAllMessagesTableHelper}
 import views.html.components.table
-import views.html.messages.ViewAllMessages
+import views.html.messages.ViewAllMessagesView
 import views.{BaseSelectors, ViewBehaviours}
 
 
@@ -56,7 +56,7 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
 
   implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
-  lazy val view: ViewAllMessages = app.injector.instanceOf[ViewAllMessages]
+  lazy val view: ViewAllMessagesView = app.injector.instanceOf[ViewAllMessagesView]
   lazy val helper: ViewAllMessagesTableHelper = app.injector.instanceOf[ViewAllMessagesTableHelper]
   lazy val paginationHelper = app.injector.instanceOf[MessagesPaginationHelper]
 

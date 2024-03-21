@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package pages.prevalidateTrader
-
-import models.Index
-import pages.QuestionPage
-import play.api.libs.json.{JsObject, JsPath}
-
-case class PreValidateProductCode(idx: Index) extends QuestionPage[JsObject] {
-
-  override val path: JsPath = PreValidateAddedProductCodes.path \ idx.position \ "epcCode"
-  
+package object forms {
+  private[forms] val XSS_REGEX = "^(?s)(?!.*javascript)(?!.*[<>;:]).{1,}$"
+  private[forms] val ALPHANUMERIC_REGEX = "^(?s)(?=.*[A-Za-z0-9]).{1,}$"
+  private[forms] val EXCISE_NUMBER_REGEX = "[A-Z]{2}[a-zA-Z0-9]{11}"
 }

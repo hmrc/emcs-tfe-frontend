@@ -20,7 +20,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import config.EnrolmentKeys
 import controllers.predicates.SelectExciseNumberAuthAction
 import utils.Logging
-import views.html.ExciseNumbersPage
+import views.html.ExciseNumbersView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class IndexController @Inject()(mcc: MessagesControllerComponents,
-                                view: ExciseNumbersPage,
+                                view: ExciseNumbersView,
                                 authAction: SelectExciseNumberAuthAction
                                )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with Logging {
 

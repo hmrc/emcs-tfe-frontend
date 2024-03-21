@@ -31,7 +31,7 @@ import services.{DeleteMessageService, GetMessagesService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels.helpers.messages.{DeleteMessageHelper, MessagesHelper}
-import views.html.messages.DeleteMessage
+import views.html.messages.DeleteMessageView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,7 +43,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                         val getMessagesService: GetMessagesService,
                                         val deleteMessageService: DeleteMessageService,
                                         formProvider: DeleteMessageFormProvider,
-                                        val view: DeleteMessage,
+                                        val view: DeleteMessageView,
                                         val deleteMessageHelper: DeleteMessageHelper,
                                         val messagesHelper: MessagesHelper,
                                         errorHandler: ErrorHandler)

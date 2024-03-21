@@ -32,7 +32,7 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.messages.ViewAllMessages
+import views.html.messages.ViewAllMessagesView
 
 import scala.concurrent.Future
 
@@ -42,7 +42,7 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
 
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
 
-  lazy val view = app.injector.instanceOf[ViewAllMessages]
+  lazy val view = app.injector.instanceOf[ViewAllMessagesView]
 
   lazy val controller: ViewAllMessagesController = new ViewAllMessagesController(
     mcc = app.injector.instanceOf[MessagesControllerComponents],

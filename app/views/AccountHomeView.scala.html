@@ -92,7 +92,7 @@
             )
         } else {
             Seq(
-                link(controllers.prevalidateTrader.routes.StartPrevalidateTraderController.onPageLoad(ern).url, "accountHome.checkLink", id = Some("prevalidate-tfe-link")),
+                link(controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(ern).url, "accountHome.checkLink", id = Some("prevalidate-tfe-link")),
                 link(appConfig.europaCheckLink, "accountHome.checkLink.europa", id = Some("prevalidate-europa-link")),
             )
         }

@@ -27,6 +27,7 @@ sealed trait BaseMessages { _: i18n =>
   val prevalidateTraderCaption: String = "Prevalidate a trader"
 
   val continue = "Continue"
+  val saveAndContinue = "Save and continue"
 }
 
 trait BaseEnglish extends BaseMessages with EN {

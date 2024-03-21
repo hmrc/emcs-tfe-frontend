@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.predicates
+package services
 
-import services.PreValidateTraderUserAnswersService
+import repositories.PrevalidateTraderUserAnswersRepository
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
-class PreValidateTraderDataRetrievalAction @Inject()(override val userAnswersService: PreValidateTraderUserAnswersService)
-                                                    (override implicit val executionContext: ExecutionContext) extends BaseUserAnswersDataRetrievalAction
+class PrevalidateTraderUserAnswersService @Inject()(override val userAnswersRepo: PrevalidateTraderUserAnswersRepository) extends BaseUserAnswersService

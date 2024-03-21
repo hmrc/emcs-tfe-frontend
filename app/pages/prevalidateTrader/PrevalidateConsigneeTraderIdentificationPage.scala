@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package repositories
+package pages.prevalidateTrader
 
-class PreValidateTraderUserAnswersRepositorySpec extends BaseUserAnswersRepositorySpec {
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-  lazy val repository: BaseUserAnswersRepository = new PreValidateTraderUserAnswersRepository(appConfig)(
-    mongoComponent = mongoComponent,
-    time = timeMachine,
-    ec = ec
-  )
+case object PrevalidateConsigneeTraderIdentificationPage extends QuestionPage[String] {
+  override val toString: String = "consigneeTraderIdentification"
+  override val path: JsPath = PrevalidateTraderSection.path \ toString
 }

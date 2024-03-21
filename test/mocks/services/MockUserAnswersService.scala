@@ -19,12 +19,12 @@ package mocks.services
 import models.UserAnswers
 import org.scalamock.handlers.CallHandler1
 import org.scalamock.scalatest.MockFactory
-import services.{BaseUserAnswersService, PreValidateTraderUserAnswersService}
+import services.{BaseUserAnswersService, PrevalidateTraderUserAnswersService}
 
 import scala.concurrent.Future
 
 trait MockPreValidateUserAnswersService extends MockUserAnswersService {
-  override lazy val mockUserAnswersService: PreValidateTraderUserAnswersService = mock[PreValidateTraderUserAnswersService]
+  override lazy val mockUserAnswersService: PrevalidateTraderUserAnswersService = mock[PrevalidateTraderUserAnswersService]
 }
 
 trait MockUserAnswersService extends MockFactory {

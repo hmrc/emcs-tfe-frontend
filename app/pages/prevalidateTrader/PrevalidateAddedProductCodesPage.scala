@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package navigation
+package pages.prevalidateTrader
 
-import models.{Mode, UserAnswers}
-import pages._
-import play.api.mvc.Call
+import pages.QuestionPage
+import play.api.libs.json.{JsObject, JsPath}
 
-object FakeNavigators {
+case object PrevalidateAddedProductCodesPage extends QuestionPage[JsObject] {
 
-  class FakeNavigator(desiredRoute: Call) extends BaseNavigator {
-    override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-      desiredRoute
-  }
-
-  class FakePrevalidateNavigator(desiredRoute: Call) extends PrevalidateTraderNavigator {
-    override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-      desiredRoute
-  }
+  override val path: JsPath = PrevalidateTraderSection.path \ "addedProductCodes"
+  val max: Int = 10
+  
 }

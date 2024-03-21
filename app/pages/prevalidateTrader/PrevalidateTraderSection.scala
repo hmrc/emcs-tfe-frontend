@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,8 @@ package pages.prevalidateTrader
 import pages.QuestionPage
 import play.api.libs.json.{JsObject, JsPath}
 
-case object PreValidateAddedProductCodes extends QuestionPage[JsObject] {
+case object PrevalidateTraderSection extends QuestionPage[JsObject] {
 
-  override val path: JsPath = PreValidateTraderSection.path \ "addedProductCodes"
-  val max: Int = 10
+  override val path: JsPath = JsPath \ "preValidateTrader"
   
 }

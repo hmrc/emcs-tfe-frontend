@@ -37,7 +37,7 @@ import play.api.test.Helpers.{contentAsString, redirectLocation, status}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.messages.{DeleteMessageHelper, MessagesHelper}
-import views.html.messages.DeleteMessage
+import views.html.messages.DeleteMessageView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -56,7 +56,7 @@ class DeleteMessageControllerSpec extends SpecBase
 
   lazy val formProvider = new DeleteMessageFormProvider
 
-  lazy val view = app.injector.instanceOf[DeleteMessage]
+  lazy val view = app.injector.instanceOf[DeleteMessageView]
 
   lazy val messagesHelper = new MessagesHelper()
 

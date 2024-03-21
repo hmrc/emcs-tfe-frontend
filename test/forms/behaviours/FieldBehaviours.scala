@@ -114,4 +114,15 @@ trait FieldBehaviours extends FormSpec {
 
   }
 
+  def fieldWithoutXss(form: Form[_],
+                   fieldName: String,
+                   formatError: FormError): Unit = {
+
+    "not bind when the input matches the XSS filter" in {
+      val result = form.bind(Map(fieldName -> "<beans />;:")).apply(fieldName)
+      result.errors mustEqual Seq(formatError)
+    }
+
+  }
+
 }

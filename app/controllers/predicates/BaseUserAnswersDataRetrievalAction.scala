@@ -31,6 +31,6 @@ trait BaseUserAnswersDataRetrievalAction extends ActionRefiner[DataRequest, User
   override protected def refine[A](request: DataRequest[A]): Future[Either[Result, UserAnswersRequest[A]]] =
     userAnswersService.get(request.ern).map {
       case Some(answers) => Right(UserAnswersRequest(request, answers))
-      case _ => Left(Redirect(controllers.prevalidateTrader.routes.StartPrevalidateTraderController.onPageLoad(request.ern)))
+      case _ => Left(Redirect(controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(request.ern)))
     }
 }

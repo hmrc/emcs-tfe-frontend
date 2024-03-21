@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package services
+@import config.AppConfig
 
-import repositories.PreValidateTraderUserAnswersRepository
+@this(
+        govukButton: GovukButton,
+        appConfig: AppConfig
+)
 
-import javax.inject.Inject
+@(primaryKey: String = "base.saveAndContinue")(implicit messages: Messages)
 
-class PreValidateTraderUserAnswersService @Inject()(override val userAnswersRepo: PreValidateTraderUserAnswersRepository) extends BaseUserAnswersService
+<div class="govuk-button-group">
+
+  @govukButton(
+      ButtonViewModel(messages(primaryKey)).preventingDoubleClick().withId("submit")
+  )
+
+</div>
+
+@{
+    //$COVERAGE-OFF$
+}
