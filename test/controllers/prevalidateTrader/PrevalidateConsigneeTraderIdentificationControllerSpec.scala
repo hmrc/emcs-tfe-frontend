@@ -47,22 +47,42 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase wi
     view = view
   )
 
+  val testAnswer = "GB00123456789"
+
   "ConsigneeTraderIdentification Controller" when {
 
     "calling .onPageLoad()" must {
 
-      "render the view" in {
+      "render the view" when {
+        "previous data exists in user answers" in {
+          MockUserAnswersService
+            .get(testErn)
+            .returns(Future.successful(Some(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))))
 
-        MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+          val request = FakeRequest(GET, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+          val result = controller.onPageLoad(testErn)(request)
 
-        val request = FakeRequest(GET, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-        val result = controller.onPageLoad(testErn)(request)
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form = formProvider().fill(testAnswer),
+            action = routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+          )(userAnswersRequest(request), messages(request)).toString
+        }
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(
-          form = formProvider(),
-          action = routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-        )(userAnswersRequest(request), messages(request)).toString
+        "no previous data exists in user answers" in {
+          MockUserAnswersService
+            .get(testErn)
+            .returns(Future.successful(Some(emptyUserAnswers)))
+
+          val request = FakeRequest(GET, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+          val result = controller.onPageLoad(testErn)(request)
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form = formProvider(),
+            action = routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+          )(userAnswersRequest(request), messages(request)).toString
+        }
       }
     }
 
@@ -70,25 +90,50 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase wi
 
       "form validation fails" must {
 
-        "render the view when bad value" in {
+        "render the view with the bad value" when {
 
-          MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+          "previous user answers exist" in {
 
-          val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-          val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "<beans />"))
+            MockUserAnswersService
+              .get(testErn)
+              .returns(Future.successful(Some(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))))
 
-          val form = formProvider()
-            .fill("<beans />")
-            .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters")))
+            val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+            val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "<beans />"))
 
-          status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(
-            form = form,
-            action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-          )(userAnswersRequest(request), messages(request)).toString
+            val form = formProvider()
+              .fill("<beans />")
+              .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters")))
+
+            status(result) mustEqual BAD_REQUEST
+            contentAsString(result) mustEqual view(
+              form = form,
+              action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+            )(userAnswersRequest(request), messages(request)).toString
+          }
+
+          "no previous user answers exist" in {
+
+            MockUserAnswersService
+              .get(testErn)
+              .returns(Future.successful(Some(emptyUserAnswers)))
+
+            val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+            val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "<beans />"))
+
+            val form = formProvider()
+              .fill("<beans />")
+              .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters")))
+
+            status(result) mustEqual BAD_REQUEST
+            contentAsString(result) mustEqual view(
+              form = form,
+              action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+            )(userAnswersRequest(request), messages(request)).toString
+          }
         }
 
-        "render the view when form missing" in {
+        "render the view when form value missing" in {
 
           MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
 
@@ -115,11 +160,11 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase wi
               .returns(Future.successful(Some(emptyUserAnswers)))
 
             MockUserAnswersService
-              .set(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, "GB00123456789"))
+              .set(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))
               .returns(Future.successful(emptyUserAnswers))
 
             val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-            val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "GB00123456789"))
+            val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> testAnswer))
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual testOnwardRoute.url

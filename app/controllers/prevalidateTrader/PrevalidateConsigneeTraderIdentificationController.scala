@@ -44,7 +44,7 @@ class PrevalidateConsigneeTraderIdentificationController @Inject()(override val 
 
   def onPageLoad(ern: String): Action[AnyContent] =
     (authorisedWithData(ern) andThen userAnswersAction) { implicit request =>
-      Ok(renderView())
+      Ok(renderView(fillForm(PrevalidateConsigneeTraderIdentificationPage, formProvider())))
     }
 
   def onSubmit(ern: String): Action[AnyContent] =
@@ -55,9 +55,9 @@ class PrevalidateConsigneeTraderIdentificationController @Inject()(override val 
       )
     }
 
-  private def renderView(form: Form[String] = formProvider())(implicit request: UserAnswersRequest[_]) = {
+  private def renderView(form: Form[String])(implicit request: UserAnswersRequest[_]) = {
     view(
-      form = fillForm(PrevalidateConsigneeTraderIdentificationPage, form),
+      form = form,
       action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(request.ern)
     )
   }

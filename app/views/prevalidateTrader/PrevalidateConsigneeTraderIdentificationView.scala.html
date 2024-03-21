@@ -32,7 +32,7 @@
 )
 @(form: Form[_], action: Call)(implicit request: UserAnswersRequest[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("prevalidateTrader.consigneeTraderIdentification.title")), maybeShowActiveTrader = maybeShowActiveTrader(request.request), maybeShowNavigationBanner = None) {
+@layout(pageTitle = title(form, messages("prevalidateTrader.consigneeTraderIdentification.title")), maybeShowActiveTrader = maybeShowActiveTrader(request.request), maybeShowNavigationBanner = None) {
 
     @formHelper(action) {
 

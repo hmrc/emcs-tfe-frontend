@@ -31,6 +31,14 @@ trait BaseController extends FrontendBaseController with I18nSupport with Enumer
 
   implicit lazy val ec: ExecutionContext = controllerComponents.executionContext
 
+  /**
+   * @param page    - the question page to search user answers for
+   * @param form    - the form to fill with user's previous answer
+   * @param request - implicit request which contains user answers
+   * @param format  - implicit JSON format for userAnswers.get(page)
+   * @tparam A - generic type to ensure form and format have the same type parameter
+   * @return pre-filled form if data exists for this page. If no data exists, return an empty form
+   */
   def fillForm[A](page: QuestionPage[A], form: Form[A])
                  (implicit request: UserAnswersRequest[_], format: Format[A]): Form[A] =
     request.userAnswers.get(page).fold(form)(form.fill)
