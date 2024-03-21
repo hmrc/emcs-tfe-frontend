@@ -48,6 +48,7 @@ class PrevalidateConsigneeTraderIdentificationViewSpec extends ViewSpecBase with
         implicit val doc: Document = Jsoup.parse(view(formProvider(), testOnly.controllers.routes.UnderConstructionController.onPageLoad()).toString())
 
         behave like pageWithExpectedElementsAndMessages(Seq(
+          Selectors.subHeadingCaptionSelector -> messagesForLanguage.prevalidateTraderCaption,
           Selectors.title -> messagesForLanguage.titleHelper(messagesForLanguage.title),
           Selectors.h1 -> messagesForLanguage.h1,
           Selectors.p(1) -> messagesForLanguage.p,

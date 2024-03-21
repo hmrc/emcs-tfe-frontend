@@ -27,7 +27,7 @@ import play.api.libs.json.{JsValue, Json}
 
 import java.time.LocalDate
 
-trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEventsResponseFixtures {
+trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEventsResponseFixtures with ExciseProductCodeFixtures {
   _: BaseFixtures =>
 
   val eadEsadModel: EadEsadModel = EadEsadModel(
@@ -75,7 +75,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       eadBodyUniqueReference = 1,
       excessAmount = Some(21),
       shortageAmount = None,
-      productCode = "W300",
+      productCode = testEpcWine,
       refusedAmount = Some(1),
       unsatisfactoryReasons = Seq(
         UnsatisfactoryModel(Excess, Some("some info")),
@@ -242,7 +242,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     "individualItems" -> Json.arr(
       Json.obj(
         "eadBodyUniqueReference" -> 1,
-        "productCode" -> "W300",
+        "productCode" -> testEpcWine,
         "excessAmount" -> 21,
         "refusedAmount" -> 1,
         "unsatisfactoryReasons" -> Json.arr(

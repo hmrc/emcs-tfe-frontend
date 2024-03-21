@@ -59,7 +59,7 @@ class PrevalidateExciseProductCodeSummarySpec extends SpecBase with Matchers wit
                     id = s"change-epc-1"
                   ).withVisuallyHiddenText(messagesForLanguage.changeHidden(testIndex1)),
                   ActionItemViewModel(
-                    href = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                    href = routes.PrevalidateRemoveExciseProductCodeController.onPageLoad(request.ern, testIndex1).url,
                     content = Text(messagesForLanguage.remove),
                     id = s"remove-epc-1"
                   ).withVisuallyHiddenText(messagesForLanguage.removeHidden(testIndex1))

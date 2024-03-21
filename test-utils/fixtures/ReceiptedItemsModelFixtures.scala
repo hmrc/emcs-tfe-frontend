@@ -19,11 +19,11 @@ package fixtures
 import models.common.WrongWithMovement._
 import models.response.emcsTfe.reportOfReceipt.ReceiptedItemsModel
 
-trait ReceiptedItemsModelFixtures extends BaseFixtures with UnsatisfactoryModelFixtures {
+trait ReceiptedItemsModelFixtures extends BaseFixtures with UnsatisfactoryModelFixtures with ExciseProductCodeFixtures {
 
   val excessReceiptedItemsModel = ReceiptedItemsModel(
     eadBodyUniqueReference = 1,
-    productCode = "W300",
+    productCode = testEpcWine,
     excessAmount = Some(12.145),
     shortageAmount = None,
     refusedAmount = Some(10),
@@ -32,7 +32,7 @@ trait ReceiptedItemsModelFixtures extends BaseFixtures with UnsatisfactoryModelF
 
   val shortageReceiptedItemsModel = ReceiptedItemsModel(
     eadBodyUniqueReference = 1,
-    productCode = "W300",
+    productCode = testEpcWine,
     excessAmount = None,
     shortageAmount = Some(12.145),
     refusedAmount = Some(10),
@@ -46,7 +46,7 @@ trait ReceiptedItemsModelFixtures extends BaseFixtures with UnsatisfactoryModelF
 
   val minReceiptedItemsModel = ReceiptedItemsModel(
     eadBodyUniqueReference = 1,
-    productCode = "W300",
+    productCode = testEpcWine,
     excessAmount = None,
     shortageAmount = None,
     refusedAmount = None,

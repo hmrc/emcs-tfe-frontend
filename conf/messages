@@ -733,7 +733,7 @@ prevalidateTrader.exciseProductCode.paragraph = Add an excise product code for t
 prevalidateTrader.exciseProductCode.label = Excise product code {0}
 prevalidateTrader.exciseProductCode.error.required = Select an excise product code to check
 
-# Prevalidate trader - EPC page
+# Prevalidate trader - Add to list page
 prevalidateTrader.addToList.title.plural = You have added {0} Excise Product Codes
 prevalidateTrader.addToList.title.singular = You have added 1 Excise Product Code
 prevalidateTrader.addToList.heading.plural = You have added {0} Excise Product Codes
@@ -742,3 +742,9 @@ prevalidateTrader.addToList.h2 = Do you need to add another Excise Product Code 
 prevalidateTrader.addToList.error.required = Select yes if you want to add another Excise Product Code (EPC)
 prevalidateTrader.addToList.change.hidden = excise product code {0}
 prevalidateTrader.addToList.remove.hidden = excise product code {0}
+
+# Prevalidate trader - remove Excise Product Code page
+prevalidateTrader.removeExciseProductCode.title = Are you sure you want to remove Excise Product Code {0}?
+prevalidateTrader.removeExciseProductCode.heading = Are you sure you want to remove Excise Product Code {0}?
+prevalidateTrader.removeExciseProductCode.error = Select yes if you want to remove the Excise Product Code {0}, or select no
+

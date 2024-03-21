@@ -22,7 +22,7 @@ import models.response.emcsTfe.{MovementItem, Packaging}
 import models.response.referenceData.ItemPackaging
 import play.api.libs.json.{JsObject, Json}
 
-trait ItemFixtures { _: BaseFixtures =>
+trait ItemFixtures extends ExciseProductCodeFixtures { _: BaseFixtures =>
 
   val testItemPackagingTypes: Seq[ItemPackaging] = Seq(
     ItemPackaging("AE", "Aerosol"),
@@ -150,7 +150,7 @@ trait ItemFixtures { _: BaseFixtures =>
 
   val item2 = MovementItem(
     itemUniqueReference = 2,
-    productCode = "W300",
+    productCode = testEpcWine,
     cnCode = "22041011",
     quantity = BigDecimal(550),
     grossMass = BigDecimal(901),
@@ -173,7 +173,7 @@ trait ItemFixtures { _: BaseFixtures =>
 
   val item2Json = Json.obj(fields =
     "itemUniqueReference" -> 2,
-    "productCode" -> "W300",
+    "productCode" -> testEpcWine,
     "cnCode" -> "22041011",
     "quantity" -> 550,
     "grossMass" -> 901,
@@ -241,7 +241,7 @@ trait ItemFixtures { _: BaseFixtures =>
     "22041011" -> Json.obj(
       "cnCode" -> "22041011",
         "cnCodeDescription" -> "Wine sparkling",
-        "exciseProductCode" -> "W300",
+        "exciseProductCode" -> testEpcWine,
         "exciseProductCodeDescription" -> "Wine",
         "unitOfMeasureCode" -> 3
     ),

@@ -83,7 +83,7 @@ trait RadiosFluency {
         field    = field,
         fieldset = fieldset,
         items    = items
-      ).inline()
+      )
     }
 
     def yesNo(
@@ -109,7 +109,7 @@ trait RadiosFluency {
         field = field,
         fieldset = FieldsetViewModel(legend),
         items = items
-      ).inline()
+      )
     }
   }
 
