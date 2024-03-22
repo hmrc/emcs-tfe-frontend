@@ -18,7 +18,7 @@ package views.prevalidateTrader
 
 import base.ViewSpecBase
 import fixtures.messages.prevalidateTrader.PrevalidateConsigneeTraderIdentificationMessages
-import forms.PrevalidateConsigneeTraderIdentificationFormProvider
+import forms.prevalidate.PrevalidateConsigneeTraderIdentificationFormProvider
 import models.requests.UserAnswersRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

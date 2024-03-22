@@ -16,10 +16,16 @@
 
 package queries
 
+import models.ExciseProductCode
 import pages.prevalidateTrader.PrevalidateAddedProductCodesPage
-import play.api.libs.json.{JsPath, JsValue}
+import play.api.libs.json.{JsPath, JsValue, Reads}
 
-case object PreValidateTraderEPCCount extends Derivable[List[JsValue], Int] {
-  override val derive: List[JsValue] => Int = _.size
+case object PrevalidateTraderAddedValues extends Derivable[List[JsValue], List[String]] {
+
+  val epcReads: Reads[ExciseProductCode] = (JsPath \ "exciseProductCode").read[ExciseProductCode]
+
+  override val derive: List[JsValue] => List[String] = _.map { json =>
+    json.as[ExciseProductCode](epcReads).code
+  }
   override val path: JsPath = PrevalidateAddedProductCodesPage.path
 }

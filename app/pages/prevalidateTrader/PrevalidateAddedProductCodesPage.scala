@@ -20,8 +20,8 @@ import pages.QuestionPage
 import play.api.libs.json.{JsObject, JsPath}
 
 case object PrevalidateAddedProductCodesPage extends QuestionPage[JsObject] {
-
-  override val path: JsPath = PrevalidateTraderSection.path \ "addedProductCodes"
-  val max: Int = 10
+  override val toString: String = "addedProductCodes"
+  override val path: JsPath = PrevalidateTraderSection.path \ toString
+  val MAX: Int = 10
   
 }

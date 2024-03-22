@@ -17,6 +17,7 @@
 package base
 
 import config.{AppConfig, ErrorHandler}
+import controllers.predicates.PrevalidateTraderDataRetrievalAction
 import fixtures.BaseFixtures
 import models.UserAnswers
 import models.auth.UserRequest
@@ -45,6 +46,7 @@ trait SpecBase extends AnyWordSpecLike
   lazy implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   lazy val messagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   lazy val errorHandler: ErrorHandler = app.injector.instanceOf[ErrorHandler]
+  lazy val preValidateTraderDataRetrievalAction: PrevalidateTraderDataRetrievalAction = app.injector.instanceOf[PrevalidateTraderDataRetrievalAction]
 
   def messages(request: Request[_]): Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 

@@ -22,8 +22,11 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SelectItem
 
 object SelectItemHelper {
 
-  def constructSelectItems(selectOptions: Seq[SelectOptionModel], defaultTextMessageKey: Option[String], existingAnswer: Option[String] = None)
-                          (implicit messages: Messages): Seq[SelectItem] = {
+  def constructSelectItems(selectOptions: Seq[SelectOptionModel],
+                           defaultTextMessageKey: Option[String],
+                           existingAnswer: Option[String] = None,
+                           withEpcDescription: Boolean = false)
+                          (implicit messages: Messages): Seq[SelectItem] =
     Seq(
       defaultTextMessageKey.map(default => SelectItem(
         text = messages(default),
@@ -31,11 +34,11 @@ object SelectItemHelper {
         disabled = true
       ))
     ).flatten ++ selectOptions.map { option =>
+      val displayValue = if(withEpcDescription) option.displayName else option.displayName.split(":").head
       SelectItem(
         value = Some(option.code),
-        text = messages(option.displayName),
+        text = messages(displayValue),
         selected = existingAnswer.contains(option.code)
       )
     }
-  }
 }

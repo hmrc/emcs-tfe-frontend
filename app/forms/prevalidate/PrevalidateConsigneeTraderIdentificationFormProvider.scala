@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package forms
+package forms.prevalidate
 
 import forms.mappings.Mappings
+import forms.{ALPHANUMERIC_REGEX, EXCISE_NUMBER_REGEX, XSS_REGEX}
 import play.api.data.Form
 
 import javax.inject.Inject

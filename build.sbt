@@ -17,6 +17,12 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     majorVersion := 0,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
+    scalacOptions ++= Seq(
+      "-feature",
+      "-rootdir",
+      baseDirectory.value.getCanonicalPath,
+      "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s"
+    ),
     Assets / pipelineStages := Seq(gzip),
     RoutesKeys.routesImport ++= Seq(
       "models._",

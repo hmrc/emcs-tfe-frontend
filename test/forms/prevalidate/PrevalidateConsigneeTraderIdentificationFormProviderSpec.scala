@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package forms
+package forms.prevalidate
 
 import forms.behaviours.FieldBehaviours
+import forms.{EXCISE_NUMBER_REGEX, XSS_REGEX}
 import play.api.data.FormError
 
 class PrevalidateConsigneeTraderIdentificationFormProviderSpec extends FieldBehaviours {

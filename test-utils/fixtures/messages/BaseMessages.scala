@@ -19,7 +19,7 @@ package fixtures.messages
 import play.api.i18n.Lang
 
 
-sealed trait BaseMessages { _: i18n =>
+trait BaseMessages { _: i18n =>
   def titleHelper(heading: String) = s"$heading - Excise Movement and Control System - GOV.UK"
   val opensInNewTab: String
   val lang: Lang

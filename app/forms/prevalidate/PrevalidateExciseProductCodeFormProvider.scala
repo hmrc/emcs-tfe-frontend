@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package navigation
+package forms.prevalidate
 
-import models.{Mode, UserAnswers}
-import pages._
-import play.api.mvc.Call
+import forms.mappings.Mappings
+import models.ExciseProductCode
+import play.api.data.Form
 
-object FakeNavigators {
+import javax.inject.Inject
 
-  class FakeNavigator(desiredRoute: Call) extends BaseNavigator {
-    override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
-  }
+class PrevalidateExciseProductCodeFormProvider @Inject() extends Mappings {
 
-  class FakePrevalidateNavigator(desiredRoute: Call) extends PrevalidateTraderNavigator {
-    override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
-  }
+  def apply(exciseProductCodes: Seq[ExciseProductCode]): Form[String] =
+    Form(
+      "excise-product-code" -> text("prevalidateTrader.exciseProductCode.error.required")
+        .verifying(valueInList(exciseProductCodes.map(_.code), "prevalidateTrader.exciseProductCode.error.required"))
+    )
 }
