@@ -32,7 +32,7 @@ trait AuthActionHelper extends BetaChecks {
   private def authorised(ern: String): ActionBuilder[UserRequest, AnyContent] =
     auth(ern) andThen betaAllowList(navigationHubBetaGuard())
 
-  private def authorisedWithData(ern: String): ActionBuilder[DataRequest, AnyContent] =
+  def authorisedWithData(ern: String): ActionBuilder[DataRequest, AnyContent] =
     authorised(ern) andThen getData()
 
   private def authorisedWithBetaGuardData(ern: String, betaGuard: (String, Result)): ActionBuilder[DataRequest, AnyContent] =
