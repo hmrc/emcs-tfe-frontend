@@ -36,4 +36,15 @@ trait ViewBehaviours extends Logging { _: ViewSpecBase =>
         }
       }
   }
+
+  def pageWithElementsNotPresent(checks: Seq[String])(implicit document: Document): Unit = checks foreach {
+    selector =>
+      s"element with selector '$selector' must not be found" in {
+        document.select(selector) match {
+          case elements if elements.size() == 0 => succeed
+          case _ =>
+            fail(s"Found element with CSS selector: '$selector'")
+        }
+      }
+  }
 }

@@ -47,6 +47,14 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
   align-items: center;
 }
 
+.govuk-\!-width-10 {
+  width: 100% !important;
+
+  @include govuk-media-query($from: tablet) {
+    width: 10% !important;
+  }
+}
+
 @media print {
   header, nav, footer {
     display: none;

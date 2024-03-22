@@ -2,6 +2,10 @@ service.name = Excise Movement and Control System
 service.text = This is your new service
 
 site.warning = Warning:
+site.yes = Yes
+site.no = No
+site.change = Change
+site.remove = Remove
 
 errorPage.title = Sorry, we’re experiencing technical difficulties
 errorPage.heading = Sorry, we’re experiencing technical difficulties
@@ -728,3 +732,13 @@ prevalidateTrader.exciseProductCode.heading = Add an excise product code (EPC)
 prevalidateTrader.exciseProductCode.paragraph = Add an excise product code for the goods you want to check. You will have the chance to add more codes later.
 prevalidateTrader.exciseProductCode.label = Excise product code {0}
 prevalidateTrader.exciseProductCode.error.required = Select an excise product code to check
+
+# Prevalidate trader - EPC page
+prevalidateTrader.addToList.title.plural = You have added {0} Excise Product Codes
+prevalidateTrader.addToList.title.singular = You have added 1 Excise Product Code
+prevalidateTrader.addToList.heading.plural = You have added {0} Excise Product Codes
+prevalidateTrader.addToList.heading.singular = You have added 1 Excise Product Code
+prevalidateTrader.addToList.h2 = Do you need to add another Excise Product Code (EPC)?
+prevalidateTrader.addToList.error.required = Select yes if you want to add another Excise Product Code (EPC)
+prevalidateTrader.addToList.change.hidden = excise product code {0}
+prevalidateTrader.addToList.remove.hidden = excise product code {0}
