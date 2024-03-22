@@ -43,7 +43,7 @@ class PrevalidateTraderUserAnswersActionSpec extends SpecBase with MockFactory w
     })
   }
 
-  "BetaAllowListAction" should {
+  "PrevalidateTraderDataRetrievalAction" should {
 
     "when data is returned from the UserAnswersService" must {
 

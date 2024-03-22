@@ -16,6 +16,7 @@
 
 package controllers.prevalidateTrader
 
+import controllers.BaseNavigationController
 import controllers.predicates._
 import forms.prevalidate.PrevalidateConsigneeTraderIdentificationFormProvider
 import models.NormalMode
@@ -40,7 +41,7 @@ class PrevalidateConsigneeTraderIdentificationController @Inject()(override val 
                                                                    val navigator: PrevalidateTraderNavigator,
                                                                    formProvider: PrevalidateConsigneeTraderIdentificationFormProvider,
                                                                    view: PrevalidateConsigneeTraderIdentificationView
-                                                       )(implicit val executionContext: ExecutionContext) extends BasePrevalidateNavigationController with AuthActionHelper with I18nSupport {
+                                                       )(implicit val executionContext: ExecutionContext) extends BaseNavigationController with AuthActionHelper with I18nSupport {
 
   def onPageLoad(ern: String): Action[AnyContent] =
     (authorisedWithData(ern) andThen userAnswersAction) { implicit request =>

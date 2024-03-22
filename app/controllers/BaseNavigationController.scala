@@ -56,14 +56,6 @@ trait BaseNavigationController extends BaseController with Logging {
       } yield updatedAnswers
     }
 
-  def validateIndex[T, A](itemCount: Derivable[T, Int], idx: Index)
-                         (onSuccess: => A, onFailure: => A)
-                         (implicit request: UserAnswersRequest[_], reads: Reads[T]): A =
-    request.userAnswers.get(itemCount) match {
-      case Some(value) if idx.position >= 0 && idx.position < value => onSuccess
-      case _ => onFailure
-    }
-
   def validateIndexForJourneyEntry[T, A](
                                           itemCount: Derivable[T, Int], idx: Index, max: Int = Int.MaxValue
                                         )(onSuccess: => A, onFailure: => A)(implicit request: UserAnswersRequest[_], reads: Reads[T]): A =

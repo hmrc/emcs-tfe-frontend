@@ -16,6 +16,7 @@
 
 package controllers.prevalidateTrader
 
+import controllers.BaseNavigationController
 import controllers.predicates._
 import forms.prevalidate.PrevalidateExciseProductCodeFormProvider
 import models.requests.UserAnswersRequest
@@ -45,7 +46,7 @@ class PrevalidateExciseProductCodeController @Inject()(
                                                         val controllerComponents: MessagesControllerComponents,
                                                         exciseProductCodesService: GetExciseProductCodesService,
                                                         view: PrevalidateExciseProductCodeView
-                                           ) extends BasePrevalidateNavigationController with AuthActionHelper {
+                                           ) extends BaseNavigationController with AuthActionHelper {
 
   def onPageLoad(ern: String, idx: Index, mode: Mode): Action[AnyContent] =
     (authorisedWithData(ern) andThen requireData).async { implicit request =>
@@ -69,7 +70,7 @@ class PrevalidateExciseProductCodeController @Inject()(
       }
     }
 
-  override def validateIndexAsync(idx: Index)(f: => Future[Result])(implicit request: UserAnswersRequest[_]): Future[Result] =
+  def validateIndexAsync(idx: Index)(f: => Future[Result])(implicit request: UserAnswersRequest[_]): Future[Result] =
     validateIndexForJourneyEntry(PrevalidateTraderEPCCount, idx, PrevalidateAddedProductCodesPage.MAX)(
       onSuccess = f,
       onFailure = Future.successful(Redirect(routes.PrevalidateTraderStartController.onPageLoad(request.ern)))

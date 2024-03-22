@@ -23,7 +23,7 @@ object ExciseProductCodeMessages {
 
   sealed trait ViewMessages extends BaseMessages { _: i18n =>
 
-    val heading: String = s"Add excise product codes (EPC)"
+    val heading: String = s"Add an excise product code (EPC)"
     val title: String = titleHelper(heading)
 
     val defaultSelectOption = "Choose excise product code"
