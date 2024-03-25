@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-package fixtures.messages
+package pages.prevalidateTrader
 
-import play.api.i18n.Lang
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-
-trait BaseMessages { _: i18n =>
-  def titleHelper(heading: String) = s"$heading - Excise Movement and Control System - GOV.UK"
-  val opensInNewTab: String
-  val lang: Lang
-
-  val prevalidateTraderCaption: String = "Prevalidate a trader"
-
-  val continue = "Continue"
-  val saveAndContinue = "Save and continue"
-  val change = "Change"
-  val remove = "Remove"
-  val yes = "Yes"
-  val no = "No"
+object PrevalidateAddToListPage extends QuestionPage[Boolean] {
+  override val toString: String = "addAnotherEpc"
+  override val path: JsPath = PrevalidateTraderSection.path \ toString
 }
-
-trait BaseEnglish extends BaseMessages with EN {
-  override val opensInNewTab: String = "(opens in new tab)"
-}
-object BaseEnglish extends BaseEnglish

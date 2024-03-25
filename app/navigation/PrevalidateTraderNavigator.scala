@@ -19,7 +19,7 @@ package navigation
 import controllers.prevalidateTrader.routes
 import models.{CheckMode, Index, Mode, NormalMode, UserAnswers}
 import pages.Page
-import pages.prevalidateTrader.{PrevalidateConsigneeTraderIdentificationPage, PrevalidateEPCPage}
+import pages.prevalidateTrader.{PrevalidateAddToListPage, PrevalidateConsigneeTraderIdentificationPage, PrevalidateEPCPage}
 import play.api.mvc.Call
 import queries.PrevalidateTraderEPCCount
 
@@ -34,13 +34,20 @@ class PrevalidateTraderNavigator @Inject() extends BaseNavigator {
         case None | Some(0) =>
           routes.PrevalidateExciseProductCodeController.onPageLoad(userAnswers.ern, Index(0), NormalMode)
         case _ =>
-          //TODO: Update to route to Add to List page when built PVT-04
-          testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+          routes.PrevalidateAddToListController.onPageLoad(userAnswers.ern)
       }
 
-    case PrevalidateEPCPage(idx) => (userAnswers: UserAnswers) =>
-      //TODO: Update to route to Add to List page when built PVT-04
-      testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+    case PrevalidateEPCPage(_) => (userAnswers: UserAnswers) =>
+      routes.PrevalidateAddToListController.onPageLoad(userAnswers.ern)
+
+    case PrevalidateAddToListPage => (userAnswers: UserAnswers) =>
+      userAnswers.get(PrevalidateAddToListPage) match {
+        case Some(true) =>
+          routes.PrevalidateExciseProductCodeController.onPageLoad(userAnswers.ern, Index(userAnswers.get(PrevalidateTraderEPCCount).getOrElse(0)), NormalMode)
+        case _ =>
+          //TODO: Update to route to Result page when built PVT-05
+          testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+      }
 
     case _ => (userAnswers: UserAnswers) =>
       routes.PrevalidateTraderStartController.onPageLoad(userAnswers.ern)
@@ -48,8 +55,7 @@ class PrevalidateTraderNavigator @Inject() extends BaseNavigator {
 
   private[navigation] val checkRouteMap: Page => UserAnswers => Call = {
     case _ => (userAnswers: UserAnswers) =>
-      //TODO: Update to route to Add to List page when built PVT-04
-      testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+      routes.PrevalidateAddToListController.onPageLoad(userAnswers.ern)
   }
 
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {

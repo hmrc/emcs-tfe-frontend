@@ -1,0 +1,74 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models.requests.UserAnswersRequest
+
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios,
+    govukSummaryList: GovukSummaryList,
+    govukButton: GovukButton,
+    h1: components.h1,
+    h2: components.h2,
+    notificationBanner: GovukNotificationBanner,
+    p: components.p,
+    link: components.link,
+    list: components.list,
+    saveAndContinue: components.saveAndContinue
+)
+
+@(formOpt: Option[Form[_]], onSubmitCall: Call, addedEpcs: SummaryList)(implicit request: UserAnswersRequest[_], messages: Messages)
+
+@layout(
+    pageTitle = formOpt.fold(titleNoForm(pluralSingular("prevalidateTrader.addToList.title", addedEpcs.rows.length))) {
+        form => title(form, pluralSingular("prevalidateTrader.addToList.title", addedEpcs.rows.length))
+    },
+    maybeShowActiveTrader = maybeShowActiveTrader(request.request),
+    maybeShowNavigationBanner = None
+) {
+
+    @formHelper(action = onSubmitCall, 'autoComplete -> "off") {
+
+      @formOpt.map { form =>
+        @if(form.errors.nonEmpty) {
+          @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+      }
+
+      @h2(messages("prevalidateTrader.caption"), "govuk-caption-xl")
+      @h1(classes = "govuk-heading-l")(Html(pluralSingular("prevalidateTrader.addToList.heading", addedEpcs.rows.length)))
+
+      @govukSummaryList(addedEpcs)
+
+      @formOpt.map { form =>
+          @govukRadios(
+              RadiosViewModel.yesNo(
+                  field = form("value"),
+                  legend = LegendViewModel(Text(messages("prevalidateTrader.addToList.h2"))).withCssClass(LegendSize.Medium.toString)
+              )
+          )
+      }
+
+      @saveAndContinue()
+
+    }
+}
+
+@{
+    //$COVERAGE-OFF$
+}

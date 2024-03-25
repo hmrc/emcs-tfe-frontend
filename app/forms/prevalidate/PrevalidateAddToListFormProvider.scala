@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-package fixtures.messages
+package forms.prevalidate
 
-import play.api.i18n.Lang
+import forms.mappings.Mappings
+import play.api.data.Form
 
+import javax.inject.Inject
 
-trait BaseMessages { _: i18n =>
-  def titleHelper(heading: String) = s"$heading - Excise Movement and Control System - GOV.UK"
-  val opensInNewTab: String
-  val lang: Lang
+class PrevalidateAddToListFormProvider @Inject() extends Mappings {
 
-  val prevalidateTraderCaption: String = "Prevalidate a trader"
-
-  val continue = "Continue"
-  val saveAndContinue = "Save and continue"
-  val change = "Change"
-  val remove = "Remove"
-  val yes = "Yes"
-  val no = "No"
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("prevalidateTrader.addToList.error.required")
+    )
 }
-
-trait BaseEnglish extends BaseMessages with EN {
-  override val opensInNewTab: String = "(opens in new tab)"
-}
-object BaseEnglish extends BaseEnglish
