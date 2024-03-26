@@ -81,12 +81,12 @@ class PrevalidateRemoveExciseProductCodeControllerSpec
     }
 
     //scalastyle:off
-    "redirect back to the start page when the index is out of bounds" in new Fixture(Some(baseUserAnswers)) {
+    "redirect back to the add to list page when the index is out of bounds" in new Fixture(Some(baseUserAnswers)) {
 
       val result = controller.onPageLoad(testErn, testIndex2)(getRequest)
 
       status(result) mustEqual SEE_OTHER
-      redirectLocation(result).get mustBe routes.PrevalidateTraderStartController.onPageLoad(testErn).url
+      redirectLocation(result).get mustBe routes.PrevalidateAddToListController.onPageLoad(testErn).url
     }
 
     "redirect to to the start page when no existing data is found" in new Fixture(None) {
@@ -149,12 +149,12 @@ class PrevalidateRemoveExciseProductCodeControllerSpec
     }
 
     //scalastyle:off
-    "redirect back to the start page when the index is out of bounds" in new Fixture(Some(emptyUserAnswers.set(PrevalidateEPCPage(testIndex1), wineExciseProductCode))) {
+    "redirect back to the add to list page when the index is out of bounds" in new Fixture(Some(emptyUserAnswers.set(PrevalidateEPCPage(testIndex1), wineExciseProductCode))) {
 
       val result = controller.onSubmit(testErn, testIndex2)(postRequest.withFormUrlEncodedBody(("value", "true")))
 
       status(result) mustEqual SEE_OTHER
-      redirectLocation(result).get mustBe routes.PrevalidateTraderStartController.onPageLoad(testErn).url
+      redirectLocation(result).get mustBe routes.PrevalidateAddToListController.onPageLoad(testErn).url
     }
 
     "redirect to to the start page when no existing data is found" in new Fixture(None) {

@@ -91,14 +91,14 @@ class PrevalidateRemoveExciseProductCodeController @Inject()(override val contro
   private def validateIndex(index: Index)(onSuccess: => Result)(implicit request: UserAnswersRequest[_]): Result = {
     super.validateIndex(PrevalidateTraderEPCCount, index)(
       onSuccess,
-      Redirect(controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(request.ern))
+      Redirect(controllers.prevalidateTrader.routes.PrevalidateAddToListController.onPageLoad(request.ern))
     )
   }
 
   private def validateIndexAsync(index: Index)(onSuccess: => Future[Result])(implicit request: UserAnswersRequest[_]): Future[Result] = {
     super.validateIndex(PrevalidateTraderEPCCount, index)(
       onSuccess,
-      Future.successful(Redirect(controllers.prevalidateTrader.routes.PrevalidateTraderStartController.onPageLoad(request.ern)))
+      Future.successful(Redirect(controllers.prevalidateTrader.routes.PrevalidateAddToListController.onPageLoad(request.ern)))
     )
   }
 }
