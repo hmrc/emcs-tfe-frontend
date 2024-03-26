@@ -65,7 +65,7 @@ class BaseUserAnswersRepository(collectionName: String,
     collection
       .updateOne(
         filter = by(ern),
-        update = Updates.set("lastUpdated", time.instant()),
+        update = Updates.set("lastUpdated", time.instant())
       )
       .toFuture()
       .map(_ => true)

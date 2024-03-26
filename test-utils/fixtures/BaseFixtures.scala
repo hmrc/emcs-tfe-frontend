@@ -38,8 +38,8 @@ trait BaseFixtures {
   val testTraderName = "testTraderName"
   val testUniqueMessageIdentifier = 1234
   val testOnwardRoute: Call = Call("GET", "/foo")
-  val testIndex1 = Index(0)
-  val testIndex2 = Index(1)
+  val testIndex1: Index = Index(0)
+  val testIndex2: Index = Index(1)
 
   val testDutyPaidErn = "XIPATestErn"
 
