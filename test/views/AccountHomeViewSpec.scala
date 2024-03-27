@@ -95,8 +95,7 @@ class AccountHomeViewSpec extends SpecBase {
 
           if (roleType.isConsignor) {
             movementsLinks.get(2).text mustBe "Draft movements"
-            //TODO update link location when built
-            movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+            movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.DraftsController.onPageLoad(ern).url
           } else {
             movementsLinks.text mustNot contain("Draft movements")
           }

@@ -18,9 +18,11 @@ package controllers.messages
 
 import base.SpecBase
 import config.{ErrorHandler, SessionKeys}
-import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
+import controllers.predicates.{BetaAllowListActionImpl, FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.MessagesFixtures
 import fixtures.messages.EN
+import mocks.config.MockAppConfig
+import mocks.connectors.MockBetaAllowListConnector
 import mocks.services.MockGetMessagesService
 import models.messages.{MessagesSearchOptions, MessagesSortingSelectOption}
 import models.requests.DataRequest
@@ -36,7 +38,9 @@ import views.html.messages.ViewAllMessagesView
 
 import scala.concurrent.Future
 
-class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with FakeAuthAction with MockGetMessagesService {
+class ViewAllMessagesControllerSpec
+  extends SpecBase
+    with MessagesFixtures with FakeAuthAction with MockGetMessagesService with MockAppConfig with MockBetaAllowListConnector {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -44,15 +48,27 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
 
   lazy val view = app.injector.instanceOf[ViewAllMessagesView]
 
-  lazy val controller: ViewAllMessagesController = new ViewAllMessagesController(
-    mcc = app.injector.instanceOf[MessagesControllerComponents],
-    auth = FakeSuccessAuthAction,
-    getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
-    betaAllowList = new FakeBetaAllowListAction,
-    getMessagesService = mockGetMessagesService,
-    view = view,
-    app.injector.instanceOf[ErrorHandler]
-  )
+  class Test(navHubEnabled: Boolean = true, messageInboxEnabled: Boolean = true) {
+    lazy val betaAllowListAction = new BetaAllowListActionImpl(
+      betaAllowListConnector = mockBetaAllowListConnector,
+      errorHandler = errorHandler,
+      config = mockAppConfig
+    )
+
+    lazy val controller: ViewAllMessagesController = new ViewAllMessagesController(
+      mcc = app.injector.instanceOf[MessagesControllerComponents],
+      auth = FakeSuccessAuthAction,
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      betaAllowList = betaAllowListAction,
+      getMessagesService = mockGetMessagesService,
+      view = view,
+      app.injector.instanceOf[ErrorHandler]
+    )(ec, appConfig)
+
+    MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
+    MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(navHubEnabled)))
+    MockBetaAllowListConnector.check(testErn, "tfeMessageInbox").returns(Future.successful(Right(messageInboxEnabled)))
+  }
 
 
   "GET" when {
@@ -60,209 +76,224 @@ class ViewAllMessagesControllerSpec extends SpecBase with MessagesFixtures with 
 
     implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
-    "service call to get messages is successful" should {
+    "user is NOT on the private beta list" should {
 
-      "redirect to the index 1 when current index is below the minimum" in {
-        val searchOptions = MessagesSearchOptions(index = 0)
+      "redirect to legacy's messages URL" in new Test(messageInboxEnabled = false) {
 
-        val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
-
-        status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions(index = 1)).url)
-      }
-
-
-      "show the correct view with an index of 1" in {
-        val numberOfMessages = 30
-
-        val messagesResponse = constructMessageResponse(numberOfMessages)
-
-        val search = MessagesSearchOptions(index = 1)
-
-        MockGetMessagesService
-          .getMessages(testErn, Some(search))
-          .returns(Future.successful(messagesResponse))
-
-        val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
-
-        status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(
-          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messages,
-          totalNumberOfPages = 3,
-          searchOptions = search
-        ).toString()
-      }
-
-      "show the correct view with an index of 2" in {
-        val numberOfMessages = 30
-
-        val messagesResponse = constructMessageResponse(numberOfMessages)
-
-        val search = MessagesSearchOptions(index = 2)
-
-        MockGetMessagesService
-          .getMessages(testErn, Some(search))
-          .returns(Future.successful(messagesResponse))
-
-        val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
-
-        status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(
-          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messages,
-          totalNumberOfPages = 3,
-          searchOptions = search
-        ).toString()
-      }
-
-      "show the correct view with an index of 3" in {
-        val numberOfMessages = 30
-
-        val messagesResponse = constructMessageResponse(numberOfMessages)
-
-        val search = MessagesSearchOptions(index = 3)
-
-        MockGetMessagesService
-          .getMessages(testErn, Some(search))
-          .returns(Future.successful(messagesResponse))
-
-        val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
-
-        status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(
-          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messages,
-          totalNumberOfPages = 3,
-          searchOptions = search
-        ).toString()
-      }
-
-      "show the correct view when message count is 1 above a multiple of the pageCount" in {
-        val numberOfMessages = 31
-
-        val messagesResponse = constructMessageResponse(numberOfMessages)
-
-        val search = MessagesSearchOptions(index = 4)
-
-        MockGetMessagesService
-          .getMessages(testErn, Some(search))
-          .returns(Future.successful(messagesResponse))
-
-        val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
-
-        status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(
-          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messages,
-          totalNumberOfPages = 4,
-          searchOptions = search
-        ).toString()
-      }
-
-      "show the correct view when message count is 1 below a multiple of the pageCount" in {
-        val numberOfMessages = 29
-
-        val messagesResponse = constructMessageResponse(numberOfMessages)
-
-        val search = MessagesSearchOptions(index = 3)
-
-        MockGetMessagesService
-          .getMessages(testErn, Some(search))
-          .returns(Future.successful(messagesResponse))
-
-        val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
-
-        status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(
-          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messages,
-          totalNumberOfPages = 3,
-          searchOptions = search
-        ).toString()
-      }
-
-      "show the correct view when there are no messages available" in {
-        val numberOfMessages = 0
-
-        val messagesResponse = constructMessageResponse(numberOfMessages)
-
-        val search = MessagesSearchOptions()
-
-        MockGetMessagesService
-          .getMessages(testErn, Some(search))
-          .returns(Future.successful(messagesResponse))
-
-        val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
-
-        status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(
-          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messages,
-          totalNumberOfPages = 1,
-          searchOptions = search
-        ).toString()
-      }
-
-      "redirect to the index 1 when current index is above the maximum" in {
-        val numberOfMessages = 30
-
-        val messagesResponse = constructMessageResponse(numberOfMessages)
-
-        val search = MessagesSearchOptions(index = 4)
-
-        MockGetMessagesService
-          .getMessages(testErn, Some(search))
-          .returns(Future.successful(messagesResponse))
-
-        val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(testErn, MessagesSearchOptions())(fakeRequest)
 
         status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions(index = 1)).url)
-      }
-
-      "show deleted message success banner, if the DELETED_MESSAGE_DESCRIPTION_KEY session variable is set" in {
-        val deletedMessageDescriptionKey = "messages.IE837.true.1.description"
-
-        implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
-          FakeRequest("GET", "/")
-            .withFlash(SessionKeys.DELETED_MESSAGE_DESCRIPTION_KEY -> deletedMessageDescriptionKey)
-
-        val messagesResponse = constructMessageResponse(numberOfMessages = 0)
-        val search = MessagesSearchOptions()
-
-        MockGetMessagesService
-          .getMessages(testErn, Some(search))
-          .returns(Future.successful(messagesResponse))
-
-        val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
-
-        status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(
-          sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
-          allMessages = messagesResponse.messages,
-          totalNumberOfPages = 1,
-          searchOptions = search,
-          maybeDeletedMessageDescriptionKey = Some(deletedMessageDescriptionKey)
-        ).toString()
+        redirectLocation(result) shouldBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/messages")
       }
     }
 
-    "service call to get messages is un-successful" should {
-      "return 500 response" in {
-        implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
 
-        val searchOptions = MessagesSearchOptions()
+    "user is on the private beta list" should {
 
-        MockGetMessagesService
-          .getMessages(testErn, Some(searchOptions))
-          .returns(Future.failed(MessagesException("bang")))
+      "service call to get messages is successful" should {
 
-        val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
+        "redirect to the index 1 when current index is below the minimum" in new Test {
+          val searchOptions = MessagesSearchOptions(index = 0)
 
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
+
+          status(result) shouldBe Status.SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions(index = 1)).url)
+        }
+
+        "show the correct view with an index of 1" in new Test {
+          val numberOfMessages = 30
+
+          val messagesResponse = constructMessageResponse(numberOfMessages)
+
+          val search = MessagesSearchOptions(index = 1)
+
+          MockGetMessagesService
+            .getMessages(testErn, Some(search))
+            .returns(Future.successful(messagesResponse))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          contentAsString(result) shouldBe view(
+            sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
+            allMessages = messagesResponse.messages,
+            totalNumberOfPages = 3,
+            searchOptions = search
+          ).toString()
+        }
+
+        "show the correct view with an index of 2" in new Test {
+          val numberOfMessages = 30
+
+          val messagesResponse = constructMessageResponse(numberOfMessages)
+
+          val search = MessagesSearchOptions(index = 2)
+
+          MockGetMessagesService
+            .getMessages(testErn, Some(search))
+            .returns(Future.successful(messagesResponse))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          contentAsString(result) shouldBe view(
+            sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
+            allMessages = messagesResponse.messages,
+            totalNumberOfPages = 3,
+            searchOptions = search
+          ).toString()
+        }
+
+        "show the correct view with an index of 3" in new Test {
+          val numberOfMessages = 30
+
+          val messagesResponse = constructMessageResponse(numberOfMessages)
+
+          val search = MessagesSearchOptions(index = 3)
+
+          MockGetMessagesService
+            .getMessages(testErn, Some(search))
+            .returns(Future.successful(messagesResponse))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          contentAsString(result) shouldBe view(
+            sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
+            allMessages = messagesResponse.messages,
+            totalNumberOfPages = 3,
+            searchOptions = search
+          ).toString()
+        }
+
+        "show the correct view when message count is 1 above a multiple of the pageCount" in new Test {
+          val numberOfMessages = 31
+
+          val messagesResponse = constructMessageResponse(numberOfMessages)
+
+          val search = MessagesSearchOptions(index = 4)
+
+          MockGetMessagesService
+            .getMessages(testErn, Some(search))
+            .returns(Future.successful(messagesResponse))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          contentAsString(result) shouldBe view(
+            sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
+            allMessages = messagesResponse.messages,
+            totalNumberOfPages = 4,
+            searchOptions = search
+          ).toString()
+        }
+
+        "show the correct view when message count is 1 below a multiple of the pageCount" in new Test {
+          val numberOfMessages = 29
+
+          val messagesResponse = constructMessageResponse(numberOfMessages)
+
+          val search = MessagesSearchOptions(index = 3)
+
+          MockGetMessagesService
+            .getMessages(testErn, Some(search))
+            .returns(Future.successful(messagesResponse))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          contentAsString(result) shouldBe view(
+            sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
+            allMessages = messagesResponse.messages,
+            totalNumberOfPages = 3,
+            searchOptions = search
+          ).toString()
+        }
+
+        "show the correct view when there are no messages available" in new Test {
+          val numberOfMessages = 0
+
+          val messagesResponse = constructMessageResponse(numberOfMessages)
+
+          val search = MessagesSearchOptions()
+
+          MockGetMessagesService
+            .getMessages(testErn, Some(search))
+            .returns(Future.successful(messagesResponse))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          contentAsString(result) shouldBe view(
+            sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
+            allMessages = messagesResponse.messages,
+            totalNumberOfPages = 1,
+            searchOptions = search
+          ).toString()
+        }
+
+        "redirect to the index 1 when current index is above the maximum" in new Test {
+          val numberOfMessages = 30
+
+          val messagesResponse = constructMessageResponse(numberOfMessages)
+
+          val search = MessagesSearchOptions(index = 4)
+
+          MockGetMessagesService
+            .getMessages(testErn, Some(search))
+            .returns(Future.successful(messagesResponse))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
+
+          status(result) shouldBe Status.SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions(index = 1)).url)
+        }
+
+        "show deleted message success banner, if the DELETED_MESSAGE_DESCRIPTION_KEY session variable is set" in new Test {
+          val deletedMessageDescriptionKey = "messages.IE837.true.1.description"
+
+          implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+            FakeRequest("GET", "/")
+              .withFlash(SessionKeys.DELETED_MESSAGE_DESCRIPTION_KEY -> deletedMessageDescriptionKey)
+
+          val messagesResponse = constructMessageResponse(numberOfMessages = 0)
+          val search = MessagesSearchOptions()
+
+          MockGetMessagesService
+            .getMessages(testErn, Some(search))
+            .returns(Future.successful(messagesResponse))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, search)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          contentAsString(result) shouldBe view(
+            sortSelectItems = MessagesSortingSelectOption.constructSelectItems(Some(search.sortBy.code)),
+            allMessages = messagesResponse.messages,
+            totalNumberOfPages = 1,
+            searchOptions = search,
+            maybeDeletedMessageDescriptionKey = Some(deletedMessageDescriptionKey)
+          ).toString()
+        }
+      }
+
+      "service call to get messages is un-successful" should {
+        "return 500 response" in new Test {
+          implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+
+          val searchOptions = MessagesSearchOptions()
+
+          MockGetMessagesService
+            .getMessages(testErn, Some(searchOptions))
+            .returns(Future.failed(MessagesException("bang")))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
+
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        }
       }
     }
-
   }
+
+
 }

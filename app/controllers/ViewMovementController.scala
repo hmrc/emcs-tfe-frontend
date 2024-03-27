@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.ErrorHandler
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -39,7 +39,9 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        errorHandler: ErrorHandler,
                                        helper: ViewMovementHelper,
                                        timelineHelper: TimelineHelper
-                                      )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport with AuthActionHelper {
+                                      )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends FrontendController(mcc)
+    with I18nSupport with AuthActionHelper {
 
   def viewMovementOverview(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
     viewMovement(exciseRegistrationNumber, arc, Overview)
@@ -68,7 +70,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                             currentSubNavigationTab: SubNavigationTab
                           ): Action[AnyContent] =
 
-    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
+    authorisedDataRequestAsync(exciseRegistrationNumber, viewMovementBetaGuard(exciseRegistrationNumber, arc)) { implicit request =>
       getMovementService.getMovement(exciseRegistrationNumber, arc).flatMap { movement =>
         helper.movementCard(currentSubNavigationTab, movement).map { movementCard =>
           Ok(view(

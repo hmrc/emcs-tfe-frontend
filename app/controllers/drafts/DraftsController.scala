@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,37 +14,29 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.drafts
 
 import config.AppConfig
 import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
-import models.common.RoleType
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.AccountHomeView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
-                                      view: AccountHomeView,
-                                      val auth: AuthAction,
-                                      val getData: DataRetrievalAction,
-                                      val betaAllowList: BetaAllowListAction
-                                     )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+class DraftsController @Inject()(mcc: MessagesControllerComponents,
+                                 val auth: AuthAction,
+                                 val getData: DataRetrievalAction,
+                                 val betaAllowList: BetaAllowListAction
+                                )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
 
-  def viewAccountHome(exciseRegistrationNumber: String): Action[AnyContent] = {
-    authorisedDataRequestAsync(exciseRegistrationNumber, homeBetaGuard(exciseRegistrationNumber)) { implicit request =>
+  def onPageLoad(ern: String): Action[AnyContent] = {
+    authorisedDataRequestAsync(ern, draftsBetaGuard(ern)) { implicit _ =>
       Future.successful(
-        Ok(
-          view(
-            exciseRegistrationNumber,
-            RoleType.fromExciseRegistrationNumber(exciseRegistrationNumber)
-          )
-        )
+        Redirect(testOnly.controllers.routes.UnderConstructionController.onPageLoad().url)
       )
     }
   }

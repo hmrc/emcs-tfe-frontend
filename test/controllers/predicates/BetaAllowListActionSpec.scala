@@ -17,6 +17,7 @@
 package controllers.predicates
 
 import base.SpecBase
+import controllers.helpers.BetaChecks
 import mocks.config.MockAppConfig
 import mocks.connectors.MockBetaAllowListConnector
 import models.auth.UserRequest
@@ -29,7 +30,7 @@ import play.api.test.Helpers._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BetaAllowListActionSpec extends SpecBase with MockFactory with MockBetaAllowListConnector with MockAppConfig {
+class BetaAllowListActionSpec extends SpecBase with MockFactory with MockBetaAllowListConnector with MockAppConfig with BetaChecks {
 
   implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
@@ -43,13 +44,13 @@ class BetaAllowListActionSpec extends SpecBase with MockFactory with MockBetaAll
 
     if(enabled) {
       MockedAppConfig.betaAllowListCheckingEnabled.returns(true)
-      MockBetaAllowListConnector.check(testErn)
+      MockBetaAllowListConnector.check(testErn, navigationHubBetaGuard()._1)
         .returns(Future.successful(connectorResponse))
     } else {
       MockedAppConfig.betaAllowListCheckingEnabled.returns(false)
     }
 
-    val result: Future[Result] = betaAllowListAction.invokeBlock(userRequest(FakeRequest()), { _: UserRequest[_] =>
+    val result: Future[Result] = betaAllowListAction(navigationHubBetaGuard()).invokeBlock(userRequest(FakeRequest()), { _: UserRequest[_] =>
       Future.successful(Ok)
     })
   }

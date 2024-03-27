@@ -27,9 +27,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class BetaAllowListConnector @Inject()(http: HttpClient, config: AppConfig) extends BetaAllowListHttpParser with Logging {
 
-  def check(ern: String)
+  def check(ern: String, service: String)
            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Boolean]] = {
-    http.GET(url = config.emcsTfeBaseUrl + s"/beta/eligibility/$ern/${config.betaCheckServiceName}")
+    http.GET(url = config.emcsTfeBaseUrl + s"/beta/eligibility/$ern/$service")
   }.recover {
     error =>
       logger.warn(s"[check] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
