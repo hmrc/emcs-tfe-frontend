@@ -31,32 +31,32 @@ class ViewMovementDeliveryHelper @Inject()(
 
   def constructMovementDelivery(movementResponse: GetMovementResponse)(implicit messages: Messages): Html = {
     val consignorSummaryCards = Seq(
-      summaryListRowBuilder("viewMovement.delivery.consignor.name", movementResponse.consignorTrader.traderName),
-      summaryListRowBuilder("viewMovement.delivery.consignor.ern", movementResponse.consignorTrader.traderExciseNumber),
-      summaryListRowBuilder("viewMovement.delivery.consignor.address", renderAddress(movementResponse.consignorTrader.address))
+      movementResponse.consignorTrader.traderName.map(name => summaryListRowBuilder("viewMovement.delivery.consignor.name", name)),
+      movementResponse.consignorTrader.traderExciseNumber.map(ern => summaryListRowBuilder("viewMovement.delivery.consignor.ern", ern)),
+      movementResponse.consignorTrader.address.map(address => summaryListRowBuilder("viewMovement.delivery.consignor.address", renderAddress(address)))
     )
 
     val optPlaceOfDispatchSummaryCards = movementResponse.placeOfDispatchTrader.map { placeOfDispatch =>
       Seq(
-        summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.name", placeOfDispatch.traderName),
-        summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.ern", placeOfDispatch.traderExciseNumber),
-        summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.address", renderAddress(placeOfDispatch.address))
+        placeOfDispatch.traderName.map(name => summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.name", name)),
+        placeOfDispatch.traderExciseNumber.map(ern => summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.ern", ern)),
+        placeOfDispatch.address.map(address => summaryListRowBuilder("viewMovement.delivery.placeOfDispatch.address", renderAddress(address)))
       )
     }
 
     val optConsigneeSummaryCards = movementResponse.consigneeTrader.map { consigneeTrader =>
       Seq(
-        summaryListRowBuilder("viewMovement.delivery.consignee.name", consigneeTrader.traderName),
-        summaryListRowBuilder("viewMovement.delivery.consignee.ern", consigneeTrader.traderExciseNumber),
-        summaryListRowBuilder("viewMovement.delivery.consignee.address", renderAddress(consigneeTrader.address))
+        consigneeTrader.traderName.map(name => summaryListRowBuilder("viewMovement.delivery.consignee.name", name)),
+        consigneeTrader.traderExciseNumber.map(ern => summaryListRowBuilder("viewMovement.delivery.consignee.ern", ern)),
+        consigneeTrader.address.map(address => summaryListRowBuilder("viewMovement.delivery.consignee.address", renderAddress(address)))
       )
     }
 
     val optPlaceOfDestinationCards = movementResponse.deliveryPlaceTrader.map { deliverPlaceTrader =>
       Seq(
-        summaryListRowBuilder("viewMovement.delivery.placeOfDestination.name", deliverPlaceTrader.traderName),
-        summaryListRowBuilder("viewMovement.delivery.placeOfDestination.ern", deliverPlaceTrader.traderExciseNumber),
-        summaryListRowBuilder("viewMovement.delivery.placeOfDestination.address", renderAddress(deliverPlaceTrader.address))
+        deliverPlaceTrader.traderName.map( name => summaryListRowBuilder("viewMovement.delivery.placeOfDestination.name", name)),
+        deliverPlaceTrader.traderExciseNumber.map(ern => summaryListRowBuilder("viewMovement.delivery.placeOfDestination.ern", ern)),
+        deliverPlaceTrader.address.map(address => summaryListRowBuilder("viewMovement.delivery.placeOfDestination.address", renderAddress(address)))
       )
     }
 
@@ -64,27 +64,27 @@ class ViewMovementDeliveryHelper @Inject()(
       overviewPartial(
         headingMessageKey = Some("viewMovement.delivery.title"),
         cardTitleMessageKey = "viewMovement.delivery.consignor",
-        consignorSummaryCards
+        consignorSummaryCards.flatten
       ),
       optPlaceOfDispatchSummaryCards.map { placeOfDispatchSummaryCards =>
         overviewPartial(
           headingMessageKey = None,
           cardTitleMessageKey = "viewMovement.delivery.placeOfDispatch",
-          placeOfDispatchSummaryCards
+          placeOfDispatchSummaryCards.flatten
         )
       }.getOrElse(Html("")),
       optConsigneeSummaryCards.map { consigneeSummaryCards =>
         overviewPartial(
           headingMessageKey = None,
           cardTitleMessageKey = "viewMovement.delivery.consignee",
-          consigneeSummaryCards
+          consigneeSummaryCards.flatten
         )
       }.getOrElse(Html("")),
       optPlaceOfDestinationCards.map { placeOfDestinationCards =>
         overviewPartial(
           headingMessageKey = None,
           cardTitleMessageKey = "viewMovement.delivery.placeOfDestination",
-          placeOfDestinationCards
+          placeOfDestinationCards.flatten
         )
       }.getOrElse(Html(""))
     ))

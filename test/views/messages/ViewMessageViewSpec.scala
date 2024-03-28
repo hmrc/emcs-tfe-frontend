@@ -181,8 +181,8 @@ class ViewMessageViewSpec extends ViewSpecBase
 
       val movementWithLoggedInUserAsConsignor = Some(getMovementResponseModel
         .copy(
-          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = testErn),
-          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = "GB00000000000"))
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(testErn)),
+          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some("GB00000000000")))
         )
       )
 
@@ -255,8 +255,8 @@ class ViewMessageViewSpec extends ViewSpecBase
 
       val movementWithLoggedInUserAsConsignee = Some(getMovementResponseModel
         .copy(
-          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = "GB00000000000"),
-          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = testErn))
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GB00000000000")),
+          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some(testErn)))
         )
       )
 

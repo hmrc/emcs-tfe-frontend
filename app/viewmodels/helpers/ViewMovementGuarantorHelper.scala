@@ -35,9 +35,9 @@ class ViewMovementGuarantorHelper @Inject()(h2: h2,
     val guarantor = movementResponse.movementGuarantee
     lazy val optFirstGuarantor = guarantor.guarantorTrader.flatMap(_.headOption)
     lazy val guarantorArranger = summaryListRowBuilder("viewMovement.guarantor.summary.type", messages(s"viewMovement.guarantor.summary.type.${guarantor.guarantorTypeCode}"))
-    lazy val guarantorBusinessName = optFirstGuarantor.map(firstGuarantor => summaryListRowBuilder("viewMovement.guarantor.summary.businessName", firstGuarantor.traderName))
-    lazy val guarantorErn = optFirstGuarantor.map(firstGuarantor => summaryListRowBuilder("viewMovement.guarantor.summary.ern", firstGuarantor.traderExciseNumber))
-    lazy val guarantorAddress = optFirstGuarantor.map(firstGuarantor => summaryListRowBuilder("viewMovement.guarantor.summary.address", renderAddress(firstGuarantor.address)))
+    lazy val guarantorBusinessName = optFirstGuarantor.flatMap(firstGuarantor => firstGuarantor.traderName.map(name => summaryListRowBuilder("viewMovement.guarantor.summary.businessName", name)))
+    lazy val guarantorErn = optFirstGuarantor.flatMap(firstGuarantor => firstGuarantor.traderExciseNumber.map(ern => summaryListRowBuilder("viewMovement.guarantor.summary.ern", ern)))
+    lazy val guarantorAddress = optFirstGuarantor.flatMap(firstGuarantor => firstGuarantor.address.map(address => summaryListRowBuilder("viewMovement.guarantor.summary.address", renderAddress(address))))
     lazy val guarantorVatNumber = optFirstGuarantor.flatMap(_.vatNumber.map(firstGuarantorVatNumber => summaryListRowBuilder("viewMovement.guarantor.summary.vatRegistrationNumber", firstGuarantorVatNumber)))
 
     guarantor.guarantorTypeCode match {

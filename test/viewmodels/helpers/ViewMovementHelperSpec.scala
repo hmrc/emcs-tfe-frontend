@@ -150,15 +150,16 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
           destinationType = TaxWarehouse,
           deliveryPlaceTrader = Some(TraderModel(
-            traderExciseNumber = "GBWK123456789",
-            traderName = "Current 801 Consignee",
-            address = AddressModel(
+            traderExciseNumber = Some("GBWK123456789"),
+            traderName = Some("Current 801 Consignee"),
+            address = Some(AddressModel(
               streetNumber = None,
               street = Some("Main101"),
               postcode = Some("ZZ78"),
               city = Some("Zeebrugge")
-            ),
-            vatNumber = Some("GB123456789")
+            )),
+            vatNumber = Some("GB123456789"),
+            eoriNumber = None
           ))
         ))
 
@@ -170,15 +171,16 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
           destinationType = TaxWarehouse,
           deliveryPlaceTrader = Some(TraderModel(
-            traderExciseNumber = "XI00345GTR145",
-            traderName = "Current 801 Consignee",
-            address = AddressModel(
+            traderExciseNumber = Some("XI00345GTR145"),
+            traderName = Some("Current 801 Consignee"),
+            address = Some(AddressModel(
               streetNumber = None,
               street = Some("Main101"),
               postcode = Some("ZZ78"),
               city = Some("Zeebrugge")
-            ),
-            vatNumber = Some("GB123456789")
+            )),
+            vatNumber = Some("GB123456789"),
+            eoriNumber = None
           ))
         ))
 
@@ -200,15 +202,16 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = destinationTypeToMessage._1,
             placeOfDispatchTrader = Some(TraderModel(
-              traderExciseNumber = "GBRC345GTR145",
-              traderName = "Current 801 Consignee",
-              address = AddressModel(
+              traderExciseNumber = Some("GBRC345GTR145"),
+              traderName = Some("Current 801 Consignee"),
+              address = Some(AddressModel(
                 streetNumber = None,
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              ),
-              vatNumber = Some("GB123456789")
+              )),
+              vatNumber = Some("GB123456789"),
+              eoriNumber = None
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
@@ -232,15 +235,16 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = destinationTypeToMessage._1,
             placeOfDispatchTrader = Some(TraderModel(
-              traderExciseNumber = "XI00345GTR145",
-              traderName = "Current 801 Consignee",
-              address = AddressModel(
+              traderExciseNumber = Some("XI00345GTR145"),
+              traderName = Some("Current 801 Consignee"),
+              address = Some(AddressModel(
                 streetNumber = None,
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              ),
-              vatNumber = Some("GB123456789")
+              )),
+              vatNumber = Some("GB123456789"),
+              eoriNumber = None
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 

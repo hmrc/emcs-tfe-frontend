@@ -18,11 +18,11 @@ package models.common
 
 import play.api.libs.json.{Json, OFormat}
 
-case class TraderModel(traderExciseNumber: String,
-                       traderName: String,
-                       address: AddressModel,
-                       vatNumber: Option[String]) {
-}
+case class TraderModel(traderExciseNumber: Option[String],
+                       traderName: Option[String],
+                       address: Option[AddressModel],
+                       vatNumber: Option[String],
+                       eoriNumber: Option[String])
 
 object TraderModel {
   implicit val format: OFormat[TraderModel] = Json.format

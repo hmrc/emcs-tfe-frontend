@@ -74,15 +74,16 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
         "deliveryPlaceTrader.traderExciseNumber starts with GB" in {
           MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
             deliveryPlaceTrader = Some(TraderModel(
-              traderExciseNumber = "GBWK345GTR145",
-              traderName = "Current 801 Consignee",
-              address = AddressModel(
+              traderExciseNumber = Some("GBWK345GTR145"),
+              traderName = Some("Current 801 Consignee"),
+              address = Some(AddressModel(
                 streetNumber = None,
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              ),
-              vatNumber = Some("GB123456789")
+              )),
+              vatNumber = Some("GB123456789"),
+              eoriNumber = None
             )),
             destinationType = TaxWarehouse
           )) mustBe GbTaxWarehouse
@@ -91,15 +92,16 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
         "deliveryPlaceTrader.traderExciseNumber starts with XI" in {
           MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
             deliveryPlaceTrader = Some(TraderModel(
-              traderExciseNumber = "XIWK345GTR145",
-              traderName = "Current 801 Consignee",
-              address = AddressModel(
+              traderExciseNumber = Some("XIWK345GTR145"),
+              traderName = Some("Current 801 Consignee"),
+              address = Some(AddressModel(
                 streetNumber = None,
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              ),
-              vatNumber = Some("XI123456789")
+              )),
+              vatNumber = Some("XI123456789"),
+              eoriNumber = None
             )),
             destinationType = TaxWarehouse
           )) mustBe GbTaxWarehouse
@@ -110,15 +112,16 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
         "deliveryPlaceTrader.traderExciseNumber does not start with GB or XI" in {
           MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
             deliveryPlaceTrader = Some(TraderModel(
-              traderExciseNumber = "FRWK345GTR145",
-              traderName = "Current 801 Consignee",
-              address = AddressModel(
+              traderExciseNumber = Some("FRWK345GTR145"),
+              traderName = Some("Current 801 Consignee"),
+              address = Some(AddressModel(
                 streetNumber = None,
                 street = Some("Main101"),
                 postcode = Some("ZZ78"),
                 city = Some("Zeebrugge")
-              ),
-              vatNumber = Some("FR123456789")
+              )),
+              vatNumber = Some("FR123456789"),
+              eoriNumber = None
             )),
             destinationType = TaxWarehouse
           )) mustBe EuTaxWarehouse

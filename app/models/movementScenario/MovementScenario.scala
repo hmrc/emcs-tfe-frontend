@@ -37,8 +37,8 @@ object MovementScenario extends Enumerable.Implicits with Logging {
     logger.debug(s"[getMovementScenarioFromMovement] destinationType: ${movementResponse.destinationType}")
     movementResponse.destinationType match {
       case DestinationType.TaxWarehouse =>
-          if (movementResponse.deliveryPlaceTrader.map(_.traderExciseNumber).exists(RoleType.isGB) ||
-            movementResponse.deliveryPlaceTrader.map(_.traderExciseNumber).exists(RoleType.isXI)) {
+          if (movementResponse.deliveryPlaceTrader.flatMap(_.traderExciseNumber).exists(RoleType.isGB) ||
+            movementResponse.deliveryPlaceTrader.flatMap(_.traderExciseNumber).exists(RoleType.isXI)) {
           MovementScenario.GbTaxWarehouse
         } else {
           MovementScenario.EuTaxWarehouse
