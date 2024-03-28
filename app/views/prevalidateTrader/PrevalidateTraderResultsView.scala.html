@@ -1,0 +1,115 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models.requests.UserAnswersRequest
+@import controllers.prevalidateTrader.routes
+
+@this(
+    layout: templates.Layout,
+    h1: components.h1,
+    h2: components.h2,
+    p: components.p,
+    link: components.link,
+    list: components.list,
+    govukButton: GovukButton
+)
+
+@(
+    ernOpt: Option[String],
+    addCodeCall: Call,
+    approved: Seq[ExciseProductCode] = Seq.empty,
+    notApproved: Seq[ExciseProductCode] = Seq.empty
+)(implicit request: UserAnswersRequest[_], messages: Messages)
+
+@layout(
+    pageTitle = titleNoForm(ernOpt.fold{
+        messages("prevalidateTrader.results.noErn.heading")
+    }{ _ =>
+        messages("prevalidateTrader.results.withErn.heading")
+    }),
+    maybeShowActiveTrader = maybeShowActiveTrader(request.request),
+    maybeShowNavigationBanner = None
+) {
+
+    @h2(messages("prevalidateTrader.caption"), "govuk-caption-xl")
+
+    @ernOpt.fold{
+        @h1(){@messages("prevalidateTrader.results.noErn.heading")}
+        @p(){
+            @link(
+                link = routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(request.ern).url,
+                messageKey = "prevalidateTrader.results.noErn.link",
+                id = Some("no-ern-link")
+            )
+        }
+    }{ ern =>
+        @h1(){@messages("prevalidateTrader.results.withErn.heading")}
+        @p(){@messages("prevalidateTrader.results.p1", ern)}
+
+        @if(!approved.isEmpty) {
+            @h2(messages("prevalidateTrader.results.h2.approved"))
+
+            @list(approved.map{ exciseCode =>
+                Html(messages("prevalidateTrader.results.bullet", exciseCode.code, exciseCode.description))
+            })
+        }
+
+        @if(!notApproved.isEmpty) {
+            @h2(messages("prevalidateTrader.results.h2.notApproved"))
+
+            @list(notApproved.map{ exciseCode =>
+                Html(messages("prevalidateTrader.results.bullet", exciseCode.code, exciseCode.description))
+            })
+        }
+
+        @p(){
+            @link(
+                link = addCodeCall.url,
+                messageKey = "prevalidateTrader.results.link.addCode",
+                id = Some("add-code-link")
+            )
+        }
+
+        @p(){
+            @link(
+                link = routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(request.ern).url,
+                messageKey = "prevalidateTrader.results.link.differentTrader",
+                id = Some("different-trader-link")
+            )
+        }
+    }
+
+    @p(){
+        @link(
+            link = controllers.routes.AccountHomeController.viewAccountHome(request.ern).url,
+            messageKey = "prevalidateTrader.results.link.returnToAccount",
+            id = Some("return-to-account-link")
+        )
+    }
+
+    @p(){
+        @link(
+            link = "#",
+            messageKey = "prevalidateTrader.results.link.feedback",
+            id = Some("feedback-link")
+        )
+        @messages("prevalidateTrader.results.link.feedback.text")
+    }
+}
+
+@{
+    //$COVERAGE-OFF$
+}

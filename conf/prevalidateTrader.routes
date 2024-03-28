@@ -14,3 +14,5 @@ POST       /trader/:ern/check-trader/product-code-add-to-list                   
 
 GET        /trader/:ern/check-trader/:idx/remove-excise-product-code                      controllers.prevalidateTrader.PrevalidateRemoveExciseProductCodeController.onPageLoad(ern: String, idx: Index)
 POST       /trader/:ern/check-trader/:idx/remove-excise-product-code                      controllers.prevalidateTrader.PrevalidateRemoveExciseProductCodeController.onSubmit(ern: String, idx: Index)
+
+GET        /trader/:ern/check-trader/trader-results                                       controllers.prevalidateTrader.PrevalidateTraderResultsController.onPageLoad(ern: String)

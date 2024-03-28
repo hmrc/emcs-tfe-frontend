@@ -743,8 +743,21 @@ prevalidateTrader.addToList.error.required = Select yes if you want to add anoth
 prevalidateTrader.addToList.change.hidden = excise product code {0}
 prevalidateTrader.addToList.remove.hidden = excise product code {0}
 
-# Prevalidate trader - remove Excise Product Code page
+# Prevalidate trader - Remove Excise Product Code page
 prevalidateTrader.removeExciseProductCode.title = Are you sure you want to remove Excise Product Code {0}?
 prevalidateTrader.removeExciseProductCode.heading = Are you sure you want to remove Excise Product Code {0}?
 prevalidateTrader.removeExciseProductCode.error = Select yes if you want to remove the Excise Product Code {0}, or select no
 
+# Prevalidate trader - Results page
+prevalidateTrader.results.noErn.heading = We cannot find consignee’s trader ID
+prevalidateTrader.results.noErn.link = Try again with another trader ID
+prevalidateTrader.results.withErn.heading = Results for this trader
+prevalidateTrader.results.p1 = Trader ID: {0}
+prevalidateTrader.results.h2.approved = Trader can receive:
+prevalidateTrader.results.h2.notApproved = Trader cannot receive:
+prevalidateTrader.results.bullet = {0}: {1}
+prevalidateTrader.results.link.addCode = Check more codes for the same trader
+prevalidateTrader.results.link.differentTrader = Check codes for a different trader
+prevalidateTrader.results.link.returnToAccount = Return to account home
+prevalidateTrader.results.link.feedback = What did you think of this service?
+prevalidateTrader.results.link.feedback.text = (takes 30 seconds)
