@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package services
+package mocks.connectors
 
 import connectors.emcsTfe.PrevalidateTraderConnector
 import models.requests.PrevalidateTraderRequest
-import models.response.PrevalidateTraderException
+import models.response.ErrorResponse
 import models.response.emcsTfe.prevalidateTrader.PreValidateTraderApiResponse
+import org.scalamock.handlers.CallHandler4
+import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class PrevalidateTraderService @Inject()(connector: PrevalidateTraderConnector)
-                                        (implicit ec: ExecutionContext) {
+trait MockPrevalidateTraderConnector extends MockFactory {
 
-  def prevalidateTrader(ern: String, ernToCheck: String, productCodesToCheck: Seq[String])(implicit hc: HeaderCarrier): Future[PreValidateTraderApiResponse] = {
+  lazy val mockPrevalidateTraderConnector: PrevalidateTraderConnector = mock[PrevalidateTraderConnector]
 
-    val requestModel = PrevalidateTraderRequest(ernToCheck, productCodesToCheck)
-    connector.prevalidateTrader(ern, requestModel).map {
-      case Left(_) => throw PrevalidateTraderException("Prevalidate trader result error")
-      case Right(response) => response
-    }
+  object MockPrevalidateTraderConnector {
+
+    def prevalidateTrader(ern: String, requestModel: PrevalidateTraderRequest): CallHandler4[String, PrevalidateTraderRequest, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, PreValidateTraderApiResponse]]] =
+      (mockPrevalidateTraderConnector.prevalidateTrader(_: String, _: PrevalidateTraderRequest)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(ern, requestModel, *, *)
   }
+
 }

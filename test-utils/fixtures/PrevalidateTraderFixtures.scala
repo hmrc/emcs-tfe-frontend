@@ -16,7 +16,7 @@
 
 package fixtures
 
-import models.response.emcsTfe.prevalidateTrader.{ExciseTraderResponse, ExciseTraderValidationResponse, PreValidateTraderApiResponse, ValidateProductAuthorisationResponse}
+import models.response.emcsTfe.prevalidateTrader._
 import play.api.libs.json.{JsValue, Json}
 
 trait PrevalidateTraderFixtures extends BaseFixtures {

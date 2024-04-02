@@ -31,7 +31,7 @@ trait MockPrevalidateTraderService extends MockFactory {
 
   object MockPrevalidateTraderService {
     def prevalidate(ern: String, ernToCheck: String, productCodesToCheck: Seq[String]): CallHandler4[String, String, Seq[String], HeaderCarrier, Future[PreValidateTraderApiResponse]] =
-      (mockPrevalidateTraderService.prevalidate(_: String, _: String, _: Seq[String])(_: HeaderCarrier))
+      (mockPrevalidateTraderService.prevalidateTrader(_: String, _: String, _: Seq[String])(_: HeaderCarrier))
         .expects(ern, ernToCheck, productCodesToCheck, *)
   }
 }
