@@ -16,8 +16,7 @@
 
 package controllers.prevalidateTrader
 
-import config.ErrorHandler
-import connectors.referenceData.GetExciseProductCodesConnector
+import config.AppConfig
 import controllers.BaseNavigationController
 import controllers.predicates._
 import models.requests.UserAnswersRequest
@@ -28,7 +27,7 @@ import pages.prevalidateTrader.{PrevalidateAddedProductCodesPage, PrevalidateCon
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.{PrevalidateTraderAddedValues, PrevalidateTraderEPCCount}
-import services.{PrevalidateTraderService, PrevalidateTraderUserAnswersService}
+import services.{GetExciseProductCodesService, PrevalidateTraderService, PrevalidateTraderUserAnswersService}
 import viewmodels.helpers.PrevalidateTraderResultsHelper
 import views.html.prevalidateTrader.PrevalidateTraderResultsView
 
@@ -46,10 +45,9 @@ class PrevalidateTraderResultsController @Inject()(
                                                     val prevalidateTraderService: PrevalidateTraderService,
                                                     val requireData: PrevalidateTraderDataRetrievalAction,
                                                     val controllerComponents: MessagesControllerComponents,
-                                                    getExciseProductCodesConnector: GetExciseProductCodesConnector,
-                                                    errorHandler: ErrorHandler,
+                                                    getExciseProductCodesService: GetExciseProductCodesService,
                                                     view: PrevalidateTraderResultsView
-                                                  ) extends BaseNavigationController with AuthActionHelper {
+                                                  )(implicit appConfig: AppConfig) extends BaseNavigationController with AuthActionHelper {
   def onPageLoad(ern: String): Action[AnyContent] =
     (authorisedWithData(ern) andThen requireData).async { implicit request =>
       withAllValidRequestData {
@@ -62,31 +60,28 @@ class PrevalidateTraderResultsController @Inject()(
         val enteredEPCs: Seq[String] = request.userAnswers.get(PrevalidateTraderAddedValues).get
         val ernToCheck: String = request.userAnswers.get(PrevalidateConsigneeTraderIdentificationPage).get
 
-        getExciseProductCodesConnector.getExciseProductCodes().flatMap(_.fold(
-          _ => Future(InternalServerError(errorHandler.internalServerErrorTemplate)),
-          epcs => {
-            prevalidateTraderService.prevalidate(ern, ernToCheck, enteredEPCs).map { prevalidateTraderResult =>
-              //Spec says that whilst the "exciseTraderResponse" is an array, it has a fixed size of 1, hence headOption (option just in case)
-              val firstPrevalidateEntry: Option[ExciseTraderResponse] = prevalidateTraderResult.exciseTraderValidationResponse.exciseTraderResponse.headOption
-              val validTraderErn: Option[String] = Option.when(firstPrevalidateEntry.exists(_.validTrader))(firstPrevalidateEntry.map(_.exciseRegistrationNumber)).flatten
-              val ineligibleEPCs: Seq[String] = firstPrevalidateEntry.flatMap(
-                _.validateProductAuthorisationResponse.flatMap(
-                  _.productError.map(
-                    _.map(_.exciseProductCode)
-                  )
+        getExciseProductCodesService.getExciseProductCodes().flatMap { epcs =>
+          prevalidateTraderService.prevalidate(ern, ernToCheck, enteredEPCs).map { prevalidateTraderResult =>
+            //Spec says that whilst the "exciseTraderResponse" is an array, it has a fixed size of 1, hence headOption (option just in case)
+            val firstPrevalidateEntry: Option[ExciseTraderResponse] = prevalidateTraderResult.exciseTraderValidationResponse.exciseTraderResponse.headOption
+            val validTraderErn: Option[String] = Option.when(firstPrevalidateEntry.exists(_.validTrader))(firstPrevalidateEntry.map(_.exciseRegistrationNumber)).flatten
+            val ineligibleEPCs: Seq[String] = firstPrevalidateEntry.flatMap(
+              _.validateProductAuthorisationResponse.flatMap(
+                _.productError.map(
+                  _.map(_.exciseProductCode)
                 )
-              ).getOrElse(Seq.empty)
+              )
+            ).getOrElse(Seq.empty)
 
-              val eligibleEPCs = enteredEPCs.diff(ineligibleEPCs)
-              Ok(view(
-                ernOpt = validTraderErn,
-                addCodeCall = addItemCall,
-                approved = PrevalidateTraderResultsHelper.parseExciseProductCodeFromStringToModel(eligibleEPCs, epcs),
-                notApproved = PrevalidateTraderResultsHelper.parseExciseProductCodeFromStringToModel(ineligibleEPCs, epcs)
-              ))
-            }
+            val eligibleEPCs = enteredEPCs.diff(ineligibleEPCs)
+            Ok(view(
+              ernOpt = validTraderErn,
+              addCodeCall = addItemCall,
+              approved = PrevalidateTraderResultsHelper.parseExciseProductCodeFromStringToModel(eligibleEPCs, epcs),
+              notApproved = PrevalidateTraderResultsHelper.parseExciseProductCodeFromStringToModel(ineligibleEPCs, epcs)
+            ))
           }
-        ))
+        }
       }
     }
 

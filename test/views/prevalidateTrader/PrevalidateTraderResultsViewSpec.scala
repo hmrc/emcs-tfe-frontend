@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package views.prevalidateTrader
 
 import base.ViewSpecBase
+import config.AppConfig
 import fixtures.messages.prevalidateTrader.PrevalidateTraderResultsMessages.English
 import fixtures.{ExciseProductCodeFixtures, ItemFixtures}
 import mocks.services.MockGetCnCodeInformationService
@@ -43,6 +44,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
 
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val config: AppConfig = appConfig
 
   object Selectors extends BaseSelectors {
     val noErnLink = "#no-ern-link"
@@ -58,7 +60,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
 
       implicit val msgs: Messages = messages(Seq(English.lang))
 
-      s"rendered for when there is no ERN" when {
+      "rendered for when there the ERN is invalid" when {
 
         implicit val request: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(FakeRequest(), emptyUserAnswers)
 
@@ -70,10 +72,10 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
         ).toString())
 
         behave like pageWithExpectedElementsAndMessages(Seq(
-          Selectors.title -> English.titleNoErn,
+          Selectors.title -> English.titleInvalidErn,
           Selectors.subHeadingCaptionSelector -> English.prevalidateTraderCaption,
-          Selectors.h1 -> English.headingNoErn,
-          Selectors.p(1) -> English.noErnLink,
+          Selectors.h1 -> English.headingInvalidErn,
+          Selectors.p(1) -> English.invalidErnLink,
           Selectors.p(2) -> English.linkReturnToAccount,
           Selectors.p(3) -> English.linkFeedback,
           Selectors.feedbackLink -> English.linkFeedback
@@ -82,7 +84,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
         Seq(
           Selectors.noErnLink -> controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url,
           Selectors.returnToAccountLink -> controllers.routes.AccountHomeController.viewAccountHome(testErn).url,
-          Selectors.feedbackLink -> "#"
+          Selectors.feedbackLink -> appConfig.feedbackFrontendSurveyUrl
         ) foreach { case (selector, route) =>
 
           s"for link $selector have the correct route" in {
@@ -91,7 +93,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
         }
       }
 
-      s"rendered for when there is an ERN and codes that are approved" when {
+      "rendered for when there is a valid ERN and codes that are approved" when {
 
         val exciseProductCodes = Seq(tobaccoExciseProductCode, beerExciseProductCode, wineExciseProductCode)
 
@@ -124,7 +126,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
           Selectors.addCodeLink -> testOnwardRoute.url,
           Selectors.differentTraderLInk -> controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url,
           Selectors.returnToAccountLink -> controllers.routes.AccountHomeController.viewAccountHome(testErn).url,
-          Selectors.feedbackLink -> "#"
+          Selectors.feedbackLink -> appConfig.feedbackFrontendSurveyUrl
         ) foreach { case (selector, route) =>
 
           s"for link $selector have the correct route" in {
@@ -133,7 +135,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
         }
       }
 
-      s"rendered for when there is an ERN and codes that are not approved" when {
+      "rendered for when there is a valid ERN and codes that are not approved" when {
 
         val exciseProductCodes = Seq(beerExciseProductCode, wineExciseProductCode, tobaccoExciseProductCode)
 
@@ -166,7 +168,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
           Selectors.addCodeLink -> testOnwardRoute.url,
           Selectors.differentTraderLInk -> controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url,
           Selectors.returnToAccountLink -> controllers.routes.AccountHomeController.viewAccountHome(testErn).url,
-          Selectors.feedbackLink -> "#"
+          Selectors.feedbackLink -> appConfig.feedbackFrontendSurveyUrl
         ) foreach { case (selector, route) =>
 
           s"for link $selector have the correct route" in {
@@ -175,7 +177,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
         }
       }
 
-      s"rendered for when there is an ERN and codes that are approved and not approved" when {
+      "rendered for when there is a valid ERN and codes that are approved and not approved" when {
 
         val approved: Seq[ExciseProductCode] = Seq(wineExciseProductCode)
         val notApproved: Seq[ExciseProductCode] = Seq(beerExciseProductCode, tobaccoExciseProductCode)
@@ -210,7 +212,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
           Selectors.addCodeLink -> testOnwardRoute.url,
           Selectors.differentTraderLInk -> controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url,
           Selectors.returnToAccountLink -> controllers.routes.AccountHomeController.viewAccountHome(testErn).url,
-          Selectors.feedbackLink -> "#"
+          Selectors.feedbackLink -> appConfig.feedbackFrontendSurveyUrl
         ) foreach { case (selector, route) =>
 
           s"for link $selector have the correct route" in {

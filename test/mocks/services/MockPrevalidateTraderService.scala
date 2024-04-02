@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package mocks.services
 
-import org.scalamock.handlers.CallHandler2
+import models.response.emcsTfe.prevalidateTrader.PreValidateTraderApiResponse
+import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import services.PrevalidateTraderService
-import uk.gov.hmrc.emcstfe.models.response.prevalidate.PreValidateTraderApiResponse
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -30,8 +30,8 @@ trait MockPrevalidateTraderService extends MockFactory {
   lazy val mockPrevalidateTraderService: PrevalidateTraderService = mock[PrevalidateTraderService]
 
   object MockPrevalidateTraderService {
-    def prevalidate(ern: String): CallHandler2[String, HeaderCarrier, Future[PreValidateTraderApiResponse]] =
-      (mockPrevalidateTraderService.prevalidate(_: String)(_: HeaderCarrier))
-        .expects(ern, *)
+    def prevalidate(ern: String, ernToCheck: String, productCodesToCheck: Seq[String]): CallHandler4[String, String, Seq[String], HeaderCarrier, Future[PreValidateTraderApiResponse]] =
+      (mockPrevalidateTraderService.prevalidate(_: String, _: String, _: Seq[String])(_: HeaderCarrier))
+        .expects(ern, ernToCheck, productCodesToCheck, *)
   }
 }

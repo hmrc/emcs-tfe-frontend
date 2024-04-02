@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package connectors.emcsTfe
 
 import base.SpecBase
-import fixtures.PrevalidateTraderFixtures
+import fixtures.{ExciseProductCodeFixtures, PrevalidateTraderFixtures}
 import mocks.connectors.MockHttpClient
+import models.requests.PrevalidateTraderRequest
 import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -26,22 +27,29 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 class PrevalidateTraderConnectorSpec extends SpecBase
-  with Status with MimeTypes with HeaderNames with MockHttpClient with PrevalidateTraderFixtures {
+  with Status
+  with MimeTypes
+  with HeaderNames
+  with MockHttpClient
+  with PrevalidateTraderFixtures
+  with ExciseProductCodeFixtures {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   lazy val connector = new PrevalidateTraderConnector(mockHttpClient, appConfig)
 
-  "prevalidate" should {
+  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(testErn, Seq(testEpcWine, testEpcBeer))
+
+  "prevalidateTrader" should {
 
     "return a successful response" when {
 
       "downstream call is successful" in {
 
-        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/pre-validate-trader/$testErn").returns(Future.successful(Right(preValidateApiResponseModel)))
+        MockHttpClient.post(s"${appConfig.emcsTfeBaseUrl}/pre-validate-trader/$testErn", requestModel).returns(Future.successful(Right(preValidateApiResponseModel)))
 
-        connector.prevalidate(ern = testErn).futureValue mustBe Right(preValidateApiResponseModel)
+        connector.prevalidateTrader(testErn, requestModel).futureValue mustBe Right(preValidateApiResponseModel)
       }
     }
 
@@ -49,9 +57,9 @@ class PrevalidateTraderConnectorSpec extends SpecBase
 
       "when downstream call fails" in {
 
-        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/pre-validate-trader/$testErn").returns(Future.successful(Left(JsonValidationError)))
+        MockHttpClient.post(s"${appConfig.emcsTfeBaseUrl}/pre-validate-trader/$testErn", requestModel).returns(Future.successful(Left(JsonValidationError)))
 
-        connector.prevalidate(ern = testErn).futureValue mustBe Left(JsonValidationError)
+        connector.prevalidateTrader(testErn,requestModel).futureValue mustBe Left(JsonValidationError)
       }
     }
   }

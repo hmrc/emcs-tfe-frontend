@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package fixtures
 
+import models.response.emcsTfe.prevalidateTrader.{ExciseTraderResponse, ExciseTraderValidationResponse, PreValidateTraderApiResponse, ValidateProductAuthorisationResponse}
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.emcstfe.models.response.prevalidate.{ExciseTraderResponse, ExciseTraderValidationResponse, PreValidateTraderApiResponse, ValidateProductAuthorisationResponse}
 
 trait PrevalidateTraderFixtures extends BaseFixtures {
 
@@ -41,18 +41,20 @@ trait PrevalidateTraderFixtures extends BaseFixtures {
        | }
        |""".stripMargin)
 
+  val exciseTraderResponse: ExciseTraderResponse = ExciseTraderResponse(
+    exciseRegistrationNumber = "GBWK002281023",
+    entityGroup = "UK Record",
+    validTrader = true,
+    traderType = Some("1"),
+    validateProductAuthorisationResponse = Some(ValidateProductAuthorisationResponse(valid = true))
+  )
+
+  val validationTimestamp = "2023-12-15T10:55:17.443Z"
+
   val preValidateApiResponseModel: PreValidateTraderApiResponse = PreValidateTraderApiResponse(
     exciseTraderValidationResponse = ExciseTraderValidationResponse(
-      validationTimestamp = "2023-12-15T10:55:17.443Z",
-      exciseTraderResponse = Seq(
-        ExciseTraderResponse(
-          exciseRegistrationNumber = "GBWK002281023",
-          entityGroup = "UK Record",
-          validTrader = true,
-          traderType = Some("1"),
-          validateProductAuthorisationResponse = Some(ValidateProductAuthorisationResponse(true))
-        )
-      )
+      validationTimestamp = validationTimestamp,
+      exciseTraderResponse = Seq(exciseTraderResponse)
     )
   )
 }

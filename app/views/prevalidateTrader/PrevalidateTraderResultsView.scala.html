@@ -14,8 +14,9 @@
  * limitations under the License.
  *@
 
-@import models.requests.UserAnswersRequest
+@import config.AppConfig
 @import controllers.prevalidateTrader.routes
+@import models.requests.UserAnswersRequest
 
 @this(
         layout: templates.Layout,
@@ -32,7 +33,7 @@
         addCodeCall: Call,
         approved: Seq[ExciseProductCode] = Seq.empty,
         notApproved: Seq[ExciseProductCode] = Seq.empty
-)(implicit request: UserAnswersRequest[_], messages: Messages)
+)(implicit request: UserAnswersRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
     pageTitle = titleNoForm(ernOpt.fold(messages("prevalidateTrader.results.invalidErn.heading"))(_ => messages("prevalidateTrader.results.validErn.heading"))),
@@ -104,7 +105,7 @@
 
     @p() {
         @link(
-            link = "#",
+            link = appConfig.feedbackFrontendSurveyUrl,
             messageKey = "prevalidateTrader.results.link.feedback",
             id = Some("feedback-link")
         )

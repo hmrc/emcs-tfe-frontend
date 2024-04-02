@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ object PrevalidateTraderResultsMessages {
   sealed trait ViewMessages extends BaseMessages {
     _: i18n =>
 
-    val headingNoErn = "We cannot find consignee’s trader ID"
-    val titleNoErn = titleHelper(headingNoErn)
-    val noErnLink = "Try again with another trader ID"
+    val headingInvalidErn = "We cannot find consignee’s trader ID"
+    val titleInvalidErn = titleHelper(headingInvalidErn)
+    val invalidErnLink = "Try again with another trader ID"
 
     val heading = "Results for this trader"
     val title = titleHelper(heading)
