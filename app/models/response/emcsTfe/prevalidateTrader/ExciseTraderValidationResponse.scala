@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfe.models.response.prevalidate
+package models.response.emcsTfe.prevalidateTrader
 
 import play.api.libs.json.{Format, Json}
 

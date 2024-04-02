@@ -749,9 +749,9 @@ prevalidateTrader.removeExciseProductCode.heading = Are you sure you want to rem
 prevalidateTrader.removeExciseProductCode.error = Select yes if you want to remove the Excise Product Code {0}, or select no
 
 # Prevalidate trader - Results page
-prevalidateTrader.results.noErn.heading = We cannot find consignee’s trader ID
-prevalidateTrader.results.noErn.link = Try again with another trader ID
-prevalidateTrader.results.withErn.heading = Results for this trader
+prevalidateTrader.results.invalidErn.heading = We cannot find consignee’s trader ID
+prevalidateTrader.results.invalidErn.link = Try again with another trader ID
+prevalidateTrader.results.validErn.heading = Results for this trader
 prevalidateTrader.results.p1 = Trader ID: {0}
 prevalidateTrader.results.h2.approved = Trader can receive:
 prevalidateTrader.results.h2.notApproved = Trader cannot receive:

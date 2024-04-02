@@ -17,8 +17,9 @@
 package services
 
 import connectors.emcsTfe.PrevalidateTraderConnector
-import models.response.MemberStatesException
-import uk.gov.hmrc.emcstfe.models.response.prevalidate.PreValidateTraderApiResponse
+import models.requests.PrevalidateTraderRequest
+import models.response.PrevalidateTraderException
+import models.response.emcsTfe.prevalidateTrader.PreValidateTraderApiResponse
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -28,9 +29,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class PrevalidateTraderService @Inject()(connector: PrevalidateTraderConnector)
                                         (implicit ec: ExecutionContext) {
 
-  def prevalidate(ern: String)(implicit hc: HeaderCarrier): Future[PreValidateTraderApiResponse] = {
-    connector.prevalidate(ern).map {
-      case Left(_) => throw MemberStatesException("Prevalidate trader error")
+  def prevalidate(ern: String, ernToCheck: String, productCodesToCheck: Seq[String])(implicit hc: HeaderCarrier): Future[PreValidateTraderApiResponse] = {
+
+    val requestModel = PrevalidateTraderRequest(ernToCheck, productCodesToCheck)
+    connector.prevalidateTrader(ern, requestModel).map {
+      case Left(_) => throw PrevalidateTraderException("Prevalidate trader result error")
       case Right(response) => response
     }
   }

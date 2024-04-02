@@ -17,9 +17,10 @@
 package connectors.emcsTfe
 
 import config.AppConfig
+import models.requests.PrevalidateTraderRequest
+import models.response.emcsTfe.prevalidateTrader.PreValidateTraderApiResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
-import uk.gov.hmrc.emcstfe.models.response.prevalidate.PreValidateTraderApiResponse
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}
@@ -32,17 +33,16 @@ class PrevalidateTraderConnector @Inject()(val http: HttpClient, config: AppConf
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 
-  def prevalidate(ern: String)(implicit headerCarrier: HeaderCarrier,
-                               executionContext: ExecutionContext): Future[Either[ErrorResponse, PreValidateTraderApiResponse]] = {
-
+  def prevalidateTrader(ern: String, requestModel: PrevalidateTraderRequest)
+                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, PreValidateTraderApiResponse]] = {
     def url: String = s"$baseUrl/pre-validate-trader/$ern"
 
-    get(url).recover {
+    post(url, requestModel).recover {
       case JsResultException(errors) =>
-        logger.warn(s"[prevalidate] Bad JSON response from emcs-tfe: " + errors)
+        logger.warn(s"[prevalidateTrader] Bad JSON response from emcs-tfe: " + errors)
         Left(JsonValidationError)
       case error =>
-        logger.warn(s"[prevalidate] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
+        logger.warn(s"[prevalidateTrader] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
         Left(UnexpectedDownstreamResponseError)
       }
   }

@@ -18,64 +18,66 @@
 @import controllers.prevalidateTrader.routes
 
 @this(
-    layout: templates.Layout,
-    h1: components.h1,
-    h2: components.h2,
-    p: components.p,
-    link: components.link,
-    list: components.list,
-    govukButton: GovukButton
+        layout: templates.Layout,
+        h1: components.h1,
+        h2: components.h2,
+        p: components.p,
+        link: components.link,
+        bullets: components.bullets,
+        govukButton: GovukButton
 )
 
 @(
-    ernOpt: Option[String],
-    addCodeCall: Call,
-    approved: Seq[ExciseProductCode] = Seq.empty,
-    notApproved: Seq[ExciseProductCode] = Seq.empty
+        ernOpt: Option[String],
+        addCodeCall: Call,
+        approved: Seq[ExciseProductCode] = Seq.empty,
+        notApproved: Seq[ExciseProductCode] = Seq.empty
 )(implicit request: UserAnswersRequest[_], messages: Messages)
 
 @layout(
-    pageTitle = titleNoForm(ernOpt.fold{
-        messages("prevalidateTrader.results.noErn.heading")
-    }{ _ =>
-        messages("prevalidateTrader.results.withErn.heading")
-    }),
+    pageTitle = titleNoForm(ernOpt.fold(messages("prevalidateTrader.results.invalidErn.heading"))(_ => messages("prevalidateTrader.results.validErn.heading"))),
     maybeShowActiveTrader = maybeShowActiveTrader(request.request),
     maybeShowNavigationBanner = None
 ) {
 
     @h2(messages("prevalidateTrader.caption"), "govuk-caption-xl")
 
-    @ernOpt.fold{
-        @h1(){@messages("prevalidateTrader.results.noErn.heading")}
-        @p(){
+    @ernOpt.fold {
+        @h1(classes = "govuk-heading-l") {
+            @messages("prevalidateTrader.results.invalidErn.heading")
+        }
+        @p() {
             @link(
                 link = routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(request.ern).url,
-                messageKey = "prevalidateTrader.results.noErn.link",
+                messageKey = "prevalidateTrader.results.invalidErn.link",
                 id = Some("no-ern-link")
             )
         }
-    }{ ern =>
-        @h1(){@messages("prevalidateTrader.results.withErn.heading")}
-        @p(){@messages("prevalidateTrader.results.p1", ern)}
+    } { ern =>
+        @h1(classes = "govuk-heading-l") {
+            @messages("prevalidateTrader.results.validErn.heading")
+        }
+        @p() {
+            @messages("prevalidateTrader.results.p1", ern)
+        }
 
-        @if(!approved.isEmpty) {
+        @if(approved.nonEmpty) {
             @h2(messages("prevalidateTrader.results.h2.approved"))
 
-            @list(approved.map{ exciseCode =>
+            @bullets(approved.map { exciseCode =>
                 Html(messages("prevalidateTrader.results.bullet", exciseCode.code, exciseCode.description))
             })
         }
 
-        @if(!notApproved.isEmpty) {
+        @if(notApproved.nonEmpty) {
             @h2(messages("prevalidateTrader.results.h2.notApproved"))
 
-            @list(notApproved.map{ exciseCode =>
+            @bullets(notApproved.map { exciseCode =>
                 Html(messages("prevalidateTrader.results.bullet", exciseCode.code, exciseCode.description))
             })
         }
 
-        @p(){
+        @p() {
             @link(
                 link = addCodeCall.url,
                 messageKey = "prevalidateTrader.results.link.addCode",
@@ -83,7 +85,7 @@
             )
         }
 
-        @p(){
+        @p() {
             @link(
                 link = routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(request.ern).url,
                 messageKey = "prevalidateTrader.results.link.differentTrader",
@@ -92,7 +94,7 @@
         }
     }
 
-    @p(){
+    @p() {
         @link(
             link = controllers.routes.AccountHomeController.viewAccountHome(request.ern).url,
             messageKey = "prevalidateTrader.results.link.returnToAccount",
@@ -100,7 +102,7 @@
         )
     }
 
-    @p(){
+    @p() {
         @link(
             link = "#",
             messageKey = "prevalidateTrader.results.link.feedback",
