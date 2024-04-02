@@ -23,7 +23,13 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 
 class FakeBetaAllowListAction extends BetaAllowListAction with BaseFixtures {
-  override protected def refine[A](request: UserRequest[A]): Future[Either[Result, UserRequest[A]]] = Future.successful(Right(request))
 
-  override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  def apply(betaGuard: (String, Result)): ActionRefiner[UserRequest, UserRequest] = new ActionRefiner[UserRequest, UserRequest] {
+
+      override implicit val executionContext: ExecutionContext =
+        scala.concurrent.ExecutionContext.Implicits.global
+
+      override protected def refine[A](request: UserRequest[A]): Future[Either[Result, UserRequest[A]]] =
+        Future.successful(Right(request))
+  }
 }

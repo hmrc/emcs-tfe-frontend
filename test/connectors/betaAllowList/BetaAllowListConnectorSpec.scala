@@ -17,6 +17,7 @@
 package connectors.betaAllowList
 
 import base.SpecBase
+import controllers.helpers.BetaChecks
 import mocks.connectors.MockHttpClient
 import models.response.UnexpectedDownstreamResponseError
 import org.scalatest.BeforeAndAfterAll
@@ -26,7 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 class BetaAllowListConnectorSpec extends SpecBase
-  with Status with MimeTypes with HeaderNames with MockHttpClient with BeforeAndAfterAll {
+  with Status with MimeTypes with HeaderNames with MockHttpClient with BeforeAndAfterAll with BetaChecks {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
@@ -40,10 +41,10 @@ class BetaAllowListConnectorSpec extends SpecBase
       "downstream call is successful" in {
 
         MockHttpClient.get(
-          url = s"${appConfig.emcsTfeBaseUrl}/beta/eligibility/$testErn/navHub"
+          url = s"${appConfig.emcsTfeBaseUrl}/beta/eligibility/$testErn/tfeNavHub"
         ).returns(Future.successful(Right(true)))
 
-        connector.check(testErn).futureValue mustBe Right(true)
+        connector.check(testErn, navigationHubBetaGuard()._1).futureValue mustBe Right(true)
       }
     }
 
@@ -52,10 +53,10 @@ class BetaAllowListConnectorSpec extends SpecBase
       "downstream call fails" in {
 
         MockHttpClient.get(
-          url = s"${appConfig.emcsTfeBaseUrl}/beta/eligibility/$testErn/navHub"
+          url = s"${appConfig.emcsTfeBaseUrl}/beta/eligibility/$testErn/tfeNavHub"
         ).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-        connector.check(testErn).futureValue mustBe Left(UnexpectedDownstreamResponseError)
+        connector.check(testErn, navigationHubBetaGuard()._1).futureValue mustBe Left(UnexpectedDownstreamResponseError)
       }
     }
   }

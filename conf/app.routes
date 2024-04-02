@@ -10,6 +10,8 @@ GET        /refresh-session                                                     
 
 GET        /                                                                              controllers.IndexController.exciseNumber()
 
+GET        /trader/:ern/movement/:arc/version/:ver/change-destination                     controllers.cod.ChangeOfDestinationController.onPageLoad(ern, arc, ver: Int)
+
 GET        /trader/:ern/movement/:arc/overview                                            controllers.ViewMovementController.viewMovementOverview(ern, arc)
 GET        /trader/:ern/movement/:arc/movement                                            controllers.ViewMovementController.viewMovementMovement(ern, arc)
 GET        /trader/:ern/movement/:arc/delivery                                            controllers.ViewMovementController.viewMovementDelivery(ern, arc)
@@ -21,6 +23,8 @@ GET        /trader/:ern/movement/:arc/documents                                 
 GET        /trader/:ern/movement/:arc/item/:idx/details                                   controllers.ItemDetailsController.onPageLoad(ern, arc, idx: Int)
 
 GET        /trader/:ern/account                                                           controllers.AccountHomeController.viewAccountHome(ern)
+
+GET        /trader/:ern/drafts                                                            controllers.drafts.DraftsController.onPageLoad(ern)
 
 GET        /trader/:ern/movements                                                         controllers.ViewAllMovementsController.onPageLoad(ern: String, search: MovementListSearchOptions)
 POST       /trader/:ern/movements                                                         controllers.ViewAllMovementsController.onSubmit(ern: String, search: MovementListSearchOptions)

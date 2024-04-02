@@ -3,6 +3,7 @@ package connectors
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.http.Fault
 import connectors.betaAllowList.BetaAllowListConnector
+import controllers.helpers.BetaChecks
 import fixtures.BaseFixtures
 import models.response.UnexpectedDownstreamResponseError
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -20,7 +21,8 @@ class BetaAllowListConnectorISpec
     with IntegrationPatience
     with EitherValues
     with OptionValues
-    with BaseFixtures {
+    with BaseFixtures
+    with BetaChecks {
 
   val authToken: String = "auth-value"
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(authToken)))
@@ -29,7 +31,7 @@ class BetaAllowListConnectorISpec
 
   ".check" must {
 
-    val url = s"/emcs-tfe/beta/eligibility/$testErn/navHub"
+    val url = s"/emcs-tfe/beta/eligibility/$testErn/tfeNavHub"
 
     "return true when the server responds OK" in {
 
@@ -39,7 +41,7 @@ class BetaAllowListConnectorISpec
           .willReturn(aResponse().withStatus(OK))
       )
 
-      connector.check(testErn).futureValue mustBe Right(true)
+      connector.check(testErn, navigationHubBetaGuard()._1).futureValue mustBe Right(true)
     }
 
     "must return false when the server responds NOT_FOUND" in {
@@ -50,7 +52,7 @@ class BetaAllowListConnectorISpec
           .willReturn(aResponse().withStatus(NOT_FOUND))
       )
 
-      connector.check(testErn).futureValue mustBe Right(false)
+      connector.check(testErn, navigationHubBetaGuard()._1).futureValue mustBe Right(false)
     }
 
     "must fail when the server responds with any other status" in {
@@ -61,7 +63,7 @@ class BetaAllowListConnectorISpec
           .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR))
       )
 
-      connector.check(testErn).futureValue mustBe Left(UnexpectedDownstreamResponseError)
+      connector.check(testErn, navigationHubBetaGuard()._1).futureValue mustBe Left(UnexpectedDownstreamResponseError)
     }
 
     "must fail when the connection fails" in {
@@ -72,7 +74,7 @@ class BetaAllowListConnectorISpec
           .willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE))
       )
 
-      connector.check(testErn).futureValue mustBe Left(UnexpectedDownstreamResponseError)
+      connector.check(testErn, navigationHubBetaGuard()._1).futureValue mustBe Left(UnexpectedDownstreamResponseError)
     }
   }
 }

@@ -16,9 +16,9 @@
 
 package controllers.messages
 
-import config.ErrorHandler
 import config.SessionKeys.{DELETED_MESSAGE_DESCRIPTION_KEY, FROM_PAGE}
-import controllers.messages.routes.{ViewAllMessagesController, ViewMessageController}
+import config.{AppConfig, ErrorHandler}
+import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import forms.DeleteMessageFormProvider
 import models.messages.{MessageCache, MessagesSearchOptions}
@@ -47,11 +47,11 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                         val deleteMessageHelper: DeleteMessageHelper,
                                         val messagesHelper: MessagesHelper,
                                         errorHandler: ErrorHandler)
-                                       (implicit val executionContext: ExecutionContext)
-  extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                       (implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
 
   def onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
-    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
+    authorisedDataRequestAsync(exciseRegistrationNumber, messageInboxBetaGuard(exciseRegistrationNumber)) { implicit request =>
       renderView(
         exciseRegistrationNumber,
         uniqueMessageIdentifier,
@@ -62,7 +62,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] =
-    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
+    authorisedDataRequestAsync(exciseRegistrationNumber, messageInboxBetaGuard(exciseRegistrationNumber)) { implicit request =>
       formProvider().bindFromRequest().fold(
         formWithErrors => {
           renderView(exciseRegistrationNumber, uniqueMessageIdentifier, formWithErrors, pageFromSession(request.session.get(FROM_PAGE)))
@@ -84,7 +84,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
         deleteMessageService.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier) map {
           case deleteMessageResponse if deleteMessageResponse.recordsAffected == 1 =>
             // redirect to all messages page to show success banner, add the deleted message title to session for the banner title
-            Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
+            Redirect(routes.ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
               .flashing(DELETED_MESSAGE_DESCRIPTION_KEY -> messagesHelper.messageDescriptionKey(messageCache.message))
           case _ =>
             InternalServerError(errorHandler.internalServerErrorTemplate(request))
@@ -103,13 +103,13 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
           Ok(view(
             messageCache.message,
             form = form,
-            returnToMessagesUrl = ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
+            returnToMessagesUrl = routes.ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url,
             fromPage
           ))
         )
       case None =>
         Future(
-          amendSession(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
+          amendSession(Redirect(routes.ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
         )
     }
 
@@ -119,9 +119,9 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
     Future(
       pageFromSession(dr.session.get(FROM_PAGE)) match {
         case ViewAllMessagesPage =>
-          amendSession(Redirect(ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
+          amendSession(Redirect(routes.ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url))
         case _ =>
-          amendSession(Redirect(ViewMessageController.onPageLoad(exciseRegistrationNumber, uniqueMessageIdentifier)))
+          amendSession(Redirect(routes.ViewMessageController.onPageLoad(exciseRegistrationNumber, uniqueMessageIdentifier)))
       }
     )
 

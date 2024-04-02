@@ -17,9 +17,10 @@
 package controllers
 
 import cats.data.EitherT
-import config.ErrorHandler
+import config.{AppConfig, ErrorHandler}
 import connectors.emcsTfe.GetMovementListConnector
 import connectors.referenceData.{GetExciseProductCodesConnector, GetMemberStatesConnector}
+import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import forms.ViewAllMovementsFormProvider
 import models.MovementListSearchOptions.DEFAULT_MAX_ROWS
@@ -50,15 +51,18 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                            val betaAllowList: BetaAllowListAction,
                                            paginationHelper: MovementPaginationHelper,
                                            formProvider: ViewAllMovementsFormProvider
-                                          )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                          )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends FrontendController(mcc)
+    with AuthActionHelper with I18nSupport with BetaChecks {
+
   def onPageLoad(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] = {
-    authorisedWithData(ern).async { implicit request =>
+    authorisedDataRequestAsync(ern, searchMovementsBetaGuard(ern)) { implicit request =>
       renderView(Ok, ern, searchOptions)
     }
   }
 
   def onSubmit(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
-    authorisedWithData(ern).async { implicit request =>
+    authorisedDataRequestAsync(ern, searchMovementsBetaGuard(ern)) { implicit request =>
       formProvider().bindFromRequest().fold(
         formWithErrors => renderView(BadRequest, ern, searchOptions, formWithErrors),
         value => Future(Redirect(routes.ViewAllMovementsController.onPageLoad(ern, value)))

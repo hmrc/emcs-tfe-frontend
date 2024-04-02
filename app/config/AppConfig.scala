@@ -27,9 +27,9 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.net.URLEncoder
 import javax.inject.{Inject, Singleton}
-import scala.annotation.unused
 import scala.concurrent.duration.Duration
 
+// scalastyle:off
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configuration) extends FeatureSwitching {
 
@@ -50,8 +50,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def emcsTfeListMovementsUrl(ern: String): String = routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()).url
 
-  // TODO: update with new URL when MOV01 filters are created
-  def emcsTfeDraftMovementsUrl(@unused ern: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+  def emcsTfeDraftMovementsUrl(ern: String): String = controllers.drafts.routes.DraftsController.onPageLoad(ern).url
 
   def emcsTfeMessagesUrl(ern: String): String = controllers.messages.routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).url
 
@@ -103,6 +102,24 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def emcsTfeCreateMovementTaskListUrl(ern: String, draftId: String): String =
     servicesConfig.getString("urls.emcsTfeCreateMovement") + s"/trader/$ern/draft/$draftId/draft-movement"
 
+  def emcsLegacyMessageInboxUrl(ern: String): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/messages"
+
+  def emcsLegacyHomeUrl(ern: String): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern"
+
+  def emcsLegacyDraftsUrl(ern: String): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movement/drafts"
+
+  def emcsLegacySearchMovementsUrl(ern: String): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movements"
+
+  def emcsLegacyViewMovementUrl(ern: String, arc: String): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movement/$arc/history?movementtype=all"
+
+  def emcsLegacyChangeDestinationUrl(ern: String, arc: String, ver: Int): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movement/$arc/version/$ver/changedestination"
+
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")
 
@@ -129,6 +146,4 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def prevalidateTraderUserAnswersReplaceIndexes: Boolean = configuration.get[Boolean]("mongodb.prevalidateTraderUserAnswers.replaceIndexes")
 
   def betaAllowListCheckingEnabled: Boolean = isEnabled(CheckBetaAllowList)
-
-  def betaCheckServiceName: String = configuration.get[String]("beta.serviceName")
 }

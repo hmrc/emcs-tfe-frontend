@@ -18,6 +18,7 @@ package controllers.messages
 
 import config.SessionKeys.FROM_PAGE
 import config.{AppConfig, ErrorHandler}
+import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.messages.MessagesSearchOptions
 import pages.ViewMessagePage
@@ -40,14 +41,18 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       draftMovementService: DraftMovementService,
                                       deleteMessageService: DeleteMessageService,
                                       val view: ViewMessageView,
-                                      errorHandler: ErrorHandler,
-                                      appConfig: AppConfig
-                                     )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport with Logging {
+                                      errorHandler: ErrorHandler
+                                     )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends FrontendController(mcc)
+    with AuthActionHelper
+    with I18nSupport
+    with Logging
+    with BetaChecks {
 
   private val messagesThatNeedMovement = Seq("IE871")
 
   def onPageLoad(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern) { implicit request =>
+    authorisedDataRequestAsync(ern, messageInboxBetaGuard(ern)) { implicit request =>
 
       val sessionWithFromPageSet = request.session + (FROM_PAGE -> ViewMessagePage.toString)
 
@@ -69,7 +74,7 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def removeMessageAndRedirectToDraftMovement(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] =
-    authorisedDataRequestAsync(ern) { implicit request =>
+    authorisedDataRequestAsync(ern, messageInboxBetaGuard(ern)) { implicit request =>
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
         case Some(msg) =>
           msg.errorMessage match {

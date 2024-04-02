@@ -18,7 +18,7 @@ package mocks.connectors
 
 import connectors.betaAllowList.BetaAllowListConnector
 import models.response.ErrorResponse
-import org.scalamock.handlers.CallHandler3
+import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -30,8 +30,8 @@ trait MockBetaAllowListConnector extends MockFactory {
 
   object MockBetaAllowListConnector {
 
-    def check(ern: String): CallHandler3[String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, Boolean]]] =
-      (mockBetaAllowListConnector.check(_: String)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(ern, *, *)
+    def check(ern: String, service: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, Boolean]]] =
+      (mockBetaAllowListConnector.check(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(ern, service, *, *)
   }
 }
