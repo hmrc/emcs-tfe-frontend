@@ -17,8 +17,10 @@
 package controllers.prevalidateTrader
 
 import base.SpecBase
-import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction, PrevalidateTraderDataRetrievalAction}
+import controllers.predicates.{BetaAllowListActionImpl, FakeAuthAction, FakeDataRetrievalAction, PrevalidateTraderDataRetrievalAction}
 import forms.prevalidate.PrevalidateConsigneeTraderIdentificationFormProvider
+import mocks.config.MockAppConfig
+import mocks.connectors.MockBetaAllowListConnector
 import mocks.services.MockPrevalidateUserAnswersService
 import navigation.FakeNavigators.FakePrevalidateNavigator
 import pages.prevalidateTrader.PrevalidateConsigneeTraderIdentificationPage
@@ -30,100 +32,147 @@ import views.html.prevalidateTrader.PrevalidateConsigneeTraderIdentificationView
 
 import scala.concurrent.Future
 
-class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase with FakeAuthAction with MockPrevalidateUserAnswersService {
+class PrevalidateConsigneeTraderIdentificationControllerSpec
+  extends SpecBase
+    with FakeAuthAction
+    with MockPrevalidateUserAnswersService
+    with MockBetaAllowListConnector
+    with MockAppConfig {
 
   lazy val view: PrevalidateConsigneeTraderIdentificationView = app.injector.instanceOf[PrevalidateConsigneeTraderIdentificationView]
   lazy val formProvider: PrevalidateConsigneeTraderIdentificationFormProvider = app.injector.instanceOf[PrevalidateConsigneeTraderIdentificationFormProvider]
 
-  lazy val controller: PrevalidateConsigneeTraderIdentificationController = new PrevalidateConsigneeTraderIdentificationController(
-    controllerComponents = app.injector.instanceOf[MessagesControllerComponents],
-    auth = FakeSuccessAuthAction,
-    getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
-    betaAllowList = new FakeBetaAllowListAction,
-    userAnswersAction = new PrevalidateTraderDataRetrievalAction(mockUserAnswersService),
-    userAnswersService = mockUserAnswersService,
-    navigator = new FakePrevalidateNavigator(testOnwardRoute),
-    formProvider = formProvider,
-    view = view
-  )
+  class Setup(navHubEnabled: Boolean = true, preValidateEnabled: Boolean = true) {
+
+    lazy val betaAllowListAction = new BetaAllowListActionImpl(
+      betaAllowListConnector = mockBetaAllowListConnector,
+      errorHandler = errorHandler,
+      config = mockAppConfig
+    )
+
+    lazy val controller: PrevalidateConsigneeTraderIdentificationController = new PrevalidateConsigneeTraderIdentificationController(
+      controllerComponents = app.injector.instanceOf[MessagesControllerComponents],
+      auth = FakeSuccessAuthAction,
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      betaAllowList = betaAllowListAction,
+      userAnswersAction = new PrevalidateTraderDataRetrievalAction(mockUserAnswersService),
+      userAnswersService = mockUserAnswersService,
+      navigator = new FakePrevalidateNavigator(testOnwardRoute),
+      formProvider = formProvider,
+      view = view
+    )(ec, appConfig)
+
+    MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
+    MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(navHubEnabled)))
+    MockBetaAllowListConnector.check(testErn, "tfePreValidate").returns(Future.successful(Right(preValidateEnabled)))
+  }
+
 
   val testAnswer = "GB00123456789"
 
   "ConsigneeTraderIdentification Controller" when {
 
-    "calling .onPageLoad()" must {
+    "calling .onPageLoad()" when {
+      "user is on the private beta list" should {
+        "render the view" when {
+          "previous data exists in user answers" in new Setup {
+            MockUserAnswersService
+              .get(testErn)
+              .returns(Future.successful(Some(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))))
 
-      "render the view" when {
-        "previous data exists in user answers" in {
-          MockUserAnswersService
-            .get(testErn)
-            .returns(Future.successful(Some(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))))
+            val request = FakeRequest(GET, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+            val result = controller.onPageLoad(testErn)(request)
 
-          val request = FakeRequest(GET, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-          val result = controller.onPageLoad(testErn)(request)
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              form = formProvider().fill(testAnswer),
+              action = routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+            )(userAnswersRequest(request), messages(request)).toString
+          }
 
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            form = formProvider().fill(testAnswer),
-            action = routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-          )(userAnswersRequest(request), messages(request)).toString
+          "no previous data exists in user answers" in new Setup {
+            MockUserAnswersService
+              .get(testErn)
+              .returns(Future.successful(Some(emptyUserAnswers)))
+
+            val request = FakeRequest(GET, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+            val result = controller.onPageLoad(testErn)(request)
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              form = formProvider(),
+              action = routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+            )(userAnswersRequest(request), messages(request)).toString
+          }
         }
-
-        "no previous data exists in user answers" in {
-          MockUserAnswersService
-            .get(testErn)
-            .returns(Future.successful(Some(emptyUserAnswers)))
-
+      }
+      "user is NOT on the private beta list" should {
+        "redirect to legacy" in new Setup(preValidateEnabled = false) {
           val request = FakeRequest(GET, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
           val result = controller.onPageLoad(testErn)(request)
 
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            form = formProvider(),
-            action = routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-          )(userAnswersRequest(request), messages(request)).toString
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result) mustBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate")
         }
       }
     }
 
     "calling .onSubmit()" when {
+      "user is on the private beta list" should {
+        "form validation fails" must {
 
-      "form validation fails" must {
+          "render the view with the bad value" when {
 
-        "render the view with the bad value" when {
+            "previous user answers exist" in new Setup {
 
-          "previous user answers exist" in {
+              MockUserAnswersService
+                .get(testErn)
+                .returns(Future.successful(Some(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))))
 
-            MockUserAnswersService
-              .get(testErn)
-              .returns(Future.successful(Some(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))))
+              val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "<beans />"))
 
-            val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-            val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "<beans />"))
+              val form = formProvider()
+                .fill("<beans />")
+                .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters")))
 
-            val form = formProvider()
-              .fill("<beans />")
-              .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters")))
+              status(result) mustEqual BAD_REQUEST
+              contentAsString(result) mustEqual view(
+                form = form,
+                action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+              )(userAnswersRequest(request), messages(request)).toString
+            }
 
-            status(result) mustEqual BAD_REQUEST
-            contentAsString(result) mustEqual view(
-              form = form,
-              action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-            )(userAnswersRequest(request), messages(request)).toString
+            "no previous user answers exist" in new Setup {
+
+              MockUserAnswersService
+                .get(testErn)
+                .returns(Future.successful(Some(emptyUserAnswers)))
+
+              val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "<beans />"))
+
+              val form = formProvider()
+                .fill("<beans />")
+                .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters")))
+
+              status(result) mustEqual BAD_REQUEST
+              contentAsString(result) mustEqual view(
+                form = form,
+                action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+              )(userAnswersRequest(request), messages(request)).toString
+            }
           }
 
-          "no previous user answers exist" in {
+          "render the view when form value missing" in new Setup {
 
-            MockUserAnswersService
-              .get(testErn)
-              .returns(Future.successful(Some(emptyUserAnswers)))
+            MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
 
             val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-            val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "<beans />"))
+            val result = controller.onSubmit(testErn)(request)
 
             val form = formProvider()
-              .fill("<beans />")
-              .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters")))
+              .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.required")))
 
             status(result) mustEqual BAD_REQUEST
             contentAsString(result) mustEqual view(
@@ -132,43 +181,34 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec extends SpecBase wi
             )(userAnswersRequest(request), messages(request)).toString
           }
         }
+        "form validation passes" when {
+          "data saves to repository" must {
+            "redirect" in new Setup {
 
-        "render the view when form value missing" in {
+              MockUserAnswersService
+                .get(testErn)
+                .returns(Future.successful(Some(emptyUserAnswers)))
 
-          MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+              MockUserAnswersService
+                .set(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))
+                .returns(Future.successful(emptyUserAnswers))
 
-          val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-          val result = controller.onSubmit(testErn)(request)
+              val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> testAnswer))
 
-          val form = formProvider()
-            .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.required")))
-
-          status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(
-            form = form,
-            action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-          )(userAnswersRequest(request), messages(request)).toString
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual testOnwardRoute.url
+            }
+          }
         }
       }
+      "user is NOT on the private beta list" should {
+        "redirect to legacy" in new Setup(preValidateEnabled = false) {
+          val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+          val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> testAnswer))
 
-      "form validation passes" when {
-        "data saves to repository" must {
-          "redirect" in {
-
-            MockUserAnswersService
-              .get(testErn)
-              .returns(Future.successful(Some(emptyUserAnswers)))
-
-            MockUserAnswersService
-              .set(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))
-              .returns(Future.successful(emptyUserAnswers))
-
-            val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-            val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> testAnswer))
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual testOnwardRoute.url
-          }
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result) mustBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate")
         }
       }
     }

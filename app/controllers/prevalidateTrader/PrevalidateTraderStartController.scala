@@ -16,6 +16,8 @@
 
 package controllers.prevalidateTrader
 
+import config.AppConfig
+import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.UserAnswers
 import play.api.i18n.I18nSupport
@@ -33,21 +35,26 @@ class PrevalidateTraderStartController @Inject()(mcc: MessagesControllerComponen
                                                  val betaAllowList: BetaAllowListAction,
                                                  val userAnswersService: PrevalidateTraderUserAnswersService,
                                                  view: PrevalidateTraderStartView
-                                                )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                                )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends FrontendController(mcc)
+    with AuthActionHelper
+    with I18nSupport
+    with BetaChecks {
 
   def onPageLoad(ern: String): Action[AnyContent] =
-    authorisedDataRequest(ern) { implicit request =>
+    authorisedDataRequest(ern, preValidateBetaGuard(ern)) { implicit request =>
       Ok(view(routes.PrevalidateTraderStartController.onSubmit(ern)))
     }
 
-  def onSubmit(ern: String): Action[AnyContent] = authorisedDataRequestAsync(ern) { _ =>
-    userAnswersService.get(ern).flatMap {
-      case Some(_) => Future.successful(nextPage(ern))
-      case None =>
-        userAnswersService.set(UserAnswers(ern)).map { _ =>
-          nextPage(ern)
-        }
-    }
+  def onSubmit(ern: String): Action[AnyContent] =
+    authorisedDataRequestAsync(ern, preValidateBetaGuard(ern)) { _ =>
+      userAnswersService.get(ern).flatMap {
+        case Some(_) => Future.successful(nextPage(ern))
+        case None =>
+          userAnswersService.set(UserAnswers(ern)).map { _ =>
+            nextPage(ern)
+          }
+      }
   }
 
   private def nextPage(ern: String): Result = Redirect(routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(ern))

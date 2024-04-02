@@ -120,6 +120,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def emcsLegacyChangeDestinationUrl(ern: String, arc: String, ver: Int): String =
     servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movement/$arc/version/$ver/changedestination"
 
+  def emcsLegacyPreValidateUrl(ern: String): String =
+    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/prevalidate"
+
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")
 
