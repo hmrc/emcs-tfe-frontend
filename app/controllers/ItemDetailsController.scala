@@ -16,6 +16,8 @@
 
 package controllers
 
+import config.AppConfig
+import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -32,10 +34,14 @@ class ItemDetailsController @Inject()(mcc: MessagesControllerComponents,
                                       val betaAllowList: BetaAllowListAction,
                                       view: ItemDetailsView,
                                       movementService: GetMovementService
-                                     )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
+                                     )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends FrontendController(mcc)
+    with AuthActionHelper
+    with I18nSupport
+    with BetaChecks {
 
   def onPageLoad(ern: String, arc: String, idx: Int): Action[AnyContent] =
-    authorisedDataRequestAsync(ern) { implicit request =>
+    authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
       movementService.getMovement(ern, arc).map { movement =>
         val item = movement.items(idx - 1)
         Ok(view(item))

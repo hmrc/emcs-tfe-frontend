@@ -17,9 +17,11 @@
 package controllers.messages
 
 import base.SpecBase
-import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
+import controllers.predicates.{BetaAllowListActionImpl, FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
 import fixtures.{GetMovementResponseFixtures, GetSubmissionFailureMessageFixtures, MessagesFixtures}
+import mocks.config.MockAppConfig
+import mocks.connectors.MockBetaAllowListConnector
 import mocks.services.{MockDeleteMessageService, MockDraftMovementService, MockGetMessagesService, MockGetMovementService}
 import models.messages.{MessageCache, MessagesSearchOptions}
 import models.requests.DataRequest
@@ -45,7 +47,9 @@ class ViewMessageControllerSpec extends SpecBase
   with MockDeleteMessageService
   with MockDraftMovementService
   with GetSubmissionFailureMessageFixtures
-  with GetMovementResponseFixtures {
+  with GetMovementResponseFixtures
+  with MockAppConfig
+  with MockBetaAllowListConnector {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -57,19 +61,31 @@ class ViewMessageControllerSpec extends SpecBase
 
   implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
-  lazy val controller: ViewMessageController = new ViewMessageController(
-    mcc = app.injector.instanceOf[MessagesControllerComponents],
-    auth = FakeSuccessAuthAction,
-    getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
-    betaAllowList = new FakeBetaAllowListAction,
-    getMessagesService = mockGetMessagesService,
-    getMovementService = mockGetMovementService,
-    draftMovementService = mockDraftMovementService,
-    deleteMessageService = mockDeleteMessagesService,
-    view = view,
-    errorHandler = errorHandler,
-    appConfig = appConfig
-  )
+  class Test(navHubEnabled: Boolean = true, messageInboxEnabled: Boolean = true) {
+
+    lazy val betaAllowListAction = new BetaAllowListActionImpl(
+      betaAllowListConnector = mockBetaAllowListConnector,
+      errorHandler = errorHandler,
+      config = mockAppConfig
+    )
+
+    lazy val controller: ViewMessageController = new ViewMessageController(
+      mcc = app.injector.instanceOf[MessagesControllerComponents],
+      auth = FakeSuccessAuthAction,
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      betaAllowList = betaAllowListAction,
+      getMessagesService = mockGetMessagesService,
+      getMovementService = mockGetMovementService,
+      draftMovementService = mockDraftMovementService,
+      deleteMessageService = mockDeleteMessagesService,
+      view = view,
+      errorHandler = errorHandler
+    )(ec, appConfig)
+
+    MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
+    MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(navHubEnabled)))
+    MockBetaAllowListConnector.check(testErn, "tfeMessageInbox").returns(Future.successful(Right(messageInboxEnabled)))
+  }
 
   val testMessageId = 1234
 
@@ -80,151 +96,170 @@ class ViewMessageControllerSpec extends SpecBase
     lastUpdated = Instant.now
   )
 
-  "GET /trader/:ern/message/:uniqueMessageIdentifier/view" when {
+  "user is on the private beta list" when {
+    "GET /trader/:ern/message/:uniqueMessageIdentifier/view" when {
 
-    "service call to get message returns a Some(MessageCache)" should {
-      "render the view" in {
-        MockGetMessagesService
-          .getMessage(testErn, testMessageId)
-          .returns(Future.successful(Some(testMessageFromCache)))
+      "service call to get message returns a Some(MessageCache)" should {
+        "render the view" in new Test {
+          MockGetMessagesService
+            .getMessage(testErn, testMessageId)
+            .returns(Future.successful(Some(testMessageFromCache)))
 
-        val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
 
-        status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(testMessageFromCache, None).toString()
+          status(result) shouldBe Status.OK
+          contentAsString(result) shouldBe view(testMessageFromCache, None).toString()
+        }
+      }
+
+      "service call to get message returns a Some(MessageCache) with an IE871 message type" should {
+        "render the view" in new Test {
+
+          val testMessageFromCacheWithIE871MessageType = MessageCache(
+            ern = testErn,
+            message = message1.copy(uniqueMessageIdentifier = testMessageId, messageType = "IE871"),
+            errorMessage = Some(GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel),
+            lastUpdated = Instant.now
+          )
+
+          MockGetMessagesService
+            .getMessage(testErn, testMessageId)
+            .returns(Future.successful(Some(testMessageFromCacheWithIE871MessageType)))
+
+          MockGetMovementService
+            .getRawMovement(testErn, arc = "ARC1001")
+            .returns(Future.successful(getMovementResponseModel))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          contentAsString(result) shouldBe view(testMessageFromCacheWithIE871MessageType, None).toString()
+        }
+      }
+
+      "service call to get message returns a None" should {
+        "redirect back to the messages inbox" in new Test {
+          MockGetMessagesService
+            .getMessage(testErn, testMessageId)
+            .returns(Future.successful(None))
+
+          val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
+
+          status(result) shouldBe Status.SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url)
+        }
       }
     }
+    "GET /trader/:ern/message/:uniqueMessageIdentifier/draft-movement" when {
 
-    "service call to get message returns a Some(MessageCache) with an IE871 message type" should {
-      "render the view" in {
+      "the message ID relates to a movement submission in error" should {
 
-        val testMessageFromCacheWithIE871MessageType = MessageCache(
-          ern = testErn,
-          message = message1.copy(uniqueMessageIdentifier = testMessageId, messageType = "IE871"),
-          errorMessage = Some(GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel),
-          lastUpdated = Instant.now
-        )
+        "call the draft movement service to delete the message and redirect to CaM to 'revive' the draft" in new Test {
 
-        MockGetMessagesService
-          .getMessage(testErn, testMessageId)
-          .returns(Future.successful(Some(testMessageFromCacheWithIE871MessageType)))
+          MockGetMessagesService
+            .getMessage(testErn, testMessageId)
+            .returns(Future.successful(Some(testMessageFromCache)))
 
-        MockGetMovementService
-          .getRawMovement(testErn, arc = "ARC1001")
-          .returns(Future.successful(getMovementResponseModel))
+          MockDeleteMessagesService
+            .deleteMessage(testErn, testMessageId)
+            .returns(Future.successful(DeleteMessageResponse(recordsAffected = 1)))
 
-        val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
+          MockDraftMovementService
+            .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
+            .returns(Future.successful(Some(testDraftId)))
 
-        status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe view(testMessageFromCacheWithIE871MessageType, None).toString()
+          val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+
+          status(result) shouldBe Status.SEE_OTHER
+          redirectLocation(result).value shouldBe appConfig.emcsTfeCreateMovementTaskListUrl(testErn, testDraftId)
+        }
       }
-    }
 
-    "service call to get message returns a None" should {
-      "redirect back to the messages inbox" in {
-        MockGetMessagesService
-          .getMessage(testErn, testMessageId)
-          .returns(Future.successful(None))
+      "the message ID does not relate to a movement submission in error" should {
 
-        val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
+        "return a Not Found response" in new Test {
 
-        status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url)
+          MockGetMessagesService
+            .getMessage(testErn, testMessageId)
+            .returns(Future.successful(Some(testMessageFromCache.copy(errorMessage = None))))
+
+          val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+
+          status(result) shouldBe Status.NOT_FOUND
+        }
+      }
+
+      "no message ID can be found" should {
+
+        "return a Not Found response" in new Test {
+
+          MockGetMessagesService
+            .getMessage(testErn, testMessageId)
+            .returns(Future.successful(None))
+
+          val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+
+          status(result) shouldBe Status.NOT_FOUND
+        }
+      }
+
+      "no records were deleted" should {
+
+        "return an Internal Server error response with the correct error handler template" in new Test {
+
+          MockGetMessagesService
+            .getMessage(testErn, testMessageId)
+            .returns(Future.successful(Some(testMessageFromCache)))
+
+          MockDeleteMessagesService
+            .deleteMessage(testErn, testMessageId)
+            .returns(Future.successful(DeleteMessageResponse(recordsAffected = 0)))
+
+          val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+        }
+      }
+
+      "one of the backend calls to 'revive' the movement fails" should {
+
+        "return an ISE response" in new Test {
+
+          MockGetMessagesService
+            .getMessage(testErn, testMessageId)
+            .returns(Future.successful(Some(testMessageFromCache)))
+
+          MockDeleteMessagesService
+            .deleteMessage(testErn, testMessageId)
+            .returns(Future.successful(DeleteMessageResponse(recordsAffected = 1)))
+
+          MockDraftMovementService
+            .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
+            .returns(Future.successful(None))
+
+          val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
+
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        }
       }
     }
   }
 
-  "GET /trader/:ern/message/:uniqueMessageIdentifier/draft-movement" when {
-
-    "the message ID relates to a movement submission in error" should {
-
-      "call the draft movement service to delete the message and redirect to CaM to 'revive' the draft" in {
-
-        MockGetMessagesService
-          .getMessage(testErn, testMessageId)
-          .returns(Future.successful(Some(testMessageFromCache)))
-
-        MockDeleteMessagesService
-          .deleteMessage(testErn, testMessageId)
-          .returns(Future.successful(DeleteMessageResponse(recordsAffected = 1)))
-
-        MockDraftMovementService
-          .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
-          .returns(Future.successful(Some(testDraftId)))
-
-        val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
-
+  "user is NOT on the private beta list" when {
+    "GET /trader/:ern/message/:uniqueMessageIdentifier/view" should {
+      "redirect back to legacy" in new Test(messageInboxEnabled = false) {
+        val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)
         status(result) shouldBe Status.SEE_OTHER
-        redirectLocation(result).value shouldBe appConfig.emcsTfeCreateMovementTaskListUrl(testErn, testDraftId)
+        redirectLocation(result) shouldBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/messages")
       }
     }
 
-    "the message ID does not relate to a movement submission in error" should {
-
-      "return a Not Found response" in {
-
-        MockGetMessagesService
-          .getMessage(testErn, testMessageId)
-          .returns(Future.successful(Some(testMessageFromCache.copy(errorMessage = None))))
-
+    "GET /trader/:ern/message/:uniqueMessageIdentifier/draft-movement" should {
+      "redirect back to legacy" in new Test(messageInboxEnabled = false) {
         val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
-
-        status(result) shouldBe Status.NOT_FOUND
-      }
-    }
-
-    "no message ID can be found" should {
-
-      "return a Not Found response" in {
-
-        MockGetMessagesService
-          .getMessage(testErn, testMessageId)
-          .returns(Future.successful(None))
-
-        val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
-
-        status(result) shouldBe Status.NOT_FOUND
-      }
-    }
-
-    "no records were deleted" should {
-
-      "return an Internal Server error response with the correct error handler template" in {
-
-        MockGetMessagesService
-          .getMessage(testErn, testMessageId)
-          .returns(Future.successful(Some(testMessageFromCache)))
-
-        MockDeleteMessagesService
-          .deleteMessage(testErn, testMessageId)
-          .returns(Future.successful(DeleteMessageResponse(recordsAffected = 0)))
-
-        val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
-
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
-      }
-    }
-
-    "one of the backend calls to 'revive' the movement fails" should {
-
-      "return an ISE response" in {
-
-        MockGetMessagesService
-          .getMessage(testErn, testMessageId)
-          .returns(Future.successful(Some(testMessageFromCache)))
-
-        MockDeleteMessagesService
-          .deleteMessage(testErn, testMessageId)
-          .returns(Future.successful(DeleteMessageResponse(recordsAffected = 1)))
-
-        MockDraftMovementService
-          .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
-          .returns(Future.successful(None))
-
-        val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
-
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        status(result) shouldBe Status.SEE_OTHER
+        redirectLocation(result) shouldBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/messages")
       }
     }
   }
