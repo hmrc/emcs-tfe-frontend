@@ -166,7 +166,7 @@ class ExciseProductCodeControllerSpec extends SpecBase
           val result = controller.onPageLoad(testErn, testIndex1, NormalMode)(request)
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result) mustBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate")
+          redirectLocation(result).value mustEqual "http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate"
         }
       }
     }
