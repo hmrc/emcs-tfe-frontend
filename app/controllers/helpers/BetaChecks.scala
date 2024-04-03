@@ -25,21 +25,25 @@ trait BetaChecks {
   def navigationHubBetaGuard(): (String, Result) =
     "tfeNavHub" -> Redirect(controllers.errors.routes.NotOnBetaListController.unauthorised())
 
-  def messageInboxBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
-    Some("tfeMessageInbox" -> Redirect(appConfig.emcsLegacyMessageInboxUrl(ern)))
+  def messageInboxBetaGuard(ern: String)(implicit appConfig: AppConfig): (String, Result) =
+    "tfeMessageInbox" -> Redirect(appConfig.emcsLegacyMessageInboxUrl(ern))
 
-  def homeBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
-    Some("tfeHome" -> Redirect(appConfig.emcsLegacyHomeUrl(ern)))
+  def homeBetaGuard(ern: String)(implicit appConfig: AppConfig): (String, Result) =
+    "tfeHome" -> Redirect(appConfig.emcsLegacyHomeUrl(ern))
 
-  def draftsBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
-    Some("tfeDrafts" -> Redirect(appConfig.emcsLegacyDraftsUrl(ern)))
+  def draftsBetaGuard(ern: String)(implicit appConfig: AppConfig): (String, Result) =
+    "tfeDrafts" -> Redirect(appConfig.emcsLegacyDraftsUrl(ern))
 
-  def searchMovementsBetaGuard(ern: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
-    Some("tfeSearchMovements" -> Redirect(appConfig.emcsLegacySearchMovementsUrl(ern)))
+  def searchMovementsBetaGuard(ern: String)(implicit appConfig: AppConfig): (String, Result) =
+    "tfeSearchMovements" -> Redirect(appConfig.emcsLegacySearchMovementsUrl(ern))
 
-  def viewMovementBetaGuard(ern: String, arc: String)(implicit appConfig: AppConfig): Option[(String, Result)] =
-    Some("tfeViewMovement" -> Redirect(appConfig.emcsLegacyViewMovementUrl(ern, arc)))
+  def viewMovementBetaGuard(ern: String, arc: String)(implicit appConfig: AppConfig): (String, Result) =
+    "tfeViewMovement" -> Redirect(appConfig.emcsLegacyViewMovementUrl(ern, arc))
 
-  def changeDestinationBetaGuard(ern: String, arc: String, ver: Int)(implicit appConfig: AppConfig): Option[(String, Result)] =
-    Some("tfeChangeDestination" -> Redirect(appConfig.emcsLegacyChangeDestinationUrl(ern, arc, ver)))
+  def changeDestinationBetaGuard(ern: String, arc: String, ver: Int)(implicit appConfig: AppConfig): (String, Result) =
+   "tfeChangeDestination" -> Redirect(appConfig.emcsLegacyChangeDestinationUrl(ern, arc, ver))
+
+  def preValidateBetaGuard(ern: String)(implicit appConfig: AppConfig): (String, Result) =
+    "tfePreValidate" -> Redirect(appConfig.emcsLegacyPreValidateUrl(ern))
+
 }

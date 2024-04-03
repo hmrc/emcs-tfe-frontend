@@ -16,7 +16,9 @@
 
 package controllers.prevalidateTrader
 
+import config.AppConfig
 import controllers.BaseNavigationController
+import controllers.helpers.BetaChecks
 import controllers.predicates._
 import forms.prevalidate.PrevalidateExciseProductCodeFormProvider
 import models.requests.UserAnswersRequest
@@ -32,7 +34,7 @@ import viewmodels.helpers.SelectItemHelper
 import views.html.prevalidateTrader.PrevalidateExciseProductCodeView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PrevalidateExciseProductCodeController @Inject()(
                                                         override val messagesApi: MessagesApi,
@@ -46,10 +48,13 @@ class PrevalidateExciseProductCodeController @Inject()(
                                                         val controllerComponents: MessagesControllerComponents,
                                                         exciseProductCodesService: GetExciseProductCodesService,
                                                         view: PrevalidateExciseProductCodeView
-                                           ) extends BaseNavigationController with AuthActionHelper {
+                                           )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends BaseNavigationController
+    with AuthActionHelper
+    with BetaChecks {
 
   def onPageLoad(ern: String, idx: Index, mode: Mode): Action[AnyContent] =
-    (authorisedWithData(ern) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       validateIndexAsync(idx) {
         exciseProductCodesService.getExciseProductCodes().flatMap { exciseProductCodes =>
           renderView(Ok, formProvider(exciseProductCodes), idx, exciseProductCodes, mode)
@@ -58,7 +63,7 @@ class PrevalidateExciseProductCodeController @Inject()(
     }
 
   def onSubmit(ern: String, idx: Index, mode: Mode): Action[AnyContent] =
-    (authorisedWithData(ern) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       validateIndexAsync(idx) {
         exciseProductCodesService.getExciseProductCodes().flatMap { exciseProductCodes =>
           formProvider(exciseProductCodes).bindFromRequest().fold(

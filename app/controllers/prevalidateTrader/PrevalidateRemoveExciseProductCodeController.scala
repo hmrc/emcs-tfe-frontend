@@ -17,11 +17,13 @@
 package controllers.prevalidateTrader
 
 
+import config.AppConfig
 import controllers.BaseNavigationController
+import controllers.helpers.BetaChecks
 import controllers.predicates._
 import forms.prevalidateTrader.PrevalidateRemoveExciseProductCodeFormProvider
-import models.{Index, NormalMode}
 import models.requests.UserAnswersRequest
+import models.{Index, NormalMode}
 import navigation.PrevalidateTraderNavigator
 import pages.prevalidateTrader.PrevalidateEPCPage
 import play.api.data.Form
@@ -44,10 +46,14 @@ class PrevalidateRemoveExciseProductCodeController @Inject()(override val contro
                                                              val navigator: PrevalidateTraderNavigator,
                                                              formProvider: PrevalidateRemoveExciseProductCodeFormProvider,
                                                              view: PrevalidateTraderRemoveExciseProductCodeView
-                                                            )(implicit val executionContext: ExecutionContext) extends BaseNavigationController with AuthActionHelper with I18nSupport {
+                                                            )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends BaseNavigationController
+    with AuthActionHelper
+    with I18nSupport
+    with BetaChecks {
 
   def onPageLoad(ern: String, idx: Index): Action[AnyContent] =
-    (authorisedWithData(ern) andThen requireData) { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData) { implicit request =>
       validateIndex(idx) {
         val exciseProductCodeSelected = request.userAnswers.get(PrevalidateEPCPage(idx)).get
         Ok(renderView(idx, exciseProductCodeSelected.code, formProvider(exciseProductCodeSelected.code)))
@@ -55,7 +61,7 @@ class PrevalidateRemoveExciseProductCodeController @Inject()(override val contro
     }
 
   def onSubmit(ern: String, idx: Index): Action[AnyContent] =
-    (authorisedWithData(ern) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       validateIndexAsync(idx) {
         val exciseProductCodeSelected = request.userAnswers.get(PrevalidateEPCPage(idx)).get
         formProvider(exciseProductCodeSelected.code).bindFromRequest().fold(

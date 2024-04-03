@@ -16,7 +16,9 @@
 
 package controllers.prevalidateTrader
 
+import config.AppConfig
 import controllers.BaseNavigationController
+import controllers.helpers.BetaChecks
 import controllers.predicates._
 import forms.prevalidate.PrevalidateConsigneeTraderIdentificationFormProvider
 import models.NormalMode
@@ -41,15 +43,19 @@ class PrevalidateConsigneeTraderIdentificationController @Inject()(override val 
                                                                    val navigator: PrevalidateTraderNavigator,
                                                                    formProvider: PrevalidateConsigneeTraderIdentificationFormProvider,
                                                                    view: PrevalidateConsigneeTraderIdentificationView
-                                                       )(implicit val executionContext: ExecutionContext) extends BaseNavigationController with AuthActionHelper with I18nSupport {
+                                                       )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends BaseNavigationController
+    with AuthActionHelper
+    with I18nSupport
+    with BetaChecks {
 
   def onPageLoad(ern: String): Action[AnyContent] =
-    (authorisedWithData(ern) andThen userAnswersAction) { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen userAnswersAction) { implicit request =>
       Ok(renderView(fillForm(PrevalidateConsigneeTraderIdentificationPage, formProvider())))
     }
 
   def onSubmit(ern: String): Action[AnyContent] =
-    (authorisedWithData(ern) andThen userAnswersAction).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen userAnswersAction).async { implicit request =>
       formProvider().bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(renderView(formWithErrors))),
         value => saveAndRedirect(PrevalidateConsigneeTraderIdentificationPage, value, NormalMode)

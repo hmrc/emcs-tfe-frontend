@@ -16,7 +16,9 @@
 
 package controllers.prevalidateTrader
 
+import config.AppConfig
 import controllers.BaseNavigationController
+import controllers.helpers.BetaChecks
 import controllers.predicates._
 import forms.prevalidate.PrevalidateAddToListFormProvider
 import models.requests.UserAnswersRequest
@@ -32,7 +34,7 @@ import viewmodels.helpers.PrevalidateAddToListHelper
 import views.html.prevalidateTrader.PrevalidateAddToListView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PrevalidateAddToListController @Inject()(
                                                 override val messagesApi: MessagesApi,
@@ -45,10 +47,13 @@ class PrevalidateAddToListController @Inject()(
                                                 formProvider: PrevalidateAddToListFormProvider,
                                                 val controllerComponents: MessagesControllerComponents,
                                                 view: PrevalidateAddToListView
-                                              ) extends BaseNavigationController with AuthActionHelper {
+                                              )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends BaseNavigationController
+    with AuthActionHelper
+    with BetaChecks {
 
   def onPageLoad(ern: String): Action[AnyContent] =
-    (authorisedWithData(ern) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       withAtLeastOneItem {
         val form = onMax(maxF = None, notMaxF = Some(fillForm(PrevalidateAddToListPage, formProvider())))
         Future.successful(renderView(Ok, form))
@@ -56,7 +61,7 @@ class PrevalidateAddToListController @Inject()(
     }
 
   def onSubmit(ern: String): Action[AnyContent] =
-    (authorisedWithData(ern) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       onMax(
         maxF = Future.successful(Redirect(navigator.nextPage(
           page = PrevalidateAddToListPage,
