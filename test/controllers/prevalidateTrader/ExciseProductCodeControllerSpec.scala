@@ -251,7 +251,7 @@ class ExciseProductCodeControllerSpec extends SpecBase
             controller.onSubmit(testErn, testIndex1, NormalMode)(request.withFormUrlEncodedBody(("excise-product-code", testEpcWine)))
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result) mustBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate")
+          redirectLocation(result).value mustEqual "http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate"
         }
       }
     }
