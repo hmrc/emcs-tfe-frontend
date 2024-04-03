@@ -121,7 +121,7 @@ class PrevalidateRemoveExciseProductCodeControllerSpec
         val result = controller.onPageLoad(testErn, testIndex1)(getRequest)
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result) mustBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate")
+          redirectLocation(result).value mustEqual "http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate"
       }
     }
   }
