@@ -60,7 +60,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
 
       implicit val msgs: Messages = messages(Seq(English.lang))
 
-      "rendered for when there the ERN is invalid" when {
+      "rendered for when the ERN is invalid" when {
 
         implicit val request: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(FakeRequest(), emptyUserAnswers)
 
