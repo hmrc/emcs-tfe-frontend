@@ -18,8 +18,10 @@ package controllers.prevalidateTrader
 
 import base.SpecBase
 import config.AppConfig
-import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction, PrevalidateTraderDataRetrievalAction}
+import controllers.predicates.{BetaAllowListActionImpl, FakeAuthAction, FakeDataRetrievalAction, PrevalidateTraderDataRetrievalAction}
 import fixtures.{ExciseProductCodeFixtures, ItemFixtures, PrevalidateTraderFixtures}
+import mocks.config.MockAppConfig
+import mocks.connectors.MockBetaAllowListConnector
 import mocks.services.{MockGetExciseProductCodesService, MockPrevalidateTraderService, MockPrevalidateUserAnswersService}
 import models.requests.UserAnswersRequest
 import models.response.emcsTfe.prevalidateTrader.{ExciseTraderValidationResponse, PreValidateTraderApiResponse, ProductError, ValidateProductAuthorisationResponse}
@@ -41,7 +43,9 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
   with ExciseProductCodeFixtures
   with MockPrevalidateTraderService
   with MockGetExciseProductCodesService
-  with PrevalidateTraderFixtures {
+  with PrevalidateTraderFixtures
+  with MockBetaAllowListConnector
+  with MockAppConfig {
 
   lazy val view = app.injector.instanceOf[PrevalidateTraderResultsView]
   lazy val controllerRoute: String = routes.PrevalidateTraderResultsController.onPageLoad(testErn).url
@@ -55,19 +59,25 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
 
   val ernToCheck = "GBWK002281023"
 
-  class Setup(val userAnswers: UserAnswers = emptyUserAnswers, getEPCs: Boolean = true) {
+  class Setup(val userAnswers: UserAnswers = emptyUserAnswers, getEPCs: Boolean = true, preValidateEnabled: Boolean = true) {
 
     implicit val userAnswerReq: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(request, userAnswers)
     implicit val msgs: Messages = messages(request)
 
     MockUserAnswersService.get(userAnswers.ern).returns(Future.successful(Some(userAnswers))).anyNumberOfTimes()
 
+    lazy val betaAllowListAction = new BetaAllowListActionImpl(
+      betaAllowListConnector = mockBetaAllowListConnector,
+      errorHandler = errorHandler,
+      config = mockAppConfig
+    )
+
     if(getEPCs) MockGetExciseProductCodesService.getExciseProductCodes().returns(Future.successful(sampleEPCs))
 
     lazy val controller = new PrevalidateTraderResultsController(
       messagesApi = messagesApi,
       userAnswersService = mockUserAnswersService,
-      betaAllowList = new FakeBetaAllowListAction,
+      betaAllowList = betaAllowListAction,
       navigator = new FakePrevalidateNavigator(testOnwardRoute),
       auth = FakeSuccessAuthAction,
       getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
@@ -77,239 +87,256 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
       getExciseProductCodesService = mockGetExciseProductCodesService,
       view = view
     )
+
+    MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
+    MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(true)))
+    MockBetaAllowListConnector.check(testErn, "tfePreValidate").returns(Future.successful(Right(preValidateEnabled)))
   }
 
   "PrevalidateTraderResults Controller" when {
 
+    "user is on the private beta list" should {
 
-    "must return OK and the correct view when there the ERN is invalid" in new Setup(
-      emptyUserAnswers
-        .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
-        .set(PrevalidateEPCPage(testIndex1), beerExciseProductCode)
-    ) {
+      "must return OK and the correct view when there the ERN is invalid" in new Setup(
+        emptyUserAnswers
+          .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
+          .set(PrevalidateEPCPage(testIndex1), beerExciseProductCode)
+      ) {
 
-      MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, Seq(beerExciseProductCode.code)).returns(Future.successful(
-        PreValidateTraderApiResponse(ExciseTraderValidationResponse(
-          validationTimestamp = validationTimestamp,
-          exciseTraderResponse = Seq(exciseTraderResponse.copy(validTrader = false))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, Seq(beerExciseProductCode.code)).returns(Future.successful(
+          PreValidateTraderApiResponse(ExciseTraderValidationResponse(
+            validationTimestamp = validationTimestamp,
+            exciseTraderResponse = Seq(exciseTraderResponse.copy(validTrader = false))
+          ))
         ))
-      ))
 
-      val result = controller.onPageLoad(testErn)(request)
+        val result = controller.onPageLoad(testErn)(request)
 
-      status(result) mustEqual OK
-      contentAsString(result) mustEqual view(
-        ernOpt = None,
-        addCodeCall = exciseProductPageRoute(),
-        approved = Seq.empty,
-        notApproved = Seq.empty
-      ).toString()
-    }
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          ernOpt = None,
+          addCodeCall = exciseProductPageRoute(),
+          approved = Seq.empty,
+          notApproved = Seq.empty
+        ).toString()
+      }
 
-    "must return OK and the correct view when the correct addCodeCall when below the max codes allowed" in new Setup(
-      emptyUserAnswers
-        .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
-        .set(PrevalidateEPCPage(0), wineExciseProductCode)
-        .set(PrevalidateEPCPage(1), wineExciseProductCode)
-        .set(PrevalidateEPCPage(2), wineExciseProductCode)
-        .set(PrevalidateEPCPage(3), wineExciseProductCode)
-        .set(PrevalidateEPCPage(4), wineExciseProductCode)
-        .set(PrevalidateEPCPage(5), wineExciseProductCode)
-        .set(PrevalidateEPCPage(6), wineExciseProductCode)
-        .set(PrevalidateEPCPage(7), wineExciseProductCode)
-        .set(PrevalidateEPCPage(8), wineExciseProductCode)
-    ) {
+      "must return OK and the correct view when the correct addCodeCall when below the max codes allowed" in new Setup(
+        emptyUserAnswers
+          .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
+          .set(PrevalidateEPCPage(0), wineExciseProductCode)
+          .set(PrevalidateEPCPage(1), wineExciseProductCode)
+          .set(PrevalidateEPCPage(2), wineExciseProductCode)
+          .set(PrevalidateEPCPage(3), wineExciseProductCode)
+          .set(PrevalidateEPCPage(4), wineExciseProductCode)
+          .set(PrevalidateEPCPage(5), wineExciseProductCode)
+          .set(PrevalidateEPCPage(6), wineExciseProductCode)
+          .set(PrevalidateEPCPage(7), wineExciseProductCode)
+          .set(PrevalidateEPCPage(8), wineExciseProductCode)
+      ) {
 
-      MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, (1 to 9).map(_ => wineExciseProductCode.code))
-        .returns(Future.successful(preValidateApiResponseModel))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, (1 to 9).map(_ => wineExciseProductCode.code))
+          .returns(Future.successful(preValidateApiResponseModel))
 
-      val result = controller.onPageLoad(testErn)(request)
+        val result = controller.onPageLoad(testErn)(request)
 
-      status(result) mustEqual OK
-      contentAsString(result) mustEqual view(
-        ernOpt = Some(ernToCheck),
-        addCodeCall = exciseProductPageRoute(9),
-        approved = (1 to 9).map(_ => wineExciseProductCode),
-        notApproved = Seq.empty
-      ).toString()
-    }
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          ernOpt = Some(ernToCheck),
+          addCodeCall = exciseProductPageRoute(9),
+          approved = (1 to 9).map(_ => wineExciseProductCode),
+          notApproved = Seq.empty
+        ).toString()
+      }
 
-    "must return OK and the correct view when the correct addCodeCall when on the max codes allowed" in new Setup(
-      emptyUserAnswers
-        .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
-        .set(PrevalidateEPCPage(0), wineExciseProductCode)
-        .set(PrevalidateEPCPage(1), wineExciseProductCode)
-        .set(PrevalidateEPCPage(2), wineExciseProductCode)
-        .set(PrevalidateEPCPage(3), wineExciseProductCode)
-        .set(PrevalidateEPCPage(4), wineExciseProductCode)
-        .set(PrevalidateEPCPage(5), wineExciseProductCode)
-        .set(PrevalidateEPCPage(6), wineExciseProductCode)
-        .set(PrevalidateEPCPage(7), wineExciseProductCode)
-        .set(PrevalidateEPCPage(8), wineExciseProductCode)
-        .set(PrevalidateEPCPage(9), wineExciseProductCode)
-    ) {
+      "must return OK and the correct view when the correct addCodeCall when on the max codes allowed" in new Setup(
+        emptyUserAnswers
+          .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
+          .set(PrevalidateEPCPage(0), wineExciseProductCode)
+          .set(PrevalidateEPCPage(1), wineExciseProductCode)
+          .set(PrevalidateEPCPage(2), wineExciseProductCode)
+          .set(PrevalidateEPCPage(3), wineExciseProductCode)
+          .set(PrevalidateEPCPage(4), wineExciseProductCode)
+          .set(PrevalidateEPCPage(5), wineExciseProductCode)
+          .set(PrevalidateEPCPage(6), wineExciseProductCode)
+          .set(PrevalidateEPCPage(7), wineExciseProductCode)
+          .set(PrevalidateEPCPage(8), wineExciseProductCode)
+          .set(PrevalidateEPCPage(9), wineExciseProductCode)
+      ) {
 
-      MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, (1 to 10).map(_ => wineExciseProductCode.code))
-        .returns(Future.successful(preValidateApiResponseModel))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, (1 to 10).map(_ => wineExciseProductCode.code))
+          .returns(Future.successful(preValidateApiResponseModel))
 
-      val result = controller.onPageLoad(testErn)(request)
+        val result = controller.onPageLoad(testErn)(request)
 
-      status(result) mustEqual OK
-      contentAsString(result) mustEqual view(
-        ernOpt = Some(ernToCheck),
-        addCodeCall = addToListPageRoute,
-        approved = (1 to 10).map(_ => wineExciseProductCode),
-        notApproved = Seq.empty
-      ).toString()
-    }
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          ernOpt = Some(ernToCheck),
+          addCodeCall = addToListPageRoute,
+          approved = (1 to 10).map(_ => wineExciseProductCode),
+          notApproved = Seq.empty
+        ).toString()
+      }
 
-    "must return OK and the correct view when the correct addCodeCall when above the max codes allowed" in new Setup(
-      emptyUserAnswers
-        .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
-        .set(PrevalidateEPCPage(0), wineExciseProductCode)
-        .set(PrevalidateEPCPage(1), wineExciseProductCode)
-        .set(PrevalidateEPCPage(2), wineExciseProductCode)
-        .set(PrevalidateEPCPage(3), wineExciseProductCode)
-        .set(PrevalidateEPCPage(4), wineExciseProductCode)
-        .set(PrevalidateEPCPage(5), wineExciseProductCode)
-        .set(PrevalidateEPCPage(6), wineExciseProductCode)
-        .set(PrevalidateEPCPage(7), wineExciseProductCode)
-        .set(PrevalidateEPCPage(8), wineExciseProductCode)
-        .set(PrevalidateEPCPage(9), wineExciseProductCode)
-        .set(PrevalidateEPCPage(10), wineExciseProductCode)
-    ) {
+      "must return OK and the correct view when the correct addCodeCall when above the max codes allowed" in new Setup(
+        emptyUserAnswers
+          .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
+          .set(PrevalidateEPCPage(0), wineExciseProductCode)
+          .set(PrevalidateEPCPage(1), wineExciseProductCode)
+          .set(PrevalidateEPCPage(2), wineExciseProductCode)
+          .set(PrevalidateEPCPage(3), wineExciseProductCode)
+          .set(PrevalidateEPCPage(4), wineExciseProductCode)
+          .set(PrevalidateEPCPage(5), wineExciseProductCode)
+          .set(PrevalidateEPCPage(6), wineExciseProductCode)
+          .set(PrevalidateEPCPage(7), wineExciseProductCode)
+          .set(PrevalidateEPCPage(8), wineExciseProductCode)
+          .set(PrevalidateEPCPage(9), wineExciseProductCode)
+          .set(PrevalidateEPCPage(10), wineExciseProductCode)
+      ) {
 
-      MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, (1 to 11).map(_ => wineExciseProductCode.code))
-        .returns(Future.successful(preValidateApiResponseModel))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, (1 to 11).map(_ => wineExciseProductCode.code))
+          .returns(Future.successful(preValidateApiResponseModel))
 
-      val result = controller.onPageLoad(testErn)(request)
+        val result = controller.onPageLoad(testErn)(request)
 
-      status(result) mustEqual OK
-      contentAsString(result) mustEqual view(
-        ernOpt = Some(ernToCheck),
-        addCodeCall = addToListPageRoute,
-        approved = (1 to 11).map(_ => wineExciseProductCode),
-        notApproved = Seq.empty
-      ).toString()
-    }
-    
-    "must return OK and the correct view when all EPCs are eligible" in new Setup(
-      emptyUserAnswers
-        .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
-        .set(PrevalidateEPCPage(0), wineExciseProductCode)
-        .set(PrevalidateEPCPage(1), beerExciseProductCode)
-        .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
-    ) {
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          ernOpt = Some(ernToCheck),
+          addCodeCall = addToListPageRoute,
+          approved = (1 to 11).map(_ => wineExciseProductCode),
+          notApproved = Seq.empty
+        ).toString()
+      }
 
-      MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
-        .returns(Future.successful(preValidateApiResponseModel))
+      "must return OK and the correct view when all EPCs are eligible" in new Setup(
+        emptyUserAnswers
+          .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
+          .set(PrevalidateEPCPage(0), wineExciseProductCode)
+          .set(PrevalidateEPCPage(1), beerExciseProductCode)
+          .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
+      ) {
 
-      val result = controller.onPageLoad(testErn)(request)
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
+          .returns(Future.successful(preValidateApiResponseModel))
 
-      status(result) mustEqual OK
-      contentAsString(result) mustEqual view(
-        ernOpt = Some(ernToCheck),
-        addCodeCall = exciseProductPageRoute(3),
-        approved = Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode),
-        notApproved = Seq.empty
-      ).toString()
-    }
+        val result = controller.onPageLoad(testErn)(request)
 
-    "must return OK and the correct view when all EPCs are ineligible" in new Setup(
-      emptyUserAnswers
-        .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
-        .set(PrevalidateEPCPage(0), wineExciseProductCode)
-        .set(PrevalidateEPCPage(1), beerExciseProductCode)
-        .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
-    ) {
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          ernOpt = Some(ernToCheck),
+          addCodeCall = exciseProductPageRoute(3),
+          approved = Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode),
+          notApproved = Seq.empty
+        ).toString()
+      }
 
-      MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
-        .returns(Future.successful(preValidateApiResponseModel.copy(
-          exciseTraderValidationResponse = ExciseTraderValidationResponse(
-            validationTimestamp = validationTimestamp,
-            exciseTraderResponse = Seq(
-              exciseTraderResponse.copy(validateProductAuthorisationResponse = Some(ValidateProductAuthorisationResponse(
-                valid = false,
-                productError = Some(Seq(
-                  ProductError(wineExciseProductCode.code, "error code", "error text"),
-                  ProductError(beerExciseProductCode.code, "error code", "error text"),
-                  ProductError(tobaccoExciseProductCode.code, "error code", "error text")
-                ))
-              )))
+      "must return OK and the correct view when all EPCs are ineligible" in new Setup(
+        emptyUserAnswers
+          .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
+          .set(PrevalidateEPCPage(0), wineExciseProductCode)
+          .set(PrevalidateEPCPage(1), beerExciseProductCode)
+          .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
+      ) {
+
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
+          .returns(Future.successful(preValidateApiResponseModel.copy(
+            exciseTraderValidationResponse = ExciseTraderValidationResponse(
+              validationTimestamp = validationTimestamp,
+              exciseTraderResponse = Seq(
+                exciseTraderResponse.copy(validateProductAuthorisationResponse = Some(ValidateProductAuthorisationResponse(
+                  valid = false,
+                  productError = Some(Seq(
+                    ProductError(wineExciseProductCode.code, "error code", "error text"),
+                    ProductError(beerExciseProductCode.code, "error code", "error text"),
+                    ProductError(tobaccoExciseProductCode.code, "error code", "error text")
+                  ))
+                )))
+              )
             )
-          )
-        )))
+          )))
 
-      val result = controller.onPageLoad(testErn)(request)
+        val result = controller.onPageLoad(testErn)(request)
 
-      status(result) mustEqual OK
-      contentAsString(result) mustEqual view(
-        ernOpt = Some(ernToCheck),
-        addCodeCall = exciseProductPageRoute(3),
-        approved = Seq.empty,
-        notApproved = Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode)
-      ).toString()
-    }
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          ernOpt = Some(ernToCheck),
+          addCodeCall = exciseProductPageRoute(3),
+          approved = Seq.empty,
+          notApproved = Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode)
+        ).toString()
+      }
 
-    "must return OK and the correct view when some EPCs are eligible and some are not" in new Setup(
-      emptyUserAnswers
-        .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
-        .set(PrevalidateEPCPage(0), wineExciseProductCode)
-        .set(PrevalidateEPCPage(1), beerExciseProductCode)
-        .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
-    ) {
+      "must return OK and the correct view when some EPCs are eligible and some are not" in new Setup(
+        emptyUserAnswers
+          .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck)
+          .set(PrevalidateEPCPage(0), wineExciseProductCode)
+          .set(PrevalidateEPCPage(1), beerExciseProductCode)
+          .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
+      ) {
 
-      MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
-        .returns(Future.successful(preValidateApiResponseModel.copy(
-          exciseTraderValidationResponse = ExciseTraderValidationResponse(
-            validationTimestamp = validationTimestamp,
-            exciseTraderResponse = Seq(
-              exciseTraderResponse.copy(validateProductAuthorisationResponse = Some(ValidateProductAuthorisationResponse(
-                valid = false,
-                productError = Some(Seq(
-                  ProductError(wineExciseProductCode.code, "error code", "error text"),
-                  ProductError(beerExciseProductCode.code, "error code", "error text")
-                ))
-              )))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
+          .returns(Future.successful(preValidateApiResponseModel.copy(
+            exciseTraderValidationResponse = ExciseTraderValidationResponse(
+              validationTimestamp = validationTimestamp,
+              exciseTraderResponse = Seq(
+                exciseTraderResponse.copy(validateProductAuthorisationResponse = Some(ValidateProductAuthorisationResponse(
+                  valid = false,
+                  productError = Some(Seq(
+                    ProductError(wineExciseProductCode.code, "error code", "error text"),
+                    ProductError(beerExciseProductCode.code, "error code", "error text")
+                  ))
+                )))
+              )
             )
-          )
-        )))
+          )))
 
-      val result = controller.onPageLoad(testErn)(request)
+        val result = controller.onPageLoad(testErn)(request)
 
-      status(result) mustEqual OK
-      contentAsString(result) mustEqual view(
-        ernOpt = Some(ernToCheck),
-        addCodeCall = exciseProductPageRoute(3),
-        approved = Seq(tobaccoExciseProductCode),
-        notApproved = Seq(wineExciseProductCode, beerExciseProductCode)
-      ).toString()
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          ernOpt = Some(ernToCheck),
+          addCodeCall = exciseProductPageRoute(3),
+          approved = Seq(tobaccoExciseProductCode),
+          notApproved = Seq(wineExciseProductCode, beerExciseProductCode)
+        ).toString()
+      }
+
+      "must redirect to the first EPC entry page when no EPCs have been entered" in new Setup(emptyUserAnswers
+        .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck), getEPCs = false) {
+
+        val result = controller.onPageLoad(testErn)(request)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.PrevalidateExciseProductCodeController.onPageLoad(testErn, Index(0), NormalMode).url
+      }
+
+      "must redirect to the ERN entry page when no ERN has been entered" in new Setup(emptyUserAnswers
+        .set(PrevalidateEPCPage(0), wineExciseProductCode), getEPCs = false) {
+
+        val result = controller.onPageLoad(testErn)(request)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url
+      }
+
+      "must redirect to the ERN entry page when no data has been entered" in new Setup(emptyUserAnswers, getEPCs = false) {
+
+        val result = controller.onPageLoad(testErn)(request)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url
+      }
     }
 
-    "must redirect to the first EPC entry page when no EPCs have been entered" in new Setup(emptyUserAnswers
-      .set(PrevalidateConsigneeTraderIdentificationPage, ernToCheck), getEPCs = false) {
+    "user is NOT on the private beta list" should {
 
-      val result = controller.onPageLoad(testErn)(request)
+      "redirect to legacy" in new Setup(preValidateEnabled = false, getEPCs = false) {
 
-      status(result) mustEqual SEE_OTHER
-      redirectLocation(result).value mustEqual routes.PrevalidateExciseProductCodeController.onPageLoad(testErn, Index(0), NormalMode).url
-    }
+        val result = controller.onPageLoad(testErn)(request)
 
-    "must redirect to the ERN entry page when no ERN has been entered" in new Setup(emptyUserAnswers
-      .set(PrevalidateEPCPage(0), wineExciseProductCode), getEPCs = false) {
-
-      val result = controller.onPageLoad(testErn)(request)
-
-      status(result) mustEqual SEE_OTHER
-      redirectLocation(result).value mustEqual routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url
-    }
-
-    "must redirect to the ERN entry page when no data has been entered" in new Setup(emptyUserAnswers, getEPCs = false) {
-
-      val result = controller.onPageLoad(testErn)(request)
-
-      status(result) mustEqual SEE_OTHER
-      redirectLocation(result).value mustEqual routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual "http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate"
+      }
     }
   }
 }

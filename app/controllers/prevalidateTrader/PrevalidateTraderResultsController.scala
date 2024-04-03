@@ -18,6 +18,7 @@ package controllers.prevalidateTrader
 
 import config.AppConfig
 import controllers.BaseNavigationController
+import controllers.helpers.BetaChecks
 import controllers.predicates._
 import models.requests.UserAnswersRequest
 import models.response.emcsTfe.prevalidateTrader.ExciseTraderResponse
@@ -34,7 +35,6 @@ import views.html.prevalidateTrader.PrevalidateTraderResultsView
 import javax.inject.Inject
 import scala.concurrent.Future
 
-
 class PrevalidateTraderResultsController @Inject()(
                                                     override val messagesApi: MessagesApi,
                                                     override val userAnswersService: PrevalidateTraderUserAnswersService,
@@ -47,9 +47,9 @@ class PrevalidateTraderResultsController @Inject()(
                                                     val controllerComponents: MessagesControllerComponents,
                                                     getExciseProductCodesService: GetExciseProductCodesService,
                                                     view: PrevalidateTraderResultsView
-                                                  )(implicit appConfig: AppConfig) extends BaseNavigationController with AuthActionHelper {
+                                                  )(implicit appConfig: AppConfig) extends BaseNavigationController with AuthActionHelper with BetaChecks {
   def onPageLoad(ern: String): Action[AnyContent] =
-    (authorisedWithData(ern) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       withAllValidRequestData {
 
         val addItemCall = onMax(
