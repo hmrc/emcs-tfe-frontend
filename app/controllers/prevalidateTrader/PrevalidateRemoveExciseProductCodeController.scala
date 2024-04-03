@@ -53,7 +53,7 @@ class PrevalidateRemoveExciseProductCodeController @Inject()(override val contro
     with BetaChecks {
 
   def onPageLoad(ern: String, idx: Index): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern).get) andThen requireData) { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData) { implicit request =>
       validateIndex(idx) {
         val exciseProductCodeSelected = request.userAnswers.get(PrevalidateEPCPage(idx)).get
         Ok(renderView(idx, exciseProductCodeSelected.code, formProvider(exciseProductCodeSelected.code)))
@@ -61,7 +61,7 @@ class PrevalidateRemoveExciseProductCodeController @Inject()(override val contro
     }
 
   def onSubmit(ern: String, idx: Index): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern).get) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       validateIndexAsync(idx) {
         val exciseProductCodeSelected = request.userAnswers.get(PrevalidateEPCPage(idx)).get
         formProvider(exciseProductCodeSelected.code).bindFromRequest().fold(

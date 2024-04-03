@@ -50,12 +50,12 @@ class PrevalidateConsigneeTraderIdentificationController @Inject()(override val 
     with BetaChecks {
 
   def onPageLoad(ern: String): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern).get) andThen userAnswersAction) { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen userAnswersAction) { implicit request =>
       Ok(renderView(fillForm(PrevalidateConsigneeTraderIdentificationPage, formProvider())))
     }
 
   def onSubmit(ern: String): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern).get) andThen userAnswersAction).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen userAnswersAction).async { implicit request =>
       formProvider().bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(renderView(formWithErrors))),
         value => saveAndRedirect(PrevalidateConsigneeTraderIdentificationPage, value, NormalMode)

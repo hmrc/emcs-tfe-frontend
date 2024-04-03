@@ -38,9 +38,16 @@ trait AuthActionHelper extends BetaChecks {
   def authorisedWithBetaGuardData(ern: String, betaGuard: (String, Result)): ActionBuilder[DataRequest, AnyContent] =
     authorised(ern) andThen betaAllowList(betaGuard) andThen getData()
 
-  def authorisedDataRequest(ern: String, betaGuard: Option[(String, Result)] = None)(block: DataRequest[_] => Result): Action[AnyContent] =
-    betaGuard.fold(authorisedWithData(ern)(block))(authorisedWithBetaGuardData(ern, _)(block))
+  def authorisedDataRequest(ern: String)(block: DataRequest[_] => Result): Action[AnyContent] =
+    authorisedWithData(ern)(block)
 
-  def authorisedDataRequestAsync(ern: String, betaGuard: Option[(String, Result)] = None)(block: DataRequest[_] => Future[Result]): Action[AnyContent] =
-    betaGuard.fold(authorisedWithData(ern).async(block))(authorisedWithBetaGuardData(ern, _).async(block))
+  def authorisedDataRequest(ern: String, betaGuard: (String, Result))(block: DataRequest[_] => Result): Action[AnyContent] =
+    authorisedWithBetaGuardData(ern, betaGuard)(block)
+
+  def authorisedDataRequestAsync(ern: String)(block: DataRequest[_] => Future[Result]): Action[AnyContent] =
+    authorisedWithData(ern).async(block)
+
+  def authorisedDataRequestAsync(ern: String, betaGuard: (String, Result))(block: DataRequest[_] => Future[Result]): Action[AnyContent] =
+    authorisedWithBetaGuardData(ern, betaGuard).async(block)
+
 }

@@ -53,7 +53,7 @@ class PrevalidateAddToListController @Inject()(
     with BetaChecks {
 
   def onPageLoad(ern: String): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern).get) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       withAtLeastOneItem {
         val form = onMax(maxF = None, notMaxF = Some(fillForm(PrevalidateAddToListPage, formProvider())))
         Future.successful(renderView(Ok, form))
@@ -61,7 +61,7 @@ class PrevalidateAddToListController @Inject()(
     }
 
   def onSubmit(ern: String): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern).get) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       onMax(
         maxF = Future.successful(Redirect(navigator.nextPage(
           page = PrevalidateAddToListPage,

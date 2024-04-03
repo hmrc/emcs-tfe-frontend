@@ -54,7 +54,7 @@ class PrevalidateExciseProductCodeController @Inject()(
     with BetaChecks {
 
   def onPageLoad(ern: String, idx: Index, mode: Mode): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern).get) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       validateIndexAsync(idx) {
         exciseProductCodesService.getExciseProductCodes().flatMap { exciseProductCodes =>
           renderView(Ok, formProvider(exciseProductCodes), idx, exciseProductCodes, mode)
@@ -63,7 +63,7 @@ class PrevalidateExciseProductCodeController @Inject()(
     }
 
   def onSubmit(ern: String, idx: Index, mode: Mode): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern).get) andThen requireData).async { implicit request =>
+    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
       validateIndexAsync(idx) {
         exciseProductCodesService.getExciseProductCodes().flatMap { exciseProductCodes =>
           formProvider(exciseProductCodes).bindFromRequest().fold(
