@@ -34,7 +34,7 @@ class DraftsController @Inject()(mcc: MessagesControllerComponents,
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
 
   def onPageLoad(ern: String): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, draftsBetaGuard(ern)) { implicit _ =>
+    authorisedDataRequestAsync(ern, draftsBetaGuard(ern)) { _ =>
       Future.successful(
         Redirect(testOnly.controllers.routes.UnderConstructionController.onPageLoad().url)
       )

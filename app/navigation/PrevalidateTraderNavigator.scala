@@ -45,8 +45,7 @@ class PrevalidateTraderNavigator @Inject() extends BaseNavigator {
         case Some(true) =>
           routes.PrevalidateExciseProductCodeController.onPageLoad(userAnswers.ern, Index(userAnswers.get(PrevalidateTraderEPCCount).getOrElse(0)), NormalMode)
         case _ =>
-          //TODO: Update to route to Result page when built PVT-05
-          testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+          routes.PrevalidateTraderResultsController.onPageLoad(userAnswers.ern)
       }
 
     case _ => (userAnswers: UserAnswers) =>

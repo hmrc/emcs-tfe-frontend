@@ -36,7 +36,7 @@ import views.html.prevalidateTrader.PrevalidateExciseProductCodeView
 
 import scala.concurrent.Future
 
-class ExciseProductCodeControllerSpec extends SpecBase
+class PrevalidateExciseProductCodeControllerSpec extends SpecBase
   with FakeAuthAction
   with MockPrevalidateUserAnswersService
   with MockGetExciseProductCodesService

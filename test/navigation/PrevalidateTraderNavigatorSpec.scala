@@ -91,7 +91,6 @@ class PrevalidateTraderNavigatorSpec extends SpecBase with ExciseProductCodeFixt
 
         "answer is `false`" must {
 
-          //TODO: Update redirect when PVT-05 built
           "go to the result page PVT-05" in {
 
             val userAnswers = emptyUserAnswers
@@ -99,7 +98,7 @@ class PrevalidateTraderNavigatorSpec extends SpecBase with ExciseProductCodeFixt
               .set(PrevalidateEPCPage(testIndex1), beerExciseProductCode)
 
             navigator.nextPage(PrevalidateAddToListPage, NormalMode, userAnswers) mustBe
-              testOnly.controllers.routes.UnderConstructionController.onPageLoad()
+              routes.PrevalidateTraderResultsController.onPageLoad(testErn)
           }
         }
       }

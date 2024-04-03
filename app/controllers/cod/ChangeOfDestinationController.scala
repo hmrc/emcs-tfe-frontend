@@ -34,7 +34,7 @@ class ChangeOfDestinationController @Inject()(mcc: MessagesControllerComponents,
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
 
   def onPageLoad(ern: String, arc: String, ver: Int): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, changeDestinationBetaGuard(ern, arc, ver)) { implicit _ =>
+    authorisedDataRequestAsync(ern, changeDestinationBetaGuard(ern, arc, ver)) { _ =>
       Future.successful(
         Redirect(appConfig.emcsTfeChangeDestinationUrl(ern, arc))
       )

@@ -69,3 +69,5 @@ case class DocumentTypesException(message: String) extends Exception(message) wi
 case class MessageRetrievalException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class DeleteMessageException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class PrevalidateTraderException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
