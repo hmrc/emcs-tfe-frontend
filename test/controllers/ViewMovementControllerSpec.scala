@@ -66,7 +66,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
         "messagesConnector call is successful" in {
           MockViewMovementHelper.movementCard().returns(Future(Html("")))
           MockGetMovementService
-            .getMovement(testErn, testArc)
+            .getLatestMovementForLoggedInUser(testErn, testArc)
             .returns(Future.successful(getMovementResponseModel))
 
           val result: Future[Result] = method()
@@ -77,7 +77,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
       "return 500" when {
         "movement messagesConnector call is unsuccessful" in {
           MockGetMovementService
-            .getMovement(testErn, testArc)
+            .getLatestMovementForLoggedInUser(testErn, testArc)
             .returns(Future.failed(MovementException("bang")))
 
           val result: Future[Result] = method()
@@ -88,9 +88,8 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
         "document messagesConnector call is unsuccessful" in {
           MockViewMovementHelper.movementCard().returns(Future.failed(DocumentTypesException("No document types retrieved")))
           MockGetMovementService
-            .getMovement(testErn, testArc)
+            .getLatestMovementForLoggedInUser(testErn, testArc)
             .returns(Future.successful(getMovementResponseModel))
-
 
           val result: Future[Result] = method()
 

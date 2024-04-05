@@ -71,7 +71,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                           ): Action[AnyContent] =
 
     authorisedDataRequestAsync(exciseRegistrationNumber, viewMovementBetaGuard(exciseRegistrationNumber, arc)) { implicit request =>
-      getMovementService.getMovement(exciseRegistrationNumber, arc).flatMap { movement =>
+      getMovementService.getLatestMovementForLoggedInUser(exciseRegistrationNumber, arc).flatMap { movement =>
         helper.movementCard(currentSubNavigationTab, movement).map { movementCard =>
           Ok(view(
             ern = exciseRegistrationNumber,

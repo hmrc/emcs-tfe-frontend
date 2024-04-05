@@ -127,7 +127,7 @@ class ViewMessageControllerSpec extends SpecBase
             .returns(Future.successful(Some(testMessageFromCacheWithIE871MessageType)))
 
           MockGetMovementService
-            .getRawMovement(testErn, arc = "ARC1001")
+            .getRawMovement(testErn, arc = "ARC1001", testMessageFromCacheWithIE871MessageType.message.sequenceNumber)
             .returns(Future.successful(getMovementResponseModel))
 
           val result: Future[Result] = controller.onPageLoad(testErn, testMessageId)(fakeRequest)

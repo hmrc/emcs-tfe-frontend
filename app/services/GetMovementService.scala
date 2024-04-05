@@ -19,6 +19,7 @@ package services
 import connectors.emcsTfe.GetMovementConnector
 import models.response.MovementException
 import models.response.emcsTfe.GetMovementResponse
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -31,18 +32,20 @@ class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
                                    getWineOperationsService: GetWineOperationsService,
                                    getMovementHistoryEventsService: GetMovementHistoryEventsService)(implicit ec: ExecutionContext) {
 
-  def getRawMovement(ern: String, arc: String)(implicit hc: HeaderCarrier) : Future[GetMovementResponse] =
-    getMovementConnector.getMovement(ern, arc).map {
+  def getRawMovement(ern: String, arc: String, sequenceNumber: Option[Int] = None)(implicit hc: HeaderCarrier) : Future[GetMovementResponse] =
+    getMovementConnector.getMovement(ern, arc, sequenceNumber).map {
       case Right(movement) => movement
       case Left(errorResponse) =>
         throw MovementException(s"Failed to retrieve movement from emcs-tfe: $errorResponse")
 
     }
 
-  def getMovement(ern: String, arc: String)(implicit hc: HeaderCarrier): Future[GetMovementResponse] =
-    getRawMovement(ern, arc).flatMap { movement =>
+  def getMovement(ern: String, arc: String, sequenceNumber: Option[Int] = None, historyEvents: Option[Seq[MovementHistoryEvent]] = None)
+                 (implicit hc: HeaderCarrier): Future[GetMovementResponse] =
+
+    getRawMovement(ern, arc, sequenceNumber).flatMap { movement =>
       for {
-        historyEvents <- getMovementHistoryEventsService.getMovementHistoryEvents(ern, arc)
+        historyEvents <- historyEvents.fold(getMovementHistoryEventsService.getMovementHistoryEvents(ern, arc))(history => Future.successful(history))
         itemsWithWineOperations <- getWineOperationsService.getWineOperations(movement.items)
         itemsWithWineAndPackaging <- getPackagingTypesService.getMovementItemsWithPackagingTypes(itemsWithWineOperations)
         itemsWithCnCodeInfo <- getCnCodeInformationService.getCnCodeInformation(itemsWithWineAndPackaging)
@@ -56,5 +59,16 @@ class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
         items = itemsWithWineAndPackagingAndCnCodeInfo,
         eventHistorySummary = Some(historyEvents)
       )
+    }
+
+  def getLatestMovementForLoggedInUser(ern: String, arc: String)(implicit hc: HeaderCarrier): Future[GetMovementResponse] =
+    getMovementHistoryEventsService.getMovementHistoryEvents(ern, arc).flatMap {
+      historyEvents =>
+        getMovement(
+          ern = ern,
+          arc = arc,
+          sequenceNumber = Some( historyEvents.map(_.sequenceNumber).max ),
+          historyEvents = Some(historyEvents)
+        )
     }
 }

@@ -37,21 +37,37 @@ class GetMovementConnectorSpec extends SpecBase
 
     "return a successful response" when {
 
-      "downstream call is successful" in {
+      "when downstream call is successful for the latest movement" in {
 
         MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true").returns(Future.successful(Right(getMovementResponseModel)))
 
         connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc").futureValue mustBe Right(getMovementResponseModel)
       }
+
+      "when downstream call is successful for a particular movement sequence" in {
+
+        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true&sequenceNumber=2")
+          .returns(Future.successful(Right(getMovementResponseModel)))
+
+        connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc", Some(2)).futureValue mustBe Right(getMovementResponseModel)
+      }
+
     }
 
     "return an error response" when {
 
-      "when downstream call fails" in {
+      "when downstream call fails for the latest movement" in {
 
         MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true").returns(Future.successful(Left(JsonValidationError)))
 
         connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc").futureValue mustBe Left(JsonValidationError)
+      }
+
+      "when downstream call fails for a particular movement sequence" in {
+
+        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true&sequenceNumber=2").returns(Future.successful(Left(JsonValidationError)))
+
+        connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc", Some(2)).futureValue mustBe Left(JsonValidationError)
       }
     }
   }

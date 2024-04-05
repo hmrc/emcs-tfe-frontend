@@ -20,7 +20,7 @@ import connectors.emcsTfe.{GetMovementConnector, GetMovementListConnector}
 import models.MovementListSearchOptions
 import models.response.ErrorResponse
 import models.response.emcsTfe.{GetMovementListResponse, GetMovementResponse}
-import org.scalamock.handlers.CallHandler4
+import org.scalamock.handlers.{CallHandler4, CallHandler5}
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -31,9 +31,9 @@ trait MockEmcsTfeConnector extends MockFactory {
   lazy val mockGetMovementListConnector: GetMovementListConnector = mock[GetMovementListConnector]
 
   object MockEmcsTfeConnector {
-    def getMovement(ern: String, arc: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementResponse]]] = {
-      (mockGetMovementConnector.getMovement(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(ern, arc, *, *)
+    def getMovement(ern: String, arc: String, sequenceNumber: Option[Int] = None): CallHandler5[String, String, Option[Int], HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementResponse]]] = {
+      (mockGetMovementConnector.getMovement(_: String, _: String, _: Option[Int])(_: HeaderCarrier, _: ExecutionContext))
+        .expects(ern, arc, sequenceNumber, *, *)
     }
 
     def getMovementList(ern: String, search: Option[MovementListSearchOptions] = None): CallHandler4[String, Option[MovementListSearchOptions], HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, GetMovementListResponse]]] =

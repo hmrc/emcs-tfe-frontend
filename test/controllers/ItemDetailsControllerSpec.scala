@@ -72,7 +72,7 @@ class ItemDetailsControllerSpec
 
         "return OK and the correct view for a GET" in new Test {
 
-          MockGetMovementService.getMovement(testErn, testArc)
+          MockGetMovementService.getLatestMovementForLoggedInUser(testErn, testArc)
             .returns(Future.successful(getMovementResponseModel.copy(items = Seq(item1WithWineAndPackagingAndCnCodeInfo))))
 
           val request = FakeRequest(GET, onPageLoadUrl(idx = 1))
@@ -87,7 +87,7 @@ class ItemDetailsControllerSpec
 
           "there is an issue retrieving the movement" in new Test {
 
-            MockGetMovementService.getMovement(testErn, testArc)
+            MockGetMovementService.getLatestMovementForLoggedInUser(testErn, testArc)
               .returns(Future.failed(MovementException("bang")))
 
             val request = FakeRequest(GET, onPageLoadUrl(idx = 1))
