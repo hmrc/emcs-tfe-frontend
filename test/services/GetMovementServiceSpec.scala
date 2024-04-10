@@ -21,9 +21,9 @@ import fixtures.GetMovementResponseFixtures
 import mocks.connectors.MockEmcsTfeConnector
 import mocks.services.{MockGetCnCodeInformationService, MockGetMovementHistoryEventsService, MockGetPackagingTypesService, MockGetWineOperationsService}
 import models.common.UnitOfMeasure.Kilograms
+import models.response._
 import models.response.emcsTfe.MovementItem
 import models.response.referenceData.CnCodeInformation
-import models.response.{CnCodeInformationException, MovementException, MovementHistoryEventsException, PackagingTypesException, UnexpectedDownstreamResponseError, WineOperationsException}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -61,45 +61,88 @@ class GetMovementServiceSpec extends SpecBase
 
           "Reference Data returns success for Packaging Types" when {
 
-            "Reference Data returns success for CnCodeInformation" must {
+            "Reference Data returns success for CnCodeInformation" when {
 
-              "return successful movement with the packaging and unit of measure added to the response" in {
+              "requesting the latest movement sequence" must {
+                "return successful movement with the packaging and unit of measure added to the response" in {
 
-                MockEmcsTfeConnector.getMovement(testErn, testArc)
-                  .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
+                  MockEmcsTfeConnector.getMovement(testErn, testArc)
+                    .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
 
-                MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
-                  .returns(Future.successful(getMovementHistoryEventsModel))
+                  MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+                    .returns(Future.successful(getMovementHistoryEventsModel))
 
-                MockGetWineOperationsService.getWineOperations(movementItems)
-                  .returns(Future.successful(movementItemsWithWineOperations))
+                  MockGetWineOperationsService.getWineOperations(movementItems)
+                    .returns(Future.successful(movementItemsWithWineOperations))
 
-                MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItemsWithWineOperations)
-                  .returns(Future.successful(movementItemsWithWineAndPackaging))
+                  MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItemsWithWineOperations)
+                    .returns(Future.successful(movementItemsWithWineAndPackaging))
 
-                MockGetCnCodeInformationService.getCnCodeInformation(movementItemsWithWineAndPackaging)
-                  .returns(Future.successful(Seq(
-                    item1WithWineAndPackaging -> CnCodeInformation(
-                      cnCode = "T400",
-                      cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
-                      exciseProductCode = "24029000",
-                      exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
-                      unitOfMeasure = Kilograms
-                    ),
-                    item2WithWineAndPackaging -> CnCodeInformation(
-                      cnCode = "T400",
-                      cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
-                      exciseProductCode = "24029000",
-                      exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
-                      unitOfMeasure = Kilograms
-                    )
-                  )))
+                  MockGetCnCodeInformationService.getCnCodeInformation(movementItemsWithWineAndPackaging)
+                    .returns(Future.successful(Seq(
+                      item1WithWineAndPackaging -> CnCodeInformation(
+                        cnCode = "T400",
+                        cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+                        exciseProductCode = "24029000",
+                        exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+                        unitOfMeasure = Kilograms
+                      ),
+                      item2WithWineAndPackaging -> CnCodeInformation(
+                        cnCode = "T400",
+                        cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+                        exciseProductCode = "24029000",
+                        exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+                        unitOfMeasure = Kilograms
+                      )
+                    )))
 
-                testService.getMovement(testErn, testArc)(hc).futureValue mustBe getMovementResponseModel.copy(items = Seq(
-                  item1WithWineAndPackagingAndCnCodeInfo,
-                  item2WithWineAndPackagingAndCnCodeInfo
-                ))
+                  testService.getMovement(testErn, testArc)(hc).futureValue mustBe getMovementResponseModel.copy(items = Seq(
+                    item1WithWineAndPackagingAndCnCodeInfo,
+                    item2WithWineAndPackagingAndCnCodeInfo
+                  ))
+                }
               }
+
+              "requesting a particular movement sequence" must {
+                "return successful movement with the packaging and unit of measure added to the response" in {
+
+                  MockEmcsTfeConnector.getMovement(testErn, testArc, Some(3))
+                    .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
+
+                  MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+                    .returns(Future.successful(getMovementHistoryEventsModel))
+
+                  MockGetWineOperationsService.getWineOperations(movementItems)
+                    .returns(Future.successful(movementItemsWithWineOperations))
+
+                  MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItemsWithWineOperations)
+                    .returns(Future.successful(movementItemsWithWineAndPackaging))
+
+                  MockGetCnCodeInformationService.getCnCodeInformation(movementItemsWithWineAndPackaging)
+                    .returns(Future.successful(Seq(
+                      item1WithWineAndPackaging -> CnCodeInformation(
+                        cnCode = "T400",
+                        cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+                        exciseProductCode = "24029000",
+                        exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+                        unitOfMeasure = Kilograms
+                      ),
+                      item2WithWineAndPackaging -> CnCodeInformation(
+                        cnCode = "T400",
+                        cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+                        exciseProductCode = "24029000",
+                        exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+                        unitOfMeasure = Kilograms
+                      )
+                    )))
+
+                  testService.getLatestMovementForLoggedInUser(testErn, testArc)(hc).futureValue mustBe getMovementResponseModel.copy(items = Seq(
+                    item1WithWineAndPackagingAndCnCodeInfo,
+                    item2WithWineAndPackagingAndCnCodeInfo
+                  ))
+                }
+              }
+
             }
 
             "Reference Data returns failure for CnCodeInformation" must {

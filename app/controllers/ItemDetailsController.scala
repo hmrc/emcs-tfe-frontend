@@ -42,7 +42,7 @@ class ItemDetailsController @Inject()(mcc: MessagesControllerComponents,
 
   def onPageLoad(ern: String, arc: String, idx: Int): Action[AnyContent] =
     authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
-      movementService.getMovement(ern, arc).map { movement =>
+      movementService.getLatestMovementForLoggedInUser(ern, arc).map { movement =>
         val item = movement.items(idx - 1)
         Ok(view(item))
       }.recover {

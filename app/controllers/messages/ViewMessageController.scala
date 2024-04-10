@@ -58,7 +58,7 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
 
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
         case Some(msg) if messagesThatNeedMovement.contains(msg.message.messageType) && msg.message.arc.isDefined =>
-          getMovementService.getRawMovement(ern, msg.message.arc.get).map { movement =>
+          getMovementService.getRawMovement(ern, msg.message.arc.get, msg.message.sequenceNumber).map { movement =>
             Ok(view(msg, Some(movement))).withSession(sessionWithFromPageSet)
           }
         case Some(msg) =>

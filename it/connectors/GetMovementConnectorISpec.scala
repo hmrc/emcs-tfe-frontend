@@ -32,7 +32,7 @@ class GetMovementConnectorISpec extends IntegrationBaseSpec
 
     def url(): String = s"/emcs-tfe/movement/ern/arc?forceFetchNew=true"
 
-    "must return true when the server responds OK" in {
+    "must return true when the server responds OK for the latest movement" in {
 
       wireMockServer.stubFor(
         get(urlEqualTo(url()))
@@ -40,6 +40,15 @@ class GetMovementConnectorISpec extends IntegrationBaseSpec
       )
 
       connector.getMovement(exciseRegistrationNumber, arc).futureValue mustBe Right(getMovementResponseModel)
+    }
+
+    "must return true when the server responds OK for a particular movement sequence" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"${url()}&sequenceNumber=2"))
+          .willReturn(aResponse().withStatus(OK).withBody(Json.stringify(body)))
+      )
+
+      connector.getMovement(exciseRegistrationNumber, arc, Some(2)).futureValue mustBe Right(getMovementResponseModel)
     }
 
     "must return false when the server responds NOT_FOUND" in {
