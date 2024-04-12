@@ -28,7 +28,7 @@ class TimelineHelperSpec extends SpecBase {
 
   implicit lazy val msgs: Messages = messages(FakeRequest())
 
-  val helper = app.injector.instanceOf[TimelineHelper]
+  val helper: TimelineHelper = app.injector.instanceOf[TimelineHelper]
 
   ".parseDateTime" must {
 
@@ -62,7 +62,7 @@ class TimelineHelperSpec extends SpecBase {
   ".getEventTitleKey" must {
     "return the correct message key" when {
 
-      def getKey(eventType: String, sequenceNumber: Int, messageRole: Int):String = {
+      def getKey(eventType: String, sequenceNumber: Int, messageRole: Int): String = {
         helper.getEventTitleKey(
           MovementHistoryEvent(
             eventType = eventType,
@@ -161,7 +161,7 @@ class TimelineHelperSpec extends SpecBase {
 
       val response = helper.getHistoryEventUrl(input)
 
-      response mustBe s"event/IE818/id/$expectedEventId"
+      response mustBe s"event/$expectedEventId/report-receipt-submitted"
     }
   }
 }

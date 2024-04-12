@@ -216,25 +216,45 @@ viewMovement.guarantor.summary.vatRegistrationNumber = VAT registration number
 
 # MOV02 - History events
 movementHistoryEvent.IE801.first.label = Movement created
+movementHistoryEvent.IE801.first.urlLabel = movement-created
 movementHistoryEvent.IE801.further.label = Update to movement
+movementHistoryEvent.IE801.further.urlLabel = movement-updated
 movementHistoryEvent.IE802.cod.label = Reminder to provide change of destination
+movementHistoryEvent.IE802.cod.urlLabel = change-destination-due
 movementHistoryEvent.IE802.ror.label = Report of receipt due
+movementHistoryEvent.IE802.ror.urlLabel = report-receipt-due
 movementHistoryEvent.IE802.des.label = Reminder to provide destination
+movementHistoryEvent.IE802.des.urlLabel = movement-destination-due
 movementHistoryEvent.IE803.diverted.label = Diverted movement
+movementHistoryEvent.IE803.diverted.urlLabel = movement-diverted
 movementHistoryEvent.IE803.split.label = Notification of split movement
+movementHistoryEvent.IE803.split.urlLabel = movement-split
 movementHistoryEvent.IE807.label = Movement intercepted
+movementHistoryEvent.IE807.urlLabel = movement-intercepted
 movementHistoryEvent.IE810.label = Cancellation
+movementHistoryEvent.IE810.urlLabel = movement-cancelled
 movementHistoryEvent.IE813.label = Change of destination submitted
+movementHistoryEvent.IE813.urlLabel = change-destination-submitted
 movementHistoryEvent.IE818.label = Report of receipt submitted
+movementHistoryEvent.IE818.urlLabel = report-receipt-submitted
 movementHistoryEvent.IE819.label = Alert or rejection submitted
+movementHistoryEvent.IE819.urlLabel = alert-rejection-submitted
 movementHistoryEvent.IE829.label = Customs acceptance of movement for export
+movementHistoryEvent.IE829.urlLabel = movement-accepted-customs
 movementHistoryEvent.IE837.label = Explanation for delay submitted
+movementHistoryEvent.IE837.urlLabel = explantion-delay-submitted
 movementHistoryEvent.IE839.label = Customs rejection of movement for export
+movementHistoryEvent.IE839.urlLabel = movement-rejected-customs
 movementHistoryEvent.IE840.first.label = First notification of event
+movementHistoryEvent.IE840.first.urlLabel = event-report-received
 movementHistoryEvent.IE840.complementary.label = Complementary notification of event
+movementHistoryEvent.IE840.complementary.urlLabel = event-report-received
 movementHistoryEvent.IE871.label = Explanation for a shortage or excess
+movementHistoryEvent.IE871.urlLabel = explanation-shortage-excess-submitted
 movementHistoryEvent.IE881.label = Manual closure response
+movementHistoryEvent.IE881.urlLabel = movement-closure-response
 movementHistoryEvent.IE905.label = Manual closure response of a movement
+movementHistoryEvent.IE905.urlLabel = movement-manually-closed
 
 # MOV02 - Documents
 viewMovement.document.details = Document details
