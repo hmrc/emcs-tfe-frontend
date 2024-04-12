@@ -40,6 +40,4 @@ class DraftsController @Inject()(mcc: MessagesControllerComponents,
       )
     }
   }
-
 }
-

@@ -82,7 +82,5 @@ class DraftsControllerSpec extends SpecBase with FakeAuthAction with MockFactory
         redirectLocation(result) shouldBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/movement/drafts")
       }
     }
-
   }
-
 }
