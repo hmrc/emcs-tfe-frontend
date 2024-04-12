@@ -29,6 +29,7 @@ import viewmodels.helpers.SummaryListHelper._
 import views.html.components.{h2, h3, summaryCard}
 
 import javax.inject.{Inject, Singleton}
+import scala.language.postfixOps
 
 @Singleton
 class ViewMovementTransportHelper @Inject()(
@@ -41,7 +42,7 @@ class ViewMovementTransportHelper @Inject()(
     val notProvidedMessage = messages("viewMovement.transport.transportUnit.notProvided")
 
     HtmlFormat.fill(Seq(
-      h2(messages("viewMovement.transport.h2"), "govuk-heading-l"),
+      h2(messages("viewMovement.transport.h2"), "govuk-heading-l", id=Some("movement-transport-heading")),
       summaryCard(
         None,
         Seq(
@@ -54,9 +55,10 @@ class ViewMovementTransportHelper @Inject()(
             movement.transportMode.transportModeCode.messageKey
           ),
           summaryListRowBuilder("viewMovement.transport.summary.journeyTime", movement.journeyTime)
-        )
+        ),
+        summaryListAttributes = Map("id" -> "movement-transport-summary")
       ),
-      h3("viewMovement.transport.firstTransporter"),
+      h3("viewMovement.transport.firstTransporter", id=Some("first-transporter-heading")),
       summaryCard(
         None,
         Seq(
@@ -72,47 +74,60 @@ class ViewMovementTransportHelper @Inject()(
             "viewMovement.transport.firstTransporter.vrn",
             movement.firstTransporterTrader.flatMap(_.vatNumber).getOrElse(notProvidedMessage)
           )
-        )
-      ),
-      h3("viewMovement.transport.transportUnits")
+        ),
+        summaryListAttributes = Map("id" -> "first-transporter-summary")
+      )
     ) ++
-      movement.transportDetails.zipWithIndex.map{
-        case(transport, index) =>
-          summaryCard(
-            card = Some(Card(
-              Some(CardTitle(
-                Text(messages("viewMovement.transport.transportUnit.heading", index + 1)),
-                headingLevel = Some(4)
-              ))
-            )),
-            summaryListRows = Seq(
-              summaryListRowBuilder(
-                "viewMovement.transport.transportUnit.unitType",
-                implicitly[Enumerable[TransportUnitType]].withName(transport.transportUnitCode) match {
-                  case Some(transportItem) => messages(transportItem.messageKey)
-                  case None => messages("viewMovement.transport.transportUnit.notProvided") //TODO confirm text here
-                }
-              ),
-              summaryListRowBuilder(
-                "viewMovement.transport.transportUnit.identity",
-                transport.identityOfTransportUnits.getOrElse(messages("viewMovement.transport.transportUnit.notProvided"))
-              ),
-              summaryListRowBuilder(
-                "viewMovement.transport.transportUnit.commercialSeal",
-                transport.commercialSealIdentification.getOrElse(messages("viewMovement.transport.transportUnit.notProvided"))
-              ),
-              summaryListRowBuilder(
-                "viewMovement.transport.transportUnit.complementaryInformation",
-                transport.complementaryInformation.getOrElse(messages("viewMovement.transport.transportUnit.notProvided"))
-              ),
-              summaryListRowBuilder(
-                "viewMovement.transport.transportUnit.sealInformation",
-                transport.sealInformation.getOrElse(messages("viewMovement.transport.transportUnit.notProvided"))
-              )
-            )
-          )
-      }
+      Seq(
+        transportUnits(movement)
+      )
     )
+  }
+
+  private[viewmodels] def transportUnits(movement: GetMovementResponse)(implicit messages: Messages): Html = {
+    val notProvidedMessage = messages("viewMovement.transport.transportUnit.notProvided")
+    HtmlFormat.fill(Seq(
+      h3("viewMovement.transport.transportUnits", id = Some("transport-unit-information-heading")),
+      HtmlFormat.fill(
+        movement.transportDetails.zipWithIndex.map {
+          case (transport, index) =>
+            summaryCard(
+              card = Some(Card(
+                Some(CardTitle(
+                  Text(messages("viewMovement.transport.transportUnit.heading", index + 1)),
+                  headingLevel = Some(4)
+                ))
+              )),
+              summaryListRows = Seq(
+                summaryListRowBuilder(
+                  "viewMovement.transport.transportUnit.unitType",
+                  implicitly[Enumerable[TransportUnitType]].withName(transport.transportUnitCode) match {
+                    case Some(transportItem) => messages(transportItem.messageKey)
+                    case None => notProvidedMessage
+                  }
+                ),
+                summaryListRowBuilder(
+                  "viewMovement.transport.transportUnit.identity",
+                  transport.identityOfTransportUnits.getOrElse(notProvidedMessage)
+                ),
+                summaryListRowBuilder(
+                  "viewMovement.transport.transportUnit.commercialSeal",
+                  transport.commercialSealIdentification.getOrElse(notProvidedMessage)
+                ),
+                summaryListRowBuilder(
+                  "viewMovement.transport.transportUnit.complementaryInformation",
+                  transport.complementaryInformation.getOrElse(notProvidedMessage)
+                ),
+                summaryListRowBuilder(
+                  "viewMovement.transport.transportUnit.sealInformation",
+                  transport.sealInformation.getOrElse(notProvidedMessage)
+                )
+              ),
+              summaryListAttributes = Map("id" -> s"transport-unit-summary-$index")
+            )
+        }
+      )
+    ))
   }
 
 }

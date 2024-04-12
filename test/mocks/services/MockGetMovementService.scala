@@ -17,7 +17,8 @@
 package mocks.services
 
 import models.response.emcsTfe.GetMovementResponse
-import org.scalamock.handlers.{CallHandler3, CallHandler4}
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
+import org.scalamock.handlers.{CallHandler3, CallHandler4, CallHandler5}
 import org.scalamock.scalatest.MockFactory
 import services.GetMovementService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,9 +30,9 @@ trait MockGetMovementService extends MockFactory {
   lazy val mockGetMovementService: GetMovementService = mock[GetMovementService]
 
   object MockGetMovementService {
-    def getMovement(ern: String, arc: String, sequenceNumber: Option[Int] = None): CallHandler4[String, String, Option[Int], HeaderCarrier, Future[GetMovementResponse]] =
-      (mockGetMovementService.getMovement(_: String, _: String, _: Option[Int])(_: HeaderCarrier))
-        .expects(ern, arc, sequenceNumber, *)
+    def getMovement(ern: String, arc: String, sequenceNumber: Option[Int] = None, historyEvents: Option[Seq[MovementHistoryEvent]] = None): CallHandler5[String, String, Option[Int], Option[Seq[MovementHistoryEvent]], HeaderCarrier, Future[GetMovementResponse]] =
+      (mockGetMovementService.getMovement(_: String, _: String, _: Option[Int], _: Option[Seq[MovementHistoryEvent]])(_: HeaderCarrier))
+        .expects(ern, arc, sequenceNumber, historyEvents, *)
 
     def getRawMovement(ern: String, arc: String, sequenceNumber: Option[Int] = None): CallHandler4[String, String, Option[Int], HeaderCarrier, Future[GetMovementResponse]] =
       (mockGetMovementService.getRawMovement(_: String, _: String, _: Option[Int])(_: HeaderCarrier))

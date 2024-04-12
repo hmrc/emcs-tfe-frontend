@@ -38,9 +38,8 @@ object EventTypes extends Enumerable.Implicits {
   case object IE871 extends WithName("IE871") with EventTypes
   case object IE881 extends WithName("IE881") with EventTypes
   case object IE905 extends WithName("IE905") with EventTypes
-  case object IE704 extends WithName("IE704") with EventTypes
 
-  val values: Seq[EventTypes] = Seq(IE801, IE802, IE803, IE807, IE810, IE813, IE815, IE818, IE819, IE829, IE837, IE839, IE840, IE871, IE881, IE905, IE704)
+  val values: Seq[EventTypes] = Seq(IE801, IE802, IE803, IE807, IE810, IE813, IE815, IE818, IE819, IE829, IE837, IE839, IE840, IE871, IE881, IE905)
 
   implicit val enumerable: Enumerable[EventTypes] =
     Enumerable(values.map(v => v.toString -> v): _*)

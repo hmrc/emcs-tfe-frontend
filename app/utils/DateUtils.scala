@@ -16,8 +16,8 @@
 
 package utils
 
-import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.time.format.DateTimeFormatter
+import java.time._
 import java.util.Locale
 
 trait DateUtils {
@@ -30,7 +30,7 @@ trait DateUtils {
 
   implicit class LocalTimeExtensions(time: LocalTime) {
     def formatTimeForUIOutput(): String = {
-      val formatter = DateTimeFormatter.ofPattern("h:mm a")
+      val formatter = DateTimeFormatter.ofPattern("h:mm a", Locale.UK)
       formatter.format(time)
     }
   }

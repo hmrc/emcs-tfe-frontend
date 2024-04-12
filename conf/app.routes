@@ -34,3 +34,4 @@ POST       /trader/:ern/movements                                               
 
 ->         /   message.Routes
 ->         /   prevalidateTrader.Routes
+->         /   events.Routes

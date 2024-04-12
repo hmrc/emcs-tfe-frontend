@@ -1,0 +1,101 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components.{toAttributes, toClasses}
+
+@this()
+
+@(params: SummaryList, cardFooterHtml: Option[Html])
+@import params._
+
+@summaryCard(card: Card) = {
+    <div class="@toClasses("govuk-summary-card", "govuk-!-padding-bottom-0")"@toAttributes(card.attributes)>
+        <div class="govuk-summary-card__title-wrapper">
+            @card.title.map { cardTitle =>
+                <h@{cardTitle.headingLevel.getOrElse(2)} class="@toClasses("govuk-summary-card__title", cardTitle.classes)">
+                @cardTitle.content.asHtml
+                </h@{cardTitle.headingLevel.getOrElse(2)}>
+            }
+            @card.actions match {
+                case None => {}
+                case Some(cardAction) => {
+                    @if(cardAction.items.nonEmpty) {
+                        @if(cardAction.items.length == 1) {
+                            <div class="@toClasses("govuk-summary-card__actions", cardAction.classes)">
+                            @actionLink(cardAction.items.head, card.title.map(_.content))
+                            </div>
+                        } else {
+                            <ul class="@toClasses("govuk-summary-card__actions", cardAction.classes)">
+                            @cardAction.items.map { item =>
+                                <li class="govuk-summary-card__action">
+                                    @actionLink(item, card.title.map(_.content))
+                                </li>
+                            }
+                            </ul>
+                        }
+                    }
+                }
+            }
+        </div>
+        <div class="govuk-summary-card__content govuk-!-margin-bottom-0 govuk-!-padding-bottom-0">
+        @summaryList
+        </div>
+        @if(cardFooterHtml.nonEmpty) {
+            <div class="govuk-summary-card__content">
+                @cardFooterHtml
+            </div>
+        }
+    </div>
+}
+
+@summaryList = {
+    <dl class="@toClasses("govuk-summary-list", classes)"@toAttributes(attributes)>
+    @for(row <- rows) {
+        <div class="@toClasses("govuk-summary-list__row", "govuk-summary-list__row--no-actions".when(anyRowHasActions && row.actions.isEmpty), row.classes)">
+            <dt class="@toClasses("govuk-summary-list__key", row.key.classes)">
+            @row.key.content.asHtml
+            </dt>
+            <dd class="@toClasses("govuk-summary-list__value", row.value.classes)">
+            @row.value.content.asHtml
+            </dd>
+            @if(row.actions.exists(_.items.length > 0)) {
+                <dd class="@toClasses("govuk-summary-list__actions", row.actions.map(_.classes).getOrElse(""))">
+                @if(row.actions.exists(_.items.length == 1)) {
+                    @row.actions.map {actions => @actionLink(actions.items.head, card.flatMap(_.title).map(_.content))}
+                } else {
+                    <ul class="govuk-summary-list__actions-list">@row.actions.map {actions =>@for(action <- actions.items) {<li class="govuk-summary-list__actions-list-item">@actionLink(action, card.flatMap(_.title).map(_.content))</li>}}</ul>
+                }</dd>
+            }</div>
+    }</dl>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-top-0 govuk-!-margin-bottom-0">
+}
+
+@card match {
+    case Some(sc) => {
+        @summaryCard(sc)
+    }
+    case _ => {
+        @summaryList
+    }
+}
+
+@actionLink(action: ActionItem, cardTitle: Option[Content]) = {
+    <a class="@toClasses("govuk-link", action.classes)" href="@action.href"@toAttributes(action.attributes)>@action.content.asHtml@visuallyHiddenText(action, cardTitle)</a>}
+
+@visuallyHiddenText(action: ActionItem, cardTitle: Option[Content]) = {@if(action.visuallyHiddenText.exists(_.nonEmpty) || cardTitle.exists(_.nonEmpty)) {<span class="govuk-visually-hidden">
+    @{action.visuallyHiddenText}@{cardTitle.filter(_.nonEmpty).map(ct => s" (${ct.asHtml})")}</span>}}
+
+@anyRowHasActions = @{rows.exists(_.actions.fold(false)(_.items.nonEmpty))}

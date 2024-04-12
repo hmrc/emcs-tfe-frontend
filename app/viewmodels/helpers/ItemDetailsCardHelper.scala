@@ -18,12 +18,11 @@ package viewmodels.helpers
 
 import config.AppConfig
 import models.common.UnitOfMeasure.Kilograms
-import models.response.emcsTfe.{MovementItem, Packaging}
+import models.response.emcsTfe.MovementItem
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, Text}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryListRow, Value}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import viewmodels.helpers.SummaryListHelper.summaryListRowBuilder
 import views.html.components.{link, list}
 
 import javax.inject.Inject
@@ -32,7 +31,7 @@ class ItemDetailsCardHelper @Inject()(list: list, link: link, appConfig: AppConf
 
   def constructItemDetailsCard(item: MovementItem)(implicit messages: Messages): Seq[SummaryListRow] = {
 
-    implicit val _item = item
+    implicit val _item: MovementItem = item
 
     Seq(
       commodityCodeRow(),
@@ -57,232 +56,205 @@ class ItemDetailsCardHelper @Inject()(list: list, link: link, appConfig: AppConf
     ).flatten
   }
 
-
-  private def summaryListRowBuilder(key: Content, value: Content) = SummaryListRow(
-    Key(key),
-    Value(value),
-    classes = "govuk-summary-list__row--no-border"
-  )
-
-  private def wineOtherInformationRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def wineOtherInformationRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.wineProduct.flatMap(_.otherInformation.map { otherInformation =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.wineOtherInformation")),
-        Text(otherInformation)
+        messages("itemDetails.key.wineOtherInformation"),
+        otherInformation
       )
     })
 
-  private def thirdCountryOfOriginRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def thirdCountryOfOriginRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.wineProduct.flatMap(_.thirdCountryOfOrigin.map { country =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.thirdCountryOfOrigin")),
-        Text(country)
+        messages("itemDetails.key.thirdCountryOfOrigin"),
+        country
       )
     })
 
-  private def wineGrowingZoneCodeRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def wineGrowingZoneCodeRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.wineProduct.flatMap(_.wineGrowingZoneCode.map { zoneCode =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.wineGrowingZoneCode")),
-        Text(zoneCode)
+        messages("itemDetails.key.wineGrowingZoneCode"),
+        zoneCode
       )
     })
 
-  private def wineOperationsRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def wineOperationsRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.wineProduct.map(_.wineOperations match {
       case Some(values) if values.nonEmpty =>
         summaryListRowBuilder(
-          Text(messages("itemDetails.key.wineOperations")),
-          HtmlContent(list(values.map(Html(_))))
+          messages("itemDetails.key.wineOperations"),
+          list(values.map(Html(_)))
         )
       case _ =>
         summaryListRowBuilder(
-          Text(messages("itemDetails.key.wineOperations")),
-          Text(messages("itemDetails.value.wineOperations.none"))
+          messages("itemDetails.key.wineOperations"),
+          messages("itemDetails.value.wineOperations.none")
         )
     })
 
-  private def wineProductCategoryRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def wineProductCategoryRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.wineProduct.map { wineProduct =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.wineProductCategory")),
-        Text(messages(s"wineProductCategory.${wineProduct.wineProductCategory}"))
+        messages("itemDetails.key.wineProductCategory"),
+        messages(s"wineProductCategory.${wineProduct.wineProductCategory}")
       )
     }
 
-  private def commercialDescriptionRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def commercialDescriptionRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.commercialDescription.map { description =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.commercialDescription")),
-        Text(description)
+        messages("itemDetails.key.commercialDescription"),
+        description
       )
     }
 
-  private def brandNameOfProductRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def brandNameOfProductRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.brandNameOfProduct.map { brandNameOfProduct =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.brandNameOfProduct")),
-        Text(brandNameOfProduct)
+        messages("itemDetails.key.brandNameOfProduct"),
+        brandNameOfProduct
       )
     }
 
-  private def sizeOfProducerRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def sizeOfProducerRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.sizeOfProducer.map { size =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.sizeOfProducer")),
-        Text(messages("itemDetails.value.sizeOfProducer", size))
+        messages("itemDetails.key.sizeOfProducer"),
+        messages("itemDetails.value.sizeOfProducer", size)
       )
     }
 
-  private def designationOfOriginRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def designationOfOriginRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] = {
     item.designationOfOrigin.map {
       designation =>
         summaryListRowBuilder(
-          Text(messages("itemDetails.key.designationOfOrigin")),
-          Text(designation)
+          messages("itemDetails.key.designationOfOrigin"),
+          designation
         )
     }
+  }
 
-  private def independentSmallProducersDeclarationRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def independentSmallProducersDeclarationRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.independentSmallProducersDeclaration.map {
-      independentSmallProducersDeclaraton =>
+      independentSmallProducersDeclaration =>
         summaryListRowBuilder(
-          Text(messages("itemDetails.key.independentSmallProducerDeclaration")),
-          Text(independentSmallProducersDeclaraton)
+          messages("itemDetails.key.independentSmallProducerDeclaration"),
+          independentSmallProducersDeclaration
         )
     }
 
-  private def fiscalMarkRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def fiscalMarksPresentRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] = {
+    Some(
+      summaryListRowBuilder(
+        messages("itemDetails.key.fiscalMarksPresent"),
+        messages(s"itemDetails.key.fiscalMarksPresent.${item.fiscalMark.isDefined.toString}")
+      )
+    )
+  }
+
+  private[viewmodels] def fiscalMarkRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.fiscalMark.map { fiscalMark =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.fiscalMark")),
-        Text(fiscalMark)
+        messages("itemDetails.key.fiscalMark"),
+        fiscalMark
       )
     }
 
-  private def degreePlatoRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def degreePlatoRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.degreePlato.map { deg =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.degreePlato")),
-        HtmlContent(messages("itemDetails.value.degreePlato", deg))
+        messages("itemDetails.key.degreePlato"),
+        Html(messages("itemDetails.value.degreePlato", deg))
       )
     }
 
-  private def maturationAgeRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def maturationAgeRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.maturationAge.map { maturationAge =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.maturationAge")),
-        Text(maturationAge)
+        messages("itemDetails.key.maturationAge"),
+        maturationAge
       )
     }
 
-  private def alcoholicStrengthRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def alcoholicStrengthRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.alcoholicStrength.map { strength =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.alcoholicStrength")),
-        Text(messages("itemDetails.value.alcoholicStrength", strength))
+        messages("itemDetails.key.alcoholicStrength"),
+        messages("itemDetails.value.alcoholicStrength", strength)
       )
     }
 
-  private def densityRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def densityRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.density.flatMap { density =>
       item.unitOfMeasure.map { unitOfMeasure =>
         summaryListRowBuilder(
-          Text(messages("itemDetails.key.density")),
-          HtmlContent(messages("itemDetails.value.density", density.toString(), messages(s"itemDetails.value.density.$unitOfMeasure")))
+          messages("itemDetails.key.density"),
+          messages("itemDetails.value.density", density.toString(), messages(s"itemDetails.value.density.$unitOfMeasure"))
         )
       }
     }
 
-  private def netWeightRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def netWeightRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     Some(summaryListRowBuilder(
-      Text(messages("itemDetails.key.netWeight")),
-      Text(messages(
+      messages("itemDetails.key.netWeight"),
+      messages(
         "itemDetails.value.netWeight",
         item.netMass.toString(),
         messages(s"unitOfMeasure.$Kilograms.short")
-      ))
+      )
     ))
 
-  private def grossWeightRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def grossWeightRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     Some(summaryListRowBuilder(
-      Text(messages("itemDetails.key.grossWeight")),
-      Text(messages(
+      messages("itemDetails.key.grossWeight"),
+      messages(
         "itemDetails.value.grossWeight",
         item.grossMass.toString(),
         messages(s"unitOfMeasure.$Kilograms.short")
-      ))
+      )
     ))
 
-  private def quantityRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def quantityRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     item.unitOfMeasure.map { unitOfMeasure =>
       summaryListRowBuilder(
-        Text(messages("itemDetails.key.quantity")),
-        Text(messages(
+        messages("itemDetails.key.quantity"),
+        messages(
           "itemDetails.value.quantity",
           item.quantity.toString(),
           unitOfMeasure.toLongFormatMessage()
-        ))
+        )
       )
     }
 
-  private[viewmodels] def commodityCodeRow()(implicit item: MovementItem, messages: Messages) =
+  private[viewmodels] def commodityCodeRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     Some(summaryListRowBuilder(
-      Text(messages("itemDetails.key.commodityCode")),
+      messages("itemDetails.key.commodityCode"),
       if (item.hasProductCodeWithValidCnCode) {
-        HtmlContent(link(link = appConfig.getUrlForCommodityCode(item.cnCode), messageKey = item.cnCode, isExternal = true, id = Some("commodity-code")))
+        link(link = appConfig.getUrlForCommodityCode(item.cnCode), messageKey = item.cnCode, isExternal = true, id = Some("commodity-code"))
       } else {
-        Text(item.cnCode)
+        Html(item.cnCode)
       }
     ))
 
+  private[viewmodels] def exciseProductCodeRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
+    Some(summaryListRowBuilder(
+      messages("itemDetails.key.exciseProductCode"),
+      item.productCode
+    ))
 
-  def constructPackagingTypeCard(packaging: Packaging)(implicit messages: Messages): Seq[SummaryListRow] = {
-
-    val typeRow: Option[SummaryListRow] =
-      Some(summaryListRowBuilder(
-        Text(messages("itemDetails.packaging.key.type")),
-        Text(packaging.typeOfPackage)
-      ))
-
-    val quantityRow: Option[SummaryListRow] =
-      packaging.quantity.map { value =>
-        summaryListRowBuilder(
-          Text(messages("itemDetails.packaging.key.quantity")),
-          Text(value.toString())
+  private[viewmodels] def allPackagingQuantitiesAndTypesRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] = {
+    Some(
+      summaryListRowBuilder(
+        messages("itemDetails.key.packaging"),
+        list(
+          item.packaging.map { packaging =>
+            Html(s"${packaging.quantity.get} x ${packaging.typeOfPackage}")
+          }
         )
-      }
-
-    val identityOfCommercialSealRow: Option[SummaryListRow] =
-      packaging.identityOfCommercialSeal.map { value =>
-        summaryListRowBuilder(
-          Text(messages("itemDetails.packaging.key.identityOfCommercialSeal")),
-          Text(value)
-        )
-      }
-
-    val sealInformationRow: Option[SummaryListRow] =
-      packaging.sealInformation.map { value =>
-        summaryListRowBuilder(
-          Text(messages("itemDetails.packaging.key.sealInformation")),
-          Text(value)
-        )
-      }
-
-    val shippingMarksRow: Option[SummaryListRow] =
-      packaging.shippingMarks.map { value =>
-        summaryListRowBuilder(
-          Text(messages("itemDetails.packaging.key.shippingMarks")),
-          Text(value)
-        )
-      }
-
-    Seq(
-      typeRow,
-      quantityRow,
-      identityOfCommercialSealRow,
-      sealInformationRow,
-      shippingMarksRow
-    ).flatten
+      )
+    )
   }
+
 }

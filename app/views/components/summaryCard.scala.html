@@ -15,15 +15,26 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.components.EmcsGovukSummaryList
 
-@this(govukSummaryList: GovukSummaryList)
+@this(
+        govukSummaryList: GovukSummaryList,
+        emcsSummaryList: EmcsGovukSummaryList
+)
 
 @(
         card: Option[Card],
-        summaryListRows: Seq[SummaryListRow]
+        summaryListRows: Seq[SummaryListRow],
+        summaryListAttributes: Map[String, String] = Map.empty,
+        cardFooterHtml: Option[Html] = None
 )
 
-@govukSummaryList(SummaryList(summaryListRows, card))
+@if(cardFooterHtml.isEmpty) {
+ @govukSummaryList(SummaryList(summaryListRows, card, attributes = summaryListAttributes))
+} else {
+ @emcsSummaryList(SummaryList(summaryListRows, card, attributes = summaryListAttributes), cardFooterHtml)
+}
+
 
 @{
     //$COVERAGE-OFF$

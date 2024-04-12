@@ -70,4 +70,11 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
     )
   )
 
+  val ie801Event = MovementHistoryEvent(
+    eventType = IE801,
+    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    sequenceNumber = 1,
+    messageRole = 0,
+    upstreamArc = None
+  )
 }
