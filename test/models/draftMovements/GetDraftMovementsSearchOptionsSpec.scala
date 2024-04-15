@@ -30,6 +30,126 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
 
   "GetDraftMovementsSearchOptions" must {
 
+    "startingPosition must be correctly calculated from the index and maxRows" when {
+
+      "maxRows is 10" when {
+
+        "index is 1" in {
+
+          val expectedResult = 0
+
+          val actualResult = GetDraftMovementsSearchOptions(
+            index = 1,
+            maxRows = 10
+          ).startingPosition
+
+          actualResult mustBe expectedResult
+        }
+
+        "index is 2" in {
+
+          val expectedResult = 10
+
+          val actualResult = GetDraftMovementsSearchOptions(
+            index = 2,
+            maxRows = 10
+          ).startingPosition
+
+          actualResult mustBe expectedResult
+        }
+
+        "index is 50" in {
+
+          val expectedResult = 490
+
+          val actualResult = GetDraftMovementsSearchOptions(
+            index = 50,
+            maxRows = 10
+          ).startingPosition
+
+          actualResult mustBe expectedResult
+        }
+      }
+
+      "maxRows is 5" when {
+
+        "index is 1" in {
+
+          val expectedResult = 0
+
+          val actualResult = GetDraftMovementsSearchOptions(
+            index = 1,
+            maxRows = 5
+          ).startingPosition
+
+          actualResult mustBe expectedResult
+        }
+
+        "index is 2" in {
+
+          val expectedResult = 5
+
+          val actualResult = GetDraftMovementsSearchOptions(
+            index = 2,
+            maxRows = 5
+          ).startingPosition
+
+          actualResult mustBe expectedResult
+        }
+
+        "index is 50" in {
+
+          val expectedResult = 245
+
+          val actualResult = GetDraftMovementsSearchOptions(
+            index = 50,
+            maxRows = 5
+          ).startingPosition
+
+          actualResult mustBe expectedResult
+        }
+      }
+
+      "maxRows is 30" when {
+
+        "index is 1" in {
+
+          val expectedResult = 0
+
+          val actualResult = GetDraftMovementsSearchOptions(
+            index = 1,
+            maxRows = 5
+          ).startingPosition
+
+          actualResult mustBe expectedResult
+        }
+
+        "index is 2" in {
+
+          val expectedResult = 30
+
+          val actualResult = GetDraftMovementsSearchOptions(
+            index = 2,
+            maxRows = 30
+          ).startingPosition
+
+          actualResult mustBe expectedResult
+        }
+
+        "index is 50" in {
+
+          val expectedResult = 1470
+
+          val actualResult = GetDraftMovementsSearchOptions(
+            index = 50,
+            maxRows = 30
+          ).startingPosition
+
+          actualResult mustBe expectedResult
+        }
+      }
+    }
+
     "have the correct query params" when {
 
       "minimum values given" in {
@@ -37,7 +157,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         val expectedResult = Seq(
           "search.sortField" -> Newest.sortField,
           "search.sortOrder" -> Newest.sortOrder,
-          "search.startPosition" -> "1",
+          "search.startPosition" -> "0",
           "search.maxRows" -> "10"
         )
 
@@ -55,7 +175,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         val expectedResult = Seq(
           "search.sortField" -> LrnAscending.sortField,
           "search.sortOrder" -> LrnAscending.sortOrder,
-          "search.startPosition" -> "1",
+          "search.startPosition" -> "0",
           "search.maxRows" -> "10",
           "search.searchTerm" -> "term",
           "search.draftHasErrors" -> "true",
@@ -85,7 +205,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         val expectedResult = Seq(
           "search.sortField" -> LrnAscending.sortField,
           "search.sortOrder" -> LrnAscending.sortOrder,
-          "search.startPosition" -> "1",
+          "search.startPosition" -> "0",
           "search.maxRows" -> "10",
           "search.searchTerm" -> "term",
           "search.draftHasErrors" -> "true",
@@ -147,7 +267,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
 
         val actualResult = GetDraftMovementsSearchOptions.queryStringBinder.bind("", Map(
           "sortBy" -> Seq(LrnAscending.toString),
-          "startPosition" -> Seq("1"),
+          "startPosition" -> Seq("0"),
           "maxRows" -> Seq("10"),
           "searchTerm" -> Seq("term"),
           "draftHasErrors" -> Seq("true"),
@@ -217,5 +337,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         actualResult mustBe expectedResult
       }
     }
+
+
   }
 }

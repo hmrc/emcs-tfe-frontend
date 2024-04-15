@@ -37,10 +37,12 @@ case class GetDraftMovementsSearchOptions(
                                            exciseProductCode: Option[String] = None
                                          ) {
 
+  val startingPosition: Int = (index - 1) * maxRows
+
   val queryParams: Seq[(String, String)] = Seq(
     Some("search.sortField" -> sortBy.sortField),
     Some("search.sortOrder" -> sortBy.sortOrder),
-    Some("search.startPosition" -> index.toString),
+    Some("search.startPosition" -> startingPosition.toString),
     Some("search.maxRows" -> maxRows.toString),
     searchTerm.map(search => "search.searchTerm" -> search),
     draftHasErrors.map(hasErrors => "search.draftHasErrors" -> hasErrors.toString),
