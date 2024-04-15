@@ -761,3 +761,8 @@ prevalidateTrader.results.link.differentTrader = Check codes for a different tra
 prevalidateTrader.results.link.returnToAccount = Return to account home
 prevalidateTrader.results.link.feedback = What did you think of this service?
 prevalidateTrader.results.link.feedback.text = (takes 30 seconds)
+
+viewDraftMovements.sort.lrnAscending = LRN (A - Z)
+viewDraftMovements.sort.lrnDescending = LRN (Z - A)
+viewDraftMovements.sort.newest = Last updated (newest)
+viewDraftMovements.sort.oldest = Last updated (oldest)
