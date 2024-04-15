@@ -17,10 +17,10 @@
 package models.response.emcsTfe.draftMovement
 
 import base.SpecBase
-import fixtures.DraftMovementsFixtures
+import fixtures.MovementSubmissionFailureFixtures
 import play.api.libs.json.Json
 
-class MovementSubmissionFailureSpec extends SpecBase with DraftMovementsFixtures {
+class MovementSubmissionFailureSpec extends SpecBase with MovementSubmissionFailureFixtures {
 
   "MovementSubmissionFailure" when {
 

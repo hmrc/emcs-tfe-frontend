@@ -16,42 +16,12 @@
 
 package fixtures
 
-import models.response.emcsTfe.draftMovement.{DraftMovement, GetDraftMovementsResponse, MovementSubmissionFailure}
+import models.response.emcsTfe.draftMovement.{DraftMovement, GetDraftMovementsResponse}
 import play.api.libs.json.{JsObject, Json}
 
 import java.time.{LocalDateTime, ZoneOffset}
 
-trait DraftMovementsFixtures extends BaseFixtures {
-
-  val movementSubmissionFailureModelMax: MovementSubmissionFailure = MovementSubmissionFailure(
-    errorType = "errorType",
-    errorReason = "errorReason",
-    errorLocation = Some("errorLocation"),
-    originalAttributeValue = Some("originalAttributeValue"),
-    hasBeenFixed = true
-  )
-
-  val movementSubmissionFailureJsonMax: JsObject = Json.obj(
-    "errorType" -> "errorType",
-    "errorReason" -> "errorReason",
-    "errorLocation" -> "errorLocation",
-    "originalAttributeValue" -> "originalAttributeValue",
-    "hasBeenFixed" -> true
-  )
-
-  val movementSubmissionFailureModelMin: MovementSubmissionFailure = MovementSubmissionFailure(
-    errorType = "errorType",
-    errorReason = "errorReason",
-    errorLocation = None,
-    originalAttributeValue = None,
-    hasBeenFixed = true
-  )
-
-  val movementSubmissionFailureJsonMin: JsObject = Json.obj(
-    "errorType" -> "errorType",
-    "errorReason" -> "errorReason",
-    "hasBeenFixed" -> true
-  )
+trait DraftMovementsFixtures extends BaseFixtures with MovementSubmissionFailureFixtures {
 
   val draftMovementModelMax: DraftMovement = DraftMovement(
     ern = testErn,
