@@ -139,16 +139,22 @@ class ViewMovementHelper @Inject()(
     }.getOrElse(summaryListRowBuilder("viewMovement.movement.timeAndDate.predictedArrival", movementResponse.formattedExpectedDateOfArrival))
   }
 
+  //scalastyle:off
   private[helpers] def getMovementTypeForMovementView(movementResponse: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): String = {
     (request.userTypeFromErn, MovementScenario.getMovementScenarioFromMovement(movementResponse)) match {
       case (GBWK, GbTaxWarehouse) =>
         messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.1.$GbTaxWarehouse"))
 
       case (XIWK, destinationType@(GbTaxWarehouse | EuTaxWarehouse | DirectDelivery | RegisteredConsignee | TemporaryRegisteredConsignee | ExemptedOrganisation | UnknownDestination)) =>
-        movementResponse.placeOfDispatchTrader.map(placeOfDispatchTrader => RoleType.fromExciseRegistrationNumber(placeOfDispatchTrader.traderExciseNumber)) match {
-          case Some(value) =>
-            val countryCodePrefix = value.countryCode
-            messages("viewMovement.movement.summary.type.dispatchPlaceTo", messages(s"viewMovement.movement.summary.type.dispatchPlace.$countryCodePrefix"), messages(s"viewMovement.movement.summary.type.2.$destinationType"))
+        movementResponse.placeOfDispatchTrader match {
+          case Some(placeOfDispatch) => placeOfDispatch.traderExciseNumber match {
+            case Some(dispatchErn) =>
+              val countryCodePrefix = RoleType.fromExciseRegistrationNumber(dispatchErn).countryCode
+              messages("viewMovement.movement.summary.type.dispatchPlaceTo", messages(s"viewMovement.movement.summary.type.dispatchPlace.$countryCodePrefix"), messages(s"viewMovement.movement.summary.type.2.$destinationType"))
+            case None =>
+              logger.error(s"[constructMovementView] Missing place of dispatch ERN for $XIWK")
+              throw MissingDispatchPlaceTraderException(s"[constructMovementView][getMovementTypeForMovementView] Missing place of dispatch ERN for $XIWK")
+          }
           case None =>
             logger.error(s"[constructMovementView] Missing place of dispatch trader for $XIWK")
             throw MissingDispatchPlaceTraderException(s"[constructMovementView][getMovementTypeForMovementView] Missing place of dispatch trader for $XIWK")
@@ -165,5 +171,6 @@ class ViewMovementHelper @Inject()(
         throw InvalidUserTypeException(s"[ViewMovementHelper][constructMovementView][getMovementTypeForMovementView] invalid UserType and movement scenario combination for MOV journey: $userType | $destinationType")
     }
   }
+  //scalastyle:on
 
 }

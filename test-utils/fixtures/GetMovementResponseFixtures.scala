@@ -46,26 +46,28 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     sequenceNumber = 2,
     dateAndTimeOfValidationOfReportOfReceiptExport = Some("2021-09-10T11:11:12"),
     consigneeTrader = Some(TraderModel(
-      traderExciseNumber = "GBRC345GTR145",
-      traderName = "Current 801 Consignee",
-      address = AddressModel(
+      traderExciseNumber = Some("GBRC345GTR145"),
+      traderName = Some("Current 801 Consignee"),
+      address = Some(AddressModel(
         streetNumber = None,
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      ),
-      vatNumber = Some("GB123456789")
+      )),
+      vatNumber = Some("GB123456789"),
+      eoriNumber = None
     )),
     deliveryPlaceTrader = Some(TraderModel(
-      traderExciseNumber = "GBRC345GTR145",
-      traderName = "Current 801 Consignee",
-      address = AddressModel(
+      traderExciseNumber = Some("GBRC345GTR145"),
+      traderName = Some("Current 801 Consignee"),
+      address = Some(AddressModel(
         streetNumber = None,
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      ),
-      vatNumber = Some("GB123456789")
+      )),
+      vatNumber = Some("GB123456789"),
+      eoriNumber = None
     )),
     destinationOffice = "XI004098",
     dateOfArrival = LocalDate.parse("2008-12-08"),
@@ -95,48 +97,52 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     eadEsad = eadEsadModel,
     eadStatus = "Accepted",
     consignorTrader = TraderModel(
-      traderExciseNumber = "GBRC345GTR145",
-      traderName = "Current 801 Consignor",
-      address = AddressModel(
+      traderExciseNumber = Some("GBRC345GTR145"),
+      traderName = Some("Current 801 Consignor"),
+      address = Some(AddressModel(
         streetNumber = None,
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      ),
-      vatNumber = Some("GB123456789")
+      )),
+      vatNumber = Some("GB123456789"),
+      eoriNumber = None
     ),
     deliveryPlaceTrader = Some(TraderModel(
-      traderExciseNumber = "GBRC345GTR145",
-      traderName = "Current 801 Consignee",
-      address = AddressModel(
+      traderExciseNumber = Some("GBRC345GTR145"),
+      traderName = Some("Current 801 Consignee"),
+      address = Some(AddressModel(
         streetNumber = None,
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      ),
-      vatNumber = Some("GB123456789")
+      )),
+      vatNumber = Some("GB123456789"),
+      eoriNumber = None
     )),
     placeOfDispatchTrader = Some(TraderModel(
-      traderExciseNumber = "GBRC345GTR145",
-      traderName = "Current 801 Consignor",
-      address = AddressModel(
+      traderExciseNumber = Some("GBRC345GTR145"),
+      traderName = Some("Current 801 Consignor"),
+      address = Some(AddressModel(
         streetNumber = None,
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      ),
-      vatNumber = Some("GB123456789")
+      )),
+      vatNumber = Some("GB123456789"),
+      eoriNumber = None
     )),
     consigneeTrader = Some(TraderModel(
-      traderExciseNumber = "GB12345GTR144",
-      traderName = "Current 801 Consignee",
-      address = AddressModel(
+      traderExciseNumber = Some("GB12345GTR144"),
+      traderName = Some("Current 801 Consignee"),
+      address = Some(AddressModel(
         streetNumber = None,
         street = Some("Main101"),
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
-      ),
-      vatNumber = Some("GB123456789")
+      )),
+      vatNumber = Some("GB123456789"),
+      eoriNumber = None
     )),
     deliveryPlaceCustomsOfficeReferenceNumber = Some("FR000003"),
     dateOfDispatch = LocalDate.parse("2008-11-20"),
@@ -186,15 +192,16 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     movementGuarantee = MovementGuaranteeModel(
       guarantorTypeCode = Consignee,
       guarantorTrader = Some(Seq(TraderModel(
-        traderExciseNumber = "GB12345GTR144",
-        traderName = "Current 801 Guarantor",
-        address = AddressModel(
+        traderExciseNumber = Some("GB12345GTR144"),
+        traderName = Some("Current 801 Guarantor"),
+        address = Some(AddressModel(
           streetNumber = None,
           street = Some("Main101"),
           postcode = Some("ZZ78"),
           city = Some("Zeebrugge")
-        ),
-        vatNumber = Some("GB123456789")
+        )),
+        vatNumber = Some("GB123456789"),
+        eoriNumber = None
       )))
     ),
     documentCertificate = Some(

@@ -360,7 +360,7 @@ class ViewMessageHelperSpec extends SpecBase
           val testMessageCache = MessageCache(testErn, ie871SubmittedShortageExcessAsAConsignee.message, None)
 
           val movementWithLoggedInUserAsConsignee = Some(getMovementResponseModel
-            .copy(consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = testErn)))
+            .copy(consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some(testErn))))
           )
 
           val result: Html = helper.constructActions(testMessageCache, movementWithLoggedInUserAsConsignee)

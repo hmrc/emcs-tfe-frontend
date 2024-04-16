@@ -43,7 +43,7 @@ class ViewMovementOverviewHelper @Inject()(list: list,
 
     val expectedDate = summaryListRowBuilder("viewMovement.overview.journeyTime", movementResponse.formattedExpectedDateOfArrival)
 
-    val consignor = summaryListRowBuilder("viewMovement.overview.consignor", movementResponse.consignorTrader.traderExciseNumber)
+    val consignor = movementResponse.consignorTrader.traderExciseNumber.map(ern => summaryListRowBuilder("viewMovement.overview.consignor", ern))
 
     val itemCount = summaryListRowBuilder("viewMovement.overview.numberOfItems", movementResponse.numberOfItems.toString)
 
@@ -66,14 +66,14 @@ class ViewMovementOverviewHelper @Inject()(list: list,
       headingMessageKey = Some("viewMovement.overview.title"),
       cardTitleMessageKey = "viewMovement.overview.title",
       summaryListRows = Seq(
-        localReferenceNumber,
-        eadStatus,
-        dateOfDispatch,
-        expectedDate,
+        Some(localReferenceNumber),
+        Some(eadStatus),
+        Some(dateOfDispatch),
+        Some(expectedDate),
         consignor,
-        itemCount,
-        transportingVehicles
-      )
+        Some(itemCount),
+        Some(transportingVehicles)
+      ).flatten
     )
 
   }

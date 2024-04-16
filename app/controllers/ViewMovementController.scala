@@ -76,7 +76,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
           Ok(view(
             ern = exciseRegistrationNumber,
             arc = arc,
-            isConsignor = exciseRegistrationNumber == movement.consignorTrader.traderExciseNumber,
+            isConsignor = movement.consignorTrader.traderExciseNumber.fold(false)(_ == exciseRegistrationNumber),
             subNavigationTabs = SubNavigationTab.values,
             currentSubNavigationTab = currentSubNavigationTab,
             movementTabBody = movementCard,
