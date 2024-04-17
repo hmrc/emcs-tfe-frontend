@@ -31,25 +31,25 @@ sealed trait DraftMovementSortingSelectOption extends SelectOptionModel {
 object DraftMovementSortingSelectOption {
 
   case object LrnAscending extends WithName("lrnAsc") with DraftMovementSortingSelectOption {
-    override val displayName = "viewDraftMovements.sort.lrnAscending"
+    override val displayName = "viewAllDraftMovements.sort.lrnAscending"
     override val sortOrder: String = "A"
     override val sortField: String = "lrn"
   }
 
   case object LrnDescending extends WithName("lrnDesc") with DraftMovementSortingSelectOption {
-    override val displayName: String = "viewDraftMovements.sort.lrnDescending"
+    override val displayName: String = "viewAllDraftMovements.sort.lrnDescending"
     override val sortOrder: String = "D"
     override val sortField: String = "lrn"
   }
 
   case object Newest extends WithName("newest") with DraftMovementSortingSelectOption {
-    override val displayName: String = "viewDraftMovements.sort.newest"
+    override val displayName: String = "viewAllDraftMovements.sort.newest"
     override val sortOrder: String = "D"
     override val sortField: String = "lastUpdated"
   }
 
   case object Oldest extends WithName("oldest") with DraftMovementSortingSelectOption {
-    override val displayName: String = "viewDraftMovements.sort.oldest"
+    override val displayName: String = "viewAllDraftMovements.sort.oldest"
     override val sortOrder: String = "A"
     override val sortField: String = "lastUpdated"
   }

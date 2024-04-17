@@ -21,6 +21,7 @@ import config.AppConfig
 import controllers.predicates.{BetaAllowListActionImpl, FakeAuthAction, FakeDataRetrievalAction}
 import mocks.config.MockAppConfig
 import mocks.connectors.MockBetaAllowListConnector
+import models.GetDraftMovementsSearchOptions
 import models.requests.DataRequest
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
@@ -30,6 +31,7 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status}
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.viewAllDrafts.ViewAllDraftMovementsView
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,6 +42,7 @@ class DraftsControllerSpec extends SpecBase with FakeAuthAction with MockFactory
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
     implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"))
     implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest)
+    val view = app.injector.instanceOf[ViewAllDraftMovementsView]
 
     lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
