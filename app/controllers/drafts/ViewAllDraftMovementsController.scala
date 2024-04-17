@@ -33,6 +33,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import viewmodels.draftMovements.DraftMovementsPaginationHelper
 import viewmodels.helpers.SelectItemHelper
 import views.html.viewAllDrafts.ViewAllDraftMovementsView
 
@@ -48,7 +49,8 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
                                                 val auth: AuthAction,
                                                 val getData: DataRetrievalAction,
                                                 val betaAllowList: BetaAllowListAction,
-                                                formProvider: ViewAllDraftMovementsFormProvider
+                                                formProvider: ViewAllDraftMovementsFormProvider,
+                                                paginationHelper: DraftMovementsPaginationHelper
                                           )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc)
     with AuthActionHelper with I18nSupport with BetaChecks {
@@ -92,7 +94,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
           movements = draftMovements.paginatedDrafts,
           sortSelectItems = DraftMovementSortingSelectOption.constructSelectItems(Some(searchOptions.sortBy.code)),
           exciseItems = SelectItemHelper.constructSelectItems(exciseCodes, None, searchOptions.exciseProductCode),
-          pagination = None
+          pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions)
         ))
       }
     }

@@ -16,10 +16,7 @@
 
 package models.response.emcsTfe.draftMovement
 
-import play.api.libs.json.{Format, JsObject, Json}
-import play.api.mvc.Call
-import utils.DateUtils
-import viewmodels.govuk.TagFluency
+import play.api.libs.json._
 
 import java.time.Instant
 
@@ -32,5 +29,5 @@ case class DraftMovement(ern: String,
                          submittedDraftId: Option[String])
 
 object DraftMovement {
-  implicit val format: Format[DraftMovement] = Json.format[DraftMovement]
+  implicit val format: Format[DraftMovement] = Json.format
 }
