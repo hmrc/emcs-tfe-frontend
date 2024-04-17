@@ -16,10 +16,10 @@
 
 package models.response.emcsTfe.draftMovement
 
-import play.api.libs.json.{Format, JsObject, Json}
-import play.api.mvc.Call
-import utils.DateUtils
-import viewmodels.govuk.TagFluency
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
 
@@ -32,5 +32,19 @@ case class DraftMovement(ern: String,
                          submittedDraftId: Option[String])
 
 object DraftMovement {
-  implicit val format: Format[DraftMovement] = Json.format[DraftMovement]
+
+  val writes: Writes[DraftMovement] = Json.writes
+
+  val reads: Reads[DraftMovement] = (
+    (__ \ "ern").read[String] and
+      (__ \ "draftId").read[String] and
+      (__ \ "data").read[JsObject] and
+      (__ \ "submissionFailures").read[Seq[MovementSubmissionFailure]] and
+      (__ \ "lastUpdated").read[Instant](MongoJavatimeFormats.instantReads) and
+      (__ \ "hasBeenSubmitted").read[Boolean] and
+      (__ \ "submittedDraftId").readNullable[String]
+    )(DraftMovement.apply _)
+
+  implicit val format: Format[DraftMovement] = Format(reads, writes)
+
 }
