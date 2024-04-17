@@ -16,9 +16,14 @@
 
 package models.common
 
+import play.api.i18n.Messages
 import play.api.mvc.QueryStringBindable
+import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import viewmodels.govuk.checkbox._
 
 import scala.util.Try
+
 
 sealed trait DestinationType
 
@@ -73,4 +78,22 @@ object DestinationType extends Enumerable.Implicits {
         ).mkString("&")
     }
 
+  def draftMovementsCheckboxItems(messageKeyPrefix: String)(implicit messages: Messages): Seq[CheckboxItem] = Seq(
+    TaxWarehouse,
+    RegisteredConsignee,
+    TemporaryRegisteredConsignee,
+    ExemptedOrganisation,
+    DirectDelivery,
+    UnknownDestination,
+    Export,
+    CertifiedConsignee,
+    TemporaryCertifiedConsignee
+  ).zipWithIndex.map { case (value, index) =>
+    CheckboxItemViewModel(
+      content = Text(messages(s"$messageKeyPrefix.${value.toString}")),
+      fieldId = "errors",
+      index = index,
+      value = value.toString
+    )
+  }
 }

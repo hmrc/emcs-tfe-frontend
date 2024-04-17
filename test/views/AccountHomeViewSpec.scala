@@ -19,7 +19,7 @@ package views
 import base.SpecBase
 import controllers.routes
 import models.MovementFilterUndischargedOption.Undischarged
-import models.MovementListSearchOptions
+import models.{GetDraftMovementsSearchOptions, MovementListSearchOptions}
 import models.common.RoleType._
 import models.messages.MessagesSearchOptions
 import models.requests.DataRequest
@@ -95,7 +95,7 @@ class AccountHomeViewSpec extends SpecBase {
 
           if (roleType.isConsignor) {
             movementsLinks.get(2).text mustBe "Draft movements"
-            movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.DraftsController.onPageLoad(ern).url
+            movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
           } else {
             movementsLinks.text mustNot contain("Draft movements")
           }

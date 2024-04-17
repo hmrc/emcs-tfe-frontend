@@ -19,7 +19,7 @@ package config
 import controllers.routes
 import featureswitch.core.config._
 import models.MovementFilterUndischargedOption.Undischarged
-import models.MovementListSearchOptions
+import models.{GetDraftMovementsSearchOptions, MovementListSearchOptions}
 import models.messages.MessagesSearchOptions
 import play.api.Configuration
 import play.api.mvc.RequestHeader
@@ -50,7 +50,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def emcsTfeListMovementsUrl(ern: String): String = routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()).url
 
-  def emcsTfeDraftMovementsUrl(ern: String): String = controllers.drafts.routes.DraftsController.onPageLoad(ern).url
+  def emcsTfeDraftMovementsUrl(ern: String): String = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
 
   def emcsTfeMessagesUrl(ern: String): String = controllers.messages.routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).url
 

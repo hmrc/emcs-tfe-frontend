@@ -1,0 +1,203 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models.requests.DataRequest
+@import models.response.emcsTfe.draftMovement.DraftMovement
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
+@import viewmodels.ViewAllMovementsTableHelper
+@import views.html._
+@import views.html.components._
+@import views.html.viewAllMovements._
+@import models.common.DestinationType
+@import viewmodels.draftMovements._
+
+@this(
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        h1: h1,
+        h2: h2,
+        p: p,
+        govukPagination: GovukPagination,
+        govukSelect: GovukSelect,
+        govukInput: GovukInput,
+        govukErrorSummary: GovukErrorSummary,
+        govukDateInput: GovukDateInput,
+        govukButton: GovukButton,
+        govukFieldset: GovukFieldset,
+        govukCheckboxes: GovukCheckboxes,
+        draftMovementList: DraftMovementsList,
+        helper: ViewAllMovementsTableHelper
+)
+
+@(
+        form: Form[_],
+        action: Call,
+        ern: String,
+        movements: Seq[DraftMovement],
+        sortSelectItems: Seq[SelectItem],
+        exciseItems: Seq[SelectItem],
+        pagination: Option[Pagination]
+)(implicit request: DataRequest[_], messages: Messages)
+
+@searchFields = {
+
+@p() {
+    @messages("viewAllDraftMovements.search.p1")
+}
+
+    <div class="hmrc-search-group-wrapper">
+        <div class="govuk-grid-column-one-half hmrc-search-group">
+
+        @govukInput(
+            InputViewModel(
+                field = form("searchValue"),
+                label = LabelViewModel(Text(messages("viewAllDraftMovements.search.heading"))).hidden
+            ).withCssClass("govuk-input--width-30").withInputType("search")
+        )
+
+        </div>
+
+        <div class="govuk-grid-column-one-half hmrc-search-group-flex">
+            @govukButton(
+                ButtonViewModel(Text(messages("viewAllDraftMovements.search.button")))
+                .withCssClass("govuk-!-margin-left-2 hmrc-search-button")
+                .withId("searchButton")
+            )
+        </div>
+    </div>
+}
+
+@layout(
+    pageTitle = title(form, messages("viewAllDraftMovements.title")),
+    maybeShowActiveTrader = None,
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, Movements)),
+    fullWidthContent = true
+) {
+
+    @formHelper(action) {
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = {
+                form.errors.map {
+                    case FormError(key, _, args) => key -> s"$key.${args.headOption.getOrElse("day")}"
+                }.toMap
+            }))
+        }
+
+        @h1() {
+            @messages("viewAllDraftMovements.heading")
+        }
+
+        @govukFieldset(Fieldset(
+            legend = Some(Legend(
+                content = Text(messages("viewAllDraftMovements.search.heading")),
+                classes = "govuk-fieldset__legend--m",
+                isPageHeading = false
+            )),
+            classes = "govuk-!-margin-bottom-2",
+            html = searchFields
+        ))
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third govuk-!-padding-0">
+                <aside style="border: 1px solid #b1b4b6;
+                    padding: 15px">
+
+                    @h2("Filters", "govuk-heading-m")
+                    @govukButton(
+                        ButtonViewModel(Text(messages("viewAllDraftMovements.filters.button")))
+                        .withId("filtersButton")
+                    )
+
+                    @govukCheckboxes(
+                        CheckboxesViewModel(
+                            form = form,
+                            name = "draftHasErrors",
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    content = Text(messages("viewAllDraftMovements.filters.errors.heading")),
+                                    classes = "govuk-fieldset__legend--s",
+                                    isPageHeading = false
+                                ))
+                            )),
+                            items = DraftMovementsErrorsOption.checkboxItems
+                        ).withClasses(Seq("govuk-checkboxes--small"))
+                    )
+
+                    @govukCheckboxes(
+                        CheckboxesViewModel(
+                            form = form,
+                            name = "destinationTypes",
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    content = Text(messages("viewAllDraftMovements.filters.destinationType.heading")),
+                                    classes = "govuk-fieldset__legend--s",
+                                    isPageHeading = false
+                                ))
+                            )),
+                            items = DestinationType.draftMovementsCheckboxItems("viewAllDraftMovements.filters.destinationType")
+                        ).withClasses(Seq("govuk-checkboxes--small"))
+                    )
+
+                    @govukSelect(Select(
+                        items = exciseItems,
+                        name = "exciseProductCode",
+                        id = "exciseProductCode",
+                        label = LabelViewModel(
+                            content = Text(messages("viewAllDraftMovements.filters.exciseProduct.heading"))
+                        ).withCssClass("govuk-label--s")
+                    ))
+
+                    @defining(form.errors.find(_.key == "dateOfDispatchFrom").map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
+                        @govukDateInput(
+                            DateViewModel(
+                                field = form("dateOfDispatchFrom"),
+                                legend = Legend(
+                                    content = Text(messages("viewAllDraftMovements.filters.dispatchFrom.heading")),
+                                    classes = "govuk-fieldset__legend--s",
+                                    isPageHeading = false
+                                ),
+                                fieldsWithErrors = erroredFields
+                            )
+                        )
+                    }
+
+                    @defining(form.errors.find(_.key == "dateOfDispatchTo").map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
+                        @govukDateInput(
+                            DateViewModel(
+                                field = form("dateOfDispatchTo"),
+                                legend = Legend(
+                                    content = Text(messages("viewAllDraftMovements.filters.dispatchTo.heading")),
+                                    classes = "govuk-fieldset__legend--s",
+                                    isPageHeading = false
+                                ),
+                                fieldsWithErrors = erroredFields
+                            )
+                        )
+                    }
+                </aside>
+            </div>
+
+            @draftMovementList(ern, movements, sortSelectItems, pagination)
+        </div>
+    }
+}
+
+@{
+    //$COVERAGE-OFF$
+}

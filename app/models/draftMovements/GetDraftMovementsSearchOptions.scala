@@ -22,6 +22,8 @@ import models.draftMovements.DraftMovementSortingSelectOption
 import models.draftMovements.DraftMovementSortingSelectOption.Newest
 import play.api.mvc.QueryStringBindable
 import utils.Logging
+import viewmodels.draftMovements.DraftMovementsErrorsOption
+import viewmodels.draftMovements.DraftMovementsErrorsOption.DraftHasErrors
 
 import java.time.LocalDate
 
@@ -74,7 +76,7 @@ object GetDraftMovementsSearchOptions extends Logging {
           index <- intBinder.bind("index", params).getOrElse(Right(DEFAULT_INDEX))
           searchTerm <- stringBinder.bind("searchTerm", params).map(_.map(Some(_))).getOrElse(Right(None))
           draftHasErrors <- booleanBinder.bind("draftHasErrors", params).map(_.map(Some(_))).getOrElse(Right(None))
-          destinationTypes <- destinationTypeBinder.bind("destinationType", params).map(_.map(Some(_))).getOrElse(Right(None))
+          destinationTypes <- destinationTypeBinder.bind("destinationTypes", params).map(_.map(Some(_))).getOrElse(Right(None))
           dateOfDispatchFrom <- stringBinder.bind("dateOfDispatchFrom", params).map(_.map(Some(_))).getOrElse(Right(None))
           dateOfDispatchTo <- stringBinder.bind("dateOfDispatchTo", params).map(_.map(Some(_))).getOrElse(Right(None))
           exciseProductCode <- stringBinder.bind("exciseProductCode", params).map(_.map(Some(_))).getOrElse(Right(None))
@@ -107,11 +109,58 @@ object GetDraftMovementsSearchOptions extends Logging {
           Some(intBinder.unbind("index", searchOptions.index)),
           searchOptions.searchTerm.map(searchTerm => stringBinder.unbind("searchTerm", searchTerm)),
           searchOptions.draftHasErrors.map(hasErrors => booleanBinder.unbind("draftHasErrors", hasErrors)),
-          searchOptions.destinationTypes.map(destinationTypes => destinationTypeBinder.unbind("destinationType", destinationTypes)),
+          searchOptions.destinationTypes.map(destinationTypes => destinationTypeBinder.unbind("destinationTypes", destinationTypes)),
           searchOptions.dateOfDispatchFrom.map(date => stringBinder.unbind("dateOfDispatchFrom", date.toString)),
           searchOptions.dateOfDispatchTo.map(date => stringBinder.unbind("dateOfDispatchTo", date.toString)),
           searchOptions.exciseProductCode.map(code => stringBinder.unbind("exciseProductCode", code))
         ).flatten.mkString("&")
       }
     }
+
+  def apply(
+             sortBy: String,
+             searchValue: Option[String],
+             errors: Set[DraftMovementsErrorsOption],
+             destinationType: Set[DestinationType],
+             exciseProductCodeOption: Option[String],
+             dateOfDispatchFrom: Option[LocalDate],
+             dateOfDispatchTo: Option[LocalDate]
+           ): GetDraftMovementsSearchOptions = {
+
+    GetDraftMovementsSearchOptions(
+      sortBy = DraftMovementSortingSelectOption(sortBy),
+      index = DEFAULT_INDEX,
+      maxRows = DEFAULT_MAX_ROWS,
+      searchTerm = searchValue,
+      draftHasErrors = Some(errors.contains(DraftHasErrors)),
+      destinationTypes = Some(destinationType.toSeq),
+      dateOfDispatchFrom = dateOfDispatchFrom,
+      dateOfDispatchTo = dateOfDispatchTo,
+      exciseProductCode = exciseProductCodeOption
+    )
+  }
+
+  def unapply(options: GetDraftMovementsSearchOptions): Option[(
+      String,
+      Option[String],
+      Set[DraftMovementsErrorsOption],
+      Set[DestinationType],
+      Option[String],
+      Option[LocalDate],
+      Option[LocalDate]
+    )] = Some(
+    (
+      options.sortBy.code,
+      options.searchTerm,
+      options.draftHasErrors.fold[Set[DraftMovementsErrorsOption]](Set.empty){
+        case true => Set(DraftMovementsErrorsOption.DraftHasErrors)
+        case _ => Set()
+      },
+      options.destinationTypes.fold[Set[DestinationType]](Set.empty)(_.toSet),
+      options.exciseProductCode,
+      options.dateOfDispatchFrom,
+      options.dateOfDispatchTo,
+    )
+  )
+
 }
