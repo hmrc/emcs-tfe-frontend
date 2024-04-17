@@ -17,7 +17,6 @@
 package models.draftMovements
 
 import base.SpecBase
-import models.GetDraftMovementsSearchOptions
 import models.common.DestinationType
 import models.draftMovements.DraftMovementSortingSelectOption.{LrnAscending, Newest}
 
@@ -271,7 +270,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           "maxRows" -> Seq("10"),
           "searchTerm" -> Seq("term"),
           "draftHasErrors" -> Seq("true"),
-          "destinationType" -> Seq(DestinationType.TaxWarehouse.toString),
+          "destinationTypes" -> Seq(DestinationType.TaxWarehouse.toString),
           "dateOfDispatchFrom" -> Seq(dateOfDispatchFrom.toString),
           "dateOfDispatchTo" -> Seq(dateOfDispatchTo.toString),
           "exciseProductCode" -> Seq("exciseProductCode")
@@ -287,7 +286,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         )))
 
         val actualResult = GetDraftMovementsSearchOptions.queryStringBinder.bind("", Map(
-          "destinationType" -> DestinationType.values.map(_.toString)
+          "destinationTypes" -> DestinationType.values.map(_.toString)
         ))
 
         actualResult mustBe expectedResult
@@ -303,7 +302,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           "index=1&" +
           "searchTerm=term&" +
           "draftHasErrors=true&" +
-          s"destinationType=${DestinationType.TaxWarehouse.toString}&" +
+          s"destinationTypes=${DestinationType.TaxWarehouse.toString}&" +
           s"dateOfDispatchFrom=${dateOfDispatchFrom.toString}&" +
           s"dateOfDispatchTo=${dateOfDispatchTo.toString}&" +
           "exciseProductCode=exciseProductCode"
@@ -328,7 +327,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         val expectedResult =
           s"sortBy=${Newest.toString}&" +
             "index=1&" +
-            DestinationType.values.map(destinationType => s"destinationType=$destinationType").mkString("&")
+            DestinationType.values.map(destinationType => s"destinationTypes=$destinationType").mkString("&")
 
         val actualResult = GetDraftMovementsSearchOptions.queryStringBinder.unbind("", GetDraftMovementsSearchOptions(
           destinationTypes = Some(DestinationType.values),
@@ -337,7 +336,5 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         actualResult mustBe expectedResult
       }
     }
-
-
   }
 }

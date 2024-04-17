@@ -19,8 +19,9 @@ package views
 import base.SpecBase
 import controllers.routes
 import models.MovementFilterUndischargedOption.Undischarged
-import models.{GetDraftMovementsSearchOptions, MovementListSearchOptions}
+import models.MovementListSearchOptions
 import models.common.RoleType._
+import models.draftMovements.GetDraftMovementsSearchOptions
 import models.messages.MessagesSearchOptions
 import models.requests.DataRequest
 import org.jsoup.Jsoup

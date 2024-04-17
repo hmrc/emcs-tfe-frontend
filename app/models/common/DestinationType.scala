@@ -91,7 +91,7 @@ object DestinationType extends Enumerable.Implicits {
   ).zipWithIndex.map { case (value, index) =>
     CheckboxItemViewModel(
       content = Text(messages(s"$messageKeyPrefix.${value.toString}")),
-      fieldId = "errors",
+      fieldId = "destinationTypes",
       index = index,
       value = value.toString
     )

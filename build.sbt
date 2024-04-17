@@ -26,6 +26,7 @@ lazy val microservice = Project(appName, file("."))
     Assets / pipelineStages := Seq(gzip),
     RoutesKeys.routesImport ++= Seq(
       "models._",
+      "models.draftMovements._",
       "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl"
     )
   )

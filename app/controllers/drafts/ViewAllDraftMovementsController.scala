@@ -23,9 +23,8 @@ import connectors.referenceData.GetExciseProductCodesConnector
 import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import forms.ViewAllDraftMovementsFormProvider
-import models.GetDraftMovementsSearchOptions
-import models.GetDraftMovementsSearchOptions.DEFAULT_MAX_ROWS
-import models.draftMovements.DraftMovementSortingSelectOption
+import models.draftMovements.GetDraftMovementsSearchOptions.DEFAULT_MAX_ROWS
+import models.draftMovements.{DraftMovementSortingSelectOption, GetDraftMovementsSearchOptions}
 import models.requests.DataRequest
 import models.response.ErrorResponse
 import models.response.emcsTfe.draftMovement.GetDraftMovementsResponse
@@ -86,7 +85,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
         Redirect(routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()))
       } else {
         status(view(
-          form = form,
+          form = form.fill(searchOptions),
           action = routes.ViewAllDraftMovementsController.onSubmit(ern, searchOptions),
           ern = ern,
           movements = draftMovements.paginatedDrafts,

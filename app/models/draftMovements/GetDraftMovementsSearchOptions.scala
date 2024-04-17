@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package models
+package models.draftMovements
 
-import models.GetDraftMovementsSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS}
 import models.common.DestinationType
-import models.draftMovements.DraftMovementSortingSelectOption
 import models.draftMovements.DraftMovementSortingSelectOption.Newest
+import models.draftMovements.GetDraftMovementsSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS}
 import play.api.mvc.QueryStringBindable
 import utils.Logging
 import viewmodels.draftMovements.DraftMovementsErrorsOption
@@ -119,7 +118,7 @@ object GetDraftMovementsSearchOptions extends Logging {
 
   def apply(
              sortBy: String,
-             searchValue: Option[String],
+             searchTerm: Option[String],
              errors: Set[DraftMovementsErrorsOption],
              destinationType: Set[DestinationType],
              exciseProductCodeOption: Option[String],
@@ -131,8 +130,8 @@ object GetDraftMovementsSearchOptions extends Logging {
       sortBy = DraftMovementSortingSelectOption(sortBy),
       index = DEFAULT_INDEX,
       maxRows = DEFAULT_MAX_ROWS,
-      searchTerm = searchValue,
-      draftHasErrors = Some(errors.contains(DraftHasErrors)),
+      searchTerm = searchTerm,
+      draftHasErrors = errors.headOption.map(_ == DraftHasErrors),
       destinationTypes = Some(destinationType.toSeq),
       dateOfDispatchFrom = dateOfDispatchFrom,
       dateOfDispatchTo = dateOfDispatchTo,

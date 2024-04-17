@@ -17,8 +17,8 @@
 package forms
 
 import forms.mappings.Mappings
-import models._
 import models.common.DestinationType
+import models.draftMovements.GetDraftMovementsSearchOptions
 import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, set}
 import viewmodels.draftMovements.DraftMovementsErrorsOption
@@ -31,7 +31,7 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
     Form(
       mapping(
         ViewAllDraftMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
-        ViewAllDraftMovementsFormProvider.searchValue -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllDraftMovementsFormProvider.searchTerm -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllDraftMovementsFormProvider.draftHasErrors -> set(enumerable[DraftMovementsErrorsOption]()),
         ViewAllDraftMovementsFormProvider.destinationTypes -> set(enumerable[DestinationType]()),
         ViewAllDraftMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
@@ -54,7 +54,7 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
 object ViewAllDraftMovementsFormProvider {
 
   val sortByKey = "sortBy"
-  val searchValue = "searchKey"
+  val searchTerm = "searchTerm"
   val draftHasErrors = "draftHasErrors"
   val destinationTypes = "destinationTypes"
   val exciseProductCode = "exciseProductCode"

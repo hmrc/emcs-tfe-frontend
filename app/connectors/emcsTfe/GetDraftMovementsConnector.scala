@@ -17,7 +17,7 @@
 package connectors.emcsTfe
 
 import config.AppConfig
-import models.GetDraftMovementsSearchOptions
+import models.draftMovements.GetDraftMovementsSearchOptions
 import models.response.emcsTfe.draftMovement.GetDraftMovementsResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
