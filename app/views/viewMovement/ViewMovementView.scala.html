@@ -39,12 +39,12 @@
 @(
     ern: String,
     arc: String,
-    isConsignor: Boolean,
     subNavigationTabs: Seq[SubNavigationTab],
     currentSubNavigationTab: SubNavigationTab,
     movementTabBody: Html,
     historyEvents: Seq[TimelineEvent],
-    messageStatistics: GetMessageStatisticsResponse
+    messageStatistics: GetMessageStatisticsResponse,
+    actionLinksBody: Html
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
@@ -66,24 +66,7 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half" id="actions">
                 @h2(messages("viewMovement.actions.heading"), "govuk-heading-l")
-
-                @if(isConsignor) {
-                    @list(Seq(
-                        link(appConfig.emcsTfeCancelMovementUrl(ern, arc), "viewMovement.cancelMovement", Some("cancel-this-movement"), hintKey = Some("viewMovement.cancelMovement.info")),
-                        link(appConfig.emcsTfeChangeDestinationUrl(ern, arc), "viewMovement.changeDestination", Some("submit-a-change-of-destination"), hintKey = Some("viewMovement.changeDestination.info")),
-                        link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "viewMovement.explainDelay", Some("explain-a-delay"), hintKey = Some("viewMovement.explainDelay.info")),
-                        link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "viewMovement.explainShortageOrExcess", Some("explain-shortage-or-excess"), hintKey = Some("viewMovement.explainShortageOrExcess.info")),
-                        link("print", "viewMovement.printOrSaveEad", Some("print-or-save-ead"), hintKey = Some("viewMovement.printOrSaveEad.info"))
-                    ), extraClasses = Some("govuk-list--spaced"))
-                } else {
-                    @list(Seq(
-                        link(appConfig.emcsTfeAlertOrRejectionUrl(ern, arc), "viewMovement.alertOrRejection", Some("submit-alert-or-rejection"), hintKey = Some("viewMovement.alertOrRejection.info")),
-                        link(appConfig.emcsTfeReportAReceiptUrl(ern, arc), "viewMovement.reportAReceipt", Some("submit-report-of-receipt"), hintKey = Some("viewMovement.reportAReceipt.info")),
-                        link(appConfig.emcsTfeExplainDelayUrl(ern, arc), "viewMovement.explainDelay", Some("explain-a-delay"), hintKey = Some("viewMovement.explainDelay.info")),
-                        link(appConfig.emcsTfeExplainShortageOrExcessUrl(ern, arc), "viewMovement.explainShortageOrExcess", Some("explain-shortage-or-excess"), hintKey = Some("viewMovement.explainShortageOrExcess.info")),
-                        link("print", "viewMovement.printOrSaveEad", Some("print-or-save-ead"), hintKey = Some("viewMovement.printOrSaveEad.info"))
-                    ), extraClasses = Some("govuk-list--spaced"))
-                }
+                @{actionLinksBody}
             </div>
             <div class="govuk-grid-column-one-half" id="history">
                @h2(messages("viewMovement.history.heading"), "govuk-heading-l")

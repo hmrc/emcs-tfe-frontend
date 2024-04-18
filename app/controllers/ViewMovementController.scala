@@ -23,7 +23,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GetMovementService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels._
-import viewmodels.helpers.{TimelineHelper, ViewMovementHelper}
+import viewmodels.helpers.{TimelineHelper, ViewMovementActionsHelper, ViewMovementHelper}
 import views.html.viewMovement.ViewMovementView
 
 import javax.inject.{Inject, Singleton}
@@ -38,7 +38,8 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        view: ViewMovementView,
                                        errorHandler: ErrorHandler,
                                        helper: ViewMovementHelper,
-                                       timelineHelper: TimelineHelper
+                                       timelineHelper: TimelineHelper,
+                                       actionHelper: ViewMovementActionsHelper
                                       )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc)
     with I18nSupport with AuthActionHelper {
@@ -73,17 +74,18 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
     authorisedDataRequestAsync(exciseRegistrationNumber, viewMovementBetaGuard(exciseRegistrationNumber, arc)) { implicit request =>
       getMovementService.getLatestMovementForLoggedInUser(exciseRegistrationNumber, arc).flatMap { movement =>
         helper.movementCard(currentSubNavigationTab, movement).map { movementCard =>
+
           Ok(view(
             ern = exciseRegistrationNumber,
             arc = arc,
-            isConsignor = movement.consignorTrader.traderExciseNumber.fold(false)(_ == exciseRegistrationNumber),
             subNavigationTabs = SubNavigationTab.values,
             currentSubNavigationTab = currentSubNavigationTab,
             movementTabBody = movementCard,
             historyEvents = movement.eventHistorySummary
               .map(timelineHelper.timeline(_))
               .getOrElse(Seq.empty[TimelineEvent]),
-            messageStatistics = request.messageStatistics
+            messageStatistics = request.messageStatistics,
+            actionLinksBody = actionHelper.movementActions(movement)
           ))
         }
       } recover {
