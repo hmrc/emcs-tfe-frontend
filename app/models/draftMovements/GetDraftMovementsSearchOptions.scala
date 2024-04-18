@@ -132,7 +132,7 @@ object GetDraftMovementsSearchOptions extends Logging {
       maxRows = DEFAULT_MAX_ROWS,
       searchTerm = searchTerm,
       draftHasErrors = errors.headOption.map(_ == DraftHasErrors),
-      destinationTypes = Some(destinationType.toSeq),
+      destinationTypes = Option.when(destinationType.nonEmpty)(destinationType.toSeq),
       dateOfDispatchFrom = dateOfDispatchFrom,
       dateOfDispatchTo = dateOfDispatchTo,
       exciseProductCode = exciseProductCodeOption
@@ -161,5 +161,4 @@ object GetDraftMovementsSearchOptions extends Logging {
       options.dateOfDispatchTo,
     )
   )
-
 }
