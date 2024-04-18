@@ -16,6 +16,7 @@
 
 package models.draftMovements
 
+import models.SelectOptionModel
 import models.common.DestinationType
 import models.draftMovements.DraftMovementSortingSelectOption.Newest
 import models.draftMovements.GetDraftMovementsSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS}
@@ -60,6 +61,11 @@ object GetDraftMovementsSearchOptions extends Logging {
 
   val DEFAULT_INDEX: Int = 1
   val DEFAULT_MAX_ROWS: Int = 10
+
+  object CHOOSE_PRODUCT_CODE extends SelectOptionModel {
+    override val code: String = "chooseProductCode"
+    override val displayName: String = "viewAllDraftMovements.filters.exciseProduct.chooseProductCode"
+  }
 
   //noinspection ScalaStyle
   implicit def queryStringBinder(implicit intBinder: QueryStringBindable[Int],
@@ -121,10 +127,15 @@ object GetDraftMovementsSearchOptions extends Logging {
              searchTerm: Option[String],
              errors: Set[DraftMovementsErrorsOption],
              destinationType: Set[DestinationType],
-             exciseProductCodeOption: Option[String],
+             exciseProductCode: Option[String],
              dateOfDispatchFrom: Option[LocalDate],
              dateOfDispatchTo: Option[LocalDate]
            ): GetDraftMovementsSearchOptions = {
+
+    val exciseProductCodeWithoutDefault: Option[String] = exciseProductCode match {
+      case Some(value) if value == CHOOSE_PRODUCT_CODE.code => None
+      case value => value
+    }
 
     GetDraftMovementsSearchOptions(
       sortBy = DraftMovementSortingSelectOption(sortBy),
@@ -135,7 +146,7 @@ object GetDraftMovementsSearchOptions extends Logging {
       destinationTypes = Option.when(destinationType.nonEmpty)(destinationType.toSeq),
       dateOfDispatchFrom = dateOfDispatchFrom,
       dateOfDispatchTo = dateOfDispatchTo,
-      exciseProductCode = exciseProductCodeOption
+      exciseProductCode = exciseProductCodeWithoutDefault
     )
   }
 

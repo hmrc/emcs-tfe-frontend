@@ -79,6 +79,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
     val result: EitherT[Future, ErrorResponse, Result] = for {
       draftMovements <- EitherT(getDraftMovementsConnector.getDraftMovements(ern, Some(searchOptions)))
       exciseCodes <- EitherT(getExciseProductCodesConnector.getExciseProductCodes())
+      exciseCodesWithDefault = GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE +: exciseCodes
     } yield {
 
       val pageCount: Int = calculatePageCount(draftMovements)
@@ -92,7 +93,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
           ern = ern,
           movements = draftMovements.paginatedDrafts,
           sortSelectItems = DraftMovementSortingSelectOption.constructSelectItems(Some(searchOptions.sortBy.code)),
-          exciseItems = SelectItemHelper.constructSelectItems(exciseCodes, None, searchOptions.exciseProductCode),
+          exciseItems = SelectItemHelper.constructSelectItems(exciseCodesWithDefault, None, searchOptions.exciseProductCode),
           pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions)
         ))
       }

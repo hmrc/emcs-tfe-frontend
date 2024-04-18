@@ -356,7 +356,32 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           searchTerm = Some("search term"),
           errors = Set(DraftMovementsErrorsOption.DraftHasErrors),
           destinationType = Set(DestinationType.TaxWarehouse),
-          exciseProductCodeOption = Some("exciseProductCode"),
+          exciseProductCode = Some("exciseProductCode"),
+          dateOfDispatchFrom = Some(dateOfDispatchFrom),
+          dateOfDispatchTo = Some(dateOfDispatchTo)
+        )
+
+        actualResult mustBe expectedResult
+      }
+
+      "should return GetDraftMovementSearchOptions with exciseProductCode None for ExciseProductCode when left as default" in {
+
+        val expectedResult = GetDraftMovementsSearchOptions(
+          sortBy = DraftMovementSortingSelectOption.Oldest,
+          searchTerm = Some("search term"),
+          draftHasErrors = Some(true),
+          destinationTypes = Some(Seq(DestinationType.TaxWarehouse)),
+          dateOfDispatchFrom = Some(dateOfDispatchFrom),
+          dateOfDispatchTo = Some(dateOfDispatchTo),
+          exciseProductCode = None
+        )
+
+        val actualResult = GetDraftMovementsSearchOptions.apply(
+          sortBy = DraftMovementSortingSelectOption.Oldest.toString,
+          searchTerm = Some("search term"),
+          errors = Set(DraftMovementsErrorsOption.DraftHasErrors),
+          destinationType = Set(DestinationType.TaxWarehouse),
+          exciseProductCode = Some(GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE.code),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo)
         )
