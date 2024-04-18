@@ -17,7 +17,7 @@
 package viewmodels.draftMovements
 
 import controllers.drafts.routes
-import models.GetDraftMovementsSearchOptions
+import models.draftMovements.GetDraftMovementsSearchOptions
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{Pagination, PaginationItem, PaginationLink}
 import utils.DateUtils
 
