@@ -783,6 +783,7 @@ viewAllDraftMovements.filters.errors.heading = Errors
 viewAllDraftMovements.filters.errors.draftHasErrors = Draft has errors
 viewAllDraftMovements.filters.destinationType.heading = Destination type
 viewAllDraftMovements.filters.exciseProduct.heading = Excise product
+viewAllDraftMovements.filters.exciseProduct.chooseProductCode = Choose product code
 viewAllDraftMovements.filters.dispatchFrom.heading = Dispatch from
 viewAllDraftMovements.filters.dispatchTo.heading = Dispatch to
 
