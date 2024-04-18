@@ -29,5 +29,6 @@ case class DraftMovement(ern: String,
                          submittedDraftId: Option[String])
 
 object DraftMovement {
+
   implicit val format: Format[DraftMovement] = Json.format
 }

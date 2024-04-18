@@ -18,6 +18,7 @@ package viewmodels.helpers
 
 import base.SpecBase
 import controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad
+import models.draftMovements.GetDraftMovementsSearchOptions
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
 import viewmodels.draftMovements.DraftMovementsPaginationHelper
