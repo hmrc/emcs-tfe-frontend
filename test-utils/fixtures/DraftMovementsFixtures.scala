@@ -16,17 +16,51 @@
 
 package fixtures
 
+import models.movementScenario.MovementScenario
 import models.response.emcsTfe.draftMovement.{Data, DraftMovement, GetDraftMovementsResponse}
 import play.api.libs.json.{JsObject, Json}
 
-import java.time.{LocalDateTime, ZoneOffset}
+import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 
 trait DraftMovementsFixtures extends BaseFixtures with MovementSubmissionFailureFixtures {
+
+  val draftMovementDataJsonMin = Json.obj(fields =
+    "info" -> Json.obj(fields =
+      "localReferenceNumber" -> testLrn
+    )
+  )
+
+  val draftMovementDataModelMin = Data(
+    lrn = testLrn,
+    movementScenario = None,
+    consigneeReference = None,
+    dispatchDate = None
+  )
+
+  val draftMovementDataJsonMax = Json.obj(fields =
+    "info" -> Json.obj(fields =
+      "localReferenceNumber" -> testLrn,
+      "destinationType" -> MovementScenario.EuTaxWarehouse.toString,
+      "dispatchDetails" -> Json.obj(fields =
+        "date" -> "2024-01-01"
+      )
+    ),
+    "consignee" -> Json.obj(fields =
+      "exciseRegistrationNumber" -> testErn
+    )
+  )
+
+  val draftMovementDataModelMax = Data(
+    lrn = testLrn,
+    movementScenario = Some(MovementScenario.EuTaxWarehouse),
+    consigneeReference = Some(testErn),
+    dispatchDate = Some(LocalDate.of(2024, 1, 1))
+  )
 
   val draftMovementModelMax: DraftMovement = DraftMovement(
     ern = testErn,
     draftId = testDraftId,
-    data = Data(testLrn, None, None, None),
+    data = draftMovementDataModelMax,
     submissionFailures = Seq(movementSubmissionFailureModelMax),
     lastUpdated = LocalDateTime.parse("2020-01-01T12:00:00").toInstant(ZoneOffset.UTC),
     hasBeenSubmitted = true,
@@ -36,11 +70,7 @@ trait DraftMovementsFixtures extends BaseFixtures with MovementSubmissionFailure
   val draftMovementJsonMax: JsObject = Json.obj(
     "ern" -> testErn,
     "draftId" -> testDraftId,
-    "data" -> Json.obj(fields =
-      "info" -> Json.obj(fields =
-        "localReferenceNumber" -> testLrn
-      )
-    ),
+    "data" -> draftMovementDataJsonMax,
     "submissionFailures" -> Json.arr(movementSubmissionFailureJsonMax),
     "lastUpdated" -> LocalDateTime.parse("2020-01-01T12:00:00").toInstant(ZoneOffset.UTC),
     "hasBeenSubmitted" -> true,
@@ -50,7 +80,7 @@ trait DraftMovementsFixtures extends BaseFixtures with MovementSubmissionFailure
   val draftMovementModelMin: DraftMovement = DraftMovement(
     ern = testErn,
     draftId = testDraftId,
-    data = Data(testLrn, None, None, None),
+    data = draftMovementDataModelMin,
     submissionFailures = Seq(),
     lastUpdated = LocalDateTime.parse("2020-01-01T12:00:00").toInstant(ZoneOffset.UTC),
     hasBeenSubmitted = true,
@@ -60,11 +90,7 @@ trait DraftMovementsFixtures extends BaseFixtures with MovementSubmissionFailure
   val draftMovementJsonMin: JsObject = Json.obj(
     "ern" -> testErn,
     "draftId" -> testDraftId,
-    "data" -> Json.obj(fields =
-      "info" -> Json.obj(fields =
-        "localReferenceNumber" -> testLrn
-      )
-    ),
+    "data" -> draftMovementDataJsonMin,
     "submissionFailures" -> Json.arr(),
     "lastUpdated" -> LocalDateTime.parse("2020-01-01T12:00:00").toInstant(ZoneOffset.UTC),
     "hasBeenSubmitted" -> true

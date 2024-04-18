@@ -17,42 +17,24 @@
 package models.response.emcsTfe.draftMovement
 
 import base.SpecBase
-import models.movementScenario.MovementScenario
+import fixtures.DraftMovementsFixtures
 import play.api.libs.json.Json
 
 import java.time.LocalDate
 
-class DataSpec extends SpecBase {
+class DataSpec extends SpecBase with DraftMovementsFixtures {
 
   "de-serialise from JSON as expected" when {
 
     "min data is supplied" in {
-      Json.obj("info" -> Json.obj(fields =
-        "localReferenceNumber" -> testLrn
-      )).as[Data] mustBe Data(testLrn, None, None, None)
+      draftMovementDataJsonMin.as[Data] mustBe draftMovementDataModelMin
     }
 
     "max data is supplied (consignee has ERN, Dispatch Date in LocalDateFmt)" in {
-      Json.obj(fields =
-        "info" -> Json.obj(fields =
-          "localReferenceNumber" -> testLrn,
-          "destinationType" -> MovementScenario.EuTaxWarehouse.toString,
-          "dispatchDetails" -> Json.obj(fields =
-            "date" -> "2024-01-01"
-          )
-        ),
-        "consignee" -> Json.obj(fields =
-          "exciseRegistrationNumber" -> testErn
-        )
-      ).as[Data] mustBe Data(
-        lrn = testLrn,
-        movementScenario = Some(MovementScenario.EuTaxWarehouse),
-        consigneeReference = Some(testErn),
-        dispatchDate = Some(LocalDate.of(2024, 1, 1))
-      )
+      draftMovementDataJsonMax.as[Data] mustBe draftMovementDataModelMax
     }
 
-    "max data is supplied (consignee has VAT, Dispatch Date in MongoLocaltimeFormat)" in {
+    "consignee has VAT and dispatch Date in MongoLocaltimeFormat" in {
       Json.obj(fields =
         "info" -> Json.obj(fields =
           "localReferenceNumber" -> testLrn,

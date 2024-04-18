@@ -16,19 +16,22 @@
 
 package fixtures.messages
 
-object DraftMovementsMessages {
+import models.movementScenario.MovementScenario
+import utils.DateUtils
+
+import java.time.LocalDate
+
+object DraftMovementsMessages extends DateUtils {
 
   sealed trait ViewMessages { _: i18n =>
-    val lrnAscending: String
-    val lrnDescending: String
-    val newest: String
-    val oldest: String
+    val lrnAscending: String = "LRN (A - Z)"
+    val lrnDescending: String = "LRN (Z - A)"
+    val newest: String = "Last updated (newest)"
+    val oldest: String = "Last updated (oldest)"
+    val destination = (scenario: MovementScenario) => s"Destination: ${DestinationMessages.English.destinationType(scenario.destinationType)}"
+    val consignee: String => String = "Consignee: " + _
+    val dispatchDate: LocalDate => String = s"Date of dispatch: " + _.formatDateForUIOutput()
   }
 
-  object English extends ViewMessages with BaseEnglish {
-    override val lrnAscending = "LRN (A - Z)"
-    override val lrnDescending = "LRN (Z - A)"
-    override val newest = "Last updated (newest)"
-    override val oldest = "Last updated (oldest)"
-  }
+  object English extends ViewMessages with BaseEnglish
 }
