@@ -26,26 +26,14 @@ class DraftMovementSpec extends SpecBase with DraftMovementsFixtures {
 
     "given max values" should {
 
-      "write to Json" in {
-
-        Json.toJson(draftMovementModelMax) mustBe draftMovementJsonMax
-      }
-
       "read from Json" in {
-
         draftMovementJsonMax.as[DraftMovement] mustBe draftMovementModelMax
       }
     }
 
     "given min values" should {
 
-      "write to Json" in {
-
-        Json.toJson(draftMovementModelMin) mustBe draftMovementJsonMin
-      }
-
       "read from Json" in {
-
         draftMovementJsonMin.as[DraftMovement] mustBe draftMovementModelMin
       }
     }

@@ -26,26 +26,14 @@ class GetDraftMovementsResponseSpec extends SpecBase with DraftMovementsFixtures
 
     "given max values" should {
 
-      "write to Json" in {
-
-        Json.toJson(getDraftMovementsResponseModelMax) mustBe getDraftMovementsResponseJsonMax
-      }
-
       "read from Json" in {
-
         getDraftMovementsResponseJsonMax.as[GetDraftMovementsResponse] mustBe getDraftMovementsResponseModelMax
       }
     }
 
     "given min values" should {
 
-      "write to Json" in {
-
-        Json.toJson(getDraftMovementsResponseModelMin) mustBe getDraftMovementsResponseJsonMin
-      }
-
       "read from Json" in {
-
         getDraftMovementsResponseJsonMin.as[GetDraftMovementsResponse] mustBe getDraftMovementsResponseModelMin
       }
     }

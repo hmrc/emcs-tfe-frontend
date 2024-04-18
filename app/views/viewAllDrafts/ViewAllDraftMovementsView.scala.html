@@ -85,7 +85,7 @@
 @layout(
     pageTitle = title(form, messages("viewAllDraftMovements.title")),
     maybeShowActiveTrader = None,
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, Movements)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, Drafts)),
     fullWidthContent = true
 ) {
 
@@ -150,7 +150,7 @@
                                     isPageHeading = false
                                 ))
                             )),
-                            items = DestinationType.draftMovementsCheckboxItems("viewAllDraftMovements.filters.destinationType")
+                            items = DestinationType.draftMovementsCheckboxItems("destinationType")
                         ).withClasses(Seq("govuk-checkboxes--small"))
                     )
 

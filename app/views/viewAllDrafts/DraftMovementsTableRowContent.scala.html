@@ -15,28 +15,43 @@
  *@
 
 @import models.response.emcsTfe.draftMovement.DraftMovement
-
 @import views.html.components._
 
 @this(
-    link: link,
-    p: p,
-    list: list
+        link: link,
+        p: p,
+        list: list,
+        govukTag: GovukTag
 )
 
 @(ern: String, movement: DraftMovement)(implicit messages: Messages)
 
-<h2 class="govuk-!-margin-bottom-0">
-    @link(
-        link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
-        messageKey = movement.draftId,
-        classes = "govuk-heading-m govuk-link"
-    )
-</h2>
+<div class="inbox">
+    <div>
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+            @link(
+                link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                messageKey = movement.data.lrn,
+                classes = "govuk-heading-m govuk-link"
+            )
+        </h2>
 
-@list(Seq(
-    Html(messages("viewAllMovements.dateOfDispatch"))
-))
+        @list(Seq(
+            movement.data.movementScenario.map(ms => Html(messages("viewAllDraftMovements.destination", messages(s"destinationType.${ms.destinationType}")))),
+            movement.data.consigneeReference.map(ref => Html(messages("viewAllDraftMovements.consignee", ref))),
+            movement.data.dispatchDate.map(d => Html(messages("viewAllDraftMovements.dateOfDispatch", d.formatDateForUIOutput())))
+        ).flatten)
+    </div>
+
+    <div class="govuk-!-text-align-right">
+        @p(){
+            @{govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.draft"))).grey())}
+        }
+        @p("govuk-body-s"){
+            @messages("viewAllDraftMovements.lastUpdated", movement.lastUpdated.formatDateForUIOutput())
+        }
+    </div>
+</div>
 
 @{
     //$COVERAGE-OFF$

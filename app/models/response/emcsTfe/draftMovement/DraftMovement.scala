@@ -22,7 +22,7 @@ import java.time.Instant
 
 case class DraftMovement(ern: String,
                          draftId: String,
-                         data: JsObject,
+                         data: Data,
                          submissionFailures: Seq[MovementSubmissionFailure],
                          lastUpdated: Instant,
                          hasBeenSubmitted: Boolean,
@@ -30,5 +30,5 @@ case class DraftMovement(ern: String,
 
 object DraftMovement {
 
-  implicit val format: Format[DraftMovement] = Json.format
+  implicit val reads: Reads[DraftMovement] = Json.reads
 }

@@ -16,7 +16,7 @@
 
 package fixtures
 
-import models.response.emcsTfe.draftMovement.{DraftMovement, GetDraftMovementsResponse}
+import models.response.emcsTfe.draftMovement.{Data, DraftMovement, GetDraftMovementsResponse}
 import play.api.libs.json.{JsObject, Json}
 
 import java.time.{LocalDateTime, ZoneOffset}
@@ -26,7 +26,7 @@ trait DraftMovementsFixtures extends BaseFixtures with MovementSubmissionFailure
   val draftMovementModelMax: DraftMovement = DraftMovement(
     ern = testErn,
     draftId = testDraftId,
-    data = Json.obj(),
+    data = Data(testLrn, None, None, None),
     submissionFailures = Seq(movementSubmissionFailureModelMax),
     lastUpdated = LocalDateTime.parse("2020-01-01T12:00:00").toInstant(ZoneOffset.UTC),
     hasBeenSubmitted = true,
@@ -36,7 +36,11 @@ trait DraftMovementsFixtures extends BaseFixtures with MovementSubmissionFailure
   val draftMovementJsonMax: JsObject = Json.obj(
     "ern" -> testErn,
     "draftId" -> testDraftId,
-    "data" -> Json.obj(),
+    "data" -> Json.obj(fields =
+      "info" -> Json.obj(fields =
+        "localReferenceNumber" -> testLrn
+      )
+    ),
     "submissionFailures" -> Json.arr(movementSubmissionFailureJsonMax),
     "lastUpdated" -> LocalDateTime.parse("2020-01-01T12:00:00").toInstant(ZoneOffset.UTC),
     "hasBeenSubmitted" -> true,
@@ -46,7 +50,7 @@ trait DraftMovementsFixtures extends BaseFixtures with MovementSubmissionFailure
   val draftMovementModelMin: DraftMovement = DraftMovement(
     ern = testErn,
     draftId = testDraftId,
-    data = Json.obj(),
+    data = Data(testLrn, None, None, None),
     submissionFailures = Seq(),
     lastUpdated = LocalDateTime.parse("2020-01-01T12:00:00").toInstant(ZoneOffset.UTC),
     hasBeenSubmitted = true,
@@ -56,7 +60,11 @@ trait DraftMovementsFixtures extends BaseFixtures with MovementSubmissionFailure
   val draftMovementJsonMin: JsObject = Json.obj(
     "ern" -> testErn,
     "draftId" -> testDraftId,
-    "data" -> Json.obj(),
+    "data" -> Json.obj(fields =
+      "info" -> Json.obj(fields =
+        "localReferenceNumber" -> testLrn
+      )
+    ),
     "submissionFailures" -> Json.arr(),
     "lastUpdated" -> LocalDateTime.parse("2020-01-01T12:00:00").toInstant(ZoneOffset.UTC),
     "hasBeenSubmitted" -> true

@@ -762,6 +762,16 @@ prevalidateTrader.results.link.returnToAccount = Return to account home
 prevalidateTrader.results.link.feedback = What did you think of this service?
 prevalidateTrader.results.link.feedback.text = (takes 30 seconds)
 
+destinationType.1 = Tax warehouse
+destinationType.2 = Registered consignee
+destinationType.3 = Temporary registered consignee
+destinationType.4 = Direct delivery
+destinationType.5 = Exempted organisation
+destinationType.6 = Export
+destinationType.8 = Unknown destination
+destinationType.9 = Certified consignee
+destinationType.10 = Temporary certified consignee
+
 viewAllDraftMovements.heading = Drafts
 viewAllDraftMovements.title = Drafts
 viewAllDraftMovements.search.heading = Search for a draft
@@ -772,15 +782,6 @@ viewAllDraftMovements.filters.button = Apply filters
 viewAllDraftMovements.filters.errors.heading = Errors
 viewAllDraftMovements.filters.errors.draftHasErrors = Draft has errors
 viewAllDraftMovements.filters.destinationType.heading = Destination type
-viewAllDraftMovements.filters.destinationType.1 = Tax warehouse
-viewAllDraftMovements.filters.destinationType.2 = Registered consignee
-viewAllDraftMovements.filters.destinationType.3 = Temporary registered consignee
-viewAllDraftMovements.filters.destinationType.4 = Direct delivery
-viewAllDraftMovements.filters.destinationType.5 = Exempted organisation
-viewAllDraftMovements.filters.destinationType.6 = Export
-viewAllDraftMovements.filters.destinationType.8 = Unknown destination
-viewAllDraftMovements.filters.destinationType.9 = Certified consignee
-viewAllDraftMovements.filters.destinationType.10 = Temporary certified consignee
 viewAllDraftMovements.filters.exciseProduct.heading = Excise product
 viewAllDraftMovements.filters.dispatchFrom.heading = Dispatch from
 viewAllDraftMovements.filters.dispatchTo.heading = Dispatch to
@@ -794,6 +795,12 @@ viewAllDraftMovements.filters.dateOfDispatchFrom.error.required.two = The Dispat
 viewAllDraftMovements.filters.dateOfDispatchFrom.error.required = The Dispatched from date must include a {0}
 viewAllDraftMovements.filters.dateOfDispatchFrom.error.invalid = The Dispatched from date must be a real date
 viewAllDraftMovements.filters.dateOfDispatchTo.error.required.two = The Dispatched to date must include a {0} and {1}
-viewAllDraftMovementsfilters.dateOfDispatchTo.error.required = The Dispatched to date must include a {0}
+viewAllDraftMovements.filters.dateOfDispatchTo.error.required = The Dispatched to date must include a {0}
 viewAllDraftMovements.filters.dateOfDispatchTo.error.invalid = The Dispatched to date must be a real date
+
+viewAllDraftMovements.status.draft = Draft
+viewAllDraftMovements.lastUpdated = Last updated: {0}
+viewAllDraftMovements.dateOfDispatch = Date of  dispatch: {0}
+viewAllDraftMovements.consignee = Consignee: {0}
+viewAllDraftMovements.destination = Destination: {0}
 
