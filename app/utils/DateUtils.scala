@@ -16,7 +16,7 @@
 
 package utils
 
-import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -40,6 +40,11 @@ trait DateUtils {
       val dateFormat = DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mm a", Locale.UK)
       dateTime.format(dateFormat)
     }
+  }
+
+  implicit class InstantExtensions(instant: Instant) {
+    def formatDateForUIOutput(): String =
+      LocalDate.ofInstant(instant, ZoneId.of("UTC")).formatDateForUIOutput()
   }
 
 }

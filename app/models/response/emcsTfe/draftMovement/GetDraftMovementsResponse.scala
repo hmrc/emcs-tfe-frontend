@@ -16,11 +16,11 @@
 
 package models.response.emcsTfe.draftMovement
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Json, Reads}
 
 case class GetDraftMovementsResponse(count: Int,
                                      paginatedDrafts: Seq[DraftMovement])
 
 object GetDraftMovementsResponse {
-  implicit val format: Format[GetDraftMovementsResponse] = Json.format[GetDraftMovementsResponse]
+  implicit val reads: Reads[GetDraftMovementsResponse] = Json.reads[GetDraftMovementsResponse]
 }

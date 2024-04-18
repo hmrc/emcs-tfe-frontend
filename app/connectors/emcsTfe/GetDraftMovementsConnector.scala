@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class GetDraftMovementsConnector @Inject()(val http: HttpClient,
                                            config: AppConfig) extends EmcsTfeHttpParser[GetDraftMovementsResponse] {
 
-  override implicit val reads: Reads[GetDraftMovementsResponse] = GetDraftMovementsResponse.format
+  override implicit val reads: Reads[GetDraftMovementsResponse] = GetDraftMovementsResponse.reads
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 
