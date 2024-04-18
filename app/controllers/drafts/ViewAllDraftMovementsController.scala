@@ -26,7 +26,7 @@ import forms.ViewAllDraftMovementsFormProvider
 import models.draftMovements.GetDraftMovementsSearchOptions.DEFAULT_MAX_ROWS
 import models.draftMovements.{DraftMovementSortingSelectOption, GetDraftMovementsSearchOptions}
 import models.requests.DataRequest
-import models.response.ErrorResponse
+import models.response.{ErrorResponse, NotFoundError}
 import models.response.emcsTfe.draftMovement.GetDraftMovementsResponse
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -77,7 +77,10 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
                         )(implicit request: DataRequest[_]): Future[Result] = {
 
     val result: EitherT[Future, ErrorResponse, Result] = for {
-      draftMovements <- EitherT(getDraftMovementsConnector.getDraftMovements(ern, Some(searchOptions)))
+      draftMovements <- EitherT(getDraftMovementsConnector.getDraftMovements(ern, Some(searchOptions)).map {
+        case Left(NotFoundError) => Right(GetDraftMovementsResponse(0, Seq.empty))
+        case value => value
+      })
       exciseCodes <- EitherT(getExciseProductCodesConnector.getExciseProductCodes())
       exciseCodesWithDefault = GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE +: exciseCodes
     } yield {
