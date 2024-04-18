@@ -23,6 +23,7 @@ import play.api.test.FakeRequest
 
 import java.time.{LocalDate, LocalDateTime}
 
+// scalastyle:off magic.number
 class TimelineHelperSpec extends SpecBase {
 
   implicit lazy val msgs: Messages = messages(FakeRequest())
@@ -30,9 +31,19 @@ class TimelineHelperSpec extends SpecBase {
   val helper = app.injector.instanceOf[TimelineHelper]
 
   ".parseDateTime" must {
-    "return a parseable date/time" in {
+
+    "return a parseable ChRIS EventDate" in {
       val input = "2023-12-02T14:35:07"
       val expected = LocalDateTime.of(2023, 12, 2, 14, 35, 7)
+
+      val response = helper.parseDateTime(input)
+
+      response mustBe expected
+    }
+
+    "return a parseable EIS EventDate" in {
+      val input = "2023-12-02T14:35:07.000Z"
+      val expected = LocalDateTime.of(2023, 12, 2, 14, 35, 7, 0)
 
       val response = helper.parseDateTime(input)
 
