@@ -17,6 +17,8 @@
 package forms
 
 import forms.mappings.Mappings
+import models._
+import models.common.DestinationType
 import models.common.DestinationType
 import models.draftMovements.GetDraftMovementsSearchOptions
 import play.api.data.Form

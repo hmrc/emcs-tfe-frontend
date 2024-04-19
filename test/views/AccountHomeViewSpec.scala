@@ -19,7 +19,7 @@ package views
 import base.SpecBase
 import controllers.routes
 import models.MovementFilterUndischargedOption.Undischarged
-import models.MovementListSearchOptions
+import models.{GetDraftMovementsSearchOptions, MovementListSearchOptions}
 import models.common.RoleType._
 import models.draftMovements.GetDraftMovementsSearchOptions
 import models.messages.MessagesSearchOptions

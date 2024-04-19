@@ -48,15 +48,13 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
       "return None" in {
 
-        val expectedResult: Pagination = Pagination()
-
-        val actualResult: Pagination = Helper.constructPagination(
+        val actualResult: Option[Pagination] = Helper.constructPagination(
           pageCount = 1,
           ern = testErn,
           search = MessagesSearchOptions(DateReceivedD, 1, 10)
         )
 
-        actualResult shouldBe expectedResult
+        actualResult shouldBe None
       }
     }
 
@@ -66,16 +64,16 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without a previous link or ellipsis and only page items [1, 2]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1, true),
               createPageItem(2)
             )),
             previous = None,
             next = Some(createPageLink(2))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 2,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 1, 10)
@@ -89,16 +87,16 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without a next link or ellipsis and only page items [1, 2]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               createPageItem(2, true)
             )),
             previous = Some(createPageLink(1)),
             next = None
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 2,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 2, 10)
@@ -115,7 +113,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without a previous link or ellipsis and only page items [1, 2, 3]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1, true),
               createPageItem(2),
@@ -123,9 +121,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = None,
             next = Some(createPageLink(2))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 3,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 1, 10)
@@ -139,7 +137,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without ellipsis and page items [1, 2, 3]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               createPageItem(2, true),
@@ -147,9 +145,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(1)),
             next = Some(createPageLink(3))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 3,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 2, 10)
@@ -162,7 +160,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
           "return a Pagination model without a next link or ellipsis and only page items [1, 2, 3]" in {
 
-            val expectedResult: Pagination = Pagination(
+            val expectedResult: Option[Pagination] = Some(Pagination(
               items = Some(Seq(
                 createPageItem(1),
                 createPageItem(2),
@@ -170,9 +168,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
               )),
               previous = Some(createPageLink(2)),
               next = None
-            )
+            ))
 
-            val actualResult: Pagination = Helper.constructPagination(
+            val actualResult: Option[Pagination] = Helper.constructPagination(
               pageCount = 3,
               ern = testErn,
               search = MessagesSearchOptions(DateReceivedD, 3, 10)
@@ -188,20 +186,20 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
       "the index is 1" must {
 
-        "return a Pagination model without a previous link and only page items [1, 2, ellipsis, 4]" in {
+        "return a Pagination model without a previous link and only page items [1, 2, 3, 4]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1, true),
               createPageItem(2),
-              ellipsis,
+              createPageItem(3),
               createPageItem(4)
             )),
             previous = None,
             next = Some(createPageLink(2))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 4,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 1, 10)
@@ -215,7 +213,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without ellipsis and page items [1, 2, 3, 4]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               createPageItem(2, true),
@@ -224,9 +222,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(1)),
             next = Some(createPageLink(3))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 4,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 2, 10)
@@ -240,7 +238,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without ellipsis and page items 1, 2, 3 and 4" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               createPageItem(2),
@@ -249,9 +247,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(2)),
             next = Some(createPageLink(4))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 4,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 3, 10)
@@ -263,20 +261,20 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
       "the index is 4" must {
 
-        "return a Pagination model without a next link and only page items 1, an ellipsis, 3 and 4" in {
+        "return a Pagination model without a next link and only page items 1, 2, 3 and 4" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
-              ellipsis,
+              createPageItem(2),
               createPageItem(3),
               createPageItem(4, true)
             )),
             previous = Some(createPageLink(3)),
             next = None
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 4,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 4, 10)
@@ -293,7 +291,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without a previous link or ellipsis and only page items [1, 2, ellipsis, 10]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1, true),
               createPageItem(2),
@@ -302,9 +300,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = None,
             next = Some(createPageLink(2))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 1, 10)
@@ -318,7 +316,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without ellipsis and page items [1, 2, 3, ellipsis, 10]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               createPageItem(2, true),
@@ -328,9 +326,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(1)),
             next = Some(createPageLink(3))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 2, 10)
@@ -344,7 +342,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without ellipsis and page items [1, 2, 3, 4, ellipsis, 10]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               createPageItem(2),
@@ -355,9 +353,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(2)),
             next = Some(createPageLink(4))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 3, 10)
@@ -369,12 +367,12 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
       "the index is 4" must {
 
-        "return a Pagination model without ellipsis and page items [1, ellipsis, 3, 4, 5, ellipsis, 10]" in {
+        "return a Pagination model without ellipsis and page items [1, 2, 3, 4, 5, ellipsis, 10]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
-              ellipsis,
+              createPageItem(2),
               createPageItem(3),
               createPageItem(4, true),
               createPageItem(5),
@@ -383,9 +381,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(3)),
             next = Some(createPageLink(5))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 4, 10)
@@ -399,7 +397,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without ellipsis and page items [1, ellipsis, 4, 5, 6, ellipsis, 10]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               ellipsis,
@@ -411,9 +409,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(4)),
             next = Some(createPageLink(6))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 5, 10)
@@ -427,7 +425,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without ellipsis and page items [1, ellipsis, 5, 6, 7, ellipsis, 10]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               ellipsis,
@@ -439,9 +437,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(5)),
             next = Some(createPageLink(7))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 6, 10)
@@ -453,23 +451,23 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
       "the index is 7" must {
 
-        "return a Pagination model without ellipsis and page items [1, ellipsis, 6, 7, 8, ellipsis, 10]" in {
+        "return a Pagination model without ellipsis and page items [1, ellipsis, 6, 7, 8, 9, 10]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               ellipsis,
               createPageItem(6),
               createPageItem(7, true),
               createPageItem(8),
-              ellipsis,
+              createPageItem(9),
               createPageItem(10)
             )),
             previous = Some(createPageLink(6)),
             next = Some(createPageLink(8))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 7, 10)
@@ -483,7 +481,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without ellipsis and page items [1, ellipsis, 7, 8, 9, 10]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               ellipsis,
@@ -494,9 +492,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(7)),
             next = Some(createPageLink(9))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 8, 10)
@@ -510,7 +508,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without ellipsis and page items [1, ellipsis, 8, 9, 10]" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               ellipsis,
@@ -520,9 +518,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(8)),
             next = Some(createPageLink(10))
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD, 9, 10)
@@ -536,7 +534,7 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
 
         "return a Pagination model without a next link and only page items 1, an ellipsis, 9 and 10" in {
 
-          val expectedResult: Pagination = Pagination(
+          val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
               createPageItem(1),
               ellipsis,
@@ -545,9 +543,9 @@ class MessagesPaginationHelperSpec extends SpecBase with MessagesFixtures {
             )),
             previous = Some(createPageLink(9)),
             next = None
-          )
+          ))
 
-          val actualResult: Pagination = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPagination(
             pageCount = 10,
             ern = testErn,
             search = MessagesSearchOptions(DateReceivedD,  10, 10)
