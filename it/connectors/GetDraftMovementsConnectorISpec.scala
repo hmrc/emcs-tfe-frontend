@@ -3,7 +3,7 @@ package connectors
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, urlEqualTo}
 import com.github.tomakehurst.wiremock.http.Fault
 import connectors.emcsTfe.GetDraftMovementsConnector
-import fixtures.{BaseFixtures, DraftMovementsFixtures, MessagesFixtures}
+import fixtures.{BaseFixtures, DraftMovementsFixtures}
 import models.response.UnexpectedDownstreamResponseError
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.libs.json.Json

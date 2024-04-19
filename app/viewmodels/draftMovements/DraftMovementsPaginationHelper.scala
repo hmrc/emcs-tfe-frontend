@@ -18,8 +18,8 @@ package viewmodels.draftMovements
 
 import controllers.drafts.routes
 import models.GetDraftMovementsSearchOptions
-import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{Pagination, PaginationItem, PaginationLink}
-import utils.DateUtils
+import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
+import utils.{DateUtils, PaginationUtil}
 
 import javax.inject.Inject
 
@@ -27,40 +27,12 @@ class DraftMovementsPaginationHelper @Inject()() extends DateUtils {
 
   def constructPagination(pageCount: Int, ern: String, search: GetDraftMovementsSearchOptions): Option[Pagination] = {
 
-    def pageItem(index: Int, isCurrent: Option[Boolean] = None) = PaginationItem(
-      href = routes.ViewAllDraftMovementsController.onPageLoad(ern, search.copy(index = index)).url,
-      number = Some(index.toString),
-      current = isCurrent
-    )
-
-    val ellipses = PaginationItem(href = "", ellipsis = Some(true))
-
-    if (pageCount == 1) None else {
-
-      def calculateEllipses(indexes: Seq[Int]): Seq[PaginationItem] =
-        if (indexes.size <= 3) indexes.map(pageItem(_)) else {
-          Seq(
-            pageItem(indexes.head),
-            ellipses,
-            pageItem(indexes.last)
-          )
-        }
-
-      val paginationItems = Seq(
-        calculateEllipses(1 until search.index),
-        Seq(pageItem(search.index, isCurrent = Some(true))),
-        calculateEllipses(search.index + 1 to pageCount)
-      ).flatten
-
-      Some(Pagination(
-        items = Some(paginationItems),
-        previous = Option.when(search.index > 1)(PaginationLink(
-          href = routes.ViewAllDraftMovementsController.onPageLoad(ern, search.copy(index = search.index - 1)).url
-        )),
-        next = Option.when(search.index < pageCount)(PaginationLink(
-          href = routes.ViewAllDraftMovementsController.onPageLoad(ern, search.copy(index = search.index + 1)).url
-        ))
-      ))
+    val paginationHelper = new PaginationUtil {
+      override val link: Int => String = (index: Int) => routes.ViewAllDraftMovementsController.onPageLoad(ern, search.copy(index = index)).url
+      override val currentPage: Int = search.index
+      override val pages: Int = pageCount
     }
+
+    paginationHelper.constructPagination()
   }
 }
