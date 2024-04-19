@@ -270,7 +270,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           "maxRows" -> Seq("10"),
           "searchTerm" -> Seq("term"),
           "draftHasErrors" -> Seq("true"),
-          "destinationTypes" -> Seq(DestinationType.TaxWarehouse.toString),
+          "destinationType" -> Seq(DestinationType.TaxWarehouse.toString),
           "dateOfDispatchFrom" -> Seq(dateOfDispatchFrom.toString),
           "dateOfDispatchTo" -> Seq(dateOfDispatchTo.toString),
           "exciseProductCode" -> Seq("exciseProductCode")
@@ -286,7 +286,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         )))
 
         val actualResult = GetDraftMovementsSearchOptions.queryStringBinder.bind("", Map(
-          "destinationTypes" -> DestinationType.values.map(_.toString)
+          "destinationType" -> DestinationType.values.map(_.toString)
         ))
 
         actualResult mustBe expectedResult
@@ -302,7 +302,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           "index=1&" +
           "searchTerm=term&" +
           "draftHasErrors=true&" +
-          s"destinationTypes=${DestinationType.TaxWarehouse.toString}&" +
+          s"destinationType=${DestinationType.TaxWarehouse.toString}&" +
           s"dateOfDispatchFrom=${dateOfDispatchFrom.toString}&" +
           s"dateOfDispatchTo=${dateOfDispatchTo.toString}&" +
           "exciseProductCode=exciseProductCode"
@@ -327,7 +327,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         val expectedResult =
           s"sortBy=${DraftMovementSortingSelectOption.Newest.toString}&" +
             "index=1&" +
-            DestinationType.values.map(destinationType => s"destinationTypes=$destinationType").mkString("&")
+            DestinationType.values.map(destinationType => s"destinationType=$destinationType").mkString("&")
 
         val actualResult = GetDraftMovementsSearchOptions.queryStringBinder.unbind("", GetDraftMovementsSearchOptions(
           destinationTypes = Some(DestinationType.values),
@@ -355,7 +355,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           sortBy = DraftMovementSortingSelectOption.Oldest.toString,
           searchTerm = Some("search term"),
           errors = Set(DraftMovementsErrorsOption.DraftHasErrors),
-          destinationType = Set(DestinationType.TaxWarehouse),
+          destinationTypes = Set(DestinationType.TaxWarehouse),
           exciseProductCode = Some("exciseProductCode"),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo)
@@ -380,7 +380,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           sortBy = DraftMovementSortingSelectOption.Oldest.toString,
           searchTerm = Some("search term"),
           errors = Set(DraftMovementsErrorsOption.DraftHasErrors),
-          destinationType = Set(DestinationType.TaxWarehouse),
+          destinationTypes = Set(DestinationType.TaxWarehouse),
           exciseProductCode = Some(GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE.code),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo)

@@ -95,7 +95,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
 
     MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
     MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(navHubEnabled)))
-    MockBetaAllowListConnector.check(testErn, "tfeSearchMovements").returns(Future.successful(Right(searchMovementsEnabled)))
+    MockBetaAllowListConnector.check(testErn, "tfeDrafts").returns(Future.successful(Right(searchMovementsEnabled)))
   }
 
   private def buildView(searchOptions: GetDraftMovementsSearchOptions,
@@ -264,39 +264,16 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
 
       "get movement connector call is unsuccessful" when {
 
-        "not found" should {
+        "return 500" in new Test {
 
-          "return the view" in new Test {
+          MockEmcsTfeConnector
+            .getDraftMovements(testErn, Some(GetDraftMovementsSearchOptions(index = 1)))
+            .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-            MockEmcsTfeConnector
-              .getDraftMovements(testErn, Some(GetDraftMovementsSearchOptions(index = 1)))
-              .returns(Future.successful(Left(NotFoundError)))
+          val result: Future[Result] = controller.onPageLoad(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
 
-            MockGetExciseProductCodesConnector
-              .getExciseProductCodes()
-              .returns(Future.successful(Right(epcsListConnectorResult)))
-
-            MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 1)(None)
-
-            val result: Future[Result] = controller.onPageLoad(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
-
-            status(result) shouldBe Status.OK
-          }
-        }
-
-        "any other error message" should {
-
-          "return 500" in new Test {
-
-            MockEmcsTfeConnector
-              .getDraftMovements(testErn, Some(GetDraftMovementsSearchOptions(index = 1)))
-              .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
-
-            val result: Future[Result] = controller.onPageLoad(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
-
-            status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-            Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
-          }
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
         }
       }
 
@@ -325,7 +302,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
       val result: Future[Result] = controller.onPageLoad(testErn, GetDraftMovementsSearchOptions())(fakeRequest)
 
       status(result) shouldBe Status.SEE_OTHER
-      redirectLocation(result) shouldBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/movements")
+      redirectLocation(result) shouldBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/movement/drafts")
     }
   }
 
@@ -493,43 +470,16 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
 
         "get movement connector call is unsuccessful" when {
 
-          "not found" should {
+          "return 500" in new Test {
 
-            "return the view" in new Test {
+            MockEmcsTfeConnector
+              .getDraftMovements(testErn, Some(GetDraftMovementsSearchOptions(index = 1)))
+              .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-              val searchOptions = GetDraftMovementsSearchOptions(index = 1)
+            val result: Future[Result] = controller.onSubmit(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
 
-              MockEmcsTfeConnector
-                .getDraftMovements(testErn, Some(searchOptions))
-                .returns(Future.successful(Left(NotFoundError)))
-
-              MockGetExciseProductCodesConnector
-                .getExciseProductCodes()
-                .returns(Future.successful(Right(epcsListConnectorResult)))
-
-              MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 1)(None)
-
-              val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-                fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
-              )
-
-              status(result) shouldBe Status.BAD_REQUEST
-            }
-          }
-
-          "any other error message" should {
-
-            "return 500" in new Test {
-
-              MockEmcsTfeConnector
-                .getDraftMovements(testErn, Some(GetDraftMovementsSearchOptions(index = 1)))
-                .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
-
-              val result: Future[Result] = controller.onSubmit(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
-
-              status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-              Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
-            }
+            status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+            Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
           }
         }
 
@@ -577,7 +527,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
       val result: Future[Result] = controller.onSubmit(testErn, GetDraftMovementsSearchOptions())(fakeRequest)
 
       status(result) shouldBe Status.SEE_OTHER
-      redirectLocation(result) shouldBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/movements")
+      redirectLocation(result) shouldBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/movement/drafts")
     }
   }
 

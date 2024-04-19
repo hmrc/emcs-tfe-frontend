@@ -81,7 +81,7 @@ object GetDraftMovementsSearchOptions extends Logging {
           index <- intBinder.bind("index", params).getOrElse(Right(DEFAULT_INDEX))
           searchTerm <- stringBinder.bind("searchTerm", params).map(_.map(Some(_))).getOrElse(Right(None))
           draftHasErrors <- booleanBinder.bind("draftHasErrors", params).map(_.map(Some(_))).getOrElse(Right(None))
-          destinationTypes <- destinationTypeBinder.bind("destinationTypes", params).map(_.map(Some(_))).getOrElse(Right(None))
+          destinationTypes <- destinationTypeBinder.bind("destinationType", params).map(_.map(Some(_))).getOrElse(Right(None))
           dateOfDispatchFrom <- stringBinder.bind("dateOfDispatchFrom", params).map(_.map(Some(_))).getOrElse(Right(None))
           dateOfDispatchTo <- stringBinder.bind("dateOfDispatchTo", params).map(_.map(Some(_))).getOrElse(Right(None))
           exciseProductCode <- stringBinder.bind("exciseProductCode", params).map(_.map(Some(_))).getOrElse(Right(None))
@@ -114,7 +114,7 @@ object GetDraftMovementsSearchOptions extends Logging {
           Some(intBinder.unbind("index", searchOptions.index)),
           searchOptions.searchTerm.map(searchTerm => stringBinder.unbind("searchTerm", searchTerm)),
           searchOptions.draftHasErrors.map(hasErrors => booleanBinder.unbind("draftHasErrors", hasErrors)),
-          searchOptions.destinationTypes.map(destinationTypes => destinationTypeBinder.unbind("destinationTypes", destinationTypes)),
+          searchOptions.destinationTypes.map(destinationTypes => destinationTypeBinder.unbind("destinationType", destinationTypes)),
           searchOptions.dateOfDispatchFrom.map(date => stringBinder.unbind("dateOfDispatchFrom", date.toString)),
           searchOptions.dateOfDispatchTo.map(date => stringBinder.unbind("dateOfDispatchTo", date.toString)),
           searchOptions.exciseProductCode.map(code => stringBinder.unbind("exciseProductCode", code))
@@ -126,7 +126,7 @@ object GetDraftMovementsSearchOptions extends Logging {
              sortBy: String,
              searchTerm: Option[String],
              errors: Set[DraftMovementsErrorsOption],
-             destinationType: Set[DestinationType],
+             destinationTypes: Set[DestinationType],
              exciseProductCode: Option[String],
              dateOfDispatchFrom: Option[LocalDate],
              dateOfDispatchTo: Option[LocalDate]
@@ -143,7 +143,7 @@ object GetDraftMovementsSearchOptions extends Logging {
       maxRows = DEFAULT_MAX_ROWS,
       searchTerm = searchTerm,
       draftHasErrors = errors.headOption.map(_ == DraftHasErrors),
-      destinationTypes = Option.when(destinationType.nonEmpty)(destinationType.toSeq),
+      destinationTypes = Option.when(destinationTypes.nonEmpty)(destinationTypes.toSeq),
       dateOfDispatchFrom = dateOfDispatchFrom,
       dateOfDispatchTo = dateOfDispatchTo,
       exciseProductCode = exciseProductCodeWithoutDefault

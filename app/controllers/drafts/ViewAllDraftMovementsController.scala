@@ -55,15 +55,15 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
     with AuthActionHelper with I18nSupport with BetaChecks {
 
   def onPageLoad(ern: String, searchOptions: GetDraftMovementsSearchOptions): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, searchMovementsBetaGuard(ern)) { implicit request =>
+    authorisedDataRequestAsync(ern, draftsBetaGuard(ern)) { implicit request =>
       renderView(Ok, ern, searchOptions, formProvider())
     }
   }
 
   def onSubmit(ern: String, searchOptions: GetDraftMovementsSearchOptions): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, searchMovementsBetaGuard(ern)) { implicit request =>
+    authorisedDataRequestAsync(ern, draftsBetaGuard(ern)) { implicit request =>
       formProvider().bindFromRequest().fold(
-        formWithErrors => renderView(BadRequest, ern, searchOptions, formWithErrors),
+        renderView(BadRequest, ern, searchOptions, _),
         value => Future(Redirect(routes.ViewAllDraftMovementsController.onPageLoad(ern, value)))
       )
     }
@@ -77,10 +77,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
                         )(implicit request: DataRequest[_]): Future[Result] = {
 
     val result: EitherT[Future, ErrorResponse, Result] = for {
-      draftMovements <- EitherT(getDraftMovementsConnector.getDraftMovements(ern, Some(searchOptions)).map {
-        case Left(NotFoundError) => Right(GetDraftMovementsResponse(0, Seq.empty))
-        case value => value
-      })
+      draftMovements <- EitherT(getDraftMovementsConnector.getDraftMovements(ern, Some(searchOptions)))
       exciseCodes <- EitherT(getExciseProductCodesConnector.getExciseProductCodes())
       exciseCodesWithDefault = GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE +: exciseCodes
     } yield {
@@ -88,7 +85,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
       val pageCount: Int = calculatePageCount(draftMovements)
 
       if (searchOptions.index <= 0 || searchOptions.index > pageCount) {
-        Redirect(routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()))
+        Redirect(routes.ViewAllDraftMovementsController.onPageLoad(ern, searchOptions.copy(index = 1)))
       } else {
         status(view(
           form = form.fill(searchOptions),
