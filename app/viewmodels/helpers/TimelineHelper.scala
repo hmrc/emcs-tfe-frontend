@@ -18,15 +18,16 @@ package viewmodels.helpers
 
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.Messages
-import utils.{DateUtils, Logging}
+import utils.Logging
 import viewmodels.TimelineEvent
+import viewmodels.helpers.TimelineHelper._
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
 import javax.inject.Inject
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
-class TimelineHelper @Inject()() extends Logging with DateUtils {
+class TimelineHelper @Inject()() extends Logging {
 
   def timeline(historyEvents: Seq[MovementHistoryEvent])(implicit messages: Messages): Seq[TimelineEvent] =
     historyEvents.map { event =>
@@ -55,15 +56,25 @@ class TimelineHelper @Inject()() extends Logging with DateUtils {
 
   }
 
-  def parseDateTime(eventDate: String): LocalDateTime =
-    Try {
-      LocalDateTime.parse(eventDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
-    }.getOrElse{
-      logger.error(s"[parseDateTime] - un-parseable date/time received [$eventDate]")
-      LocalDate.now.atStartOfDay
+  def parseDateTime(eventDate: String): LocalDateTime = {
+    Try {LocalDateTime.parse(eventDate, EisEventDateFormat)} match {
+      case Success(parsedDateTime) => parsedDateTime
+      case Failure(_) =>
+        Try {LocalDateTime.parse(eventDate, ChrisEventDateFormat)} match {
+          case Success(parsedDateTime) => parsedDateTime
+          case Failure(_) =>
+            logger.error(s"[parseDateTime] - un-parseable date/time received [$eventDate], neither in EIS or ChRIS expected format")
+            LocalDate.now.atStartOfDay
+        }
     }
+  }
 
   def getHistoryEventUrl(event: MovementHistoryEvent): String =
     s"event/${event.eventType}/id/${event.eventDate.hashCode >>> 1}"
 
+}
+
+object TimelineHelper {
+  private val EisEventDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+  private val ChrisEventDateFormat =DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 }
