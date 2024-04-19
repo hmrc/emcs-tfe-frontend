@@ -26,7 +26,10 @@ case class DraftMovement(ern: String,
                          submissionFailures: Seq[MovementSubmissionFailure],
                          lastUpdated: Instant,
                          hasBeenSubmitted: Boolean,
-                         submittedDraftId: Option[String])
+                         submittedDraftId: Option[String]) {
+
+  val hasErrors = submissionFailures.exists(!_.hasBeenFixed)
+}
 
 object DraftMovement {
 

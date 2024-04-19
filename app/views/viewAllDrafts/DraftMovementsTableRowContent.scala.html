@@ -44,7 +44,11 @@
     </div>
 
     <div class="govuk-!-text-align-right">
+
         @p(){
+            @if(movement.hasErrors) {
+                @{govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.error"))).red())}
+            }
             @{govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.draft"))).grey())}
         }
         @p("govuk-body-s"){

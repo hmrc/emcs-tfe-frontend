@@ -34,12 +34,7 @@ class ViewAllDraftMovementsTableHelper @Inject()(movementTableRowContent: DraftM
       Seq(
         TableRow(
           content = HtmlContent(movementTableRowContent(ern, draftMovement))
-        ),
-        //TODO add
-//        TableRow(
-//          content = HtmlContent(new GovukTag().apply(draftMovement.statusTag())),
-//          classes = "govuk-!-text-align-right"
-//        )
+        )
       )
     }
 

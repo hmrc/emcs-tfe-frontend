@@ -17,7 +17,7 @@
 package models.draftMovements
 
 import base.SpecBase
-import fixtures.messages.DraftMovementsMessages.English
+import fixtures.messages.ViewAllDraftMovementsMessages.English
 import models.draftMovements.DraftMovementSortingSelectOption.{LrnAscending, LrnDescending, Newest, Oldest}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
@@ -45,22 +45,22 @@ class DraftMovementSortingSelectOptionSpec extends SpecBase with GuiceOneAppPerS
 
       "output the correct messages for ARC" in {
 
-        msgs(LrnAscending.displayName) mustBe English.lrnAscending
+        msgs(LrnAscending.displayName) mustBe English.sortLrnAscending
       }
 
       "output the correct messages for LRN" in {
 
-        msgs(LrnDescending.displayName) mustBe English.lrnDescending
+        msgs(LrnDescending.displayName) mustBe English.sortLrnDescending
       }
 
       "output the correct messages for ERN" in {
 
-        msgs(Newest.displayName) mustBe English.newest
+        msgs(Newest.displayName) mustBe English.sortNewest
       }
 
       "output the correct messages for Transporter" in {
 
-        msgs(Oldest.displayName) mustBe English.oldest
+        msgs(Oldest.displayName) mustBe English.sortOldest
       }
     }
   }

@@ -18,7 +18,7 @@ package views.viewAllDrafts
 
 import base.ViewSpecBase
 import fixtures.DraftMovementsFixtures
-import fixtures.messages.DraftMovementsMessages
+import fixtures.messages.ViewAllDraftMovementsMessages.English
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
 import views.html.viewAllDrafts.DraftMovementsTableRowContent
@@ -36,37 +36,34 @@ class DraftMovementsTableRowContentSpec extends ViewSpecBase with ViewBehaviours
 
   "DraftMovementsTableRowContent" when {
 
-    Seq(DraftMovementsMessages.English).foreach { messagesForLang =>
+    implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))
 
-      implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(messagesForLang.lang))
+    s"When rendered in language code of '${English.lang.code}'" must {
 
-      s"When rendered in language code of '${messagesForLang.lang.code}'" must {
+      "min data supplied for the Draft Data" must {
 
-        "min data supplied for the Draft Data" must {
+        "render the correct content" must {
 
-          "render the correct content" must {
+          implicit val doc: Document = asDocument(view(testErn, draftMovementModelMin))
 
-            implicit val doc: Document = asDocument(view(testErn, draftMovementModelMin))
-
-            behave like pageWithExpectedElementsAndMessages(Seq(
-              Selectors.h2 -> draftMovementModelMax.data.lrn
-            ))
-          }
+          behave like pageWithExpectedElementsAndMessages(Seq(
+            Selectors.h2 -> draftMovementModelMax.data.lrn
+          ))
         }
+      }
 
-        "max data supplied for the Draft Data" must {
+      "max data supplied for the Draft Data" must {
 
-          "render the correct content" must {
+        "render the correct content" must {
 
-            implicit val doc: Document = asDocument(view(testErn, draftMovementModelMax))
+          implicit val doc: Document = asDocument(view(testErn, draftMovementModelMax))
 
-            behave like pageWithExpectedElementsAndMessages(Seq(
-              Selectors.h2 -> draftMovementModelMax.data.lrn,
-              Selectors.listElement(1) -> messagesForLang.destination(draftMovementModelMax.data.movementScenario.get),
-              Selectors.listElement(2) -> messagesForLang.consignee(draftMovementModelMax.data.consigneeReference.get),
-              Selectors.listElement(3) -> messagesForLang.dispatchDate(draftMovementModelMax.data.dispatchDate.get)
-            ))
-          }
+          behave like pageWithExpectedElementsAndMessages(Seq(
+            Selectors.h2 -> draftMovementModelMax.data.lrn,
+            Selectors.listElement(1) -> English.destinationRowContent(draftMovementModelMax.data.movementScenario.get),
+            Selectors.listElement(2) -> English.consigneeRowContent(draftMovementModelMax.data.consigneeReference.get),
+            Selectors.listElement(3) -> English.dispatchDateRowContent(draftMovementModelMax.data.dispatchDate.get)
+          ))
         }
       }
     }

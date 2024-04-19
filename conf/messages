@@ -782,13 +782,13 @@ viewAllDraftMovements.filters.button = Apply filters
 viewAllDraftMovements.filters.errors.heading = Errors
 viewAllDraftMovements.filters.errors.draftHasErrors = Draft has errors
 viewAllDraftMovements.filters.destinationType.heading = Destination type
-viewAllDraftMovements.filters.exciseProduct.heading = Excise product
+viewAllDraftMovements.filters.exciseProduct.heading = Excise product code
 viewAllDraftMovements.filters.exciseProduct.chooseProductCode = Choose product code
-viewAllDraftMovements.filters.dispatchFrom.heading = Dispatch from
-viewAllDraftMovements.filters.dispatchTo.heading = Dispatch to
+viewAllDraftMovements.filters.dispatchFrom.heading = Dispatched from
+viewAllDraftMovements.filters.dispatchTo.heading = Dispatched to
 
-viewAllDraftMovements.sort.lrnAscending = LRN (A - Z)
-viewAllDraftMovements.sort.lrnDescending = LRN (Z - A)
+viewAllDraftMovements.sort.lrnAscending = LRN (A-Z)
+viewAllDraftMovements.sort.lrnDescending = LRN (Z-A)
 viewAllDraftMovements.sort.newest = Last updated (newest)
 viewAllDraftMovements.sort.oldest = Last updated (oldest)
 
@@ -800,6 +800,7 @@ viewAllDraftMovements.filters.dateOfDispatchTo.error.required = The Dispatched t
 viewAllDraftMovements.filters.dateOfDispatchTo.error.invalid = The Dispatched to date must be a real date
 
 viewAllDraftMovements.status.draft = Draft
+viewAllDraftMovements.status.error = Error
 viewAllDraftMovements.lastUpdated = Last updated: {0}
 viewAllDraftMovements.dateOfDispatch = Date of  dispatch: {0}
 viewAllDraftMovements.consignee = Consignee: {0}

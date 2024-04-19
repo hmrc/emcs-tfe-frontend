@@ -25,8 +25,7 @@ trait MovementSubmissionFailureFixtures extends BaseFixtures {
     errorType = "errorType",
     errorReason = "errorReason",
     errorLocation = Some("errorLocation"),
-    originalAttributeValue = Some("originalAttributeValue"),
-    hasBeenFixed = true
+    originalAttributeValue = Some("originalAttributeValue")
   )
 
   val movementSubmissionFailureJsonMax: JsObject = Json.obj(
@@ -34,7 +33,7 @@ trait MovementSubmissionFailureFixtures extends BaseFixtures {
     "errorReason" -> "errorReason",
     "errorLocation" -> "errorLocation",
     "originalAttributeValue" -> "originalAttributeValue",
-    "hasBeenFixed" -> true
+    "hasBeenFixed" -> false
   )
 
   val movementSubmissionFailureModelMin: MovementSubmissionFailure = MovementSubmissionFailure(
