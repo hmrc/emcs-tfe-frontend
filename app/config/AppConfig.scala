@@ -19,7 +19,6 @@ package config
 import controllers.routes
 import featureswitch.core.config._
 import models.MovementFilterUndischargedOption.Undischarged
-import models.{GetDraftMovementsSearchOptions, MovementListSearchOptions}
 import models.MovementListSearchOptions
 import models.draftMovements.GetDraftMovementsSearchOptions
 import models.messages.MessagesSearchOptions

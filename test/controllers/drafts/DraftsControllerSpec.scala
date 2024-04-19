@@ -21,7 +21,6 @@ import config.AppConfig
 import controllers.predicates.{BetaAllowListActionImpl, FakeAuthAction, FakeDataRetrievalAction}
 import mocks.config.MockAppConfig
 import mocks.connectors.MockBetaAllowListConnector
-import models.GetDraftMovementsSearchOptions
 import models.requests.DataRequest
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}

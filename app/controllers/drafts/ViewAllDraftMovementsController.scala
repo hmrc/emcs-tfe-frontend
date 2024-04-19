@@ -23,16 +23,11 @@ import connectors.referenceData.GetExciseProductCodesConnector
 import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import forms.ViewAllDraftMovementsFormProvider
-import models.GetDraftMovementsSearchOptions
-import models.GetDraftMovementsSearchOptions.DEFAULT_MAX_ROWS
-import models.draftMovements.DraftMovementSortingSelectOption
-import models.requests.DataRequest
-import models.response.ErrorResponse
 import models.draftMovements.GetDraftMovementsSearchOptions.DEFAULT_MAX_ROWS
 import models.draftMovements.{DraftMovementSortingSelectOption, GetDraftMovementsSearchOptions}
 import models.requests.DataRequest
-import models.response.{ErrorResponse, NotFoundError}
 import models.response.emcsTfe.draftMovement.GetDraftMovementsResponse
+import models.response.{ErrorResponse, NotFoundError}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -78,7 +73,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
                           status: Status,
                           ern: String,
                           searchOptions: GetDraftMovementsSearchOptions,
-                          form: Form[GetDraftMovementsSearchOptions] = formProvider()
+                          form: Form[GetDraftMovementsSearchOptions]
                         )(implicit request: DataRequest[_]): Future[Result] = {
 
     val result: EitherT[Future, ErrorResponse, Result] = for {

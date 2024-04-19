@@ -16,7 +16,6 @@
 
 package models.common
 
-import models.movementScenario.MovementScenario
 import play.api.i18n.Messages
 import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem

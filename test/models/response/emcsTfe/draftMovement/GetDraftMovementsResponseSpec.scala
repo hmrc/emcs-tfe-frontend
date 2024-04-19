@@ -18,7 +18,6 @@ package models.response.emcsTfe.draftMovement
 
 import base.SpecBase
 import fixtures.DraftMovementsFixtures
-import play.api.libs.json.Json
 
 class GetDraftMovementsResponseSpec extends SpecBase with DraftMovementsFixtures {
 

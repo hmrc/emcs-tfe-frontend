@@ -18,7 +18,6 @@ package views.viewAllDrafts
 
 import base.ViewSpecBase
 import fixtures.DraftMovementsFixtures
-import fixtures.messages.DraftMovementsMessages
 import fixtures.messages.ViewAllDraftMovementsMessages.English
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
