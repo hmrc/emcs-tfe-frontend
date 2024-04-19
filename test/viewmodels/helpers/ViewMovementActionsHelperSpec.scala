@@ -22,14 +22,16 @@ import models.common.DestinationType
 import models.requests.DataRequest
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
+import views.html.components.link
 
 import java.time.LocalDate
 
 class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
   val helper: ViewMovementActionsHelper = app.injector.instanceOf[ViewMovementActionsHelper]
+  val link: link = app.injector.instanceOf[link]
 
-  implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"))
+  implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"), ern = testErn)
   implicit lazy val messages: Messages = messages(request)
 
   ".cancelMovementLink" should {
@@ -43,7 +45,15 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
     "return a link" when {
 
       "when the movement can be cancelled" in {
-        helper.cancelMovementLink(testMovement) mustBe defined
+        helper.cancelMovementLink(testMovement) mustBe
+          Some(
+            link(
+              link = appConfig.emcsTfeCancelMovementUrl(testErn, testArc),
+              messageKey = "viewMovement.cancelMovement",
+              id = Some("cancel-this-movement"),
+              hintKey = Some("viewMovement.cancelMovement.info")
+            )
+          )
       }
     }
 
@@ -77,7 +87,15 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
     "return a link" when {
 
       "when the movement can be diverted" in {
-        helper.changeDestinationLink(testMovement) mustBe defined
+        helper.changeDestinationLink(testMovement) mustBe
+          Some(
+            link(
+              link = appConfig.emcsTfeChangeDestinationUrl(testErn, testArc),
+              messageKey = "viewMovement.changeDestination",
+              id = Some("submit-a-change-of-destination"),
+              hintKey = Some("viewMovement.changeDestination.info")
+            )
+          )
       }
     }
 
@@ -97,7 +115,15 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
     "return a link" when {
 
       "when the movement can be alerted or rejected" in {
-        helper.alertOrRejectionLink(testMovement) mustBe defined
+        helper.alertOrRejectionLink(testMovement) mustBe
+          Some(
+            link(
+              link = appConfig.emcsTfeAlertOrRejectionUrl(testErn, testArc),
+              messageKey = "viewMovement.alertOrRejection",
+              id = Some("submit-alert-or-rejection"),
+              hintKey = Some("viewMovement.alertOrRejection.info")
+            )
+          )
       }
     }
 
@@ -117,7 +143,15 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
     "return a link" when {
 
       "when the movement can be receipted" in {
-        helper.reportOfReceiptLink(testMovement) mustBe defined
+        helper.reportOfReceiptLink(testMovement) mustBe
+          Some(
+            link(
+              link = appConfig.emcsTfeReportAReceiptUrl(testErn, testArc),
+              messageKey = "viewMovement.reportAReceipt",
+              id = Some("submit-report-of-receipt"),
+              hintKey = Some("viewMovement.reportAReceipt.info")
+            )
+          )
       }
     }
 
@@ -137,7 +171,15 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
     "return a link" when {
 
       "when an explanation of delay could be submitted" in {
-        helper.explainADelayLink(testMovement) mustBe defined
+        helper.explainADelayLink(testMovement) mustBe
+          Some(
+            link(
+              link = appConfig.emcsTfeExplainDelayUrl(testErn, testArc),
+              messageKey = "viewMovement.explainDelay",
+              id = Some("explain-a-delay"),
+              hintKey = Some("viewMovement.explainDelay.info")
+            )
+          )
       }
     }
   }
@@ -152,7 +194,15 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
       "return a link" when {
         "when a shortage or excess is allowed" in {
-          helper.shortageOrExcessLink(testMovement) mustBe defined
+          helper.shortageOrExcessLink(testMovement) mustBe
+            Some(
+              link(
+                link = appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc),
+                messageKey = "viewMovement.explainShortageOrExcess",
+                id = Some("explain-shortage-or-excess"),
+                hintKey = Some("viewMovement.explainShortageOrExcess.info")
+              )
+            )
         }
       }
 
@@ -171,7 +221,15 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
       "return a link" when {
         "when a shortage or excess is allowed" in {
-          helper.shortageOrExcessLink(testMovement) mustBe defined
+          helper.shortageOrExcessLink(testMovement) mustBe
+            Some(
+              link(
+                link = appConfig.emcsTfeExplainShortageOrExcessUrl(testErn, testArc),
+                messageKey = "viewMovement.explainShortageOrExcess",
+                id = Some("explain-shortage-or-excess"),
+                hintKey = Some("viewMovement.explainShortageOrExcess.info")
+              )
+            )
         }
       }
 
@@ -186,7 +244,15 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
   ".printLink" should {
     "always be present" in {
-      helper.printLink() mustBe defined
+      helper.printLink() mustBe
+        Some(
+          link(
+            link = "print",
+            messageKey = "viewMovement.printOrSaveEad",
+            id = Some("print-or-save-ead"),
+            hintKey = Some("viewMovement.printOrSaveEad.info")
+          )
+        )
     }
   }
 }
