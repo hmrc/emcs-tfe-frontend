@@ -153,6 +153,10 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
         Selectors.sortBySelectOption(4) -> English.sortOldest,
         Selectors.sortButton -> English.sortByButton
       ))
+
+      "have the correct links the draft movement" in {
+        doc.select(Selectors.headingLinkRow).attr("href") mustEqual appConfig.emcsTfeCreateMovementTaskListUrl(testErn, testDraftId)
+      }
     }
 
     s"being rendered for with pagination" when {

@@ -16,12 +16,14 @@
 
 @import models.response.emcsTfe.draftMovement.DraftMovement
 @import views.html.components._
+@import config.AppConfig
 
 @this(
         link: link,
         p: p,
         list: list,
-        govukTag: GovukTag
+        govukTag: GovukTag,
+        appConfig: AppConfig
 )
 
 @(ern: String, movement: DraftMovement)(implicit messages: Messages)
@@ -30,7 +32,7 @@
     <div>
         <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
             @link(
-                link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                link = appConfig.emcsTfeCreateMovementTaskListUrl(ern, movement.draftId),
                 messageKey = movement.data.lrn,
                 classes = "govuk-heading-m govuk-link"
             )
