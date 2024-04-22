@@ -70,15 +70,15 @@ class ViewMovementHelper @Inject()(
 
     val movementTypeValue = getMovementTypeForMovementView(movementResponse)
 
-    lazy val eadStatusExplanation = messages(s"viewMovement.movement.summary.eADStatus.explanation.${movementResponse.eadStatus.toLowerCase}")
+    lazy val eadStatusExplanation = messages(s"viewMovement.movement.summary.eADStatus.explanation.${movementResponse.eadStatus.toString.toLowerCase}")
 
     val optReceiptStatusMessage = movementResponse.reportOfReceipt.map(ror => messages(s"viewMovement.movement.summary.receiptStatus.${ror.acceptMovement}"))
 
     //Summary section - start
     val localReferenceNumber = summaryListRowBuilder("viewMovement.movement.summary.lrn", movementResponse.localReferenceNumber)
-    val eadStatus = if (movementResponse.eadStatus.equalsIgnoreCase("None")) None else Some(summaryListRowBuilder("viewMovement.movement.summary.eADStatus",
+    val eadStatus = if (movementResponse.eadStatus.toString.equalsIgnoreCase("None")) None else Some(summaryListRowBuilder("viewMovement.movement.summary.eADStatus",
       HtmlFormat.fill(Seq(
-        p()(Text(movementResponse.eadStatus).asHtml),
+        p()(Text(movementResponse.eadStatus.toString).asHtml),
         p(classes = "govuk-hint govuk-!-margin-top-0")(Text(eadStatusExplanation).asHtml)
       )
       )))

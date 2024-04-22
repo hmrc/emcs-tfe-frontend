@@ -17,6 +17,7 @@
 package viewmodels.helpers
 
 import config.AppConfig
+import models.MovementEadStatus._
 import models.common.DestinationType.Export
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
@@ -116,12 +117,7 @@ class ViewMovementActionsHelper @Inject()(
 }
 
 object ViewMovementActionsHelper {
-  private val CancelMovementValidStatuses = Seq("Accepted", "Exporting", "Rejected")
-  private val ChangeDestinationValidStatuses = Seq("Accepted", "Exporting", "PartiallyRefused", "Refused", "DeemedExporting", "Rejected")
-  private val AlertOrRejectValidStatuses = Seq("Accepted")
-  private val ReportOfReceiptValidStatuses = Seq("Accepted")
-  private val ShortageOrExcessValidStatuses = Seq("Delivered", "Diverted", "ManuallyClosed", "Refused", "PartiallyRefused", "Exporting", "Stopped", "DeemedExported")
-  private val ShortageOrExcessExportValidStatuses = Seq("Delivered", "Diverted", "ManuallyClosed", "Refused", "PartiallyRefused", "Exporting", "Stopped", "Accepted", "Rejected")
+
 
   private def dateOfDispatchTodayOrInTheFuture(dateOfDispatch: LocalDate): Boolean =
     dateOfDispatch.isEqual(LocalDate.now()) || dateOfDispatch.isAfter(LocalDate.now())

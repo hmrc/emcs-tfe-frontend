@@ -18,6 +18,7 @@ package viewmodels.helpers
 
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
+import models.MovementEadStatus
 import models.common.DestinationType
 import models.requests.DataRequest
 import play.api.i18n.Messages
@@ -37,7 +38,7 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
   ".cancelMovementLink" should {
 
     val testMovement = getMovementResponseModel.copy(
-      eadStatus = "Accepted",
+      eadStatus = MovementEadStatus.Accepted,
       eadEsad = getMovementResponseModel.eadEsad.copy(upstreamArc = None),
       dateOfDispatch = LocalDate.now.plusWeeks(1)
     )
@@ -61,7 +62,7 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
       "when the movement has an incorrect movement status" in {
         helper.cancelMovementLink(
-          testMovement.copy(eadStatus = "Delivered")
+          testMovement.copy(eadStatus = MovementEadStatus.Delivered)
         ) mustBe None
       }
 
@@ -82,7 +83,7 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
   }
 
   ".changeDestinationLink" should {
-    val testMovement = getMovementResponseModel.copy(eadStatus = "Accepted")
+    val testMovement = getMovementResponseModel.copy(eadStatus = MovementEadStatus.Accepted)
 
     "return a link" when {
 
@@ -102,7 +103,7 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
     "not return a link" when {
 
       "when the movement has an incorrect movement status" in {
-        helper.changeDestinationLink(testMovement.copy(eadStatus = "Delivered")) mustBe None
+        helper.changeDestinationLink(testMovement.copy(eadStatus = MovementEadStatus.Delivered)) mustBe None
       }
 
     }
@@ -110,7 +111,7 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
   }
 
   ".alertOrRejectionLink" should {
-    val testMovement = getMovementResponseModel.copy(eadStatus = "Accepted")
+    val testMovement = getMovementResponseModel.copy(eadStatus = MovementEadStatus.Accepted)
 
     "return a link" when {
 
@@ -130,7 +131,7 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
     "not return a link" when {
 
       "when the movement has an incorrect movement status" in {
-        helper.alertOrRejectionLink(testMovement.copy(eadStatus = "Delivered")) mustBe None
+        helper.alertOrRejectionLink(testMovement.copy(eadStatus = MovementEadStatus.Delivered)) mustBe None
       }
 
     }
@@ -138,7 +139,7 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
   }
 
   ".reportOfReceiptLink" should {
-    val testMovement = getMovementResponseModel.copy(eadStatus = "Accepted")
+    val testMovement = getMovementResponseModel.copy(eadStatus = MovementEadStatus.Accepted)
 
     "return a link" when {
 
@@ -158,7 +159,7 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
     "not return a link" when {
 
       "when the movement has an incorrect movement status to be receipted" in {
-        helper.reportOfReceiptLink(testMovement.copy(eadStatus = "Delivered")) mustBe None
+        helper.reportOfReceiptLink(testMovement.copy(eadStatus = MovementEadStatus.Delivered)) mustBe None
       }
 
     }
@@ -188,7 +189,7 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
     "when the movement is an export" should {
       val testMovement = getMovementResponseModel.copy(
-        eadStatus = "Accepted",
+        eadStatus = MovementEadStatus.Accepted,
         destinationType = DestinationType.Export
       )
 
@@ -208,14 +209,14 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
       "not return a link" when {
         "when the movement has the wrong status" in {
-          helper.shortageOrExcessLink(testMovement.copy(eadStatus = "DeemedExporting")) mustBe None
+          helper.shortageOrExcessLink(testMovement.copy(eadStatus = MovementEadStatus.DeemedExported)) mustBe None
         }
       }
     }
 
     "when the movement is not an export" should {
       val testMovement = getMovementResponseModel.copy(
-        eadStatus = "Exporting",
+        eadStatus = MovementEadStatus.Exporting,
         destinationType = DestinationType.TemporaryCertifiedConsignee
       )
 
@@ -235,7 +236,7 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
       "not return a link" when {
         "when the movement has the wrong status" in {
-          helper.shortageOrExcessLink(testMovement.copy(eadStatus = "Accepted")) mustBe None
+          helper.shortageOrExcessLink(testMovement.copy(eadStatus = MovementEadStatus.Accepted)) mustBe None
         }
       }
     }

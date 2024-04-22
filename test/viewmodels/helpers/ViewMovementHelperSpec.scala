@@ -18,6 +18,7 @@ package viewmodels.helpers
 
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
+import models.MovementEadStatus._
 import models.common.DestinationType._
 import models.common.RoleType.GBWK
 import models.common.{AddressModel, TraderModel}
@@ -113,25 +114,25 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "1 December 2023"
       }
 
-      Seq("Accepted" -> "An eAD has been created and the movement may be in transit.",
-        "Cancelled" -> "The consignor has cancelled the movement before the date of dispatch on the eAD.",
-        "Delivered" -> "The consignee has accepted the goods and the movement has been closed.",
-        "Diverted" -> "The consignor has successfully submitted a change of destination before the goods have been received or in response to the consignee’s complete refusal of the goods.",
-        "ManuallyClosed" -> "The member state of the consignor has manually closed the movement due to a technical problem preventing a report of receipt or because the consignee has gone out of business.",
-        "Refused" -> "The consignee has refused all goods in the movement and the consignor must create a change of destination.",
-        "None" -> "",
-        "PartiallyRefused" -> "The consignee has refused some goods in the movement and the consignor must create a change of destination.",
-        "Exporting" -> "The movement has been accepted for export by customs.",
-        "DeemedExported" -> "The movement has been approved for export by customs, but this status does not confirm that the goods have been exported (the report of receipt will provide confirmation).",
-        "Replaced" -> "The movement of energy products has been split into two or more parts (up to a maximum of 9 parts).",
-        "Stopped" -> "Officials have seized the movement because of an incident or irregularity.",
-        "Rejected" -> "The consignee has rejected the movement and the consignor must now submit a change of destination if the goods are in transit or cancel the movement if the goods have not departed."
+      Seq(Accepted -> "An eAD has been created and the movement may be in transit.",
+        Cancelled -> "The consignor has cancelled the movement before the date of dispatch on the eAD.",
+        Delivered -> "The consignee has accepted the goods and the movement has been closed.",
+        Diverted -> "The consignor has successfully submitted a change of destination before the goods have been received or in response to the consignee’s complete refusal of the goods.",
+        ManuallyClosed -> "The member state of the consignor has manually closed the movement due to a technical problem preventing a report of receipt or because the consignee has gone out of business.",
+        Refused -> "The consignee has refused all goods in the movement and the consignor must create a change of destination.",
+        NoneStatus -> "",
+        PartiallyRefused -> "The consignee has refused some goods in the movement and the consignor must create a change of destination.",
+        Exporting -> "The movement has been accepted for export by customs.",
+        DeemedExported -> "The movement has been approved for export by customs, but this status does not confirm that the goods have been exported (the report of receipt will provide confirmation).",
+        Replaced -> "The movement of energy products has been split into two or more parts (up to a maximum of 9 parts).",
+        Stopped -> "Officials have seized the movement because of an incident or irregularity.",
+        Rejected -> "The consignee has rejected the movement and the consignor must now submit a change of destination if the goods are in transit or cancel the movement if the goods have not departed."
       ).foreach { statusToExplanation =>
 
         s"when the eAD status is ${statusToExplanation._1} - show the correct status and explanation" in {
           val result = helper.constructMovementView(getMovementResponseModel.copy(eadStatus = statusToExplanation._1))
           val card = Jsoup.parse(result.toString())
-          if (statusToExplanation._1 == "None") {
+          if (statusToExplanation._1 == NoneStatus) {
             card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Receipt status"
           } else {
             card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "eAD status"
