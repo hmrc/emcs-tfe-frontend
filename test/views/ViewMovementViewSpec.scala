@@ -19,6 +19,7 @@ package views
 import base.ViewSpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.messages.ViewMovementMessages.English
+import models.common.{DestinationType, TraderModel}
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -27,20 +28,27 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels._
-import viewmodels.helpers.ViewMovementHelper
+import viewmodels.helpers.{ViewMovementActionsHelper, ViewMovementHelper}
 import views.html.viewMovement.ViewMovementView
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
+import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMovementResponseFixtures {
 
   val view: ViewMovementView = app.injector.instanceOf[ViewMovementView]
-  val helper: ViewMovementHelper = app.injector.instanceOf[ViewMovementHelper]
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  val helper: ViewMovementHelper = app.injector.instanceOf[ViewMovementHelper]
+  val actionLinkHelper: ViewMovementActionsHelper = app.injector.instanceOf[ViewMovementActionsHelper]
+  val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+
   implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"), ern = "GBRC123456789")
   implicit val messages: Messages = messages(fakeRequest)
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+
+  val consignorErn = "GBWKConsignor"
+  val consigneeErn = "GBWKConsignee"
 
   object Selectors extends BaseSelectors {
     val subNavigationTabSelected = s"main nav.moj-sub-navigation a[aria-current=page]"
@@ -70,7 +78,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               view(
                 testErn,
                 testArc,
-                isConsignor = true,
+                getMovementResponseModel,
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel).futureValue,
@@ -99,17 +107,27 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
           }
 
           "display the action links for a consignor" when {
+            val consignorRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"), ern = consignorErn)
+
+            val testMovement = getMovementResponseModel
+              .copy(
+                consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(consignorErn)),
+                consigneeTrader = Some(TraderModel(traderExciseNumber = Some(consigneeErn), None, None, None, None)),
+                dateOfDispatch = LocalDate.now.plusDays(1),
+                destinationType = DestinationType.Export
+              )
+
             implicit val doc: Document = Jsoup.parse(
               view(
-                testErn,
+                consignorErn,
                 testArc,
-                isConsignor = true,
+                testMovement,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel).futureValue,
+                helper.movementCard(Overview, testMovement)(consignorRequest, messages, hc, ec).futureValue,
                 Seq.empty[TimelineEvent],
                 testMessageStatistics
-              ).toString()
+              )(consignorRequest, messages).toString()
             )
 
             behave like pageWithExpectedElementsAndMessages(Seq(
@@ -122,17 +140,27 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
           }
 
           "display the action links for a consignee" when {
+            val consigneeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"), ern = consigneeErn)
+
+            val testMovement = getMovementResponseModel
+              .copy(
+                consigneeTrader = Some(TraderModel(traderExciseNumber = Some(consigneeErn), None, None, None, None)),
+                consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(consignorErn)),
+                dateOfDispatch = LocalDate.now.plusDays(1),
+                destinationType = DestinationType.Export
+              )
+
             implicit val doc: Document = Jsoup.parse(
               view(
-                testErn,
+                consigneeErn,
                 testArc,
-                isConsignor = false,
+                testMovement,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel).futureValue,
+                helper.movementCard(Overview, testMovement)(consigneeRequest, messages, hc, ec).futureValue,
                 Seq.empty[TimelineEvent],
                 testMessageStatistics
-              ).toString()
+              )(consigneeRequest, messages).toString()
             )
 
             behave like pageWithExpectedElementsAndMessages(Seq(
@@ -141,7 +169,6 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               Selectors.actionLink(3) -> messagesForLanguage.actionLinkExplainDelay,
               Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess,
               Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
-
             ))
           }
 
@@ -152,7 +179,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               view(
                 testErn,
                 testArc,
-                isConsignor = false,
+                getMovementResponseModel,
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel).futureValue,
@@ -174,11 +201,12 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
         }
 
         "render the movement tab" when {
+
           implicit val doc: Document = Jsoup.parse(
             view(
               testErn,
               testArc,
-              isConsignor = false,
+              getMovementResponseModel,
               SubNavigationTab.values,
               Movement,
               helper.movementCard(Movement, getMovementResponseModel).futureValue,
@@ -219,7 +247,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               view(
                 testErn,
                 testArc,
-                isConsignor = true,
+                getMovementResponseModel,
                 SubNavigationTab.values,
                 Delivery,
                 helper.movementCard(Delivery, getMovementResponseModel).futureValue,

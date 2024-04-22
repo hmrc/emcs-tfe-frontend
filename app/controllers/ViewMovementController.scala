@@ -73,10 +73,11 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
     authorisedDataRequestAsync(exciseRegistrationNumber, viewMovementBetaGuard(exciseRegistrationNumber, arc)) { implicit request =>
       getMovementService.getLatestMovementForLoggedInUser(exciseRegistrationNumber, arc).flatMap { movement =>
         helper.movementCard(currentSubNavigationTab, movement).map { movementCard =>
+
           Ok(view(
             ern = exciseRegistrationNumber,
             arc = arc,
-            isConsignor = movement.consignorTrader.traderExciseNumber.fold(false)(_ == exciseRegistrationNumber),
+            movement = movement,
             subNavigationTabs = SubNavigationTab.values,
             currentSubNavigationTab = currentSubNavigationTab,
             movementTabBody = movementCard,

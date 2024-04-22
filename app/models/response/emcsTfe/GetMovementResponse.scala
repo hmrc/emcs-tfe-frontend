@@ -16,6 +16,7 @@
 
 package models.response.emcsTfe
 
+import models.MovementEadStatus
 import models.common._
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.ReportOfReceiptModel
@@ -31,7 +32,7 @@ case class GetMovementResponse(
                                 destinationType: DestinationType,
                                 localReferenceNumber: String,
                                 eadEsad: EadEsadModel,
-                                eadStatus: String,
+                                eadStatus: MovementEadStatus,
                                 deliveryPlaceTrader: Option[TraderModel],
                                 placeOfDispatchTrader: Option[TraderModel],
                                 firstTransporterTrader: Option[TransportTraderModel],
@@ -82,7 +83,7 @@ object GetMovementResponse {
     firstTransporterTrader <- (__ \ "firstTransporterTrader").readNullable[TransportTraderModel]
     deliveryPlaceCustomsOfficeReferenceNumber <- (__ \ "deliveryPlaceCustomsOfficeReferenceNumber").readNullable[String]
     localReferenceNumber <- (__ \ "localReferenceNumber").read[String]
-    eadStatus <- (__ \ "eadStatus").read[String]
+    eadStatus <- (__ \ "eadStatus").read[MovementEadStatus]
     dateOfDispatch <- (__ \ "dateOfDispatch").read[LocalDate]
     journeyTime <- (__ \ "journeyTime").read[String]
     documentCertificate <- (__ \ "documentCertificate").readNullable[Seq[DocumentCertificateModel]]

@@ -16,6 +16,7 @@
 
 package fixtures
 
+import models.MovementEadStatus.Accepted
 import models.common.AcceptMovement.Unsatisfactory
 import models.common.GuarantorType.Consignee
 import models.common.OriginType.TaxWarehouse
@@ -95,7 +96,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     destinationType = DestinationType.TaxWarehouse,
     localReferenceNumber = testLrn,
     eadEsad = eadEsadModel,
-    eadStatus = "Accepted",
+    eadStatus = Accepted,
     consignorTrader = TraderModel(
       traderExciseNumber = Some("GBRC345GTR145"),
       traderName = Some("Current 801 Consignor"),
