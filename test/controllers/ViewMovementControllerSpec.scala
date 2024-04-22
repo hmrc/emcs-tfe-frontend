@@ -30,7 +30,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.status
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.helpers.{TimelineHelper, ViewMovementActionsHelper}
+import viewmodels.helpers.TimelineHelper
 import views.html.viewMovement.ViewMovementView
 
 import scala.concurrent.Future
@@ -49,8 +49,7 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
     app.injector.instanceOf[ViewMovementView],
     app.injector.instanceOf[ErrorHandler],
     mockViewMovementHelper,
-    app.injector.instanceOf[TimelineHelper],
-    app.injector.instanceOf[ViewMovementActionsHelper]
+    app.injector.instanceOf[TimelineHelper]
   )(ec, appConfig)
 
   Seq(

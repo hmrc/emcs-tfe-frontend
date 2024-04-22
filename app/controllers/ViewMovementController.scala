@@ -23,7 +23,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GetMovementService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels._
-import viewmodels.helpers.{TimelineHelper, ViewMovementActionsHelper, ViewMovementHelper}
+import viewmodels.helpers.{TimelineHelper, ViewMovementHelper}
 import views.html.viewMovement.ViewMovementView
 
 import javax.inject.{Inject, Singleton}
@@ -38,8 +38,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        view: ViewMovementView,
                                        errorHandler: ErrorHandler,
                                        helper: ViewMovementHelper,
-                                       timelineHelper: TimelineHelper,
-                                       actionHelper: ViewMovementActionsHelper
+                                       timelineHelper: TimelineHelper
                                       )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc)
     with I18nSupport with AuthActionHelper {
@@ -78,14 +77,14 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
           Ok(view(
             ern = exciseRegistrationNumber,
             arc = arc,
+            movement = movement,
             subNavigationTabs = SubNavigationTab.values,
             currentSubNavigationTab = currentSubNavigationTab,
             movementTabBody = movementCard,
             historyEvents = movement.eventHistorySummary
               .map(timelineHelper.timeline(_))
               .getOrElse(Seq.empty[TimelineEvent]),
-            messageStatistics = request.messageStatistics,
-            actionLinksBody = actionHelper.movementActions(movement)
+            messageStatistics = request.messageStatistics
           ))
         }
       } recover {

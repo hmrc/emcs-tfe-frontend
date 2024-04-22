@@ -78,12 +78,12 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               view(
                 testErn,
                 testArc,
+                getMovementResponseModel,
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel).futureValue,
                 Seq.empty[TimelineEvent],
-                testMessageStatistics,
-                actionLinkHelper.movementActions(getMovementResponseModel)
+                testMessageStatistics
               ).toString()
             )
 
@@ -121,12 +121,12 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               view(
                 consignorErn,
                 testArc,
+                testMovement,
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, testMovement)(consignorRequest, messages, hc, ec).futureValue,
                 Seq.empty[TimelineEvent],
-                testMessageStatistics,
-                actionLinkHelper.movementActions(testMovement)(consignorRequest, messages)
+                testMessageStatistics
               )(consignorRequest, messages).toString()
             )
 
@@ -154,12 +154,12 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               view(
                 consigneeErn,
                 testArc,
+                testMovement,
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, testMovement)(consigneeRequest, messages, hc, ec).futureValue,
                 Seq.empty[TimelineEvent],
-                testMessageStatistics,
-                actionLinkHelper.movementActions(testMovement)(consigneeRequest, messages)
+                testMessageStatistics
               )(consigneeRequest, messages).toString()
             )
 
@@ -179,6 +179,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               view(
                 testErn,
                 testArc,
+                getMovementResponseModel,
                 SubNavigationTab.values,
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel).futureValue,
@@ -187,8 +188,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
                   TimelineEvent(eventType = "someEvent2", title = "Destination changed", dateTime = eventDate, url = s"event/someEvent2/id/2"),
                   TimelineEvent(eventType = "someEvent3", title = "Report of receipt submitted", dateTime = eventDate, url = s"event/someEvent3/id/3")
                 ),
-                testMessageStatistics,
-                actionLinkHelper.movementActions(getMovementResponseModel)
+                testMessageStatistics
               ).toString()
             )
 
@@ -206,12 +206,12 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
             view(
               testErn,
               testArc,
+              getMovementResponseModel,
               SubNavigationTab.values,
               Movement,
               helper.movementCard(Movement, getMovementResponseModel).futureValue,
               Seq.empty[TimelineEvent],
-              testMessageStatistics,
-              actionLinkHelper.movementActions(getMovementResponseModel)
+              testMessageStatistics
             ).toString()
           )
 
@@ -247,12 +247,12 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               view(
                 testErn,
                 testArc,
+                getMovementResponseModel,
                 SubNavigationTab.values,
                 Delivery,
                 helper.movementCard(Delivery, getMovementResponseModel).futureValue,
                 Seq.empty[TimelineEvent],
-                testMessageStatistics,
-                actionLinkHelper.movementActions(getMovementResponseModel)
+                testMessageStatistics
               ).toString()
             )
 
