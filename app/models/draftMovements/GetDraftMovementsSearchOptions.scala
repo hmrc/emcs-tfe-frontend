@@ -31,7 +31,7 @@ case class GetDraftMovementsSearchOptions(
                                            sortBy: DraftMovementSortingSelectOption = Newest,
                                            index: Int = DEFAULT_INDEX,
                                            maxRows: Int = DEFAULT_MAX_ROWS,
-                                           searchTerm: Option[String] = None,
+                                           searchValue: Option[String] = None,
                                            draftHasErrors: Option[Boolean] = None,
                                            destinationTypes: Option[Seq[DestinationType]] = None,
                                            dateOfDispatchFrom: Option[LocalDate] = None,
@@ -46,7 +46,7 @@ case class GetDraftMovementsSearchOptions(
     Some("search.sortOrder" -> sortBy.sortOrder),
     Some("search.startPosition" -> startingPosition.toString),
     Some("search.maxRows" -> maxRows.toString),
-    searchTerm.map(search => "search.searchTerm" -> search),
+    searchValue.map(search => "search.searchTerm" -> search),
     draftHasErrors.map(hasErrors => "search.draftHasErrors" -> hasErrors.toString),
     destinationTypes.map(_.map(destinationType => "search.destinationType" -> destinationType.toString)).getOrElse(Seq.empty),
     dateOfDispatchFrom.map(date => "search.dateOfDispatchFrom" -> date.toString),
@@ -79,7 +79,7 @@ object GetDraftMovementsSearchOptions extends Logging {
         Some(for {
           sortBy <- stringBinder.bind("sortBy", params).getOrElse(Right(Newest.code))
           index <- intBinder.bind("index", params).getOrElse(Right(DEFAULT_INDEX))
-          searchTerm <- stringBinder.bind("searchTerm", params).map(_.map(Some(_))).getOrElse(Right(None))
+          searchValue <- stringBinder.bind("searchValue", params).map(_.map(Some(_))).getOrElse(Right(None))
           draftHasErrors <- booleanBinder.bind("draftHasErrors", params).map(_.map(Some(_))).getOrElse(Right(None))
           destinationTypes <- destinationTypeBinder.bind("destinationType", params).map(_.map(Some(_))).getOrElse(Right(None))
           dateOfDispatchFrom <- stringBinder.bind("dateOfDispatchFrom", params).map(_.map(Some(_))).getOrElse(Right(None))
@@ -91,7 +91,7 @@ object GetDraftMovementsSearchOptions extends Logging {
               sortBy = DraftMovementSortingSelectOption(sortBy),
               index = index,
               maxRows = DEFAULT_MAX_ROWS,
-              searchTerm = searchTerm,
+              searchValue = searchValue,
               draftHasErrors = draftHasErrors,
               destinationTypes = destinationTypes,
               dateOfDispatchFrom = dateOfDispatchFrom.map(date => LocalDate.parse(date)),
@@ -112,7 +112,7 @@ object GetDraftMovementsSearchOptions extends Logging {
         Seq(
           Some(stringBinder.unbind("sortBy", searchOptions.sortBy.code)),
           Some(intBinder.unbind("index", searchOptions.index)),
-          searchOptions.searchTerm.map(searchTerm => stringBinder.unbind("searchTerm", searchTerm)),
+          searchOptions.searchValue.map(searchValue => stringBinder.unbind("searchValue", searchValue)),
           searchOptions.draftHasErrors.map(hasErrors => booleanBinder.unbind("draftHasErrors", hasErrors)),
           searchOptions.destinationTypes.map(destinationTypes => destinationTypeBinder.unbind("destinationType", destinationTypes)),
           searchOptions.dateOfDispatchFrom.map(date => stringBinder.unbind("dateOfDispatchFrom", date.toString)),
@@ -124,7 +124,7 @@ object GetDraftMovementsSearchOptions extends Logging {
 
   def apply(
              sortBy: String,
-             searchTerm: Option[String],
+             searchValue: Option[String],
              errors: Set[DraftMovementsErrorsOption],
              destinationTypes: Set[DestinationType],
              exciseProductCode: Option[String],
@@ -141,7 +141,7 @@ object GetDraftMovementsSearchOptions extends Logging {
       sortBy = DraftMovementSortingSelectOption(sortBy),
       index = DEFAULT_INDEX,
       maxRows = DEFAULT_MAX_ROWS,
-      searchTerm = searchTerm,
+      searchValue = searchValue,
       draftHasErrors = errors.headOption.map(_ == DraftHasErrors),
       destinationTypes = Option.when(destinationTypes.nonEmpty)(destinationTypes.toSeq),
       dateOfDispatchFrom = dateOfDispatchFrom,
@@ -161,7 +161,7 @@ object GetDraftMovementsSearchOptions extends Logging {
     )] = Some(
     (
       options.sortBy.code,
-      options.searchTerm,
+      options.searchValue,
       options.draftHasErrors.fold[Set[DraftMovementsErrorsOption]](Set.empty){
         case true => Set(DraftMovementsErrorsOption.DraftHasErrors)
         case _ => Set()

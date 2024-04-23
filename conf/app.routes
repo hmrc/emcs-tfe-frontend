@@ -24,8 +24,8 @@ GET        /trader/:ern/movement/:arc/item/:idx/details                         
 
 GET        /trader/:ern/account                                                           controllers.AccountHomeController.viewAccountHome(ern)
 
-GET        /trader/:ern/drafts                                                            controllers.drafts.ViewAllDraftMovementsController.onPageLoad(ern, searchOptions: GetDraftMovementsSearchOptions)
-POST       /trader/:ern/drafts                                                            controllers.drafts.ViewAllDraftMovementsController.onSubmit(ern, searchOptions: GetDraftMovementsSearchOptions)
+GET        /trader/:ern/draft-movements                                                  controllers.drafts.ViewAllDraftMovementsController.onPageLoad(ern, searchOptions: GetDraftMovementsSearchOptions)
+POST       /trader/:ern/draft-movements                                                  controllers.drafts.ViewAllDraftMovementsController.onSubmit(ern, searchOptions: GetDraftMovementsSearchOptions)
 
 GET        /trader/:ern/movements                                                         controllers.ViewAllMovementsController.onPageLoad(ern: String, search: MovementListSearchOptions)
 POST       /trader/:ern/movements                                                         controllers.ViewAllMovementsController.onSubmit(ern: String, search: MovementListSearchOptions)

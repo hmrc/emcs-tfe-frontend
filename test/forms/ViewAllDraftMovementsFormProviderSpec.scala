@@ -28,7 +28,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
   val form = new ViewAllDraftMovementsFormProvider()()
   val sortByKey = "sortBy"
-  val searchTerm = "searchTerm"
+  val searchValue = "searchValue"
   val exciseProductCode = "exciseProductCode"
   val draftHasErrors = "draftHasErrors[0]"
   val destinationTypes = (idx: Int) => s"destinationTypes[$idx]"
@@ -72,17 +72,17 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
     }
   }
 
-  ".searchTerm" should {
+  ".searchValue" should {
 
-    "bind when the searchTerm is present" in {
+    "bind when the searchValue is present" in {
 
       val expectedResult = GetDraftMovementsSearchOptions(
-        searchTerm = Some("searchTerm")
+        searchValue = Some("searchValue")
       )
 
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
-        searchTerm -> "searchTerm",
+        searchValue -> "searchValue",
       )).get
 
       actualResult mustBe expectedResult
@@ -91,12 +91,12 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
     "remove any non-alphanumerics from the form values" in {
 
       val expectedResult = GetDraftMovementsSearchOptions(
-        searchTerm = Some("searchTerm1injectingvirusesscriptalertscript")
+        searchValue = Some("searchValue1injectingvirusesscriptalertscript")
       )
 
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
-        searchTerm -> "searchTerm1/injecting-viruses!!!!<script>\"alert</script>"
+        searchValue -> "searchValue1/injecting-viruses!!!!<script>\"alert</script>"
       )).get
 
       actualResult mustBe expectedResult

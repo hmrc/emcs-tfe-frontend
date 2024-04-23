@@ -31,7 +31,7 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
     Form(
       mapping(
         ViewAllDraftMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
-        ViewAllDraftMovementsFormProvider.searchTerm -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllDraftMovementsFormProvider.searchValue -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllDraftMovementsFormProvider.draftHasErrors -> set(enumerable[DraftMovementsErrorsOption]()),
         ViewAllDraftMovementsFormProvider.destinationTypes -> set(enumerable[DestinationType]()),
         ViewAllDraftMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
@@ -54,7 +54,7 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
 object ViewAllDraftMovementsFormProvider {
 
   val sortByKey = "sortBy"
-  val searchTerm = "searchTerm"
+  val searchValue = "searchValue"
   val draftHasErrors = "draftHasErrors"
   val destinationTypes = "destinationTypes"
   val exciseProductCode = "exciseProductCode"
