@@ -1,0 +1,69 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.Select
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
+@import views.html.components._
+@import models.response.emcsTfe.draftMovement.DraftMovement
+@import viewmodels.draftMovements._
+@import config.AppConfig
+
+@this(
+    table: table,
+    h1: h1,
+    p: p,
+    appConfig: AppConfig,
+    govukButton: GovukButton,
+    govukPagination : GovukPagination,
+    govukSelect : GovukSelect,
+    helper: ViewAllDraftMovementsTableHelper
+)
+
+@(ern: String, movements: Seq[DraftMovement], selectItems: Seq[SelectItem], pagination: Option[Pagination])(implicit messages: Messages)
+
+    <div class="govuk-grid-column-two-thirds">
+
+        <div style="display: inline-flex; align-items: flex-end;">
+            @govukSelect(Select(
+              items = selectItems,
+              name = "sortBy",
+              id = "sortBy",
+              label = Label(
+                  content = Text(messages("viewAllMovements.sort.label")),
+                  classes = "govuk-!-display-inline govuk-!-padding-right-2"
+              ),
+            classes = "govuk-!-display-inline"
+            ))
+
+            @govukButton(
+                ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
+                    .withCssClass("govuk-!-margin-left-2")
+                    .withId("sortBySubmit")
+            )
+        </div>
+
+        @table(helper.constructTable(ern, movements))
+
+        @pagination.map{ paginationLinks =>
+            @govukPagination(paginationLinks)
+        }
+    </div>
+
+@{
+    //$COVERAGE-OFF$
+}

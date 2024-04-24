@@ -18,7 +18,6 @@ package models.response.emcsTfe.draftMovement
 
 import base.SpecBase
 import fixtures.DraftMovementsFixtures
-import play.api.libs.json.Json
 
 class GetDraftMovementsResponseSpec extends SpecBase with DraftMovementsFixtures {
 
@@ -26,26 +25,14 @@ class GetDraftMovementsResponseSpec extends SpecBase with DraftMovementsFixtures
 
     "given max values" should {
 
-      "write to Json" in {
-
-        Json.toJson(getDraftMovementsResponseModelMax) mustBe getDraftMovementsResponseJsonMax
-      }
-
       "read from Json" in {
-
         getDraftMovementsResponseJsonMax.as[GetDraftMovementsResponse] mustBe getDraftMovementsResponseModelMax
       }
     }
 
     "given min values" should {
 
-      "write to Json" in {
-
-        Json.toJson(getDraftMovementsResponseModelMin) mustBe getDraftMovementsResponseJsonMin
-      }
-
       "read from Json" in {
-
         getDraftMovementsResponseJsonMin.as[GetDraftMovementsResponse] mustBe getDraftMovementsResponseModelMin
       }
     }

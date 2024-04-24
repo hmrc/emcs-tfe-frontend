@@ -21,6 +21,7 @@ import controllers.routes
 import models.MovementFilterUndischargedOption.Undischarged
 import models.MovementListSearchOptions
 import models.common.RoleType._
+import models.draftMovements.GetDraftMovementsSearchOptions
 import models.messages.MessagesSearchOptions
 import models.requests.DataRequest
 import org.jsoup.Jsoup
@@ -95,7 +96,7 @@ class AccountHomeViewSpec extends SpecBase {
 
           if (roleType.isConsignor) {
             movementsLinks.get(2).text mustBe "Draft movements"
-            movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.DraftsController.onPageLoad(ern).url
+            movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
           } else {
             movementsLinks.text mustNot contain("Draft movements")
           }

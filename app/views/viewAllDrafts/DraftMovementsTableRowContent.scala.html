@@ -1,0 +1,64 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models.response.emcsTfe.draftMovement.DraftMovement
+@import views.html.components._
+@import config.AppConfig
+
+@this(
+        link: link,
+        p: p,
+        list: list,
+        govukTag: GovukTag,
+        appConfig: AppConfig
+)
+
+@(ern: String, movement: DraftMovement)(implicit messages: Messages)
+
+<div class="inbox">
+    <div>
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+            @link(
+                link = appConfig.emcsTfeCreateMovementTaskListUrl(ern, movement.draftId),
+                messageKey = movement.data.lrn,
+                classes = "govuk-heading-m govuk-link"
+            )
+        </h2>
+
+        @list(Seq(
+            movement.data.movementScenario.map(ms => Html(messages("viewAllDraftMovements.destination", messages(s"destinationType.${ms.destinationType}")))),
+            movement.data.consigneeReference.map(ref => Html(messages("viewAllDraftMovements.consignee", ref))),
+            movement.data.dispatchDate.map(d => Html(messages("viewAllDraftMovements.dateOfDispatch", d.formatDateForUIOutput())))
+        ).flatten)
+    </div>
+
+    <div class="govuk-!-text-align-right">
+
+        @p(){
+            @if(movement.hasErrors) {
+                @{govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.error"))).red())}
+            }
+            @{govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.draft"))).grey())}
+        }
+        @p("govuk-body-s"){
+            @messages("viewAllDraftMovements.lastUpdated", movement.lastUpdated.formatDateForUIOutput())
+        }
+    </div>
+</div>
+
+@{
+    //$COVERAGE-OFF$
+}

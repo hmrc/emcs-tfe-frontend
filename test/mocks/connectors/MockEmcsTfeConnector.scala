@@ -17,7 +17,8 @@
 package mocks.connectors
 
 import connectors.emcsTfe.{GetDraftMovementsConnector, GetMovementConnector, GetMovementListConnector}
-import models.{GetDraftMovementsSearchOptions, MovementListSearchOptions}
+import models.MovementListSearchOptions
+import models.draftMovements.GetDraftMovementsSearchOptions
 import models.response.ErrorResponse
 import models.response.emcsTfe.draftMovement.GetDraftMovementsResponse
 import models.response.emcsTfe.{GetMovementListResponse, GetMovementResponse}

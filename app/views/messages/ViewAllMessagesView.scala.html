@@ -102,9 +102,9 @@
 
         @tableHelper.constructTable(allMessages)
 
-        @govukPagination(
-            paginationHelper.constructPagination(totalNumberOfPages, request.ern, searchOptions)
-        )
+        @paginationHelper.constructPagination(totalNumberOfPages, request.ern, searchOptions).map { paginationLinks =>
+            @govukPagination(paginationLinks)
+        }
 
     </div>
 }

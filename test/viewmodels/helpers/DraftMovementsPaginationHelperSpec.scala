@@ -17,21 +17,18 @@
 package viewmodels.helpers
 
 import base.SpecBase
-import controllers.routes.ViewAllMovementsController.onPageLoad
-import fixtures.MovementListFixtures
-import models.MovementListSearchOptions
-import models.MovementSearchSelectOption.ARC
-import models.MovementSortingSelectOption.ArcAscending
+import controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad
+import models.draftMovements.GetDraftMovementsSearchOptions
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
-import viewmodels.MovementPaginationHelper
+import viewmodels.draftMovements.DraftMovementsPaginationHelper
 
-class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
+class DraftMovementsPaginationHelperSpec extends SpecBase {
 
-  object Helper extends MovementPaginationHelper()
+  object Helper extends DraftMovementsPaginationHelper()
 
   def baseOptions(index: Int) =
-    MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, None, None, None, None, None, None, None, None, None, index, 10)
+    GetDraftMovementsSearchOptions(index = index)
 
   def createPageItem(index: Int): PaginationItem = PaginationItem(
     href = onPageLoad(testErn, baseOptions(index)).url,
@@ -302,7 +299,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
 
       "the index is 1" must {
 
-        "return a Pagination model without a previous link or ellipsis and only page items [1, 2, ellipsis, 10]" in {
+        "return a Pagination model without a previous link or ellipsis and only page items [1, 2, ellipsis]" in {
 
           val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
@@ -327,7 +324,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
 
       "the index is 2" must {
 
-        "return a Pagination model without ellipsis and page items [1, 2, 3, ellipsis, 10]" in {
+        "return a Pagination model without ellipsis and page items [1, 2, 3, ellipsis]" in {
 
           val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
@@ -353,7 +350,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
 
       "the index is 3" must {
 
-        "return a Pagination model without ellipsis and page items [1, 2, 3, 4, ellipsis, 10]" in {
+        "return a Pagination model without ellipsis and page items [1, 2, 3, 4, ellipsis]" in {
 
           val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
@@ -380,7 +377,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
 
       "the index is 4" must {
 
-        "return a Pagination model without ellipsis and page items [1, 2, 3, 4, 5, ellipsis, 10]" in {
+        "return a Pagination model without ellipsis and page items [1, 2, 3, 4, 5, ellipsis]" in {
 
           val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
@@ -408,7 +405,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
 
       "the index is 5" must {
 
-        "return a Pagination model without ellipsis and page items [1, ellipsis, 4, 5, 6, ellipsis, 10]" in {
+        "return a Pagination model without ellipsis and page items [1, ellipsis, 4, 5, 6, ellipsis]" in {
 
           val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
@@ -436,7 +433,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
 
       "the index is 6" must {
 
-        "return a Pagination model without ellipsis and page items [1, ellipsis, 5, 6, 7, ellipsis, 10]" in {
+        "return a Pagination model without ellipsis and page items [1, ellipsis, 5, 6, 7, ellipsis]" in {
 
           val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
@@ -492,7 +489,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
 
       "the index is 8" must {
 
-        "return a Pagination model without ellipsis and page items [1, ellipsis, 7, 8, 9, 10]" in {
+        "return a Pagination model without ellipsis and page items [1, ellipsis, 7, 8, 9]" in {
 
           val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(
@@ -519,7 +516,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
 
       "the index is 9" must {
 
-        "return a Pagination model without ellipsis and page items [1, ellipsis, 8, 9, 10]" in {
+        "return a Pagination model without ellipsis and page items [1, ellipsis, 8, 9]" in {
 
           val expectedResult: Option[Pagination] = Some(Pagination(
             items = Some(Seq(

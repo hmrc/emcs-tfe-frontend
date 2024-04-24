@@ -16,18 +16,22 @@
 
 package models.response.emcsTfe.draftMovement
 
-import play.api.libs.json.{Format, JsObject, Json}
+import play.api.libs.json._
 
 import java.time.Instant
 
 case class DraftMovement(ern: String,
                          draftId: String,
-                         data: JsObject,
+                         data: Data,
                          submissionFailures: Seq[MovementSubmissionFailure],
                          lastUpdated: Instant,
                          hasBeenSubmitted: Boolean,
-                         submittedDraftId: Option[String])
+                         submittedDraftId: Option[String]) {
+
+  val hasErrors = submissionFailures.exists(!_.hasBeenFixed)
+}
 
 object DraftMovement {
-  implicit val format: Format[DraftMovement] = Json.format[DraftMovement]
+
+  implicit val reads: Reads[DraftMovement] = Json.reads
 }

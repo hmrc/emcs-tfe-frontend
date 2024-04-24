@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package viewmodels.helpers.messages
+package viewmodels.draftMovements
 
-import controllers.messages.routes
-import models.messages.MessagesSearchOptions
+import controllers.drafts.routes
+import models.draftMovements.GetDraftMovementsSearchOptions
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
-import utils.PaginationUtil
+import utils.{DateUtils, PaginationUtil}
 
 import javax.inject.Inject
 
-class MessagesPaginationHelper @Inject()() {
+class DraftMovementsPaginationHelper @Inject()() extends DateUtils {
 
-  def constructPagination(pageCount: Int, ern: String, search: MessagesSearchOptions): Option[Pagination] = {
+  def constructPagination(pageCount: Int, ern: String, search: GetDraftMovementsSearchOptions): Option[Pagination] = {
 
     val paginationHelper = new PaginationUtil {
-      override val link: Int => String = (index: Int) => routes.ViewAllMessagesController.onPageLoad(ern, search.copy(index = index)).url
+      override val link: Int => String = (index: Int) => routes.ViewAllDraftMovementsController.onPageLoad(ern, search.copy(index = index)).url
       override val currentPage: Int = search.index
       override val pages: Int = pageCount
     }

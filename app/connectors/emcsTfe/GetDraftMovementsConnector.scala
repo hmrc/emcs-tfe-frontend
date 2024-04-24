@@ -17,7 +17,7 @@
 package connectors.emcsTfe
 
 import config.AppConfig
-import models.GetDraftMovementsSearchOptions
+import models.draftMovements.GetDraftMovementsSearchOptions
 import models.response.emcsTfe.draftMovement.GetDraftMovementsResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class GetDraftMovementsConnector @Inject()(val http: HttpClient,
                                            config: AppConfig) extends EmcsTfeHttpParser[GetDraftMovementsResponse] {
 
-  override implicit val reads: Reads[GetDraftMovementsResponse] = GetDraftMovementsResponse.format
+  override implicit val reads: Reads[GetDraftMovementsResponse] = GetDraftMovementsResponse.reads
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 
