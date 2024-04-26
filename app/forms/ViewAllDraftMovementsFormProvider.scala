@@ -17,8 +17,7 @@
 package forms
 
 import forms.mappings.Mappings
-import models.common.DestinationType
-import models.draftMovements.GetDraftMovementsSearchOptions
+import models.draftMovements.{DestinationTypeSearchOption, GetDraftMovementsSearchOptions}
 import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, set}
 import viewmodels.draftMovements.DraftMovementsErrorsOption
@@ -33,7 +32,7 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
         ViewAllDraftMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
         ViewAllDraftMovementsFormProvider.searchValue -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllDraftMovementsFormProvider.draftHasErrors -> set(enumerable[DraftMovementsErrorsOption]()),
-        ViewAllDraftMovementsFormProvider.destinationTypes -> set(enumerable[DestinationType]()),
+        ViewAllDraftMovementsFormProvider.destinationTypes -> set(enumerable[DestinationTypeSearchOption]()),
         ViewAllDraftMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllDraftMovementsFormProvider.dateOfDispatchFrom -> optionalLocalDate(
           invalidKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.invalid",
