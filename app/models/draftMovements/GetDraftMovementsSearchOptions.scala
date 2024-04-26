@@ -17,7 +17,6 @@
 package models.draftMovements
 
 import models.SelectOptionModel
-import models.common.DestinationType
 import models.draftMovements.DraftMovementSortingSelectOption.Newest
 import models.draftMovements.GetDraftMovementsSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS}
 import play.api.mvc.QueryStringBindable
@@ -33,7 +32,7 @@ case class GetDraftMovementsSearchOptions(
                                            maxRows: Int = DEFAULT_MAX_ROWS,
                                            searchValue: Option[String] = None,
                                            draftHasErrors: Option[Boolean] = None,
-                                           destinationTypes: Option[Seq[DestinationType]] = None,
+                                           destinationTypes: Option[Seq[DestinationTypeSearchOption]] = None,
                                            dateOfDispatchFrom: Option[LocalDate] = None,
                                            dateOfDispatchTo: Option[LocalDate] = None,
                                            exciseProductCode: Option[String] = None
@@ -48,7 +47,7 @@ case class GetDraftMovementsSearchOptions(
     Some("search.maxRows" -> maxRows.toString),
     searchValue.map(search => "search.searchTerm" -> search),
     draftHasErrors.map(hasErrors => "search.draftHasErrors" -> hasErrors.toString),
-    destinationTypes.map(_.map(destinationType => "search.destinationType" -> destinationType.toString)).getOrElse(Seq.empty),
+    destinationTypes.map(_.map(destinationType => "search.destinationType" -> destinationType.destinationType.toString)).getOrElse(Seq.empty),
     dateOfDispatchFrom.map(date => "search.dateOfDispatchFrom" -> date.toString),
     dateOfDispatchTo.map(date => "search.dateOfDispatchTo" -> date.toString),
     exciseProductCode.map(code => "search.exciseProductCode" -> code)
@@ -71,7 +70,7 @@ object GetDraftMovementsSearchOptions extends Logging {
   implicit def queryStringBinder(implicit intBinder: QueryStringBindable[Int],
                                  stringBinder: QueryStringBindable[String],
                                  booleanBinder: QueryStringBindable[Boolean],
-                                 destinationTypeBinder: QueryStringBindable[Seq[DestinationType]]
+                                 destinationTypeBinder: QueryStringBindable[Seq[DestinationTypeSearchOption]]
                                 ): QueryStringBindable[GetDraftMovementsSearchOptions] =
     new QueryStringBindable[GetDraftMovementsSearchOptions] {
 
@@ -126,7 +125,7 @@ object GetDraftMovementsSearchOptions extends Logging {
              sortBy: String,
              searchValue: Option[String],
              errors: Set[DraftMovementsErrorsOption],
-             destinationTypes: Set[DestinationType],
+             destinationTypes: Set[DestinationTypeSearchOption],
              exciseProductCode: Option[String],
              dateOfDispatchFrom: Option[LocalDate],
              dateOfDispatchTo: Option[LocalDate]
@@ -154,7 +153,7 @@ object GetDraftMovementsSearchOptions extends Logging {
       String,
       Option[String],
       Set[DraftMovementsErrorsOption],
-      Set[DestinationType],
+      Set[DestinationTypeSearchOption],
       Option[String],
       Option[LocalDate],
       Option[LocalDate]
@@ -166,7 +165,7 @@ object GetDraftMovementsSearchOptions extends Logging {
         case true => Set(DraftMovementsErrorsOption.DraftHasErrors)
         case _ => Set()
       },
-      options.destinationTypes.fold[Set[DestinationType]](Set.empty)(_.toSet),
+      options.destinationTypes.fold[Set[DestinationTypeSearchOption]](Set.empty)(_.toSet),
       options.exciseProductCode,
       options.dateOfDispatchFrom,
       options.dateOfDispatchTo,

@@ -23,8 +23,8 @@
 @import views.html._
 @import views.html.components._
 @import views.html.viewAllMovements._
-@import models.common.DestinationType
 @import viewmodels.draftMovements._
+@import models.draftMovements.DestinationTypeSearchOption
 
 @this(
         layout: templates.Layout,
@@ -150,7 +150,7 @@
                                     isPageHeading = false
                                 ))
                             )),
-                            items = DestinationType.draftMovementsCheckboxItems("destinationType")
+                            items = DestinationTypeSearchOption.checkboxItems
                         ).withClasses(Seq("govuk-checkboxes--small"))
                     )
 

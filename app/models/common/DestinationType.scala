@@ -16,14 +16,6 @@
 
 package models.common
 
-import play.api.i18n.Messages
-import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import viewmodels.govuk.checkbox._
-
-import scala.util.Try
-
 
 sealed trait DestinationType
 
@@ -55,45 +47,4 @@ object DestinationType extends Enumerable.Implicits {
 
   implicit val enumerable: Enumerable[DestinationType] =
     Enumerable(values.map(v => v.toString -> v): _*)
-
-  def destinationType(code: String): DestinationType = values.find(_.toString == code) match {
-    case Some(value) => value
-    case None => throw new IllegalArgumentException(s"Destination code of '$code' could not be mapped to a valid Destination Type")
-  }
-
-  implicit def queryStringBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[Seq[DestinationType]] =
-    new QueryStringBindable[Seq[DestinationType]] {
-      override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, Seq[DestinationType]]] = {
-        params.get(key).map { destinationTypeCodes =>
-          Try(destinationTypeCodes.map(destinationType)).fold[Either[String, Seq[DestinationType]]](
-            e => Left(e.getMessage),
-            Right(_)
-          )
-        }
-      }
-
-      override def unbind(key: String, destinations: Seq[DestinationType]): String =
-        destinations.map(destinationType =>
-          stringBinder.unbind(key, destinationType.toString)
-        ).mkString("&")
-    }
-
-  def draftMovementsCheckboxItems(messageKeyPrefix: String)(implicit messages: Messages): Seq[CheckboxItem] = Seq(
-    TaxWarehouse,
-    RegisteredConsignee,
-    TemporaryRegisteredConsignee,
-    ExemptedOrganisation,
-    DirectDelivery,
-    UnknownDestination,
-    Export,
-    CertifiedConsignee,
-    TemporaryCertifiedConsignee
-  ).zipWithIndex.map { case (value, index) =>
-    CheckboxItemViewModel(
-      content = Text(messages(s"$messageKeyPrefix.${value.toString}")),
-      fieldId = "destinationTypes",
-      index = index,
-      value = value.toString
-    )
-  }
 }

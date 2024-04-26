@@ -190,7 +190,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           maxRows = 10,
           searchValue = Some("term"),
           draftHasErrors = Some(true),
-          destinationTypes = Some(Seq(DestinationType.TaxWarehouse)),
+          destinationTypes = Some(Seq(DestinationTypeSearchOption.TaxWarehouse)),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo),
           exciseProductCode = Some("exciseProductCode")
@@ -217,7 +217,6 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           "search.destinationType" -> DestinationType.UnknownDestination.toString,
           "search.destinationType" -> DestinationType.CertifiedConsignee.toString,
           "search.destinationType" -> DestinationType.TemporaryCertifiedConsignee.toString,
-          "search.destinationType" -> DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor.toString,
           "search.dateOfDispatchFrom" -> dateOfDispatchFrom.toString,
           "search.dateOfDispatchTo" -> dateOfDispatchTo.toString,
           "search.exciseProductCode" -> "exciseProductCode"
@@ -229,7 +228,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           maxRows = 10,
           searchValue = Some("term"),
           draftHasErrors = Some(true),
-          destinationTypes = Some(DestinationType.values),
+          destinationTypes = Some(DestinationTypeSearchOption.values),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo),
           exciseProductCode = Some("exciseProductCode")
@@ -258,7 +257,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           maxRows = 10,
           searchValue = Some("term"),
           draftHasErrors = Some(true),
-          destinationTypes = Some(Seq(DestinationType.TaxWarehouse)),
+          destinationTypes = Some(Seq(DestinationTypeSearchOption.TaxWarehouse)),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo),
           exciseProductCode = Some("exciseProductCode")
@@ -270,7 +269,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           "maxRows" -> Seq("10"),
           "searchValue" -> Seq("term"),
           "draftHasErrors" -> Seq("true"),
-          "destinationType" -> Seq(DestinationType.TaxWarehouse.toString),
+          "destinationType" -> Seq(DestinationTypeSearchOption.TaxWarehouse.toString),
           "dateOfDispatchFrom" -> Seq(dateOfDispatchFrom.toString),
           "dateOfDispatchTo" -> Seq(dateOfDispatchTo.toString),
           "exciseProductCode" -> Seq("exciseProductCode")
@@ -282,11 +281,11 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
       "multiple destination type parameters are supplied" in {
 
         val expectedResult = Some(Right(GetDraftMovementsSearchOptions(
-          destinationTypes = Some(DestinationType.values),
+          destinationTypes = Some(DestinationTypeSearchOption.values),
         )))
 
         val actualResult = GetDraftMovementsSearchOptions.queryStringBinder.bind("", Map(
-          "destinationType" -> DestinationType.values.map(_.toString)
+          "destinationType" -> DestinationTypeSearchOption.values.map(_.toString)
         ))
 
         actualResult mustBe expectedResult
@@ -302,7 +301,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           "index=1&" +
           "searchValue=term&" +
           "draftHasErrors=true&" +
-          s"destinationType=${DestinationType.TaxWarehouse.toString}&" +
+          s"destinationType=${DestinationTypeSearchOption.TaxWarehouse.toString}&" +
           s"dateOfDispatchFrom=${dateOfDispatchFrom.toString}&" +
           s"dateOfDispatchTo=${dateOfDispatchTo.toString}&" +
           "exciseProductCode=exciseProductCode"
@@ -313,7 +312,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           maxRows = 10,
           searchValue = Some("term"),
           draftHasErrors = Some(true),
-          destinationTypes = Some(Seq(DestinationType.TaxWarehouse)),
+          destinationTypes = Some(Seq(DestinationTypeSearchOption.TaxWarehouse)),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo),
           exciseProductCode = Some("exciseProductCode")
@@ -327,10 +326,10 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         val expectedResult =
           s"sortBy=${DraftMovementSortingSelectOption.Newest.toString}&" +
             "index=1&" +
-            DestinationType.values.map(destinationType => s"destinationType=$destinationType").mkString("&")
+            DestinationTypeSearchOption.values.map(destinationType => s"destinationType=$destinationType").mkString("&")
 
         val actualResult = GetDraftMovementsSearchOptions.queryStringBinder.unbind("", GetDraftMovementsSearchOptions(
-          destinationTypes = Some(DestinationType.values),
+          destinationTypes = Some(DestinationTypeSearchOption.values),
         ))
 
         actualResult mustBe expectedResult
@@ -345,7 +344,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           sortBy = DraftMovementSortingSelectOption.Oldest,
           searchValue = Some("search term"),
           draftHasErrors = Some(true),
-          destinationTypes = Some(Seq(DestinationType.TaxWarehouse)),
+          destinationTypes = Some(Seq(DestinationTypeSearchOption.TaxWarehouse)),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo),
           exciseProductCode = Some("exciseProductCode")
@@ -355,7 +354,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           sortBy = DraftMovementSortingSelectOption.Oldest.toString,
           searchValue = Some("search term"),
           errors = Set(DraftMovementsErrorsOption.DraftHasErrors),
-          destinationTypes = Set(DestinationType.TaxWarehouse),
+          destinationTypes = Set(DestinationTypeSearchOption.TaxWarehouse),
           exciseProductCode = Some("exciseProductCode"),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo)
@@ -370,7 +369,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           sortBy = DraftMovementSortingSelectOption.Oldest,
           searchValue = Some("search term"),
           draftHasErrors = Some(true),
-          destinationTypes = Some(Seq(DestinationType.TaxWarehouse)),
+          destinationTypes = Some(Seq(DestinationTypeSearchOption.TaxWarehouse)),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo),
           exciseProductCode = None
@@ -380,7 +379,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           sortBy = DraftMovementSortingSelectOption.Oldest.toString,
           searchValue = Some("search term"),
           errors = Set(DraftMovementsErrorsOption.DraftHasErrors),
-          destinationTypes = Set(DestinationType.TaxWarehouse),
+          destinationTypes = Set(DestinationTypeSearchOption.TaxWarehouse),
           exciseProductCode = Some(GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE.code),
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo)
@@ -398,7 +397,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           DraftMovementSortingSelectOption.Oldest.toString,
           Some("search term"),
           Set(DraftMovementsErrorsOption.DraftHasErrors),
-          Set(DestinationType.TaxWarehouse),
+          Set(DestinationTypeSearchOption.TaxWarehouse),
           Some("exciseProductCode"),
           Some(dateOfDispatchFrom),
           Some(dateOfDispatchTo)
@@ -409,7 +408,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
             sortBy = DraftMovementSortingSelectOption.Oldest,
             searchValue = Some("search term"),
             draftHasErrors = Some(true),
-            destinationTypes = Some(Seq(DestinationType.TaxWarehouse)),
+            destinationTypes = Some(Seq(DestinationTypeSearchOption.TaxWarehouse)),
             dateOfDispatchFrom = Some(dateOfDispatchFrom),
             dateOfDispatchTo = Some(dateOfDispatchTo),
             exciseProductCode = Some("exciseProductCode")

@@ -17,8 +17,7 @@
 package forms
 
 import base.SpecBase
-import models.common.DestinationType
-import models.draftMovements.{DraftMovementSortingSelectOption, GetDraftMovementsSearchOptions}
+import models.draftMovements.{DestinationTypeSearchOption, DraftMovementSortingSelectOption, GetDraftMovementsSearchOptions}
 import play.api.data.FormError
 import viewmodels.draftMovements.DraftMovementsErrorsOption
 
@@ -154,12 +153,12 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
     "bind when a single destinationTypes is selected" in {
 
       val expectedResult = GetDraftMovementsSearchOptions(
-        destinationTypes = Some(Seq(DestinationType.TaxWarehouse))
+        destinationTypes = Some(Seq(DestinationTypeSearchOption.TaxWarehouse))
       )
 
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
-        destinationTypes(0) -> DestinationType.TaxWarehouse.toString
+        destinationTypes(0) -> DestinationTypeSearchOption.TaxWarehouse.toString
       )).get
 
       actualResult mustBe expectedResult
@@ -169,15 +168,15 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val expectedResult = GetDraftMovementsSearchOptions(
         destinationTypes = Some(Seq(
-          DestinationType.TaxWarehouse,
-          DestinationType.CertifiedConsignee
+          DestinationTypeSearchOption.TaxWarehouse,
+          DestinationTypeSearchOption.CertifiedConsignee
         ))
       )
 
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
-        destinationTypes(0) -> DestinationType.TaxWarehouse.toString,
-        destinationTypes(1) -> DestinationType.CertifiedConsignee.toString
+        destinationTypes(0) -> DestinationTypeSearchOption.TaxWarehouse.toString,
+        destinationTypes(1) -> DestinationTypeSearchOption.CertifiedConsignee.toString
       )).get
 
       actualResult mustBe expectedResult
