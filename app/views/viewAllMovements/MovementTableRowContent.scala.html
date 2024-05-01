@@ -25,11 +25,11 @@
 
 @(ern: String, movement: GetMovementListItem, directionFilterOption: MovementFilterDirectionOption)(implicit messages: Messages)
 
-<h2 class="govuk-!-margin-bottom-0">
+<h2 class="govuk-heading-m">
     @link(
         link = movement.viewMovementUrl(ern).url,
         messageKey = movement.arc,
-        classes = "govuk-heading-m govuk-link"
+        classes = "govuk-link"
     )
 </h2>
 

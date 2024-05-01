@@ -168,7 +168,7 @@ object GetDraftMovementsSearchOptions extends Logging {
       options.destinationTypes.fold[Set[DestinationTypeSearchOption]](Set.empty)(_.toSet),
       options.exciseProductCode,
       options.dateOfDispatchFrom,
-      options.dateOfDispatchTo,
+      options.dateOfDispatchTo
     )
   )
 }

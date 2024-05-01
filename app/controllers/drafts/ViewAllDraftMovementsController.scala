@@ -26,8 +26,8 @@ import forms.ViewAllDraftMovementsFormProvider
 import models.draftMovements.GetDraftMovementsSearchOptions.DEFAULT_MAX_ROWS
 import models.draftMovements.{DraftMovementSortingSelectOption, GetDraftMovementsSearchOptions}
 import models.requests.DataRequest
+import models.response.ErrorResponse
 import models.response.emcsTfe.draftMovement.GetDraftMovementsResponse
-import models.response.{ErrorResponse, NotFoundError}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}

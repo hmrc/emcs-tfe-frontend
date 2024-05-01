@@ -30,11 +30,11 @@
 
 <div class="inbox">
     <div>
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+        <h2 class="govuk-heading-m">
             @link(
                 link = appConfig.emcsTfeCreateMovementTaskListUrl(ern, movement.draftId),
                 messageKey = movement.data.lrn,
-                classes = "govuk-heading-m govuk-link"
+                classes = "govuk-link"
             )
         </h2>
 
@@ -49,9 +49,9 @@
 
         @p(){
             @if(movement.hasErrors) {
-                @{govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.error"))).red())}
+                @govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.error"))).red())
             }
-            @{govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.draft"))).grey())}
+            @govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.draft"))).grey())
         }
         @p("govuk-body-s"){
             @messages("viewAllDraftMovements.lastUpdated", movement.lastUpdated.formatDateForUIOutput())
