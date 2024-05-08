@@ -28,8 +28,8 @@ import models.MovementSortingSelectOption.Newest
 import models._
 import models.draftMovements.{DraftMovementSortingSelectOption, GetDraftMovementsSearchOptions}
 import models.requests.DataRequest
+import models.response.UnexpectedDownstreamResponseError
 import models.response.emcsTfe.draftMovement.{DraftMovement, GetDraftMovementsResponse}
-import models.response.{NotFoundError, UnexpectedDownstreamResponseError}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.data.{Form, FormError}
 import play.api.http.Status
