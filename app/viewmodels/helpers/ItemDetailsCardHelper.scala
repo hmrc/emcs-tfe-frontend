@@ -45,6 +45,7 @@ class ItemDetailsCardHelper @Inject()(list: list, link: link, appConfig: AppConf
       degreePlatoRow(),
       fiscalMarkRow(),
       designationOfOriginRow(),
+      independentSmallProducersDeclarationRow(),
       sizeOfProducerRow(),
       brandNameOfProductRow(),
       commercialDescriptionRow(),
@@ -139,6 +140,15 @@ class ItemDetailsCardHelper @Inject()(list: list, link: link, appConfig: AppConf
         summaryListRowBuilder(
           Text(messages("itemDetails.key.designationOfOrigin")),
           Text(designation)
+        )
+    }
+
+  private def independentSmallProducersDeclarationRow()(implicit item: MovementItem, messages: Messages) =
+    item.independentSmallProducersDeclaration.map {
+      independentSmallProducersDeclaraton =>
+        summaryListRowBuilder(
+          Text(messages("itemDetails.key.independentSmallProducerDeclaration")),
+          Text(independentSmallProducersDeclaraton)
         )
     }
 

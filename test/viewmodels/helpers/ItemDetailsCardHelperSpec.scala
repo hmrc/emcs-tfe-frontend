@@ -114,6 +114,10 @@ class ItemDetailsCardHelperSpec extends SpecBase with ItemFixtures {
                 Text(item.designationOfOrigin.get)
               )),
               Seq(summaryListRowBuilder(
+                Text(langMessages.independentSmallProducersDeclarationKey),
+                Text(item.independentSmallProducersDeclaration.get)
+              )),
+              Seq(summaryListRowBuilder(
                 Text(langMessages.sizeOfProducerKey),
                 Text(langMessages.sizeOfProducerValue(item.sizeOfProducer.get))
               )),

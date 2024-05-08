@@ -39,6 +39,7 @@ object ItemDetailsMessages {
     val degreePlatoValue: BigDecimal => String
     val fiscalMarkKey: String
     val designationOfOriginKey: String
+    val independentSmallProducersDeclarationKey: String
     val sizeOfProducerKey: String
     val sizeOfProducerValue: String => String
     val commercialDescriptionKey: String
@@ -76,7 +77,8 @@ object ItemDetailsMessages {
     override val degreePlatoKey = "Degree Plato"
     override val degreePlatoValue: BigDecimal => String = value => s"$value&deg;P"
     override val fiscalMarkKey = "Fiscal marks"
-    override val designationOfOriginKey = "Protected designation of origin (PDO) or geographical indication (PDI)"
+    override val designationOfOriginKey = "Designation of origin"
+    override val independentSmallProducersDeclarationKey = "Independent small producer’s declaration"
     override val sizeOfProducerKey = "Size of producer"
     override val sizeOfProducerValue: String => String = value => s"$value hectolitres"
     override val commercialDescriptionKey = "Commercial description"
