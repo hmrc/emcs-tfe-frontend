@@ -39,10 +39,11 @@ class TimeoutControllerSpec extends SpecBase {
 
       "render the correct view" in {
 
-        val result = controller.onPageLoad()(request)
+        val result = controller.onPageLoad()(request.withSession("foo" -> "bar"))
 
         status(result) mustBe OK
         contentAsString(result) mustBe view().toString()
+        session(result).data mustBe empty
       }
     }
   }

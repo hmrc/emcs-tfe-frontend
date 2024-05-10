@@ -25,7 +25,7 @@ import javax.inject.Inject
 class TimeoutController @Inject()(mcc: MessagesControllerComponents, view: TimeoutView) extends FrontendController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = Action { implicit request =>
-    Ok(view())
+    Ok(view()).withNewSession
   }
 
 }
