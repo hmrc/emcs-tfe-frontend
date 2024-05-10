@@ -32,6 +32,7 @@ trait BaseMessages { _: i18n =>
   val remove = "Remove"
   val yes = "Yes"
   val no = "No"
+  val signIn = "Sign back in to EMCS"
 }
 
 trait BaseEnglish extends BaseMessages with EN {
