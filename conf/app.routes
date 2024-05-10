@@ -8,6 +8,8 @@ GET        /assets/*file                                                        
 
 GET        /refresh-session                                                               controllers.KeepAliveController.keepAlive()
 
+GET        /timeout                                                                       controllers.auth.TimeoutController.onPageLoad()
+
 GET        /                                                                              controllers.IndexController.exciseNumber()
 
 GET        /trader/:ern/movement/:arc/version/:ver/change-destination                     controllers.cod.ChangeOfDestinationController.onPageLoad(ern, arc, ver: Int)
