@@ -19,7 +19,7 @@ package forms
 import forms.mappings.Mappings
 import models.draftMovements.{DestinationTypeSearchOption, GetDraftMovementsSearchOptions}
 import play.api.data.Form
-import play.api.data.Forms.{mapping, optional, set}
+import play.api.data.Forms.{mapping, optional, set, text => playText}
 import viewmodels.draftMovements.DraftMovementsErrorsOption
 
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
     Form(
       mapping(
         ViewAllDraftMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
-        ViewAllDraftMovementsFormProvider.searchValue -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllDraftMovementsFormProvider.searchValue -> optional(playText()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllDraftMovementsFormProvider.draftHasErrors -> set(enumerable[DraftMovementsErrorsOption]()),
         ViewAllDraftMovementsFormProvider.destinationTypes -> set(enumerable[DestinationTypeSearchOption]()),
         ViewAllDraftMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),

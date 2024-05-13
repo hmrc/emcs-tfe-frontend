@@ -19,7 +19,7 @@ package forms
 import forms.mappings.Mappings
 import models._
 import play.api.data.Form
-import play.api.data.Forms.{mapping, optional, set}
+import play.api.data.Forms.{mapping, optional, set, text => playText}
 
 import javax.inject.Inject
 
@@ -28,8 +28,8 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
   def apply(): Form[MovementListSearchOptions] =
     Form(
       mapping(
-        ViewAllMovementsFormProvider.searchKey -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
-        ViewAllMovementsFormProvider.searchValue -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllMovementsFormProvider.searchKey -> optional(playText()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllMovementsFormProvider.searchValue -> optional(playText()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
         ViewAllMovementsFormProvider.traderRole -> set(enumerable[MovementFilterDirectionOption]()),
         ViewAllMovementsFormProvider.undischarged -> set(enumerable[MovementFilterUndischargedOption]()),

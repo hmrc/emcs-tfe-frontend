@@ -25,6 +25,7 @@
 @import views.html.viewAllMovements._
 @import viewmodels.draftMovements._
 @import models.draftMovements.DestinationTypeSearchOption
+@import forms.ViewAllDraftMovementsFormProvider._
 
 @this(
         layout: templates.Layout,
@@ -56,16 +57,16 @@
 
 @searchFields = {
 
-@p() {
-    @messages("viewAllDraftMovements.search.p1")
-}
+    @p(id = Some("search-hint")) {
+        @messages("viewAllDraftMovements.search.p1")
+    }
 
     <div class="hmrc-search-group-wrapper">
         <div class="govuk-grid-column-one-half hmrc-search-group">
 
         @govukInput(
             InputViewModel(
-                field = form("searchValue"),
+                field = form(searchValue),
                 label = LabelViewModel(Text(messages("viewAllDraftMovements.search.heading"))).hidden
             ).withCssClass("govuk-input--width-30").withInputType("search")
         )
@@ -110,15 +111,14 @@
                 isPageHeading = false
             )),
             classes = "govuk-!-margin-bottom-2",
-            html = searchFields
+            html = searchFields,
+            describedBy = Some("search-hint")
         ))
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-third govuk-!-padding-0">
-                <aside style="border: 1px solid #b1b4b6;
-                    padding: 15px">
-
-                    @h2("Filters", "govuk-heading-m")
+                <aside class="filter-panel">
+                    @h2("viewAllDraftMovements.filters.heading", "govuk-heading-m")
                     @govukButton(
                         ButtonViewModel(Text(messages("viewAllDraftMovements.filters.button")))
                         .withId("filtersButton")
@@ -127,7 +127,7 @@
                     @govukCheckboxes(
                         CheckboxesViewModel(
                             form = form,
-                            name = "draftHasErrors",
+                            name = draftHasErrors,
                             fieldset = Some(Fieldset(
                                 legend = Some(Legend(
                                     content = Text(messages("viewAllDraftMovements.filters.errors.heading")),
@@ -142,7 +142,7 @@
                     @govukCheckboxes(
                         CheckboxesViewModel(
                             form = form,
-                            name = "destinationTypes",
+                            name = destinationTypes,
                             fieldset = Some(Fieldset(
                                 legend = Some(Legend(
                                     content = Text(messages("viewAllDraftMovements.filters.destinationType.heading")),
@@ -156,17 +156,17 @@
 
                     @govukSelect(Select(
                         items = exciseItems,
-                        name = "exciseProductCode",
-                        id = "exciseProductCode",
+                        name = exciseProductCode,
+                        id = exciseProductCode,
                         label = LabelViewModel(
                             content = Text(messages("viewAllDraftMovements.filters.exciseProduct.heading"))
                         ).withCssClass("govuk-label--s")
                     ))
 
-                    @defining(form.errors.find(_.key == "dateOfDispatchFrom").map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
+                    @defining(form.errors.find(_.key == dateOfDispatchFrom).map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
                         @govukDateInput(
                             DateViewModel(
-                                field = form("dateOfDispatchFrom"),
+                                field = form(dateOfDispatchFrom),
                                 legend = Legend(
                                     content = Text(messages("viewAllDraftMovements.filters.dispatchFrom.heading")),
                                     classes = "govuk-fieldset__legend--s",
@@ -177,10 +177,10 @@
                         )
                     }
 
-                    @defining(form.errors.find(_.key == "dateOfDispatchTo").map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
+                    @defining(form.errors.find(_.key == dateOfDispatchTo).map(_.args.map(_.toString)).getOrElse(Seq())) { erroredFields =>
                         @govukDateInput(
                             DateViewModel(
-                                field = form("dateOfDispatchTo"),
+                                field = form(dateOfDispatchTo),
                                 legend = Legend(
                                     content = Text(messages("viewAllDraftMovements.filters.dispatchTo.heading")),
                                     classes = "govuk-fieldset__legend--s",
