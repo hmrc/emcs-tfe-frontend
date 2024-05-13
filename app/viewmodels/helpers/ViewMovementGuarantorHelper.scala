@@ -50,7 +50,7 @@ class ViewMovementGuarantorHelper @Inject()(h2: h2,
       case Consignor | Transporter | Owner | Consignee => HtmlFormat.fill(Seq(
         overviewPartial(
           headingMessageKey = Some("viewMovement.guarantor.title"),
-          cardTitleMessageKey = "viewMovement.guarantor.summary",
+          cardTitleMessageKey = None,
           summaryListRows = Seq(
             Some(guarantorArranger),
             guarantorBusinessName,

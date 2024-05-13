@@ -20,13 +20,15 @@ import models.response.emcsTfe.GetMovementResponse
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import viewmodels.helpers.SummaryListHelper._
+import views.html.components.h2
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class ViewMovementDeliveryHelper @Inject()(
-                                            overviewPartial: overview_partial
+                                            overviewPartial: overview_partial,
+                                            h2: h2
                                           ) {
 
   def constructMovementDelivery(movementResponse: GetMovementResponse)(implicit messages: Messages): Html = {
@@ -61,30 +63,35 @@ class ViewMovementDeliveryHelper @Inject()(
     }
 
     HtmlFormat.fill(Seq(
+      h2("viewMovement.delivery.title", "govuk-heading-l"),
       overviewPartial(
-        headingMessageKey = Some("viewMovement.delivery.title"),
-        cardTitleMessageKey = "viewMovement.delivery.consignor",
-        consignorSummaryCards.flatten
+        headingMessageKey = Some("viewMovement.delivery.consignor"),
+        headingMessageClass = "govuk-heading-m",
+        cardTitleMessageKey = None,
+        summaryListRows = consignorSummaryCards.flatten
       ),
       optPlaceOfDispatchSummaryCards.map { placeOfDispatchSummaryCards =>
         overviewPartial(
-          headingMessageKey = None,
-          cardTitleMessageKey = "viewMovement.delivery.placeOfDispatch",
-          placeOfDispatchSummaryCards.flatten
+          headingMessageKey = Some("viewMovement.delivery.placeOfDispatch"),
+          headingMessageClass = "govuk-heading-m",
+          cardTitleMessageKey = None,
+          summaryListRows = placeOfDispatchSummaryCards.flatten
         )
       }.getOrElse(Html("")),
       optConsigneeSummaryCards.map { consigneeSummaryCards =>
         overviewPartial(
-          headingMessageKey = None,
-          cardTitleMessageKey = "viewMovement.delivery.consignee",
-          consigneeSummaryCards.flatten
+          headingMessageKey = Some("viewMovement.delivery.consignee"),
+          headingMessageClass = "govuk-heading-m",
+          cardTitleMessageKey = None,
+          summaryListRows = consigneeSummaryCards.flatten
         )
       }.getOrElse(Html("")),
       optPlaceOfDestinationCards.map { placeOfDestinationCards =>
         overviewPartial(
-          headingMessageKey = None,
-          cardTitleMessageKey = "viewMovement.delivery.placeOfDestination",
-          placeOfDestinationCards.flatten
+          headingMessageKey = Some("viewMovement.delivery.placeOfDestination"),
+          headingMessageClass = "govuk-heading-m",
+          cardTitleMessageKey = None,
+          summaryListRows = placeOfDestinationCards.flatten
         )
       }.getOrElse(Html(""))
     ))

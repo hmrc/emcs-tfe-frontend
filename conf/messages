@@ -170,6 +170,8 @@ viewMovement.transport.transportUnit.commercialSeal = Commercial seal
 viewMovement.transport.transportUnit.complementaryInformation = Complementary information
 viewMovement.transport.transportUnit.sealInformation = Seal information
 viewMovement.transport.transportUnit.notProvided = Not provided
+viewMovement.transport.firstTransporter = First transporter
+viewMovement.transport.transportUnits = Transport units
 
 transportType.container = Container
 transportType.vehicle = Vehicle

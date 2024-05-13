@@ -22,14 +22,19 @@
         summaryCard: summaryCard
 )
 
-@(headingMessageKey: Option[String], cardTitleMessageKey: String, summaryListRows: Seq[SummaryListRow])(implicit messages: Messages)
+@(
+        headingMessageKey: Option[String],
+        cardTitleMessageKey: Option[String],
+        summaryListRows: Seq[SummaryListRow],
+        headingMessageClass: String = "govuk-heading-l"
+)(implicit messages: Messages)
 
 @if(headingMessageKey.isDefined) {
- @h2(messages(headingMessageKey.get), "govuk-heading-l")
+ @h2(messages(headingMessageKey.get), headingMessageClass)
 }
 
 @summaryCard(
-    Card(Some(CardTitle(Text(messages(cardTitleMessageKey))))),
+    cardTitleMessageKey.map(msgKey => Card(Some(CardTitle(Text(messages(msgKey)))))),
     summaryListRows
 )
 

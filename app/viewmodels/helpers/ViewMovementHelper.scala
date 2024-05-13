@@ -103,7 +103,7 @@ class ViewMovementHelper @Inject()(
       Seq(
         overviewPartial(
           headingMessageKey = Some("viewMovement.movement.title"),
-          cardTitleMessageKey = "viewMovement.movement.summary",
+          cardTitleMessageKey = None,
           summaryListRows = Seq(
             Some(localReferenceNumber),
             eadStatus,
@@ -113,8 +113,9 @@ class ViewMovementHelper @Inject()(
           ).flatten
         ),
         overviewPartial(
-          headingMessageKey = None,
-          cardTitleMessageKey = "viewMovement.movement.timeAndDate",
+          headingMessageKey = Some("viewMovement.movement.timeAndDate"),
+          headingMessageClass = "govuk-heading-m",
+          cardTitleMessageKey = None,
           summaryListRows = Seq(
             Some(dateOfDispatch),
             timeOfDispatch,
@@ -122,8 +123,9 @@ class ViewMovementHelper @Inject()(
           ).flatten
         ),
         overviewPartial(
-          headingMessageKey = None,
-          cardTitleMessageKey = "viewMovement.movement.invoice",
+          headingMessageKey = Some("viewMovement.movement.invoice"),
+          headingMessageClass = "govuk-heading-m",
+          cardTitleMessageKey = None,
           summaryListRows = Seq(
             Some(invoiceNumber),
             invoiceDateOfIssue

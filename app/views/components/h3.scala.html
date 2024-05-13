@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,16 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components._
+@this()
 
-@this(govukSummaryList: GovukSummaryList)
+@(msg: String, classes: String = "govuk-heading-m", id: Option[String] = None, hiddenContent: Option[String] = None)(implicit messages: Messages)
 
-@(
-        card: Option[Card],
-        summaryListRows: Seq[SummaryListRow]
-)
+<h3 @id.map(value => s"id=$value") class="@classes">
+ @hiddenContent.map { content =>
+  <span class="govuk-visually-hidden">@messages(content)</span>
+ } @messages(msg)
+</h3>
 
-@govukSummaryList(SummaryList(summaryListRows, card))
-
-@{
-    //$COVERAGE-OFF$
-}
+ @{
+  //$COVERAGE-OFF$
+ }

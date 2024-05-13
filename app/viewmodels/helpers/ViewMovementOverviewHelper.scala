@@ -64,7 +64,7 @@ class ViewMovementOverviewHelper @Inject()(list: list,
 
     overviewPartial(
       headingMessageKey = Some("viewMovement.overview.title"),
-      cardTitleMessageKey = "viewMovement.overview.title",
+      cardTitleMessageKey = None,
       summaryListRows = Seq(
         Some(localReferenceNumber),
         Some(eadStatus),
