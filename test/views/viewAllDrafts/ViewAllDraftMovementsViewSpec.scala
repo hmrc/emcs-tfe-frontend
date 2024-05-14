@@ -22,6 +22,7 @@ import fixtures.messages.ViewAllDraftMovementsMessages.English
 import forms.ViewAllDraftMovementsFormProvider
 import models.draftMovements.{DraftMovementSortingSelectOption, GetDraftMovementsSearchOptions}
 import models.requests.DataRequest
+import models.response.emcsTfe.draftMovement.DraftMovement
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
@@ -58,6 +59,9 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
 
     def hiddenInputSearchSelectOption(value: String) = s"#searchKey > option[value=$value]"
 
+    val skipToResultsLink: String = "#skip-to-results-link"
+    val numberOfResultsFound: String = "#number-of-results-found"
+
     private val filtersSection = "aside"
     val filtersHeading: String = s"$filtersSection h2"
     val filtersButton: String = s"$filtersSection button"
@@ -89,12 +93,14 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
 
   lazy val table: table = app.injector.instanceOf[table]
 
-  def asDocument(pagination: Option[Pagination])
+  lazy val twoDraftMovements = Seq(draftMovementModelMax, draftMovementModelMin)
+
+  def asDocument(pagination: Option[Pagination], movements: Seq[DraftMovement] = twoDraftMovements)
                 (implicit messages: Messages): Document = Jsoup.parse(view(
     form = formProvider(),
     action = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad("ern", GetDraftMovementsSearchOptions()),
     ern = testErn,
-    movements = Seq(draftMovementModelMax, draftMovementModelMin),
+    movements = movements,
     sortSelectItems = DraftMovementSortingSelectOption.constructSelectItems(),
     exciseItems = SelectItemHelper.constructSelectItems(Seq(GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE), None),
     pagination = pagination
@@ -115,6 +121,9 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
         Selectors.searchText -> English.searchText,
         Selectors.hiddenSearchBoxLabel -> English.searchInputHiddenLabel,
         Selectors.searchButton -> English.searchButton,
+
+        Selectors.skipToResultsLink -> English.skipToResults,
+        Selectors.numberOfResultsFound -> English.resultsFound(twoDraftMovements.size),
 
         Selectors.filtersHeading -> English.filtersHeading,
         Selectors.filtersButton -> English.filtersButton,
@@ -157,6 +166,15 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
       "have the correct links the draft movement" in {
         doc.select(Selectors.headingLinkRow).attr("href") mustEqual appConfig.emcsTfeCreateMovementTaskListUrl(testErn, testDraftId)
       }
+
+      "show that there are no search results found" when {
+        implicit val doc: Document = asDocument(None, Seq())
+
+        behave like pageWithExpectedElementsAndMessages(Seq(
+          Selectors.skipToResultsLink -> English.skipToResults,
+          Selectors.numberOfResultsFound -> English.noResultsFound
+        ))
+      }
     }
 
     s"being rendered for with pagination" when {
@@ -178,6 +196,8 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
         Selectors.searchText -> English.searchText,
         Selectors.hiddenSearchBoxLabel -> English.searchInputHiddenLabel,
         Selectors.searchButton -> English.searchButton,
+        Selectors.skipToResultsLink -> English.skipToResults,
+        Selectors.numberOfResultsFound -> English.resultsFound(twoDraftMovements.size),
         Selectors.label("sortBy") -> English.sortByLabel,
         Selectors.sortBySelectOption(1) -> English.sortLrnAscending,
         Selectors.sortBySelectOption(2) -> English.sortLrnDescending,
@@ -197,6 +217,15 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
         doc.select(Selectors.paginationLink(3)).attr("href") mustBe "link-3"
         doc.select(Selectors.nextLink).text() mustBe English.next
         doc.select(Selectors.nextLink).attr("href") mustBe "next-link"
+      }
+
+      "show that there are no search results found" when {
+        implicit val doc: Document = asDocument(None, Seq())
+
+        behave like pageWithExpectedElementsAndMessages(Seq(
+          Selectors.skipToResultsLink -> English.skipToResults,
+          Selectors.numberOfResultsFound -> English.noResultsFound
+        ))
       }
     }
   }
