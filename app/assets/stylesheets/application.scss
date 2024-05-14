@@ -18,6 +18,10 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
     display: flex;
     align-items: flex-end;
   }
+
+  .results-column {
+    padding-top: 15px;
+  }
 }
 
 .hmrc-search-group {
@@ -67,5 +71,13 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
 .filter-panel {
   border: 1px solid #b1b4b6;
   padding: 15px;
+}
+
+.filter-column .govuk-select {
+  min-width: unset;
+}
+
+.movement-heading {
+  word-wrap: break-word;
 }
 
