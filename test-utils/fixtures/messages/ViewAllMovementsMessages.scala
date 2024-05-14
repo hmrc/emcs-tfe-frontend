@@ -41,6 +41,10 @@ object ViewAllMovementsMessages {
     val searchSelectTransporter = "Transporter"
     val searchButton = "Search"
 
+    val skipToResults = "Skip to results"
+    def resultsFound(num: Int): String = s"$num results found"
+    val noResultsFound = "No results found"
+
     val filtersHeading = "Filters"
     val filtersButton = "Apply filters"
     val filtersDirection = "Direction"

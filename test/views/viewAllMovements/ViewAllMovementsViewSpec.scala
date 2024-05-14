@@ -24,6 +24,7 @@ import forms.ViewAllMovementsFormProvider
 import models.MovementFilterDirectionOption.{All, GoodsIn, GoodsOut}
 import models._
 import models.requests.DataRequest
+import models.response.emcsTfe.GetMovementListResponse
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
@@ -101,6 +102,9 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     val filtersReceiptedToDay: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label[for$$=day]"
     val filtersReceiptedToMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label[for$$=month]"
     val filtersReceiptedToYear: String = s"$filtersSection .govuk-form-group:nth-of-type(9) label[for$$=year]"
+
+    val skipToResultsLink: String = "#skip-to-results-link"
+    val numberOfResultsFound: String = "#number-of-results-found"
   }
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/movements")
@@ -114,12 +118,12 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
 
   lazy val table: table = app.injector.instanceOf[table]
 
-  def asDocument(pagination: Option[Pagination], direction: MovementFilterDirectionOption = All)
+  def asDocument(pagination: Option[Pagination], direction: MovementFilterDirectionOption = All, movementListResponse: GetMovementListResponse = getMovementListResponse)
                 (implicit messages: Messages): Document = Jsoup.parse(view(
     form = formProvider(),
     action = routes.ViewAllMovementsController.onPageLoad("ern", MovementListSearchOptions()),
     ern = testErn,
-    movements = getMovementListResponse.movements,
+    movementListResponse = movementListResponse,
     sortSelectItems = MovementSortingSelectOption.constructSelectItems(),
     searchSelectItems = MovementSearchSelectOption.constructSelectItems(),
     movementStatusItems = MovementFilterStatusOption.selectItems(None),
@@ -149,6 +153,9 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.hiddenInputSearchSelectOption("otherTraderId") -> English.searchSelectERN,
         Selectors.hiddenInputSearchSelectOption("transporterTraderName") -> English.searchSelectTransporter,
         Selectors.searchButton -> English.searchButton,
+
+        Selectors.skipToResultsLink -> English.skipToResults,
+        Selectors.numberOfResultsFound -> English.resultsFound(getMovementListResponse.movements.size),
 
         Selectors.filtersHeading -> English.filtersHeading,
         Selectors.filtersButton -> English.filtersButton,
@@ -236,6 +243,14 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         }
       }
 
+      "show that there are no search results found" when {
+        implicit val doc: Document = asDocument(None, movementListResponse = GetMovementListResponse(Seq(), 0))
+
+        behave like pageWithExpectedElementsAndMessages(Seq(
+          Selectors.skipToResultsLink -> English.skipToResults,
+          Selectors.numberOfResultsFound -> English.noResultsFound
+        ))
+      }
     }
 
     s"being rendered for with pagination" when {
@@ -262,6 +277,10 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.hiddenInputSearchSelectOption("otherTraderId") -> English.searchSelectERN,
         Selectors.hiddenInputSearchSelectOption("transporterTraderName") -> English.searchSelectTransporter,
         Selectors.searchButton -> English.searchButton,
+
+        Selectors.skipToResultsLink -> English.skipToResults,
+        Selectors.numberOfResultsFound -> English.resultsFound(getMovementListResponse.movements.size),
+
         Selectors.label("sortBy") -> English.sortByLabel,
         Selectors.sortBySelectOption(1) -> English.sortArcAscending,
         Selectors.sortBySelectOption(2) -> English.sortArcDescending,
@@ -301,6 +320,15 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         doc.select(Selectors.paginationLink(2)).attr("href") mustBe "link-2"
         doc.select(Selectors.paginationLink(3)).attr("href") mustBe "link-3"
         doc.select(Selectors.nextLink).attr("href") mustBe "next-link"
+      }
+
+      "show that there are no search results found" when {
+        implicit val doc: Document = asDocument(None, movementListResponse = GetMovementListResponse(Seq(), 0))
+
+        behave like pageWithExpectedElementsAndMessages(Seq(
+          Selectors.skipToResultsLink -> English.skipToResults,
+          Selectors.numberOfResultsFound -> English.noResultsFound
+        ))
       }
     }
   }

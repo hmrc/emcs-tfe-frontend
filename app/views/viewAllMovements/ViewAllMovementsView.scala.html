@@ -16,7 +16,7 @@
 
 @import forms.ViewAllMovementsFormProvider._
 @import models.requests.DataRequest
-@import models.response.emcsTfe.GetMovementListItem
+@import models.response.emcsTfe.GetMovementListResponse
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
@@ -39,15 +39,17 @@
         govukButton: GovukButton,
         govukFieldset: GovukFieldset,
         govukCheckboxes: GovukCheckboxes,
+        govukSkipLink: GovukSkipLink,
         movementList: MovementsList,
         helper: ViewAllMovementsTableHelper
 )
+
 
 @(
         form: Form[_],
         action: Call,
         ern: String,
-        movements: Seq[GetMovementListItem],
+        movementListResponse: GetMovementListResponse,
         sortSelectItems: Seq[SelectItem],
         searchSelectItems: Seq[SelectItem],
         movementStatusItems: Seq[SelectItem],
@@ -125,6 +127,8 @@
             html = searchFields,
             describedBy = Some("search-hint")
         ))
+
+        @govukSkipLink(SkipLink(href = "#search-results", content = "site.skip.to.results", attributes = Map("id" -> "skip-to-results-link")))
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-third govuk-!-padding-0">
@@ -250,7 +254,7 @@
                 </aside>
             </div>
 
-            @movementList(ern, movements, sortSelectItems, pagination, directionFilterOption)
+            @movementList(ern, movementListResponse, sortSelectItems, pagination, directionFilterOption)
         </div>
     }
 }

@@ -103,12 +103,13 @@ class ViewAllMovementsControllerSpec extends SpecBase
   }
 
   private def buildView(searchOptions: MovementListSearchOptions,
+                        movementListResponse: GetMovementListResponse,
                         form: Form[MovementListSearchOptions])(implicit request: DataRequest[_]): Html =
     view(
       form = form,
       action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
       ern = testErn,
-      movements = movements,
+      movementListResponse = movementListResponse,
       sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
       searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
       movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
@@ -118,11 +119,11 @@ class ViewAllMovementsControllerSpec extends SpecBase
       directionFilterOption = All
     )
 
-  private def successView(searchOptions: MovementListSearchOptions)(implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, formProvider())
+  private def successView(searchOptions: MovementListSearchOptions, movementListResponse: GetMovementListResponse = threePageMovementListResponse)(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, movementListResponse, formProvider())
 
-  private def viewWithErrors(searchOptions: MovementListSearchOptions)(implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, formProvider().withError(FormError("sortBy", Seq("error.required"))))
+  private def viewWithErrors(searchOptions: MovementListSearchOptions, movementListResponse: GetMovementListResponse = threePageMovementListResponse)(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, movementListResponse, formProvider().withError(FormError("sortBy", Seq("error.required"))))
 
   "GET /" when {
 
@@ -252,10 +253,11 @@ class ViewAllMovementsControllerSpec extends SpecBase
         "show the correct view and pagination when movement count is 1 above a multiple of the pageCount" in new Test {
 
           val searchOptions = MovementListSearchOptions(index = 3)
+          val movementListResponse: GetMovementListResponse = GetMovementListResponse(movements, 31)
 
           MockEmcsTfeConnector
             .getMovementList(testErn, Some(searchOptions))
-            .returns(Future.successful(Right(GetMovementListResponse(movements, 31))))
+            .returns(Future.successful(Right(movementListResponse)))
 
           MockGetExciseProductCodesConnector
             .getExciseProductCodes()
@@ -270,16 +272,17 @@ class ViewAllMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions)
+          Html(contentAsString(result)) mustBe successView(searchOptions, movementListResponse)
         }
 
         "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in new Test {
 
           val searchOptions = MovementListSearchOptions(index = 3)
+          val movementListResponse: GetMovementListResponse = GetMovementListResponse(movements, 39)
 
           MockEmcsTfeConnector
             .getMovementList(testErn, Some(searchOptions))
-            .returns(Future.successful(Right(GetMovementListResponse(movements, 39))))
+            .returns(Future.successful(Right(movementListResponse)))
 
           MockGetExciseProductCodesConnector
             .getExciseProductCodes()
@@ -294,7 +297,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions)
+          Html(contentAsString(result)) shouldBe successView(searchOptions, movementListResponse)
         }
       }
 
@@ -529,10 +532,11 @@ class ViewAllMovementsControllerSpec extends SpecBase
           "show the correct view and pagination when movement count is 1 above a multiple of the pageCount" in new Test {
 
             val searchOptions = MovementListSearchOptions(index = 3)
+            val movementListResponse: GetMovementListResponse = GetMovementListResponse(movements, 31)
 
             MockEmcsTfeConnector
               .getMovementList(testErn, Some(searchOptions))
-              .returns(Future.successful(Right(GetMovementListResponse(movements, 31))))
+              .returns(Future.successful(Right(movementListResponse)))
 
             MockGetExciseProductCodesConnector
               .getExciseProductCodes()
@@ -549,16 +553,17 @@ class ViewAllMovementsControllerSpec extends SpecBase
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, movementListResponse)
           }
 
           "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in new Test {
 
             val searchOptions = MovementListSearchOptions(index = 3)
+            val movementListResponse: GetMovementListResponse = GetMovementListResponse(movements, 39)
 
             MockEmcsTfeConnector
               .getMovementList(testErn, Some(searchOptions))
-              .returns(Future.successful(Right(GetMovementListResponse(movements, 39))))
+              .returns(Future.successful(Right(movementListResponse)))
 
             MockGetExciseProductCodesConnector
               .getExciseProductCodes()
@@ -575,7 +580,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, movementListResponse)
           }
         }
 
