@@ -20,13 +20,13 @@
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
 @import viewmodels.ViewAllMovementsTableHelper
-@import views.ViewUtils
 @import views.html.components._
 
 @this(
     table: table,
     h1: h1,
     h2: h2,
+    searchResults: searchResults,
     appConfig: AppConfig,
     govukButton: GovukButton,
     govukPagination : GovukPagination,
@@ -38,17 +38,9 @@
 
     <div class="govuk-grid-column-two-thirds">
 
-        @if(movementListResponse.movements.isEmpty) {
-            <div id="search-results" role="status">
-                @h2("site.results.notFound", classes = "govuk-heading-m", id = Some("number-of-results-found"))
-                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
-            </div>
-        } else {
-            <div id="search-results" role="status">
-                @h2(ViewUtils.pluralSingular("site.results.found", movementListResponse.count), classes = "govuk-heading-m", id = Some("number-of-results-found"))
-                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
-            </div>
+        @searchResults(movementListResponse.count)
 
+        @if(movementListResponse.movements.nonEmpty) {
             <div style="display: inline-flex; align-items: flex-end;">
                 @govukSelect(Select(
                     items = selectItems,
