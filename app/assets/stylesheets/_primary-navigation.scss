@@ -98,7 +98,7 @@ $moj-page-width: 1220px !default;
   }
 
   &:hover {
-    color: govuk-tint($govuk-link-colour, 25);
+    color: $govuk-link-hover-colour;
   }
 
   &:focus {
@@ -129,6 +129,14 @@ $moj-page-width: 1220px !default;
       height: 5px;
       position: absolute; bottom: 0; left: 0;
       width: 100%;
+    }
+
+    &:hover {
+      color: $govuk-link-hover-colour;
+
+      &:before {
+        background-color: $govuk-link-hover-colour;
+      }
     }
 
     &:focus {
