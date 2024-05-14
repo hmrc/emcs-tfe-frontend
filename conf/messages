@@ -375,6 +375,7 @@ viewAllMovements.sort.arcAscending = ARC (A-Z)
 viewAllMovements.sort.arcDescending = ARC (Z-A)
 viewAllMovements.sort.newest = Dispatched (newest)
 viewAllMovements.sort.oldest = Dispatched (oldest)
+viewAllMovements.filters.heading = Filters
 viewAllMovements.filters.button = Apply filters
 viewAllMovements.filters.direction.heading = Direction
 viewAllMovements.filters.direction.consignee = Goods in
@@ -780,6 +781,7 @@ viewAllDraftMovements.search.heading = Search for a draft
 viewAllDraftMovements.search.p1 = You can search by Local Reference Number (LRN), consignee name, Excise Reference Number (ERN) or tax warehouse ERN.
 viewAllDraftMovements.search.button = Search
 
+viewAllDraftMovements.filters.heading = Filters
 viewAllDraftMovements.filters.button = Apply filters
 viewAllDraftMovements.filters.errors.heading = Errors
 viewAllDraftMovements.filters.errors.draftHasErrors = Draft has errors
