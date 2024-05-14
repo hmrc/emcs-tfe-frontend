@@ -39,79 +39,74 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
   implicit lazy val messages: Messages = messages(request)
 
   object Selectors extends BaseSelectors {
-    val cardTitle = ".govuk-summary-card__title"
 
-    def cardRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
+    override def h2(i: Int) = s"h2:nth-of-type($i)"
+    override def h3(i: Int) = s"h3:nth-of-type($i)"
 
-    def cardRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
+    def summaryListAtIndexRowKey(summaryListIndex: Int, rowIndex: Int) = s"dl:nth-of-type($summaryListIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
 
-    def cardAtIndexTitle(i: Int) = s"div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
-
-    def cardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
-
-    def cardAtIndexRowValue(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dd"
+    def summaryListAtIndexRowValue(summaryListIndex: Int, rowIndex: Int) = s"dl:nth-of-type($summaryListIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dd"
   }
 
 
   "constructMovementView" should {
-    "output the correct cards" when {
-
+    "output the correct HTML" when {
       "the date of arrival is set" in {
         val result = helper.constructMovementView(getMovementResponseModel)
-        val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Summary"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "LRN"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe testLrn
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "eAD status"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "Accepted An eAD has been created and the movement may be in transit."
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Receipt status"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Accepted and unsatisfactory"
-        card.select(Selectors.cardAtIndexRowKey(1, 4)).text() mustBe "Movement type"
-        card.select(Selectors.cardAtIndexRowValue(1, 4)).text() mustBe "Great Britain tax warehouse to Great Britain tax warehouse"
-        card.select(Selectors.cardAtIndexRowKey(1, 5)).text() mustBe "Movement direction"
-        card.select(Selectors.cardAtIndexRowValue(1, 5)).text() mustBe "Outbound"
+        val doc = Jsoup.parse(result.toString())
+        doc.select(Selectors.h2(1)).text() mustBe "Movement details"
+        doc.select(Selectors.summaryListAtIndexRowKey(1, 1)).text() mustBe "LRN"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 1)).text() mustBe testLrn
+        doc.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "eAD status"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe "Accepted An eAD has been created and the movement may be in transit."
+        doc.select(Selectors.summaryListAtIndexRowKey(1, 3)).text() mustBe "Receipt status"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Accepted and unsatisfactory"
+        doc.select(Selectors.summaryListAtIndexRowKey(1, 4)).text() mustBe "Movement type"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 4)).text() mustBe "Great Britain tax warehouse to Great Britain tax warehouse"
+        doc.select(Selectors.summaryListAtIndexRowKey(1, 5)).text() mustBe "Movement direction"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 5)).text() mustBe "Outbound"
 
-        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Time and date"
-        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Date of dispatch"
-        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "20 November 2008"
-        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Time of dispatch"
-        card.select(Selectors.cardAtIndexRowValue(2, 2)).text().toLowerCase mustBe "12:00 am"
-        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Date of arrival"
-        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "8 December 2008"
+        doc.select(Selectors.h3(1)).text() mustBe "Time and date"
+        doc.select(Selectors.summaryListAtIndexRowKey(2, 1)).text() mustBe "Date of dispatch"
+        doc.select(Selectors.summaryListAtIndexRowValue(2, 1)).text() mustBe "20 November 2008"
+        doc.select(Selectors.summaryListAtIndexRowKey(2, 2)).text() mustBe "Time of dispatch"
+        doc.select(Selectors.summaryListAtIndexRowValue(2, 2)).text().toLowerCase mustBe "12:00 am"
+        doc.select(Selectors.summaryListAtIndexRowKey(2, 3)).text() mustBe "Date of arrival"
+        doc.select(Selectors.summaryListAtIndexRowValue(2, 3)).text() mustBe "8 December 2008"
 
-        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Invoice"
-        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Invoice reference"
-        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "INV123"
-        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Invoice date of issue"
-        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "1 December 2023"
+        doc.select(Selectors.h3(2)).text() mustBe "Invoice"
+        doc.select(Selectors.summaryListAtIndexRowKey(3, 1)).text() mustBe "Invoice reference"
+        doc.select(Selectors.summaryListAtIndexRowValue(3, 1)).text() mustBe "INV123"
+        doc.select(Selectors.summaryListAtIndexRowKey(3, 2)).text() mustBe "Invoice date of issue"
+        doc.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "1 December 2023"
       }
 
       "the date of arrival is NOT set (calculating the predicted date of arrival) - not showing the receipt status" in {
         val result = helper.constructMovementView(getMovementResponseModel.copy(reportOfReceipt = None))
-        val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Summary"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "LRN"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe testLrn
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "eAD status"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "Accepted An eAD has been created and the movement may be in transit."
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Movement type"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Great Britain tax warehouse to Great Britain tax warehouse"
-        card.select(Selectors.cardAtIndexRowKey(1, 4)).text() mustBe "Movement direction"
-        card.select(Selectors.cardAtIndexRowValue(1, 4)).text() mustBe "Outbound"
+        val doc = Jsoup.parse(result.toString())
+        doc.select(Selectors.h2(1)).text() mustBe "Movement details"
+        doc.select(Selectors.summaryListAtIndexRowKey(1, 1)).text() mustBe "LRN"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 1)).text() mustBe testLrn
+        doc.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "eAD status"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe "Accepted An eAD has been created and the movement may be in transit."
+        doc.select(Selectors.summaryListAtIndexRowKey(1, 3)).text() mustBe "Movement type"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Great Britain tax warehouse to Great Britain tax warehouse"
+        doc.select(Selectors.summaryListAtIndexRowKey(1, 4)).text() mustBe "Movement direction"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 4)).text() mustBe "Outbound"
 
-        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Time and date"
-        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Date of dispatch"
-        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "20 November 2008"
-        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Time of dispatch"
-        card.select(Selectors.cardAtIndexRowValue(2, 2)).text().toLowerCase mustBe "12:00 am"
-        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Predicted arrival"
-        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "10 December 2008"
+        doc.select(Selectors.h3(1)).text() mustBe "Time and date"
+        doc.select(Selectors.summaryListAtIndexRowKey(2, 1)).text() mustBe "Date of dispatch"
+        doc.select(Selectors.summaryListAtIndexRowValue(2, 1)).text() mustBe "20 November 2008"
+        doc.select(Selectors.summaryListAtIndexRowKey(2, 2)).text() mustBe "Time of dispatch"
+        doc.select(Selectors.summaryListAtIndexRowValue(2, 2)).text().toLowerCase mustBe "12:00 am"
+        doc.select(Selectors.summaryListAtIndexRowKey(2, 3)).text() mustBe "Predicted arrival"
+        doc.select(Selectors.summaryListAtIndexRowValue(2, 3)).text() mustBe "10 December 2008"
 
-        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Invoice"
-        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Invoice reference"
-        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "INV123"
-        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Invoice date of issue"
-        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "1 December 2023"
+        doc.select(Selectors.h3(2)).text() mustBe "Invoice"
+        doc.select(Selectors.summaryListAtIndexRowKey(3, 1)).text() mustBe "Invoice reference"
+        doc.select(Selectors.summaryListAtIndexRowValue(3, 1)).text() mustBe "INV123"
+        doc.select(Selectors.summaryListAtIndexRowKey(3, 2)).text() mustBe "Invoice date of issue"
+        doc.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "1 December 2023"
       }
 
       Seq(Accepted -> "An eAD has been created and the movement may be in transit.",
@@ -131,12 +126,12 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
         s"when the eAD status is ${statusToExplanation._1} - show the correct status and explanation" in {
           val result = helper.constructMovementView(getMovementResponseModel.copy(eadStatus = statusToExplanation._1))
-          val card = Jsoup.parse(result.toString())
+          val doc = Jsoup.parse(result.toString())
           if (statusToExplanation._1 == NoneStatus) {
-            card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Receipt status"
+            doc.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "Receipt status"
           } else {
-            card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "eAD status"
-            card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe s"${statusToExplanation._1} ${statusToExplanation._2}"
+            doc.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "eAD status"
+            doc.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe s"${statusToExplanation._1} ${statusToExplanation._2}"
           }
         }
 

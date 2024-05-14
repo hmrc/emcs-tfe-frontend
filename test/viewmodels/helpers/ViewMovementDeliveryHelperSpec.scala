@@ -32,140 +32,134 @@ class ViewMovementDeliveryHelperSpec extends SpecBase with GetMovementResponseFi
   implicit lazy val messages: Messages = messages(request)
 
   object Selectors extends BaseSelectors {
-    val cardTitle = ".govuk-summary-card__title"
+    override def h2(i: Int) = s"h2:nth-of-type($i)"
+    override def h3(i: Int) = s"h3:nth-of-type($i)"
 
-    def cardRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
+    def summaryListAtIndexRowKey(summaryListIndex: Int, rowIndex: Int) = s"dl:nth-of-type($summaryListIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
 
-    def cardRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
-
-    def cardAtIndexTitle(i: Int) = s"div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
-
-    def cardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
-
-    def cardAtIndexRowValue(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dd"
+    def summaryListAtIndexRowValue(summaryListIndex: Int, rowIndex: Int) = s"dl:nth-of-type($summaryListIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dd"
   }
 
   ".constructMovementDelivery" should {
-    "output the correct cards" when {
-
+    "output the correct HTML" when {
       "consignor, place of dispatch, consignee and place of destination are present" in {
         val result = helper.constructMovementDelivery(getMovementResponseModel)
-        val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        val summaryList = Jsoup.parse(result.toString())
+        summaryList.select(Selectors.h3(1)).text() mustBe "Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
 
-        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Place of dispatch"
-        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.h3(2)).text() mustBe "Place of dispatch"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 2)).text() mustBe "GBRC345GTR145"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
 
-        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
-        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.h3(3)).text() mustBe "Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
 
-        card.select(Selectors.cardAtIndexTitle(4)).text() mustBe "Place of destination"
-        card.select(Selectors.cardAtIndexRowKey(4, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(4, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(4, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(4, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(4, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(4, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.h3(4)).text() mustBe "Place of destination"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(4, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(4, 1)).text() mustBe "Current 801 Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(4, 2)).text() mustBe "Excise registration number (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(4, 2)).text() mustBe "GBRC345GTR145"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(4, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(4, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
       }
 
       "consignor, consignee and place of destination are present" in {
         val result = helper.constructMovementDelivery(getMovementResponseModel.copy(placeOfDispatchTrader = None))
-        val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        val summaryList = Jsoup.parse(result.toString())
+        summaryList.select(Selectors.h3(1)).text() mustBe "Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
 
-        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Consignee"
-        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GB12345GTR144"
-        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.h3(2)).text() mustBe "Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 2)).text() mustBe "Excise registration number (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 2)).text() mustBe "GB12345GTR144"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
 
-        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Place of destination"
-        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.h3(3)).text() mustBe "Place of destination"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "GBRC345GTR145"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
       }
 
       "consignor, place of dispatch and place of destination are present" in {
         val result = helper.constructMovementDelivery(getMovementResponseModel.copy(consigneeTrader = None))
-        val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        val summaryList = Jsoup.parse(result.toString())
+        summaryList.select(Selectors.h3(1)).text() mustBe "Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
 
-        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Place of dispatch"
-        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.h3(2)).text() mustBe "Place of dispatch"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 2)).text() mustBe "GBRC345GTR145"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
 
-        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Place of destination"
-        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.h3(3)).text() mustBe "Place of destination"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "GBRC345GTR145"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
       }
 
       "consignor, place of dispatch and consignee are present" in {
         val result = helper.constructMovementDelivery(getMovementResponseModel.copy(deliveryPlaceTrader = None))
-        val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        val summaryList = Jsoup.parse(result.toString())
+        summaryList.select(Selectors.h3(1)).text() mustBe "Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 1)).text() mustBe "Current 801 Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "Excise registration number (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe "GBRC345GTR145"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(1, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
 
-        card.select(Selectors.cardAtIndexTitle(2)).text() mustBe "Place of dispatch"
-        card.select(Selectors.cardAtIndexRowKey(2, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(2, 2)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(2, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.h3(2)).text() mustBe "Place of dispatch"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 1)).text() mustBe "Current 801 Consignor"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 2)).text() mustBe "Excise ID (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 2)).text() mustBe "GBRC345GTR145"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(2, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(2, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
 
-        card.select(Selectors.cardAtIndexTitle(3)).text() mustBe "Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 1)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
-        card.select(Selectors.cardAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
-        card.select(Selectors.cardAtIndexRowKey(3, 3)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.h3(3)).text() mustBe "Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 2)).text() mustBe "Excise registration number (ERN)"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
       }
     }
   }

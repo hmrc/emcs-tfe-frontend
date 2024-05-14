@@ -34,17 +34,10 @@ class ViewMovementGuarantorHelperSpec extends SpecBase with GetMovementResponseF
   implicit lazy val messages: Messages = messages(request)
 
   object Selectors extends BaseSelectors {
-    val cardTitle = ".govuk-summary-card__title"
+    override def h2(i: Int) = s"h2:nth-of-type($i)"
+    def summaryListRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
+    def summaryListRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
 
-    def cardRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
-
-    def cardRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
-
-    def cardAtIndexTitle(i: Int) = s"div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
-
-    def cardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
-
-    def cardAtIndexRowValue(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dd"
   }
 
   ".constructMovementGuarantor" should {
@@ -80,17 +73,17 @@ class ViewMovementGuarantorHelperSpec extends SpecBase with GetMovementResponseF
           )
         )))))
         val card = Jsoup.parse(result.toString())
-        card.select(Selectors.cardAtIndexTitle(1)).text() mustBe "Summary"
-        card.select(Selectors.cardAtIndexRowKey(1, 1)).text() mustBe "Type"
-        card.select(Selectors.cardAtIndexRowValue(1, 1)).text() mustBe guarantorType._2
-        card.select(Selectors.cardAtIndexRowKey(1, 2)).text() mustBe "Business name"
-        card.select(Selectors.cardAtIndexRowValue(1, 2)).text() mustBe "Current 801 Consignor"
-        card.select(Selectors.cardAtIndexRowKey(1, 3)).text() mustBe "Excise registration number (ERN)"
-        card.select(Selectors.cardAtIndexRowValue(1, 3)).text() mustBe "GBRC345GTR145"
-        card.select(Selectors.cardAtIndexRowKey(1, 4)).text() mustBe "Address"
-        card.select(Selectors.cardAtIndexRowValue(1, 4)).text() mustBe "Main101 Zeebrugge ZZ78"
-        card.select(Selectors.cardAtIndexRowKey(1, 5)).text() mustBe "VAT registration number"
-        card.select(Selectors.cardAtIndexRowValue(1, 5)).text() mustBe "GB123456789"
+        card.select(Selectors.h2(1)).text() mustBe "Guarantor details"
+        card.select(Selectors.summaryListRowKey(1)).text() mustBe "Type"
+        card.select(Selectors.summaryListRowValue(1)).text() mustBe guarantorType._2
+        card.select(Selectors.summaryListRowKey(2)).text() mustBe "Business name"
+        card.select(Selectors.summaryListRowValue(2)).text() mustBe "Current 801 Consignor"
+        card.select(Selectors.summaryListRowKey(3)).text() mustBe "Excise registration number (ERN)"
+        card.select(Selectors.summaryListRowValue(3)).text() mustBe "GBRC345GTR145"
+        card.select(Selectors.summaryListRowKey(4)).text() mustBe "Address"
+        card.select(Selectors.summaryListRowValue(4)).text() mustBe "Main101 Zeebrugge ZZ78"
+        card.select(Selectors.summaryListRowKey(5)).text() mustBe "VAT registration number"
+        card.select(Selectors.summaryListRowValue(5)).text() mustBe "GB123456789"
       }
     }
 

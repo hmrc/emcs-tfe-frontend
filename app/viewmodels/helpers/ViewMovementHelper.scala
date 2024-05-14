@@ -114,6 +114,7 @@ class ViewMovementHelper @Inject()(
         ),
         overviewPartial(
           headingMessageKey = Some("viewMovement.movement.timeAndDate"),
+          headingLevel = 3,
           headingMessageClass = "govuk-heading-m",
           cardTitleMessageKey = None,
           summaryListRows = Seq(
@@ -124,6 +125,7 @@ class ViewMovementHelper @Inject()(
         ),
         overviewPartial(
           headingMessageKey = Some("viewMovement.movement.invoice"),
+          headingLevel = 3,
           headingMessageClass = "govuk-heading-m",
           cardTitleMessageKey = None,
           summaryListRows = Seq(

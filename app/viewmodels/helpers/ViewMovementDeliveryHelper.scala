@@ -67,6 +67,7 @@ class ViewMovementDeliveryHelper @Inject()(
       overviewPartial(
         headingMessageKey = Some("viewMovement.delivery.consignor"),
         headingMessageClass = "govuk-heading-m",
+        headingLevel = 3,
         cardTitleMessageKey = None,
         summaryListRows = consignorSummaryCards.flatten
       ),
@@ -74,6 +75,7 @@ class ViewMovementDeliveryHelper @Inject()(
         overviewPartial(
           headingMessageKey = Some("viewMovement.delivery.placeOfDispatch"),
           headingMessageClass = "govuk-heading-m",
+          headingLevel = 3,
           cardTitleMessageKey = None,
           summaryListRows = placeOfDispatchSummaryCards.flatten
         )
@@ -82,6 +84,7 @@ class ViewMovementDeliveryHelper @Inject()(
         overviewPartial(
           headingMessageKey = Some("viewMovement.delivery.consignee"),
           headingMessageClass = "govuk-heading-m",
+          headingLevel = 3,
           cardTitleMessageKey = None,
           summaryListRows = consigneeSummaryCards.flatten
         )
@@ -90,6 +93,7 @@ class ViewMovementDeliveryHelper @Inject()(
         overviewPartial(
           headingMessageKey = Some("viewMovement.delivery.placeOfDestination"),
           headingMessageClass = "govuk-heading-m",
+          headingLevel = 3,
           cardTitleMessageKey = None,
           summaryListRows = placeOfDestinationCards.flatten
         )

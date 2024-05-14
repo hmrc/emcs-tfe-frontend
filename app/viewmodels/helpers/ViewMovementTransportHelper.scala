@@ -80,7 +80,10 @@ class ViewMovementTransportHelper @Inject()(
         case(transport, index) =>
           summaryCard(
             card = Some(Card(
-              Some(CardTitle(Text(messages("viewMovement.transport.transportUnit.heading", index + 1))))
+              Some(CardTitle(
+                Text(messages("viewMovement.transport.transportUnit.heading", index + 1)),
+                headingLevel = Some(4)
+              ))
             )),
             summaryListRows = Seq(
               summaryListRowBuilder(
