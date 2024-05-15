@@ -37,10 +37,10 @@ object SubNavigationTab {
   val values: Seq[SubNavigationTab] = Seq(
     Overview,
     Movement,
-    Delivery,
-    Guarantor,
-    Transport,
     Items,
+    Delivery,
+    Transport,
+    Guarantor,
     Documents
   )
 }

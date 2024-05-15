@@ -26,13 +26,15 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import utils.ExpectedDateOfArrival
 import viewmodels.govuk.TagFluency
 import viewmodels.helpers.SummaryListHelper._
-import views.html.components.{h2, summaryCard}
+import views.html.components.{h2, h3, summaryCard}
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class ViewMovementTransportHelper @Inject()(h2: h2,
-                                            summaryCard: summaryCard
+class ViewMovementTransportHelper @Inject()(
+                                             h2: h2,
+                                             h3: h3,
+                                             summaryCard: summaryCard
                                            ) extends ExpectedDateOfArrival with TagFluency {
 
   def constructMovementTransport(movement: GetMovementResponse)(implicit messages: Messages): Html = {
@@ -41,9 +43,7 @@ class ViewMovementTransportHelper @Inject()(h2: h2,
     HtmlFormat.fill(Seq(
       h2(messages("viewMovement.transport.h2"), "govuk-heading-l"),
       summaryCard(
-        Card(
-          Some(CardTitle(Text(messages("viewMovement.transport.summary.heading"))))
-        ),
+        None,
         Seq(
           summaryListRowBuilder(
             "viewMovement.transport.summary.transportArranger",
@@ -56,10 +56,9 @@ class ViewMovementTransportHelper @Inject()(h2: h2,
           summaryListRowBuilder("viewMovement.transport.summary.journeyTime", movement.journeyTime)
         )
       ),
+      h3("viewMovement.transport.firstTransporter"),
       summaryCard(
-        Card(
-          Some(CardTitle(Text(messages("viewMovement.transport.firstTransporter.heading"))))
-        ),
+        None,
         Seq(
           summaryListRowBuilder(
             "viewMovement.transport.firstTransporter.name",
@@ -74,14 +73,18 @@ class ViewMovementTransportHelper @Inject()(h2: h2,
             movement.firstTransporterTrader.flatMap(_.vatNumber).getOrElse(notProvidedMessage)
           )
         )
-      )
+      ),
+      h3("viewMovement.transport.transportUnits")
     ) ++
       movement.transportDetails.zipWithIndex.map{
         case(transport, index) =>
           summaryCard(
-            card = Card(
-              Some(CardTitle(Text(messages("viewMovement.transport.transportUnit.heading", index + 1))))
-            ),
+            card = Some(Card(
+              Some(CardTitle(
+                Text(messages("viewMovement.transport.transportUnit.heading", index + 1)),
+                headingLevel = Some(4)
+              ))
+            )),
             summaryListRows = Seq(
               summaryListRowBuilder(
                 "viewMovement.transport.transportUnit.unitType",

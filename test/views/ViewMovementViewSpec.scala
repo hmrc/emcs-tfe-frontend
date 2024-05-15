@@ -55,13 +55,11 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
 
     def actionLink(i: Int) = s"main #actions > ul > li:nth-child($i) > a"
 
-    def summaryCardRowKey(i: Int) = s"main div.govuk-summary-card div.govuk-summary-list__row:nth-of-type($i) > dt"
+    def summaryListRowKey(i: Int) = s"main dl div.govuk-summary-list__row:nth-of-type($i) > dt"
 
-    def summaryCardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"main div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
+    def summaryListAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"main dl:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
 
-    def summaryCardTitle(i: Int) = s"main div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
-
-    def historyTimelineLink(i: Int) = s"main #history > ol > li:nth-child($i) > h2 > a"
+    def historyTimelineLink(i: Int) = s"main #history > ol > li:nth-child($i) > h3 > a"
   }
 
   "The ViewMovementView" when {
@@ -94,14 +92,13 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
 
               Selectors.subNavigationTabSelected -> messagesForLanguage.overviewTabHeading,
 
-              Selectors.summaryCardTitle(1) -> messagesForLanguage.overviewCardTitle,
-              Selectors.summaryCardRowKey(1) -> messagesForLanguage.overviewCardLrn,
-              Selectors.summaryCardRowKey(2) -> messagesForLanguage.overviewCardEadStatus,
-              Selectors.summaryCardRowKey(3) -> messagesForLanguage.overviewCardDateOfDispatch,
-              Selectors.summaryCardRowKey(4) -> messagesForLanguage.overviewCardExpectedDate,
-              Selectors.summaryCardRowKey(5) -> messagesForLanguage.overviewCardConsignor,
-              Selectors.summaryCardRowKey(6) -> messagesForLanguage.overviewCardNumberOfItems,
-              Selectors.summaryCardRowKey(7) -> messagesForLanguage.overviewCardTransporting
+              Selectors.summaryListRowKey(1) -> messagesForLanguage.overviewCardLrn,
+              Selectors.summaryListRowKey(2) -> messagesForLanguage.overviewCardEadStatus,
+              Selectors.summaryListRowKey(3) -> messagesForLanguage.overviewCardDateOfDispatch,
+              Selectors.summaryListRowKey(4) -> messagesForLanguage.overviewCardExpectedDate,
+              Selectors.summaryListRowKey(5) -> messagesForLanguage.overviewCardConsignor,
+              Selectors.summaryListRowKey(6) -> messagesForLanguage.overviewCardNumberOfItems,
+              Selectors.summaryListRowKey(7) -> messagesForLanguage.overviewCardTransporting
             ))
 
           }
@@ -222,21 +219,21 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
 
             Selectors.subNavigationTabSelected -> messagesForLanguage.movementTabHeading,
 
-            Selectors.summaryCardTitle(1) -> messagesForLanguage.movementSummaryCardTitle,
-            Selectors.summaryCardAtIndexRowKey(1, 1) -> messagesForLanguage.movementSummaryCardLrn,
-            Selectors.summaryCardAtIndexRowKey(1, 2) -> messagesForLanguage.movementSummaryCardEADStatus,
-            Selectors.summaryCardAtIndexRowKey(1, 3) -> messagesForLanguage.movementSummaryCardReceiptStatus,
-            Selectors.summaryCardAtIndexRowKey(1, 4) -> messagesForLanguage.movementSummaryCardMovementType,
-            Selectors.summaryCardAtIndexRowKey(1, 5) -> messagesForLanguage.movementSummaryCardMovementDirection,
+            Selectors.h2(2) -> messagesForLanguage.movementSummaryListTitle,
+            Selectors.summaryListAtIndexRowKey(1, 1) -> messagesForLanguage.movementSummaryListLrn,
+            Selectors.summaryListAtIndexRowKey(1, 2) -> messagesForLanguage.movementSummaryListEADStatus,
+            Selectors.summaryListAtIndexRowKey(1, 3) -> messagesForLanguage.movementSummaryListReceiptStatus,
+            Selectors.summaryListAtIndexRowKey(1, 4) -> messagesForLanguage.movementSummaryListMovementType,
+            Selectors.summaryListAtIndexRowKey(1, 5) -> messagesForLanguage.movementSummaryListMovementDirection,
 
-            Selectors.summaryCardTitle(2) -> messagesForLanguage.movementTimeAndDateCardTitle,
-            Selectors.summaryCardAtIndexRowKey(2, 1) -> messagesForLanguage.movementTimeAndDateCardDateOfDispatch,
-            Selectors.summaryCardAtIndexRowKey(2, 2) -> messagesForLanguage.movementTimeAndDateCardTimeOfDispatch,
-            Selectors.summaryCardAtIndexRowKey(2, 3) -> messagesForLanguage.movementTimeAndDateCardDateOfArrival,
+            Selectors.h3(1) -> messagesForLanguage.movementTimeAndDateCardTitle,
+            Selectors.summaryListAtIndexRowKey(2, 1) -> messagesForLanguage.movementTimeAndDateCardDateOfDispatch,
+            Selectors.summaryListAtIndexRowKey(2, 2) -> messagesForLanguage.movementTimeAndDateCardTimeOfDispatch,
+            Selectors.summaryListAtIndexRowKey(2, 3) -> messagesForLanguage.movementTimeAndDateCardDateOfArrival,
 
-            Selectors.summaryCardTitle(3) -> messagesForLanguage.movementInvoiceCardTitle,
-            Selectors.summaryCardAtIndexRowKey(3, 1) -> messagesForLanguage.movementInvoiceCardReference,
-            Selectors.summaryCardAtIndexRowKey(3, 2) -> messagesForLanguage.movementInvoiceCardDateOfIssue
+            Selectors.h3(2) -> messagesForLanguage.movementInvoiceCardTitle,
+            Selectors.summaryListAtIndexRowKey(3, 1) -> messagesForLanguage.movementInvoiceCardReference,
+            Selectors.summaryListAtIndexRowKey(3, 2) -> messagesForLanguage.movementInvoiceCardDateOfIssue
           ))
 
         }
@@ -264,22 +261,22 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
 
               Selectors.subNavigationTabSelected -> messagesForLanguage.deliveryTabHeading,
 
-              Selectors.summaryCardTitle(1) -> messagesForLanguage.deliveryConsignorCardTitle,
-              Selectors.summaryCardAtIndexRowKey(1, 1) -> messagesForLanguage.deliveryCardBusinessName,
-              Selectors.summaryCardAtIndexRowKey(1, 2) -> messagesForLanguage.deliveryCardERN,
-              Selectors.summaryCardAtIndexRowKey(1, 3) -> messagesForLanguage.deliveryCardAddress,
-              Selectors.summaryCardTitle(2) -> messagesForLanguage.deliveryPlaceOfDispatchCardTitle,
-              Selectors.summaryCardAtIndexRowKey(2, 1) -> messagesForLanguage.deliveryCardBusinessName,
-              Selectors.summaryCardAtIndexRowKey(2, 2) -> messagesForLanguage.deliveryPlaceOfDispatchCardERN,
-              Selectors.summaryCardAtIndexRowKey(2, 3) -> messagesForLanguage.deliveryCardAddress,
-              Selectors.summaryCardTitle(3) -> messagesForLanguage.deliveryConsigneeCardTitle,
-              Selectors.summaryCardAtIndexRowKey(3, 1) -> messagesForLanguage.deliveryCardBusinessName,
-              Selectors.summaryCardAtIndexRowKey(3, 2) -> messagesForLanguage.deliveryCardERN,
-              Selectors.summaryCardAtIndexRowKey(3, 3) -> messagesForLanguage.deliveryCardAddress,
-              Selectors.summaryCardTitle(4) -> messagesForLanguage.deliveryPlaceOfDestinationCardTitle,
-              Selectors.summaryCardAtIndexRowKey(4, 1) -> messagesForLanguage.deliveryCardBusinessName,
-              Selectors.summaryCardAtIndexRowKey(4, 2) -> messagesForLanguage.deliveryCardERN,
-              Selectors.summaryCardAtIndexRowKey(4, 3) -> messagesForLanguage.deliveryCardAddress
+              Selectors.h3(1) -> messagesForLanguage.deliveryConsignorCardTitle,
+              Selectors.summaryListAtIndexRowKey(1, 1) -> messagesForLanguage.deliveryCardBusinessName,
+              Selectors.summaryListAtIndexRowKey(1, 2) -> messagesForLanguage.deliveryCardERN,
+              Selectors.summaryListAtIndexRowKey(1, 3) -> messagesForLanguage.deliveryCardAddress,
+              Selectors.h3(2) -> messagesForLanguage.deliveryPlaceOfDispatchCardTitle,
+              Selectors.summaryListAtIndexRowKey(2, 1) -> messagesForLanguage.deliveryCardBusinessName,
+              Selectors.summaryListAtIndexRowKey(2, 2) -> messagesForLanguage.deliveryPlaceOfDispatchCardERN,
+              Selectors.summaryListAtIndexRowKey(2, 3) -> messagesForLanguage.deliveryCardAddress,
+              Selectors.h3(3) -> messagesForLanguage.deliveryConsigneeCardTitle,
+              Selectors.summaryListAtIndexRowKey(3, 1) -> messagesForLanguage.deliveryCardBusinessName,
+              Selectors.summaryListAtIndexRowKey(3, 2) -> messagesForLanguage.deliveryCardERN,
+              Selectors.summaryListAtIndexRowKey(3, 3) -> messagesForLanguage.deliveryCardAddress,
+              Selectors.h3(4) -> messagesForLanguage.deliveryPlaceOfDestinationCardTitle,
+              Selectors.summaryListAtIndexRowKey(4, 1) -> messagesForLanguage.deliveryCardBusinessName,
+              Selectors.summaryListAtIndexRowKey(4, 2) -> messagesForLanguage.deliveryCardERN,
+              Selectors.summaryListAtIndexRowKey(4, 3) -> messagesForLanguage.deliveryCardAddress
             ))
 
           }

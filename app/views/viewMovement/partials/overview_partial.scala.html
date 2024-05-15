@@ -15,21 +15,33 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import views.html.components.{h2, summaryCard}
+@import views.html.components.{h2, h3, summaryCard}
 
 @this(
         h2: h2,
+        h3: h3,
         summaryCard: summaryCard
 )
 
-@(headingMessageKey: Option[String], cardTitleMessageKey: String, summaryListRows: Seq[SummaryListRow])(implicit messages: Messages)
+@(
+        headingMessageKey: Option[String],
+        cardTitleMessageKey: Option[String],
+        summaryListRows: Seq[SummaryListRow],
+        headingMessageClass: String = "govuk-heading-l",
+        headingLevel: Int = 2
+)(implicit messages: Messages)
 
 @if(headingMessageKey.isDefined) {
- @h2(messages(headingMessageKey.get), "govuk-heading-l")
+ @if(headingLevel == 2) {
+  @h2(messages(headingMessageKey.get), headingMessageClass)
+ }
+ @if(headingLevel == 3) {
+  @h3(messages(headingMessageKey.get), headingMessageClass)
+ }
 }
 
 @summaryCard(
-    Card(Some(CardTitle(Text(messages(cardTitleMessageKey))))),
+    cardTitleMessageKey.map(msgKey => Card(Some(CardTitle(Text(messages(msgKey)))))),
     summaryListRows
 )
 

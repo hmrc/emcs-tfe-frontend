@@ -32,38 +32,30 @@ class ViewMovementOverviewHelperSpec extends SpecBase with GetMovementResponseFi
   implicit lazy val messages: Messages = messages(request)
 
   object Selectors extends BaseSelectors {
-    val cardTitle = ".govuk-summary-card__title"
-
-    def cardRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
-
-    def cardRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
-
-    def cardAtIndexTitle(i: Int) = s"div.govuk-summary-card:nth-of-type($i) .govuk-summary-card__title"
-
-    def cardAtIndexRowKey(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
-
-    def cardAtIndexRowValue(cardIndex: Int, rowIndex: Int) = s"div.govuk-summary-card:nth-of-type($cardIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dd"
+    override def h2(i: Int) = s"h2:nth-of-type($i)"
+    def summaryListRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
+    def summaryListRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
   }
 
   "constructMovementOverview" should {
     "output the correct rows" in {
       val result = helper.constructMovementOverview(getMovementResponseModel)
-      val card = Jsoup.parse(result.toString())
-      card.select(Selectors.cardTitle).text() mustBe "Overview"
-      card.select(Selectors.cardRowKey(1)).text() mustBe "Local Reference Number (LRN)"
-      card.select(Selectors.cardRowValue(1)).text() mustBe testLrn
-      card.select(Selectors.cardRowKey(2)).text() mustBe "Electronic administrative document (eAD) status"
-      card.select(Selectors.cardRowValue(2)).text() mustBe "Accepted"
-      card.select(Selectors.cardRowKey(3)).text() mustBe "Date of dispatch"
-      card.select(Selectors.cardRowValue(3)).text() mustBe "20 November 2008"
-      card.select(Selectors.cardRowKey(4)).text() mustBe "Expected date of arrival"
-      card.select(Selectors.cardRowValue(4)).text() mustBe "10 December 2008"
-      card.select(Selectors.cardRowKey(5)).text() mustBe "Consignor"
-      card.select(Selectors.cardRowValue(5)).text() mustBe "GBRC345GTR145"
-      card.select(Selectors.cardRowKey(6)).text() mustBe "Number of items"
-      card.select(Selectors.cardRowValue(6)).text() mustBe "2"
-      card.select(Selectors.cardRowKey(7)).text() mustBe "Transporting vehicle(s)"
-      card.select(Selectors.cardRowValue(7)).text() mustBe "AB11 1T4 AB22 2T4"
+      val doc = Jsoup.parse(result.toString())
+      doc.select(Selectors.h2(1)).text() mustBe "Overview"
+      doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Local Reference Number (LRN)"
+      doc.select(Selectors.summaryListRowValue(1)).text() mustBe testLrn
+      doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Electronic administrative document (eAD) status"
+      doc.select(Selectors.summaryListRowValue(2)).text() mustBe "Accepted"
+      doc.select(Selectors.summaryListRowKey(3)).text() mustBe "Date of dispatch"
+      doc.select(Selectors.summaryListRowValue(3)).text() mustBe "20 November 2008"
+      doc.select(Selectors.summaryListRowKey(4)).text() mustBe "Expected date of arrival"
+      doc.select(Selectors.summaryListRowValue(4)).text() mustBe "10 December 2008"
+      doc.select(Selectors.summaryListRowKey(5)).text() mustBe "Consignor"
+      doc.select(Selectors.summaryListRowValue(5)).text() mustBe "GBRC345GTR145"
+      doc.select(Selectors.summaryListRowKey(6)).text() mustBe "Number of items"
+      doc.select(Selectors.summaryListRowValue(6)).text() mustBe "2"
+      doc.select(Selectors.summaryListRowKey(7)).text() mustBe "Transporting vehicle(s)"
+      doc.select(Selectors.summaryListRowValue(7)).text() mustBe "AB11 1T4 AB22 2T4"
     }
   }
 }

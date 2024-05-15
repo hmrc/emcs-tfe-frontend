@@ -39,13 +39,13 @@
         @h1()(Html(item.productCodeDescription.getOrElse(messages("itemDetails.heading", item.itemUniqueReference))))
 
         @summaryCard(
-            Card(Some(CardTitle(Text(messages("itemDetails.itemDetailsCardTitle"))))),
+            Some(Card(Some(CardTitle(Text(messages("itemDetails.itemDetailsCardTitle")))))),
             helper.constructItemDetailsCard(item)
         )
 
         @item.packaging.zipWithIndex.map { case (packaging, i) =>
             @summaryCard(
-                Card(Some(CardTitle(Text(messages("itemDetails.packagingTypeCardTitle", i + 1))))),
+                Some(Card(Some(CardTitle(Text(messages("itemDetails.packagingTypeCardTitle", i + 1)))))),
                 helper.constructPackagingTypeCard(packaging)
             )
         }

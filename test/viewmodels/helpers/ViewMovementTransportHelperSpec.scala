@@ -40,30 +40,32 @@ class ViewMovementTransportHelperSpec extends SpecBase with GetMovementResponseF
             val result = Jsoup.parse(helper.constructMovementTransport(movementResponseWithReferenceData).toString())
 
             result.getElementsByTag("h2").get(0).text mustBe messagesForLang.transportDetailsHeading
-            val summaryCards = result.getElementsByClass("govuk-summary-card")
+            val summaryLists = result.getElementsByTag("dl")
 
-            val transportSummaryCard = summaryCards.get(0)
-            transportSummaryCard.getElementsByTag("h2").text mustBe messagesForLang.transportSummaryHeading
-            val transportSummaryCardRows = transportSummaryCard.getElementsByClass("govuk-summary-list__row")
-            transportSummaryCardRows.get(0).getElementsByTag("dt").text() mustBe messagesForLang.transportArranger
-            transportSummaryCardRows.get(0).getElementsByTag("dd").text() mustBe "Consignor"
-            transportSummaryCardRows.get(1).getElementsByTag("dt").text() mustBe messagesForLang.transportModeOfTransport
-            transportSummaryCardRows.get(1).getElementsByTag("dd").text() mustBe "Air transport"
-            transportSummaryCardRows.get(2).getElementsByTag("dt").text() mustBe messagesForLang.transportJourneyTime
-            transportSummaryCardRows.get(2).getElementsByTag("dd").text() mustBe "20 days"
+            val transportSummaryList = summaryLists.get(0)
+            val transportSummaryListRows = transportSummaryList.getElementsByClass("govuk-summary-list__row")
+            transportSummaryListRows.get(0).getElementsByTag("dt").text() mustBe messagesForLang.transportArranger
+            transportSummaryListRows.get(0).getElementsByTag("dd").text() mustBe "Consignor"
+            transportSummaryListRows.get(1).getElementsByTag("dt").text() mustBe messagesForLang.transportModeOfTransport
+            transportSummaryListRows.get(1).getElementsByTag("dd").text() mustBe "Air transport"
+            transportSummaryListRows.get(2).getElementsByTag("dt").text() mustBe messagesForLang.transportJourneyTime
+            transportSummaryListRows.get(2).getElementsByTag("dd").text() mustBe "20 days"
 
-            val firstTransporterCard = summaryCards.get(1)
-            firstTransporterCard.getElementsByTag("h2").text mustBe messagesForLang.transportFirstTransporterHeading
-            val firstTransporterCardRows = firstTransporterCard.getElementsByClass("govuk-summary-list__row")
-            firstTransporterCardRows.get(0).getElementsByTag("dt").text() mustBe messagesForLang.transportFirstTransporterName
-            firstTransporterCardRows.get(0).getElementsByTag("dd").text() mustBe "testFirstTransporterTraderName"
-            firstTransporterCardRows.get(1).getElementsByTag("dt").text() mustBe messagesForLang.transportFirstTransporterAddress
-            firstTransporterCardRows.get(1).getElementsByTag("dd").text() mustBe "Main101 Zeebrugge ZZ78"
-            firstTransporterCardRows.get(2).getElementsByTag("dt").text() mustBe messagesForLang.transportFirstTransporterVatRegistrationNumber
-            firstTransporterCardRows.get(2).getElementsByTag("dd").text() mustBe "testVatNumber"
+            val firstTransporterSummaryList = summaryLists.get(1)
+            result.getElementsByTag("h3").get(0).text mustBe messagesForLang.transportFirstTransporterHeading
+            val firstTransporterSummaryListRows = firstTransporterSummaryList.getElementsByClass("govuk-summary-list__row")
+            firstTransporterSummaryListRows.get(0).getElementsByTag("dt").text() mustBe messagesForLang.transportFirstTransporterName
+            firstTransporterSummaryListRows.get(0).getElementsByTag("dd").text() mustBe "testFirstTransporterTraderName"
+            firstTransporterSummaryListRows.get(1).getElementsByTag("dt").text() mustBe messagesForLang.transportFirstTransporterAddress
+            firstTransporterSummaryListRows.get(1).getElementsByTag("dd").text() mustBe "Main101 Zeebrugge ZZ78"
+            firstTransporterSummaryListRows.get(2).getElementsByTag("dt").text() mustBe messagesForLang.transportFirstTransporterVatRegistrationNumber
+            firstTransporterSummaryListRows.get(2).getElementsByTag("dd").text() mustBe "testVatNumber"
 
-            val transportUnit1Card = summaryCards.get(2)
-            transportUnit1Card.getElementsByTag("h2").text mustBe messagesForLang.transportUnitHeading(1)
+            result.getElementsByTag("h3").get(1).text mustBe messagesForLang.transportUnits
+
+            val transportUnitCards = result.getElementsByClass("govuk-summary-card")
+            val transportUnit1Card = transportUnitCards.get(0)
+            transportUnit1Card.getElementsByTag("h4").text mustBe messagesForLang.transportUnitHeading(1)
             val transportUnit1CardRows = transportUnit1Card.getElementsByClass("govuk-summary-list__row")
             transportUnit1CardRows.get(0).getElementsByTag("dt").text() mustBe messagesForLang.transportUnitType
             transportUnit1CardRows.get(0).getElementsByTag("dd").text() mustBe "Container"
@@ -76,8 +78,8 @@ class ViewMovementTransportHelperSpec extends SpecBase with GetMovementResponseF
             transportUnit1CardRows.get(4).getElementsByTag("dt").text() mustBe messagesForLang.transportUnitSealInformation
             transportUnit1CardRows.get(4).getElementsByTag("dd").text() mustBe "Not provided"
 
-            val transportUnit2Card = summaryCards.get(3)
-            transportUnit2Card.getElementsByTag("h2").text mustBe messagesForLang.transportUnitHeading(2)
+            val transportUnit2Card = transportUnitCards.get(1)
+            transportUnit2Card.getElementsByTag("h4").text mustBe messagesForLang.transportUnitHeading(2)
             val transportUnit2CardRows = transportUnit2Card.getElementsByClass("govuk-summary-list__row")
             transportUnit2CardRows.get(0).getElementsByTag("dt").text() mustBe messagesForLang.transportUnitType
             transportUnit2CardRows.get(0).getElementsByTag("dd").text() mustBe "Vehicle"

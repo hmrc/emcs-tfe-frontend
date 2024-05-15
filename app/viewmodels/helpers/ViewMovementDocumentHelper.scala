@@ -46,9 +46,9 @@ class ViewMovementDocumentHelper @Inject()(h2: h2,
               case (document, index) =>
                 val documentTypeDescription = document.documentType.flatMap(documentType => sequenceOfDocuments.find(_.code == documentType).map(_.description)).getOrElse(notProvidedMessage)
                 summaryCard(
-                  card = Card(
+                  card = Some(Card(
                     Some(CardTitle(Text(messages("viewMovement.document.heading", index + 1))))
-                  ),
+                  )),
                   summaryListRows = Seq(
                     summaryListRowBuilder(
                       "viewMovement.document.documentType",

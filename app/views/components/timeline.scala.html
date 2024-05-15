@@ -26,9 +26,9 @@
 @htmlForTimelineEvent(timelineEvent: TimelineEvent, index: Int) = {
     <li class="hmrc-timeline__event">
 
-        <h2 class="hmrc-timeline__event-title govuk-heading-s">
+        <h3 class="hmrc-timeline__event-title govuk-heading-s">
             @link(link = timelineEvent.url, messageKey = timelineEvent.title, id = Some(s"history-event-$index"))
-        </h2>
+        </h3>
 
         <time class="hmrc-timeline__event-meta" datetime="@{ISO_LOCAL_DATE_TIME.format(timelineEvent.dateTime)}">
             @{timelineEvent.dateTime.toLocalDate.formatDateForUIOutput()}
