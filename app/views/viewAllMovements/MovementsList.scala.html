@@ -14,18 +14,19 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.Select
+@import config.AppConfig
+@import models.response.emcsTfe.GetMovementListResponse
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
-@import models.response.emcsTfe.GetMovementListItem
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
 @import viewmodels.ViewAllMovementsTableHelper
 @import views.html.components._
-@import config.AppConfig
 
 @this(
     table: table,
     h1: h1,
+    h2: h2,
+    searchResults: searchResults,
     appConfig: AppConfig,
     govukButton: GovukButton,
     govukPagination : GovukPagination,
@@ -33,35 +34,41 @@
     helper: ViewAllMovementsTableHelper
 )
 
-@(ern: String, movements: Seq[GetMovementListItem], selectItems: Seq[SelectItem], pagination: Option[Pagination], directionFilterOption: MovementFilterDirectionOption)(implicit messages: Messages)
+@(ern: String, movementListResponse: GetMovementListResponse, selectItems: Seq[SelectItem], pagination: Option[Pagination], directionFilterOption: MovementFilterDirectionOption)(implicit messages: Messages)
 
     <div class="govuk-grid-column-two-thirds">
 
-      <div style="display: inline-flex; align-items: flex-end;">
-          @govukSelect(Select(
-              items = selectItems,
-              name = "sortBy",
-              id = "sortBy",
-              label = Label(
-                  content = Text(messages("viewAllMovements.sort.label")),
-                  classes = "govuk-!-display-inline govuk-!-padding-right-2"
-              ),
-            classes = "govuk-!-display-inline"
-          ))
+        @searchResults(movementListResponse.count)
 
-          @govukButton(
-              ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
-                .withCssClass("govuk-!-margin-left-2")
-                .withId("sortBySubmit")
-          )
+        @if(movementListResponse.movements.nonEmpty) {
+            <div style="display: inline-flex; align-items: flex-end;">
+                @govukSelect(Select(
+                    items = selectItems,
+                    name = "sortBy",
+                    id = "sortBy",
+                    label = Label(
+                        content = Text(messages("viewAllMovements.sort.label")),
+                        classes = "govuk-!-display-inline govuk-!-padding-right-2"
+                    ),
+                    classes = "govuk-!-display-inline",
+                    formGroupClasses = "govuk-!-margin-bottom-0"
+                ))
 
-      </div>
+                @govukButton(
+                    ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
+                    .withCssClass("govuk-!-margin-left-2")
+                    .withId("sortBySubmit")
+                )
+            </div>
 
-      @table(helper.constructTable(ern, movements, directionFilterOption))
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
 
-      @pagination.map{ paginationLinks =>
-          @govukPagination(paginationLinks)
-      }
+            @table(helper.constructTable(ern, movementListResponse.movements, directionFilterOption))
+
+            @pagination.map{ paginationLinks =>
+                @govukPagination(paginationLinks)
+            }
+        }
     </div>
 
 @{

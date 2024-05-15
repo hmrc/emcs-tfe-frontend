@@ -14,19 +14,19 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.Select
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
-@import views.html.components._
-@import models.response.emcsTfe.draftMovement.DraftMovement
-@import viewmodels.draftMovements._
 @import config.AppConfig
+@import models.response.emcsTfe.draftMovement.DraftMovement
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
+@import viewmodels.draftMovements._
+@import views.html.components._
 
 @this(
     table: table,
     h1: h1,
     p: p,
+    searchResults: searchResults,
     appConfig: AppConfig,
     govukButton: GovukButton,
     govukPagination : GovukPagination,
@@ -38,6 +38,8 @@
 
     <div class="govuk-grid-column-two-thirds">
 
+        @searchResults(movements.size)
+
         <div style="display: inline-flex; align-items: flex-end;">
             @govukSelect(Select(
               items = selectItems,
@@ -47,7 +49,8 @@
                   content = Text(messages("viewAllMovements.sort.label")),
                   classes = "govuk-!-display-inline govuk-!-padding-right-2"
               ),
-            classes = "govuk-!-display-inline"
+            classes = "govuk-!-display-inline",
+            formGroupClasses = "govuk-!-margin-bottom-0"
             ))
 
             @govukButton(
@@ -56,6 +59,8 @@
                     .withId("sortBySubmit")
             )
         </div>
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
 
         @table(helper.constructTable(ern, movements))
 

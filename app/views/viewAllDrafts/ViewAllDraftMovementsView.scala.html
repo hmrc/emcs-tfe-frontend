@@ -14,18 +14,17 @@
  * limitations under the License.
  *@
 
+@import forms.ViewAllDraftMovementsFormProvider._
+@import models.draftMovements.DestinationTypeSearchOption
 @import models.requests.DataRequest
 @import models.response.emcsTfe.draftMovement.DraftMovement
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
 @import viewmodels.ViewAllMovementsTableHelper
+@import viewmodels.draftMovements._
 @import views.html._
 @import views.html.components._
-@import views.html.viewAllMovements._
-@import viewmodels.draftMovements._
-@import models.draftMovements.DestinationTypeSearchOption
-@import forms.ViewAllDraftMovementsFormProvider._
 
 @this(
         layout: templates.Layout,
@@ -41,6 +40,7 @@
         govukButton: GovukButton,
         govukFieldset: GovukFieldset,
         govukCheckboxes: GovukCheckboxes,
+        govukSkipLink: GovukSkipLink,
         draftMovementList: DraftMovementsList,
         helper: ViewAllMovementsTableHelper
 )
@@ -115,8 +115,10 @@
             describedBy = Some("search-hint")
         ))
 
+        @govukSkipLink(SkipLink(href = "#search-results", content = "site.skip.to.results", attributes = Map("id" -> "skip-to-results-link")))
+
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-third govuk-!-padding-0">
+            <div class="govuk-grid-column-one-third">
                 <aside class="filter-panel">
                     @h2("viewAllDraftMovements.filters.heading", "govuk-heading-m")
                     @govukButton(
