@@ -41,7 +41,8 @@
         @searchResults(movementListResponse.count)
 
         @if(movementListResponse.movements.nonEmpty) {
-            <div style="display: inline-flex; align-items: flex-end;">
+            @* if there are movements in the response, show `sortBy` field, all results, pagination *@
+            <div class="sortBy-wrapper" style="display: inline-flex; align-items: flex-end;">
                 @govukSelect(Select(
                     items = selectItems,
                     name = "sortBy",
@@ -68,6 +69,16 @@
             @pagination.map{ paginationLinks =>
                 @govukPagination(paginationLinks)
             }
+        } else {
+            @* if there are no movements in the response, add `sortBy` field to the HTML in a hidden div so form validation is happy *@
+            <div class="sortBy-wrapper govuk-!-display-none">
+                @govukSelect(Select(
+                    items = selectItems,
+                    name = "sortBy",
+                    id = "sortBy",
+                    label = Label()
+                ))
+            </div>
         }
     </div>
 
