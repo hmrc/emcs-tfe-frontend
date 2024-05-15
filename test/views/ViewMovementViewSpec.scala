@@ -19,6 +19,7 @@ package views
 import base.ViewSpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.messages.ViewMovementMessages.English
+import models.EventTypes._
 import models.common.{DestinationType, TraderModel}
 import models.requests.DataRequest
 import org.jsoup.Jsoup
@@ -181,9 +182,9 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
                 Overview,
                 helper.movementCard(Overview, getMovementResponseModel).futureValue,
                 Seq(
-                  TimelineEvent(eventType = "someEvent1", title = "Movement created", dateTime = eventDate, url = s"event/someEvent1/id/1"),
-                  TimelineEvent(eventType = "someEvent2", title = "Destination changed", dateTime = eventDate, url = s"event/someEvent2/id/2"),
-                  TimelineEvent(eventType = "someEvent3", title = "Report of receipt submitted", dateTime = eventDate, url = s"event/someEvent3/id/3")
+                  TimelineEvent(eventType = IE801, title = "Movement created", dateTime = eventDate, url = s"event/someEvent1/id/1"),
+                  TimelineEvent(eventType = IE813, title = "Destination changed", dateTime = eventDate, url = s"event/someEvent2/id/2"),
+                  TimelineEvent(eventType = IE818, title = "Report of receipt submitted", dateTime = eventDate, url = s"event/someEvent3/id/3")
                 ),
                 testMessageStatistics
               ).toString()

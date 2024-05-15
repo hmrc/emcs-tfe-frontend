@@ -16,6 +16,7 @@
 
 package viewmodels.helpers
 
+import models.EventTypes._
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.Messages
 import utils.Logging
@@ -47,16 +48,16 @@ class TimelineHelper @Inject()() extends Logging {
 
   private def getEventBaseKey(event: MovementHistoryEvent): String = {
     (event.eventType, event.sequenceNumber, event.messageRole) match {
-      case ("IE801", 1, 0) => s"movementHistoryEvent.${event.eventType}.first"
-      case ("IE801", _, 0) => s"movementHistoryEvent.${event.eventType}.further"
-      case ("IE802", _, 1) => s"movementHistoryEvent.${event.eventType}.cod"
-      case ("IE802", _, 2) => s"movementHistoryEvent.${event.eventType}.ror"
-      case ("IE802", _, 3) => s"movementHistoryEvent.${event.eventType}.des"
-      case ("IE803", _, 1) => s"movementHistoryEvent.${event.eventType}.diverted"
-      case ("IE803", _, 2) => s"movementHistoryEvent.${event.eventType}.split"
-      case ("IE840", _, 1) => s"movementHistoryEvent.${event.eventType}.first"
-      case ("IE840", _, 2) => s"movementHistoryEvent.${event.eventType}.complementary"
-      case _ => s"movementHistoryEvent.${event.eventType}"
+      case (IE801, 1, 0) => s"movementHistoryEvent.${event.eventType}.first.label"
+      case (IE801, _, 0) => s"movementHistoryEvent.${event.eventType}.further.label"
+      case (IE802, _, 1) => s"movementHistoryEvent.${event.eventType}.cod.label"
+      case (IE802, _, 2) => s"movementHistoryEvent.${event.eventType}.ror.label"
+      case (IE802, _, 3) => s"movementHistoryEvent.${event.eventType}.des.label"
+      case (IE803, _, 1) => s"movementHistoryEvent.${event.eventType}.diverted.label"
+      case (IE803, _, 2) => s"movementHistoryEvent.${event.eventType}.split.label"
+      case (IE840, _, 1) => s"movementHistoryEvent.${event.eventType}.first.label"
+      case (IE840, _, 2) => s"movementHistoryEvent.${event.eventType}.complementary.label"
+      case _ => s"movementHistoryEvent.${event.eventType}.label"
     }
   }
 

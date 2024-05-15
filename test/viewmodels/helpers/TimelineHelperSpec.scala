@@ -17,6 +17,8 @@
 package viewmodels.helpers
 
 import base.SpecBase
+import models.EventTypes
+import models.EventTypes._
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
@@ -62,7 +64,7 @@ class TimelineHelperSpec extends SpecBase {
   ".getEventTitleKey" must {
     "return the correct message key" when {
 
-      def getKey(eventType: String, sequenceNumber: Int, messageRole: Int): String = {
+      def getKey(eventType: EventTypes, sequenceNumber: Int, messageRole: Int):String = {
         helper.getEventTitleKey(
           MovementHistoryEvent(
             eventType = eventType,
@@ -75,64 +77,64 @@ class TimelineHelperSpec extends SpecBase {
       }
 
       "the event is for a movement created" in {
-        getKey("IE801", 1, 0) mustBe "movementHistoryEvent.IE801.first.label"
+        getKey(IE801, 1, 0) mustBe "movementHistoryEvent.IE801.first.label"
       }
       "the event is for an update to the movement" in {
-        getKey("IE801", 2, 0) mustBe "movementHistoryEvent.IE801.further.label"
+        getKey(IE801, 2, 0) mustBe "movementHistoryEvent.IE801.further.label"
       }
       "the event is for a reminder to provide a change of destination" in {
-        getKey("IE802", 0, 1) mustBe "movementHistoryEvent.IE802.cod.label"
+        getKey(IE802, 0, 1) mustBe "movementHistoryEvent.IE802.cod.label"
       }
       "the event is for a reminder to provide a report of receipt" in {
-        getKey("IE802", 0, 2) mustBe "movementHistoryEvent.IE802.ror.label"
+        getKey(IE802, 0, 2) mustBe "movementHistoryEvent.IE802.ror.label"
       }
       "the event is for a reminder to provide a destination" in {
-        getKey("IE802", 0, 3) mustBe "movementHistoryEvent.IE802.des.label"
+        getKey(IE802, 0, 3) mustBe "movementHistoryEvent.IE802.des.label"
       }
       "the event is for a diverted movement" in {
-        getKey("IE803", 0, 1) mustBe "movementHistoryEvent.IE803.diverted.label"
+        getKey(IE803, 0, 1) mustBe "movementHistoryEvent.IE803.diverted.label"
       }
       "the event is for a split movement" in {
-        getKey("IE803", 0, 2) mustBe "movementHistoryEvent.IE803.split.label"
+        getKey(IE803, 0, 2) mustBe "movementHistoryEvent.IE803.split.label"
       }
       "the event is for a movement intercepted" in {
-        getKey("IE807", 0, 0) mustBe "movementHistoryEvent.IE807.label"
+        getKey(IE807, 0, 0) mustBe "movementHistoryEvent.IE807.label"
       }
       "the event is for a cancellation" in {
-        getKey("IE810", 0, 0) mustBe "movementHistoryEvent.IE810.label"
+        getKey(IE810, 0, 0) mustBe "movementHistoryEvent.IE810.label"
       }
       "the event is for a change of destination submission" in {
-        getKey("IE813", 0, 0) mustBe "movementHistoryEvent.IE813.label"
+        getKey(IE813, 0, 0) mustBe "movementHistoryEvent.IE813.label"
       }
       "the event is for a report of receipt submission" in {
-        getKey("IE818", 0, 0) mustBe "movementHistoryEvent.IE818.label"
+        getKey(IE818, 0, 0) mustBe "movementHistoryEvent.IE818.label"
       }
       "the event is for a alert/rejection submission" in {
-        getKey("IE819", 0, 0) mustBe "movementHistoryEvent.IE819.label"
+        getKey(IE819, 0, 0) mustBe "movementHistoryEvent.IE819.label"
       }
       "the event is for a customs acceptance of movement for export" in {
-        getKey("IE829", 0, 0) mustBe "movementHistoryEvent.IE829.label"
+        getKey(IE829, 0, 0) mustBe "movementHistoryEvent.IE829.label"
       }
       "the event is for a explanation for delay submission" in {
-        getKey("IE837", 0, 0) mustBe "movementHistoryEvent.IE837.label"
+        getKey(IE837, 0, 0) mustBe "movementHistoryEvent.IE837.label"
       }
       "the event is for a customs rejection of a movement for export" in {
-        getKey("IE839", 0, 0) mustBe "movementHistoryEvent.IE839.label"
+        getKey(IE839, 0, 0) mustBe "movementHistoryEvent.IE839.label"
       }
       "the event is for a first notification of event" in {
-        getKey("IE840", 0, 1) mustBe "movementHistoryEvent.IE840.first.label"
+        getKey(IE840, 0, 1) mustBe "movementHistoryEvent.IE840.first.label"
       }
       "the event is for a complementary notification of event" in {
-        getKey("IE840", 0, 2) mustBe "movementHistoryEvent.IE840.complementary.label"
+        getKey(IE840, 0, 2) mustBe "movementHistoryEvent.IE840.complementary.label"
       }
       "the event is for an explanation for a shortage or excess" in {
-        getKey("IE871", 0, 0) mustBe "movementHistoryEvent.IE871.label"
+        getKey(IE871, 0, 0) mustBe "movementHistoryEvent.IE871.label"
       }
       "the event is for a manual closure response" in {
-        getKey("IE881", 0, 0) mustBe "movementHistoryEvent.IE881.label"
+        getKey(IE881, 0, 0) mustBe "movementHistoryEvent.IE881.label"
       }
       "the event is for a manual closure response of a movement" in {
-        getKey("IE905", 0, 0) mustBe "movementHistoryEvent.IE905.label"
+        getKey(IE905, 0, 0) mustBe "movementHistoryEvent.IE905.label"
       }
     }
   }
@@ -143,7 +145,7 @@ class TimelineHelperSpec extends SpecBase {
       val eventDate = "2023-12-02T14:35:07"
 
       val input = MovementHistoryEvent(
-        eventType = "IE818",
+        eventType = IE818,
         eventDate = eventDate,
         sequenceNumber = 1,
         messageRole = 0,
