@@ -41,6 +41,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
   object Selectors extends BaseSelectors {
 
     override def h2(i: Int) = s"h2:nth-of-type($i)"
+
     override def h3(i: Int) = s"h3:nth-of-type($i)"
 
     def summaryListAtIndexRowKey(summaryListIndex: Int, rowIndex: Int) = s"dl:nth-of-type($summaryListIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
@@ -162,7 +163,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         result mustBe "Great Britain tax warehouse to Great Britain tax warehouse"
       }
 
-      "the users ERN starts with GBWK and the movement scenario is GB Tax Warehouse " +
+      "the users ERN starts with GBWK and the movement scenario is NI Tax Warehouse " +
         "(destination type is TaxWarehouse and Delivery Place ERN starts with XI)" in {
         val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
           destinationType = TaxWarehouse,
@@ -180,7 +181,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           ))
         ))
 
-        result mustBe "Great Britain tax warehouse to Great Britain tax warehouse"
+        result mustBe "Great Britain tax warehouse to Northern Ireland tax warehouse"
       }
     }
 

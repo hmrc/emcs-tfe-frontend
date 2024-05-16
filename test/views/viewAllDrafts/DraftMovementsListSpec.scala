@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
-package views.viewAllMovements
+package views.viewAllDrafts
 
 import base.ViewSpecBase
-import fixtures.MovementListFixtures
+import fixtures.DraftMovementsFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
-import models.MovementFilterDirectionOption.All
 import models.MovementSortingSelectOption
-import models.response.emcsTfe.GetMovementListResponse
 import play.api.i18n.{Messages, MessagesApi}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{Pagination, PaginationItem}
 import views.ViewBehaviours
-import views.html.viewAllMovements.MovementsList
+import views.html.viewAllDrafts.DraftMovementsList
 
-class MovementsListSpec extends ViewSpecBase with ViewBehaviours with MovementListFixtures {
+class DraftMovementsListSpec extends ViewSpecBase with ViewBehaviours with DraftMovementsFixtures {
 
   val sortBySelector = ".sortBy-wrapper"
   val tableSelector = ".govuk-table"
   val paginationSelector = ".govuk-pagination"
 
-  val view = app.injector.instanceOf[MovementsList]
+  lazy val twoDraftMovements = Seq(draftMovementModelMax, draftMovementModelMin)
 
-  "MovementsList" must {
+  lazy val view = app.injector.instanceOf[DraftMovementsList]
+
+  "DraftMovementsList" must {
     "render the correct content when movements list is non-empty" in {
       implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))
 
       val doc = asDocument(view(
         ern = testErn,
-        movementListResponse = getMovementListResponse,
+        movements = twoDraftMovements,
         selectItems = MovementSortingSelectOption.constructSelectItems(),
         pagination = Some(Pagination(
           items = Some(Seq(
@@ -49,8 +49,7 @@ class MovementsListSpec extends ViewSpecBase with ViewBehaviours with MovementLi
             PaginationItem(s"link-2", Some("2")),
             PaginationItem(s"link-3", Some("3"))
           ))
-        )),
-        directionFilterOption = All
+        ))
       ))
 
       doc.selectFirst(s"$sortBySelector select").childrenSize() mustBe MovementSortingSelectOption.values.size
@@ -62,7 +61,7 @@ class MovementsListSpec extends ViewSpecBase with ViewBehaviours with MovementLi
 
       val doc = asDocument(view(
         ern = testErn,
-        movementListResponse = GetMovementListResponse(Seq(), 0),
+        movements = Seq(),
         selectItems = MovementSortingSelectOption.constructSelectItems(),
         pagination = Some(Pagination(
           items = Some(Seq(
@@ -70,8 +69,7 @@ class MovementsListSpec extends ViewSpecBase with ViewBehaviours with MovementLi
             PaginationItem(s"link-2", Some("2")),
             PaginationItem(s"link-3", Some("3"))
           ))
-        )),
-        directionFilterOption = All
+        ))
       ))
 
       doc.selectFirst(s"$sortBySelector select").childrenSize() mustBe MovementSortingSelectOption.values.size

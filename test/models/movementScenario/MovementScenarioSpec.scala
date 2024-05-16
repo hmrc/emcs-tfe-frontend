@@ -20,7 +20,7 @@ import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import models.common.DestinationType._
 import models.common.{AddressModel, DestinationType, TraderModel}
-import models.movementScenario.MovementScenario.{EuTaxWarehouse, ExportWithCustomsDeclarationLodgedInTheEu, ExportWithCustomsDeclarationLodgedInTheUk, GbTaxWarehouse}
+import models.movementScenario.MovementScenario.{EuTaxWarehouse, ExportWithCustomsDeclarationLodgedInTheEu, ExportWithCustomsDeclarationLodgedInTheUk, UkTaxWarehouse}
 import models.requests.DataRequest
 import models.response.{InvalidDestinationTypeException, InvalidUserTypeException}
 import play.api.test.FakeRequest
@@ -86,7 +86,7 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
               eoriNumber = None
             )),
             destinationType = TaxWarehouse
-          )) mustBe GbTaxWarehouse
+          )) mustBe UkTaxWarehouse.GB
         }
 
         "deliveryPlaceTrader.traderExciseNumber starts with XI" in {
@@ -104,7 +104,7 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
               eoriNumber = None
             )),
             destinationType = TaxWarehouse
-          )) mustBe GbTaxWarehouse
+          )) mustBe UkTaxWarehouse.NI
         }
       }
 
@@ -238,30 +238,59 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
     }
   }
 
-  "GbTaxWarehouse" should {
+  "UkTaxWarehouse.GB" should {
 
     ".destinationType" must {
       "return TaxWarehouse" in {
-        MovementScenario.GbTaxWarehouse.destinationType mustBe DestinationType.TaxWarehouse
+        MovementScenario.UkTaxWarehouse.GB.destinationType mustBe DestinationType.TaxWarehouse
       }
     }
 
     ".movementType" when {
       "user is a warehouse keeper" must {
         "return UkToUk" in {
-          MovementScenario.GbTaxWarehouse.movementType(warehouseKeeperDataRequest) mustBe MovementType.UkToUk
+          MovementScenario.UkTaxWarehouse.GB.movementType(warehouseKeeperDataRequest) mustBe MovementType.UkToUk
         }
       }
 
       "user is a registered consignor" must {
         "return ImportUk" in {
-          MovementScenario.GbTaxWarehouse.movementType(registeredConsignorDataRequest) mustBe MovementType.ImportUk
+          MovementScenario.UkTaxWarehouse.GB.movementType(registeredConsignorDataRequest) mustBe MovementType.ImportUk
         }
       }
 
       "user is not a warehouse keeper or a registered consignor" must {
         "return an error" in {
-          intercept[InvalidUserTypeException](MovementScenario.GbTaxWarehouse.movementType(nonWKRCDataRequest))
+          intercept[InvalidUserTypeException](MovementScenario.UkTaxWarehouse.GB.movementType(nonWKRCDataRequest))
+        }
+      }
+    }
+  }
+
+  "UkTaxWarehouse.NI" should {
+
+    ".destinationType" must {
+      "return TaxWarehouse" in {
+        MovementScenario.UkTaxWarehouse.NI.destinationType mustBe DestinationType.TaxWarehouse
+      }
+    }
+
+    ".movementType" when {
+      "user is a warehouse keeper" must {
+        "return UkToUk" in {
+          MovementScenario.UkTaxWarehouse.NI.movementType(warehouseKeeperDataRequest) mustBe MovementType.UkToUk
+        }
+      }
+
+      "user is a registered consignor" must {
+        "return ImportUk" in {
+          MovementScenario.UkTaxWarehouse.NI.movementType(registeredConsignorDataRequest) mustBe MovementType.ImportUk
+        }
+      }
+
+      "user is not a warehouse keeper or a registered consignor" must {
+        "return an error" in {
+          intercept[InvalidUserTypeException](MovementScenario.UkTaxWarehouse.NI.movementType(nonWKRCDataRequest))
         }
       }
     }
@@ -277,7 +306,7 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
     ".movementType" when {
       "user is a warehouse keeper" must {
         "return UkToEu" in {
-          MovementScenario. DirectDelivery.movementType(warehouseKeeperDataRequest) mustBe MovementType.UkToEu
+          MovementScenario.DirectDelivery.movementType(warehouseKeeperDataRequest) mustBe MovementType.UkToEu
         }
       }
       "user is a registered consignor" must {

@@ -37,9 +37,11 @@ object MovementScenario extends Enumerable.Implicits with Logging {
     logger.debug(s"[getMovementScenarioFromMovement] destinationType: ${movementResponse.destinationType}")
     movementResponse.destinationType match {
       case DestinationType.TaxWarehouse =>
-          if (movementResponse.deliveryPlaceTrader.flatMap(_.traderExciseNumber).exists(RoleType.isGB) ||
-            movementResponse.deliveryPlaceTrader.flatMap(_.traderExciseNumber).exists(RoleType.isXI)) {
-          MovementScenario.GbTaxWarehouse
+        if (movementResponse.deliveryPlaceTrader.flatMap(_.traderExciseNumber).exists(RoleType.isGB)) {
+          MovementScenario.UkTaxWarehouse.GB
+        }
+        else if (movementResponse.deliveryPlaceTrader.flatMap(_.traderExciseNumber).exists(RoleType.isXI)) {
+          MovementScenario.UkTaxWarehouse.NI
         } else {
           MovementScenario.EuTaxWarehouse
         }
@@ -49,7 +51,7 @@ object MovementScenario extends Enumerable.Implicits with Logging {
       case DestinationType.ExemptedOrganisation => MovementScenario.ExemptedOrganisation
       case DestinationType.Export =>
         if (movementResponse.deliveryPlaceCustomsOfficeReferenceNumber.exists(RoleType.isGB) ||
-              movementResponse.deliveryPlaceCustomsOfficeReferenceNumber.exists(RoleType.isXI)) {
+          movementResponse.deliveryPlaceCustomsOfficeReferenceNumber.exists(RoleType.isXI)) {
           MovementScenario.ExportWithCustomsDeclarationLodgedInTheUk
         } else {
           MovementScenario.ExportWithCustomsDeclarationLodgedInTheEu
@@ -83,19 +85,38 @@ object MovementScenario extends Enumerable.Implicits with Logging {
   /**
    * emcs: tax_warehouse_uk_to_uk / import_for_taxwarehouse_uk
    */
-  case object GbTaxWarehouse extends WithName("gbTaxWarehouse") with MovementScenario {
+  object UkTaxWarehouse {
 
-    def destinationType: DestinationType = DestinationType.TaxWarehouse
+    private def _destinationType: DestinationType = DestinationType.TaxWarehouse
 
-    def movementType(implicit request: DataRequest[_]): MovementType = (request.isWarehouseKeeper, request.isRegisteredConsignor) match {
+    private def _movementType(implicit request: DataRequest[_]): MovementType = (request.isWarehouseKeeper, request.isRegisteredConsignor) match {
       case (true, _) => MovementType.UkToUk
       case (_, true) => MovementType.ImportUk
       case _ =>
-        logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
-        throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
+        logger.error(s"[movementType] invalid UserType for CAM journey: ${request.userTypeFromErn}")
+        throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for CAM journey: ${request.userTypeFromErn}")
     }
 
-    override val stringValue: String = "tax warehouse in Great Britain"
+
+    case object GB extends WithName("gbTaxWarehouse") with MovementScenario {
+
+      def destinationType: DestinationType = _destinationType
+
+      def movementType(implicit request: DataRequest[_]): MovementType = _movementType
+
+      override val stringValue: String = "tax warehouse in Great Britain"
+    }
+
+    case object NI extends WithName("niTaxWarehouse") with MovementScenario {
+
+      def destinationType: DestinationType = _destinationType
+
+      def movementType(implicit request: DataRequest[_]): MovementType = _movementType
+
+      override val stringValue: String = "tax warehouse in Northern Ireland"
+    }
+
+    val values: Seq[MovementScenario] = Seq(GB, NI)
   }
 
   /**
@@ -227,7 +248,8 @@ object MovementScenario extends Enumerable.Implicits with Logging {
 
   def valuesUk: Seq[MovementScenario] = Seq(
     ExportWithCustomsDeclarationLodgedInTheUk,
-    GbTaxWarehouse
+    UkTaxWarehouse.GB,
+    UkTaxWarehouse.NI
   )
 
   def valuesEu: Seq[MovementScenario] = Seq(
@@ -237,7 +259,8 @@ object MovementScenario extends Enumerable.Implicits with Logging {
     ExportWithCustomsDeclarationLodgedInTheUk,
     RegisteredConsignee,
     EuTaxWarehouse,
-    GbTaxWarehouse,
+    UkTaxWarehouse.GB,
+    UkTaxWarehouse.NI,
     TemporaryRegisteredConsignee,
     UnknownDestination
   )
