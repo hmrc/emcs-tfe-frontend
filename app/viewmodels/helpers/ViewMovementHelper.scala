@@ -146,10 +146,10 @@ class ViewMovementHelper @Inject()(
   //scalastyle:off
   private[helpers] def getMovementTypeForMovementView(movementResponse: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): String = {
     (request.userTypeFromErn, MovementScenario.getMovementScenarioFromMovement(movementResponse)) match {
-      case (GBWK, GbTaxWarehouse) =>
-        messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.1.$GbTaxWarehouse"))
+      case (GBWK, taxWarehouse@(UkTaxWarehouse.GB | UkTaxWarehouse.NI)) =>
+        messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.1.$taxWarehouse"))
 
-      case (XIWK, destinationType@(GbTaxWarehouse | EuTaxWarehouse | DirectDelivery | RegisteredConsignee | TemporaryRegisteredConsignee | ExemptedOrganisation | UnknownDestination)) =>
+      case (XIWK, destinationType@(UkTaxWarehouse.GB | UkTaxWarehouse.NI | EuTaxWarehouse | DirectDelivery | RegisteredConsignee | TemporaryRegisteredConsignee | ExemptedOrganisation | UnknownDestination)) =>
         movementResponse.placeOfDispatchTrader match {
           case Some(placeOfDispatch) => placeOfDispatch.traderExciseNumber match {
             case Some(dispatchErn) =>

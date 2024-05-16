@@ -1,0 +1,78 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
+@import viewmodels.ViewAllMovementsTableHelper
+@import views.html.components._
+
+@this(
+        table: table,
+        h1: h1,
+        h2: h2,
+        searchResults: searchResults,
+        appConfig: AppConfig,
+        govukButton: GovukButton,
+        govukPagination: GovukPagination,
+        govukSelect: GovukSelect,
+        helper: ViewAllMovementsTableHelper
+)
+
+@(results: Seq[_], selectItems: Seq[SelectItem])(content: Html)(implicit messages: Messages)
+
+@if(results.nonEmpty) {
+    @* if there are movements in the response, show `sortBy` field, all results, pagination *@
+    <div class="sortBy-wrapper" style="display: inline-flex;
+        align-items: flex-end;">
+        @govukSelect(Select(
+            items = selectItems,
+            name = "sortBy",
+            id = "sortBy",
+            label = Label(
+                content = Text(messages("viewAllMovements.sort.label")),
+                classes = "govuk-!-display-inline govuk-!-padding-right-2"
+            ),
+            classes = "govuk-!-display-inline",
+            formGroupClasses = "govuk-!-margin-bottom-0"
+        ))
+
+        @govukButton(
+            ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
+            .withCssClass("govuk-!-margin-left-2")
+            .withId("sortBySubmit")
+        )
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
+
+    @content
+} else {
+    @* if there are no movements in the response, add `sortBy` field to the HTML in a hidden div so form validation is happy *@
+    <div class="sortBy-wrapper govuk-!-display-none">
+    @govukSelect(Select(
+        items = selectItems,
+        name = "sortBy",
+        id = "sortBy",
+        label = Label(),
+        attributes = Map("type" -> "hidden")
+    ))
+    </div>
+}
+
+@{
+    //$COVERAGE-OFF$
+}

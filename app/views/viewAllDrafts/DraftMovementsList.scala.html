@@ -16,58 +16,38 @@
 
 @import config.AppConfig
 @import models.response.emcsTfe.draftMovement.DraftMovement
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 @import viewmodels.draftMovements._
 @import views.html.components._
 
 @this(
-    table: table,
-    h1: h1,
-    p: p,
-    searchResults: searchResults,
-    appConfig: AppConfig,
-    govukButton: GovukButton,
-    govukPagination : GovukPagination,
-    govukSelect : GovukSelect,
-    helper: ViewAllDraftMovementsTableHelper
+        table: table,
+        h1: h1,
+        p: p,
+        searchResults: searchResults,
+        sortBy: sortBy,
+        appConfig: AppConfig,
+        govukButton: GovukButton,
+        govukPagination: GovukPagination,
+        govukSelect: GovukSelect,
+        helper: ViewAllDraftMovementsTableHelper
 )
 
 @(ern: String, movements: Seq[DraftMovement], selectItems: Seq[SelectItem], pagination: Option[Pagination])(implicit messages: Messages)
 
-    <div class="govuk-grid-column-two-thirds">
+<div class="govuk-grid-column-two-thirds">
 
-        @searchResults(movements.size)
+    @searchResults(movements.size)
 
-        <div style="display: inline-flex; align-items: flex-end;">
-            @govukSelect(Select(
-              items = selectItems,
-              name = "sortBy",
-              id = "sortBy",
-              label = Label(
-                  content = Text(messages("viewAllMovements.sort.label")),
-                  classes = "govuk-!-display-inline govuk-!-padding-right-2"
-              ),
-            classes = "govuk-!-display-inline",
-            formGroupClasses = "govuk-!-margin-bottom-0"
-            ))
-
-            @govukButton(
-                ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
-                    .withCssClass("govuk-!-margin-left-2")
-                    .withId("sortBySubmit")
-            )
-        </div>
-
-        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
-
+    @sortBy(results = movements, selectItems = selectItems) {
         @table(helper.constructTable(ern, movements))
 
-        @pagination.map{ paginationLinks =>
+        @pagination.map { paginationLinks =>
             @govukPagination(paginationLinks)
         }
-    </div>
+    }
+</div>
 
 @{
     //$COVERAGE-OFF$

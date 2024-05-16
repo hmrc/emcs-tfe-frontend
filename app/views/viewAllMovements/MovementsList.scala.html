@@ -16,60 +16,38 @@
 
 @import config.AppConfig
 @import models.response.emcsTfe.GetMovementListResponse
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 @import viewmodels.ViewAllMovementsTableHelper
 @import views.html.components._
 
 @this(
-    table: table,
-    h1: h1,
-    h2: h2,
-    searchResults: searchResults,
-    appConfig: AppConfig,
-    govukButton: GovukButton,
-    govukPagination : GovukPagination,
-    govukSelect : GovukSelect,
-    helper: ViewAllMovementsTableHelper
+        table: table,
+        h1: h1,
+        h2: h2,
+        searchResults: searchResults,
+        sortBy: sortBy,
+        appConfig: AppConfig,
+        govukButton: GovukButton,
+        govukPagination: GovukPagination,
+        govukSelect: GovukSelect,
+        helper: ViewAllMovementsTableHelper
 )
 
 @(ern: String, movementListResponse: GetMovementListResponse, selectItems: Seq[SelectItem], pagination: Option[Pagination], directionFilterOption: MovementFilterDirectionOption)(implicit messages: Messages)
 
-    <div class="govuk-grid-column-two-thirds">
+<div class="govuk-grid-column-two-thirds">
 
-        @searchResults(movementListResponse.count)
+    @searchResults(movementListResponse.count)
 
-        @if(movementListResponse.movements.nonEmpty) {
-            <div style="display: inline-flex; align-items: flex-end;">
-                @govukSelect(Select(
-                    items = selectItems,
-                    name = "sortBy",
-                    id = "sortBy",
-                    label = Label(
-                        content = Text(messages("viewAllMovements.sort.label")),
-                        classes = "govuk-!-display-inline govuk-!-padding-right-2"
-                    ),
-                    classes = "govuk-!-display-inline",
-                    formGroupClasses = "govuk-!-margin-bottom-0"
-                ))
+    @sortBy(results = movementListResponse.movements, selectItems = selectItems) {
+        @table(helper.constructTable(ern, movementListResponse.movements, directionFilterOption))
 
-                @govukButton(
-                    ButtonViewModel(Text(messages("viewAllMovements.sort.button")))
-                    .withCssClass("govuk-!-margin-left-2")
-                    .withId("sortBySubmit")
-                )
-            </div>
-
-            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
-
-            @table(helper.constructTable(ern, movementListResponse.movements, directionFilterOption))
-
-            @pagination.map{ paginationLinks =>
-                @govukPagination(paginationLinks)
-            }
+        @pagination.map { paginationLinks =>
+            @govukPagination(paginationLinks)
         }
-    </div>
+    }
+</div>
 
 @{
     //$COVERAGE-OFF$
