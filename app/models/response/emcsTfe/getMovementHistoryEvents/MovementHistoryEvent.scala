@@ -16,9 +16,12 @@
 
 package models.response.emcsTfe.getMovementHistoryEvents
 
+import models.EventTypes
 import play.api.libs.json.{Format, JsValue, Json, Reads}
 
-case class MovementHistoryEvent(eventType: String, eventDate: String, sequenceNumber: Int, messageRole: Int, upstreamArc: Option[String])
+case class MovementHistoryEvent(eventType: EventTypes, eventDate: String, sequenceNumber: Int, messageRole: Int, upstreamArc: Option[String]) {
+  val eventId: Int = eventDate.hashCode >>> 1
+}
 
 object MovementHistoryEvent {
   implicit val format: Format[MovementHistoryEvent] = Json.format[MovementHistoryEvent]

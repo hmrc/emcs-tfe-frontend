@@ -32,12 +32,13 @@ class ItemDetailsCardHelperSpec extends SpecBase with ItemFixtures {
   lazy val link = app.injector.instanceOf[link]
   lazy val list = app.injector.instanceOf[list]
 
-  lazy val helper = new ItemDetailsCardHelper(list, link, appConfig)
+  lazy val packagingHelper = new ItemPackagingCardHelper()
+  lazy val itemHelper = new ItemDetailsCardHelper(list, link, appConfig)
 
   private def summaryListRowBuilder(key: Content, value: Content) = SummaryListRow(
     Key(key),
     Value(value),
-    classes = "govuk-summary-list__row--no-border"
+    classes = "govuk-summary-list__row"
   )
 
   "ItemDetailsCardHelper" when {
@@ -52,7 +53,7 @@ class ItemDetailsCardHelperSpec extends SpecBase with ItemFixtures {
 
         "should show the link for CN Code" when {
           "the CN Code is not S500" in {
-            helper.commodityCodeRow()(item, msgs) mustBe Some(summaryListRowBuilder(
+            itemHelper.commodityCodeRow()(item, msgs) mustBe Some(summaryListRowBuilder(
               Text(langMessages.commodityCodeKey),
               HtmlContent(link(link = appConfig.getUrlForCommodityCode(item.cnCode), messageKey = item.cnCode, isExternal = true, id = Some("commodity-code")))
             ))
@@ -61,9 +62,9 @@ class ItemDetailsCardHelperSpec extends SpecBase with ItemFixtures {
 
         "should NOT show the link for CN Code" when {
           "the CN Code is S500" in {
-            helper.commodityCodeRow()(item.copy(productCode = "S500"), msgs) mustBe Some(summaryListRowBuilder(
+            itemHelper.commodityCodeRow()(item.copy(productCode = "S500"), msgs) mustBe Some(summaryListRowBuilder(
               Text(langMessages.commodityCodeKey),
-              Text(item.cnCode)
+              HtmlContent(item.cnCode)
             ))
           }
         }
@@ -91,7 +92,7 @@ class ItemDetailsCardHelperSpec extends SpecBase with ItemFixtures {
               )),
               Seq(summaryListRowBuilder(
                 Text(langMessages.densityKey),
-                HtmlContent(langMessages.densityValue(item.density.get))
+                Text(langMessages.densityValue(item.density.get))
               )),
               Seq(summaryListRowBuilder(
                 Text(langMessages.alcoholicStrengthKey),
@@ -171,23 +172,23 @@ class ItemDetailsCardHelperSpec extends SpecBase with ItemFixtures {
           }
 
           "when wineOperations is not empty" in {
-            helper.constructItemDetailsCard(item) mustBe card(item.wineProduct)
+            itemHelper.constructItemDetailsCard(item) mustBe card(item.wineProduct)
           }
 
           "when wineOperations is empty" in {
             val itemWithEmptyWineOperations = item.copy(wineProduct = Some(wineProduct.copy(wineOperations = Some(Seq()))))
-            helper.constructItemDetailsCard(itemWithEmptyWineOperations) mustBe card(itemWithEmptyWineOperations.wineProduct)
+            itemHelper.constructItemDetailsCard(itemWithEmptyWineOperations) mustBe card(itemWithEmptyWineOperations.wineProduct)
           }
 
           "when wineProduct is empty" in {
             val itemWithEmptyWineOperations = item.copy(wineProduct = None)
-            helper.constructItemDetailsCard(itemWithEmptyWineOperations) mustBe card(itemWithEmptyWineOperations.wineProduct)
+            itemHelper.constructItemDetailsCard(itemWithEmptyWineOperations) mustBe card(itemWithEmptyWineOperations.wineProduct)
           }
         }
 
         "should render the PackagingType card" in {
 
-          helper.constructPackagingTypeCard(aerosolPackage) mustBe Seq(
+          packagingHelper.constructPackagingTypeCard(aerosolPackage) mustBe Seq(
             summaryListRowBuilder(
               Text(langMessages.packagingTypeKey),
               Text(aerosolPackage.typeOfPackage)

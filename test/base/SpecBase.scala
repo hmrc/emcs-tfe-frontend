@@ -48,6 +48,8 @@ trait SpecBase extends AnyWordSpecLike
   lazy val errorHandler: ErrorHandler = app.injector.instanceOf[ErrorHandler]
   lazy val preValidateTraderDataRetrievalAction: PrevalidateTraderDataRetrievalAction = app.injector.instanceOf[PrevalidateTraderDataRetrievalAction]
 
+  def simpleName(obj: Object): String = obj.getClass.getSimpleName.stripSuffix("$")
+
   def messages(request: Request[_]): Messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
   def messages(candidates: Seq[Lang]): Messages = app.injector.instanceOf[MessagesApi].preferred(candidates)

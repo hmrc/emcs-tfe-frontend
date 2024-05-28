@@ -16,7 +16,7 @@
 
 @import models.requests.DataRequest
 @import models.response.emcsTfe.MovementItem
-@import viewmodels.helpers.ItemDetailsCardHelper
+@import viewmodels.helpers.{ItemDetailsCardHelper, ItemPackagingCardHelper}
 @import views.html.components.{h1, summaryCard}
 
 @this(
@@ -24,7 +24,8 @@
         formHelper: FormWithCSRF,
         govukButton: GovukButton,
         h1: h1,
-        helper: ItemDetailsCardHelper,
+        itemHelper: ItemDetailsCardHelper,
+        packagingHelper: ItemPackagingCardHelper,
         summaryCard: summaryCard
 )
 
@@ -40,13 +41,13 @@
 
         @summaryCard(
             Some(Card(Some(CardTitle(Text(messages("itemDetails.itemDetailsCardTitle")))))),
-            helper.constructItemDetailsCard(item)
+            itemHelper.constructItemDetailsCard(item)
         )
 
         @item.packaging.zipWithIndex.map { case (packaging, i) =>
             @summaryCard(
                 Some(Card(Some(CardTitle(Text(messages("itemDetails.packagingTypeCardTitle", i + 1)))))),
-                helper.constructPackagingTypeCard(packaging)
+                packagingHelper.constructPackagingTypeCard(packaging)
             )
         }
 }

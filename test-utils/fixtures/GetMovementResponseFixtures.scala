@@ -94,6 +94,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     arc = testArc,
     sequenceNumber = testSequenceNumber,
     destinationType = DestinationType.TaxWarehouse,
+    memberStateCode = None,
+    serialNumberOfCertificateOfExemption = None,
     localReferenceNumber = testLrn,
     eadEsad = eadEsadModel,
     eadStatus = Accepted,
@@ -133,6 +135,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       vatNumber = Some("GB123456789"),
       eoriNumber = None
     )),
+    transportArrangerTrader = None,
     consigneeTrader = Some(TraderModel(
       traderExciseNumber = Some("GB12345GTR144"),
       traderName = Some("Current 801 Consignee"),
@@ -145,6 +148,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       vatNumber = Some("GB123456789"),
       eoriNumber = None
     )),
+    dispatchImportOfficeReferenceNumber = None,
     deliveryPlaceCustomsOfficeReferenceNumber = Some("FR000003"),
     dateOfDispatch = LocalDate.parse("2008-11-20"),
     journeyTime = "20 days",

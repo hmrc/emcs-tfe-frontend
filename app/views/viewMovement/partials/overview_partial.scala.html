@@ -15,34 +15,45 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import views.html.components.{h2, h3, summaryCard}
+@import views.html.components.{h2, h3, h4, summaryCard}
 
 @this(
         h2: h2,
         h3: h3,
+        h4: h4,
         summaryCard: summaryCard
 )
+
 
 @(
         headingMessageKey: Option[String],
         cardTitleMessageKey: Option[String],
         summaryListRows: Seq[SummaryListRow],
+        summaryListAttributes: Map[String, String] = Map.empty,
+        cardFooterHtml: Option[Html] = None,
         headingMessageClass: String = "govuk-heading-l",
-        headingLevel: Int = 2
+        headingLevel: Int = 2,
+        headingId: Option[String] = None
+
 )(implicit messages: Messages)
 
 @if(headingMessageKey.isDefined) {
  @if(headingLevel == 2) {
-  @h2(messages(headingMessageKey.get), headingMessageClass)
+  @h2(messages(headingMessageKey.get), headingMessageClass, id = headingId)
  }
  @if(headingLevel == 3) {
-  @h3(messages(headingMessageKey.get), headingMessageClass)
+  @h3(messages(headingMessageKey.get), headingMessageClass, id = headingId)
+ }
+ @if(headingLevel == 4) {
+  @h4(messages(headingMessageKey.get), headingMessageClass, id = headingId)
  }
 }
 
 @summaryCard(
     cardTitleMessageKey.map(msgKey => Card(Some(CardTitle(Text(messages(msgKey)))))),
-    summaryListRows
+    summaryListRows,
+    summaryListAttributes,
+    cardFooterHtml
 )
 
 @{

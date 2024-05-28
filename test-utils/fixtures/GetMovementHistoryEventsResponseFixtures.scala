@@ -16,6 +16,7 @@
 
 package fixtures
 
+import models.EventTypes._
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.libs.json.{JsValue, Json}
 
@@ -23,21 +24,21 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val getMovementHistoryEventsModel: Seq[MovementHistoryEvent] = Seq(
     MovementHistoryEvent(
-      eventType = "IE813",
+      eventType = IE813,
       eventDate = "2023-12-01T15:00:00",
       sequenceNumber = 1,
       messageRole = 1,
       upstreamArc = Some(testArc)
     ),
     MovementHistoryEvent(
-      eventType = "IE813",
+      eventType = IE813,
       eventDate = "2023-12-02T13:00:00",
       sequenceNumber = 2,
       messageRole = 1,
       upstreamArc = Some(testArc)
     ),
     MovementHistoryEvent(
-      eventType = "IE818",
+      eventType = IE818,
       eventDate = "2023-12-04T08:00:00",
       sequenceNumber = 3,
       messageRole = 1,
@@ -69,4 +70,11 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
     )
   )
 
+  val ie801Event = MovementHistoryEvent(
+    eventType = IE801,
+    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    sequenceNumber = 1,
+    messageRole = 0,
+    upstreamArc = None
+  )
 }

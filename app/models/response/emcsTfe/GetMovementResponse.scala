@@ -30,12 +30,16 @@ case class GetMovementResponse(
                                 arc: String,
                                 sequenceNumber: Int,
                                 destinationType: DestinationType,
+                                memberStateCode: Option[String],
+                                serialNumberOfCertificateOfExemption: Option[String],
                                 localReferenceNumber: String,
                                 eadEsad: EadEsadModel,
                                 eadStatus: MovementEadStatus,
                                 deliveryPlaceTrader: Option[TraderModel],
                                 placeOfDispatchTrader: Option[TraderModel],
+                                transportArrangerTrader: Option[TraderModel],
                                 firstTransporterTrader: Option[TransportTraderModel],
+                                dispatchImportOfficeReferenceNumber: Option[String],
                                 deliveryPlaceCustomsOfficeReferenceNumber: Option[String],
                                 consignorTrader: TraderModel,
                                 consigneeTrader: Option[TraderModel],
@@ -76,11 +80,15 @@ object GetMovementResponse {
     arc <- (__ \ "arc").read[String]
     sequenceNumber <- (__ \ "sequenceNumber").read[Int]
     destinationType <- (__ \ "destinationType").read[DestinationType]
+    memberStateCode <- (__ \ "memberStateCode").readNullable[String]
+    serialNumberOfCertificateOfExemption <- (__ \ "serialNumberOfCertificateOfExemption").readNullable[String]
     consignorTrader <- (__ \ "consignorTrader").read[TraderModel]
     consigneeTrader <- (__ \ "consigneeTrader").readNullable[TraderModel]
     deliveryPlaceTrader <- (__ \ "deliveryPlaceTrader").readNullable[TraderModel]
     placeOfDispatchTrader <- (__ \ "placeOfDispatchTrader").readNullable[TraderModel]
+    transportArrangerTrader <- (__ \ "transportArrangerTrader").readNullable[TraderModel]
     firstTransporterTrader <- (__ \ "firstTransporterTrader").readNullable[TransportTraderModel]
+    dispatchImportOfficeReferenceNumber <- (__ \ "dispatchImportOfficeReferenceNumber").readNullable[String]
     deliveryPlaceCustomsOfficeReferenceNumber <- (__ \ "deliveryPlaceCustomsOfficeReferenceNumber").readNullable[String]
     localReferenceNumber <- (__ \ "localReferenceNumber").read[String]
     eadStatus <- (__ \ "eadStatus").read[MovementEadStatus]
@@ -101,11 +109,15 @@ object GetMovementResponse {
       arc = arc,
       sequenceNumber = sequenceNumber,
       destinationType = destinationType,
+      memberStateCode = memberStateCode,
+      serialNumberOfCertificateOfExemption = serialNumberOfCertificateOfExemption,
       consignorTrader = consignorTrader,
       consigneeTrader = consigneeTrader,
       deliveryPlaceTrader = deliveryPlaceTrader,
       placeOfDispatchTrader = placeOfDispatchTrader,
+      transportArrangerTrader = transportArrangerTrader,
       firstTransporterTrader = firstTransporterTrader,
+      dispatchImportOfficeReferenceNumber = dispatchImportOfficeReferenceNumber,
       deliveryPlaceCustomsOfficeReferenceNumber = deliveryPlaceCustomsOfficeReferenceNumber,
       localReferenceNumber = localReferenceNumber,
       eadStatus = eadStatus,
