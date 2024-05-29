@@ -35,18 +35,18 @@ class EventsHelper @Inject()(
 
   def constructEventInformation(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
     event.eventType match {
-      case IE801  => movementCards(event, movement)
+      case IE801  => ie801Html(event, movement)
       case _      => Empty.asHtml
     }
   }
 
-  private def movementCards(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+  private def ie801Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
     implicit val _movement: GetMovementResponse = movement
 
     HtmlFormat.fill(
       Seq(
         p(classes = "govuk-body-l")(Html(
-            messages(s"${timelineHelper.getEventBaseKey(event)}.p1")
+            messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
         )),
         printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         eventHelper.movementInformationCard(),

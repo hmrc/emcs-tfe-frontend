@@ -22,7 +22,7 @@ import fixtures.messages.EN
 import fixtures.{GetMovementResponseFixtures, MessagesFixtures}
 import mocks.config.MockAppConfig
 import mocks.services.{MockGetMovementHistoryEventsService, MockGetMovementService}
-import models.EventTypes.{IE801, IE819}
+import models.EventTypes._
 import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
@@ -69,58 +69,80 @@ class ViewEventControllerSpec
     )(ec, appConfig)
   }
 
-  ".movementCreated" must {
 
-      val ie801Event = MovementHistoryEvent(
-        eventType = IE801,
-        eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
-        sequenceNumber = 1,
-        messageRole = 0,
-        upstreamArc = None,
-        isFirstEventTypeInHistory = true
-      )
+  private def renderASuccessfulEventView(event: MovementHistoryEvent) = {
+    "render a view" in new Test {
+      val testHistoryEvents = getMovementHistoryEventsModel :+ event
+      val testMovement = getMovementResponseModel.copy(eventHistorySummary = Some(testHistoryEvents))
 
-      "render a view" in new Test {
-        val testHistoryEvents = getMovementHistoryEventsModel :+ ie801Event
-        val testMovement = getMovementResponseModel.copy(eventHistorySummary = Some(testHistoryEvents))
+      MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
+      MockGetMovementService.getMovement(testErn, testArc, Some(event.sequenceNumber)).returns(Future.successful(testMovement))
+
+      val result: Future[Result] = controller.movementCreated(testErn, testArc, 853932155)(fakeRequest)
+
+      status(result) shouldBe Status.OK
+    }
+  }
+
+  private def handle404s(event: MovementHistoryEvent) = {
+    "return a 404 not found" when {
+      "when the wrong event id is requested" in new Test {
+        val testHistoryEvents = getMovementHistoryEventsModel :+ event
 
         MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
-        MockGetMovementService.getMovement(testErn, testArc, Some(1)).returns(Future.successful(testMovement))
 
-        val result: Future[Result] = controller.movementCreated(testErn, testArc, 853932155)(fakeRequest)
+        val result: Future[Result] = controller.movementCreated(testErn, testArc, 1234567)(fakeRequest)
 
-        status(result) shouldBe Status.OK
+        status(result) shouldBe Status.NOT_FOUND
       }
+      "when the matching event is not an IE801 event" in new Test {
+        val testHistoryEvents = getMovementHistoryEventsModel :+ event.copy(eventType = IE819)
 
-      "return a 404 not found" when {
-        "when the wrong event id is requested" in new Test {
-          val testHistoryEvents = getMovementHistoryEventsModel :+ ie801Event
+        MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
 
-          MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
+        val result: Future[Result] = controller.movementCreated(testErn, testArc, 1234567)(fakeRequest)
 
-          val result: Future[Result] = controller.movementCreated(testErn, testArc, 1234567)(fakeRequest)
-
-          status(result) shouldBe Status.NOT_FOUND
-        }
-        "when the matching event is not an IE801 event" in new Test {
-          val testHistoryEvents = getMovementHistoryEventsModel :+ ie801Event.copy(eventType = IE819)
-
-          MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
-
-          val result: Future[Result] = controller.movementCreated(testErn, testArc, 1234567)(fakeRequest)
-
-          status(result) shouldBe Status.NOT_FOUND
-        }
-        "when there are no history events for the movement" in new Test {
-          val testHistoryEvents = Seq[MovementHistoryEvent]().empty
-
-          MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
-
-          val result: Future[Result] = controller.movementCreated(testErn, testArc, 1234567)(fakeRequest)
-
-          status(result) shouldBe Status.NOT_FOUND
-        }
+        status(result) shouldBe Status.NOT_FOUND
       }
+      "when there are no history events for the movement" in new Test {
+        val testHistoryEvents = Seq[MovementHistoryEvent]().empty
+
+        MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
+
+        val result: Future[Result] = controller.movementCreated(testErn, testArc, 1234567)(fakeRequest)
+
+        status(result) shouldBe Status.NOT_FOUND
+      }
+    }
+  }
+
+  ".movementCreated" must {
+    val testEvent = MovementHistoryEvent(
+      eventType = IE801,
+      eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+      sequenceNumber = 1,
+      messageRole = 0,
+      upstreamArc = None,
+      isFirstEventTypeInHistory = true
+    )
+
+    renderASuccessfulEventView(testEvent)
+    handle404s(testEvent)
+  }
+
+  ".movementUpdated" must {
+
+    val testEvent = MovementHistoryEvent(
+      eventType = IE801,
+      eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+      sequenceNumber = 2,
+      messageRole = 0,
+      upstreamArc = None,
+      isFirstEventTypeInHistory = false
+    )
+
+    renderASuccessfulEventView(testEvent)
+    handle404s(testEvent)
 
   }
 
