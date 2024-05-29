@@ -103,7 +103,7 @@ object GetMovementResponse {
     numberOfItems <- (__ \ "numberOfItems").read[Int]
     reportOfReceipt <- (__ \ "reportOfReceipt").readNullable[ReportOfReceiptModel]
     items <- (__ \ "items").read[Seq[MovementItem]]
-    eventHistorySummary <- (__ \ "eventHistorySummary").readNullable[Seq[MovementHistoryEvent]]
+    eventHistorySummary <- (__ \ "eventHistorySummary").readNullable[Seq[MovementHistoryEvent]](MovementHistoryEvent.seqReads)
   } yield {
     GetMovementResponse(
       arc = arc,

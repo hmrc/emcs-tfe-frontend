@@ -64,20 +64,21 @@ class TimelineHelperSpec extends SpecBase {
   ".getEventTitleKey" must {
     "return the correct message key" when {
 
-      def getKey(eventType: EventTypes, sequenceNumber: Int, messageRole: Int):String = {
+      def getKey(eventType: EventTypes, sequenceNumber: Int, messageRole: Int, firstEventTypeInTimeline: Boolean = false):String = {
         helper.getEventTitleKey(
           MovementHistoryEvent(
             eventType = eventType,
             eventDate = "",
             sequenceNumber = sequenceNumber,
             messageRole = messageRole,
-            None
+            None,
+            isFirstEventTypeInHistory = firstEventTypeInTimeline
           )
         )
       }
 
       "the event is for a movement created" in {
-        getKey(IE801, 1, 0) mustBe "movementHistoryEvent.IE801.first.label"
+        getKey(IE801, 1, 0, firstEventTypeInTimeline = true) mustBe "movementHistoryEvent.IE801.first.label"
       }
       "the event is for an update to the movement" in {
         getKey(IE801, 2, 0) mustBe "movementHistoryEvent.IE801.further.label"
@@ -149,7 +150,8 @@ class TimelineHelperSpec extends SpecBase {
         eventDate = eventDate,
         sequenceNumber = 1,
         messageRole = 0,
-        upstreamArc = None
+        upstreamArc = None,
+        isFirstEventTypeInHistory = true
       )
 
       /*

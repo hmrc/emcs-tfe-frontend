@@ -28,21 +28,24 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
       eventDate = "2023-12-01T15:00:00",
       sequenceNumber = 1,
       messageRole = 1,
-      upstreamArc = Some(testArc)
+      upstreamArc = Some(testArc),
+      isFirstEventTypeInHistory = true
     ),
     MovementHistoryEvent(
       eventType = IE813,
       eventDate = "2023-12-02T13:00:00",
       sequenceNumber = 2,
       messageRole = 1,
-      upstreamArc = Some(testArc)
+      upstreamArc = Some(testArc),
+      isFirstEventTypeInHistory = false
     ),
     MovementHistoryEvent(
       eventType = IE818,
       eventDate = "2023-12-04T08:00:00",
       sequenceNumber = 3,
       messageRole = 1,
-      upstreamArc = Some(testArc)
+      upstreamArc = Some(testArc),
+      isFirstEventTypeInHistory = true
     )
   )
 
@@ -75,6 +78,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
     eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 0,
-    upstreamArc = None
+    upstreamArc = None,
+    isFirstEventTypeInHistory = true
   )
 }

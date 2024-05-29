@@ -47,18 +47,21 @@ class TimelineHelper @Inject()() extends Logging {
     s"${getEventBaseKey(event)}.urlLabel"
 
   def getEventBaseKey(event: MovementHistoryEvent): String = {
-    (event.eventType, event.sequenceNumber, event.messageRole) match {
-      case (IE801, 1, 0) => s"movementHistoryEvent.${event.eventType}.first"
-      case (IE801, _, 0) => s"movementHistoryEvent.${event.eventType}.further"
-      case (IE802, _, 1) => s"movementHistoryEvent.${event.eventType}.cod"
-      case (IE802, _, 2) => s"movementHistoryEvent.${event.eventType}.ror"
-      case (IE802, _, 3) => s"movementHistoryEvent.${event.eventType}.des"
-      case (IE803, _, 1) => s"movementHistoryEvent.${event.eventType}.diverted"
-      case (IE803, _, 2) => s"movementHistoryEvent.${event.eventType}.split"
-      case (IE840, _, 1) => s"movementHistoryEvent.${event.eventType}.first"
-      case (IE840, _, 2) => s"movementHistoryEvent.${event.eventType}.complementary"
-      case _ => s"movementHistoryEvent.${event.eventType}"
+    val base = s"movementHistoryEvent.${event.eventType}"
+
+    val suffix = (event.eventType, event.messageRole) match {
+      case (IE801, 0) => if (event.isFirstEventTypeInHistory) "first" else "further"
+      case (IE802, 1) => "cod"
+      case (IE802, 2) => "ror"
+      case (IE802, 3) => "des"
+      case (IE803, 1) => "diverted"
+      case (IE803, 2) => "split"
+      case (IE840, 1) => "first"
+      case (IE840, 2) => "complementary"
+      case _ => ""
     }
+
+    if (suffix.isEmpty) base else s"$base.$suffix"
   }
 
   def parseDateTime(eventDate: String): LocalDateTime = {

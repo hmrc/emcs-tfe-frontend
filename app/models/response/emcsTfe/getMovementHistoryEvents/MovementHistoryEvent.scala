@@ -17,16 +17,46 @@
 package models.response.emcsTfe.getMovementHistoryEvents
 
 import models.EventTypes
-import play.api.libs.json.{Format, JsValue, Json, Reads}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsValue, Reads, __}
 
-case class MovementHistoryEvent(eventType: EventTypes, eventDate: String, sequenceNumber: Int, messageRole: Int, upstreamArc: Option[String]) {
+case class MovementHistoryEvent(
+                                 eventType: EventTypes,
+                                 eventDate: String,
+                                 sequenceNumber: Int,
+                                 messageRole: Int,
+                                 upstreamArc: Option[String],
+                                 isFirstEventTypeInHistory: Boolean) {
+
   val eventId: Int = eventDate.hashCode >>> 1
 }
 
 object MovementHistoryEvent {
-  implicit val format: Format[MovementHistoryEvent] = Json.format[MovementHistoryEvent]
+  implicit val reads: Reads[MovementHistoryEvent] =
+    (
+      (__ \ "eventType").read[EventTypes] and
+      (__ \ "eventDate").read[String] and
+      (__ \ "sequenceNumber").read[Int] and
+      (__ \ "messageRole").read[Int] and
+      (__ \ "upstreamArc").readNullable[String] and
+      Reads.pure(false)
+    )(MovementHistoryEvent.apply _)
 
   val seqReads: Reads[Seq[MovementHistoryEvent]] = (json: JsValue) => {
     json.validate[Seq[MovementHistoryEvent]](Reads.seq[MovementHistoryEvent])
+      .map { events =>
+        val seenEventTypes = scala.collection.mutable.Set[EventTypes]()
+
+        events
+          .sortBy(_.eventDate)
+          .map { event =>
+            if (seenEventTypes.contains(event.eventType)) {
+              event.copy(isFirstEventTypeInHistory = false)
+            } else {
+              seenEventTypes.add(event.eventType)
+              event.copy(isFirstEventTypeInHistory = true)
+            }
+        }
+    }
   }
 }
