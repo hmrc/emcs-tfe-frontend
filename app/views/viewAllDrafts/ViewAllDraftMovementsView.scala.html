@@ -25,6 +25,8 @@
 @import viewmodels.draftMovements._
 @import views.html._
 @import views.html.components._
+@import models.draftMovements.GetDraftMovementsSearchOptions
+@import config.AppConfig
 @import config.Constants.TFE_DELETED_DRAFT_LRN
 
 @this(
@@ -33,6 +35,7 @@
         h1: h1,
         h2: h2,
         p: p,
+        link: link,
         govukPagination: GovukPagination,
         govukSelect: GovukSelect,
         govukInput: GovukInput,
@@ -54,8 +57,9 @@
         movements: Seq[DraftMovement],
         sortSelectItems: Seq[SelectItem],
         exciseItems: Seq[SelectItem],
-        pagination: Option[Pagination]
-)(implicit request: DataRequest[_], messages: Messages)
+        pagination: Option[Pagination],
+        totalMovements: Int
+)(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
 
 @searchFields = {
 
@@ -116,6 +120,14 @@
             @messages("viewAllDraftMovements.heading")
         }
 
+        @link(
+            link = appConfig.emcsTfeCreateMovementUrl(ern),
+            messageKey = "viewAllDraftMovements.createMovement.button",
+            id = Some("createNewMovementButton"),
+            button = true,
+            classes = "govuk-button"
+        )
+
         @govukFieldset(Fieldset(
             legend = Some(Legend(
                 content = Text(messages("viewAllDraftMovements.search.heading")),
@@ -133,10 +145,20 @@
             <div class="govuk-grid-column-one-third govuk-!-padding-bottom-2 filter-column">
                 <aside class="filter-panel">
                     @h2("viewAllDraftMovements.filters.heading", "govuk-heading-m")
-                    @govukButton(
-                        ButtonViewModel(Text(messages("viewAllDraftMovements.filters.button")))
-                        .withId("filtersButton")
-                    )
+
+                    <div class="govuk-button-group">
+                        @govukButton(
+                            ButtonViewModel(Text(messages("viewAllDraftMovements.filters.button")))
+                            .withId("filtersButton")
+                        )
+
+                        @link(
+                            link = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url,
+                            messageKey = "viewAllDraftMovements.filters.clear.button",
+                            id = Some("clearFiltersButton"),
+                            classes = "govuk-link govuk-link--no-visited-state"
+                        )
+                    </div>
 
                     @govukCheckboxes(
                         CheckboxesViewModel(
@@ -208,7 +230,7 @@
                 </aside>
             </div>
 
-            @draftMovementList(ern, movements, sortSelectItems, pagination)
+            @draftMovementList(ern, movements, sortSelectItems, pagination, totalMovements)
         </div>
     }
 }

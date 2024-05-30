@@ -44,12 +44,15 @@ object ViewAllDraftMovementsMessages {
     val searchInputHiddenLabel = "Search for a draft"
     val searchButton = "Search"
 
+    val createNewMovement = "Create a new movement"
+
     val skipToResults = "Skip to results"
     def resultsFound(num: Int): String = s"$num results found"
     val noResultsFound = "No results found"
 
     val filtersHeading = "Filters"
-    val filtersButton = "Apply filters"
+    val applyFiltersButton = "Apply filters"
+    val clearFiltersLink = "Clear filters"
     val filtersErrors = "Errors"
     val filtersErrorsOption1 = "Draft has errors"
     val filtersDestinationType = "Destination type"

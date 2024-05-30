@@ -17,6 +17,7 @@
 package views.viewAllDrafts
 
 import base.ViewSpecBase
+import config.AppConfig
 import config.Constants.TFE_DELETED_DRAFT_LRN
 import fixtures.DraftMovementsFixtures
 import fixtures.messages.ViewAllDraftMovementsMessages.English
@@ -55,6 +56,8 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
     val hiddenSearchBoxLabel = "#main-content .hmrc-search-group .govuk-form-group > label"
     val hiddenSearchSelectLabel = "#main-content .hmrc-search-group-flex .govuk-form-group > label"
 
+    val createNewMovementButton = "#createNewMovementButton"
+
     val sortButton = "#sortBySubmit"
     val searchButton = "#searchButton"
 
@@ -65,22 +68,23 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
 
     private val filtersSection = "aside"
     val filtersHeading: String = s"$filtersSection h2"
-    val filtersButton: String = s"$filtersSection button"
-    val filtersErrors: String = s"$filtersSection .govuk-form-group:nth-of-type(1) legend"
-    val filtersErrorsOption1: String = s"$filtersSection .govuk-form-group:nth-of-type(1) .govuk-checkboxes__item:nth-of-type(1) label"
-    val filtersDirectionOption2: String = s"$filtersSection .govuk-form-group:nth-of-type(1) .govuk-checkboxes__item:nth-of-type(2) label"
-    val filtersUndischarged: String = s"$filtersSection .govuk-form-group:nth-of-type(2) legend"
-    val filtersDestinationTypeOption: Int => String = i => s"$filtersSection .govuk-form-group:nth-of-type(2) .govuk-checkboxes__item:nth-of-type($i) label"
-    val filtersExciseProduct: String = s"$filtersSection .govuk-form-group:nth-of-type(3) label"
-    val filtersExciseProductChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(3) select option:nth-of-type(1)"
-    val filtersDispatchedFrom: String = s"$filtersSection .govuk-form-group:nth-of-type(4) legend"
-    val filtersDispatchedFromDay: String = s"$filtersSection .govuk-form-group:nth-of-type(4) label[for$$=day]"
-    val filtersDispatchedFromMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(4) label[for$$=month]"
-    val filtersDispatchedFromYear: String = s"$filtersSection .govuk-form-group:nth-of-type(4) label[for$$=year]"
-    val filtersDispatchedTo: String = s"$filtersSection .govuk-form-group:nth-of-type(5) legend"
-    val filtersDispatchedToDay: String = s"$filtersSection .govuk-form-group:nth-of-type(5) label[for$$=day]"
-    val filtersDispatchedToMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(5) label[for$$=month]"
-    val filtersDispatchedToYear: String = s"$filtersSection .govuk-form-group:nth-of-type(5) label[for$$=year]"
+    val applyFiltersButton: String = "#filtersButton"
+    val clearFiltersLink: String = "#clearFiltersButton"
+    val filtersErrors: String = s"$filtersSection .govuk-form-group:nth-of-type(2) legend"
+    val filtersErrorsOption1: String = s"$filtersSection .govuk-form-group:nth-of-type(2) .govuk-checkboxes__item:nth-of-type(1) label"
+    val filtersDirectionOption2: String = s"$filtersSection .govuk-form-group:nth-of-type(2) .govuk-checkboxes__item:nth-of-type(2) label"
+    val filtersUndischarged: String = s"$filtersSection .govuk-form-group:nth-of-type(3) legend"
+    val filtersDestinationTypeOption: Int => String = i => s"$filtersSection .govuk-form-group:nth-of-type(3) .govuk-checkboxes__item:nth-of-type($i) label"
+    val filtersExciseProduct: String = s"$filtersSection .govuk-form-group:nth-of-type(4) label"
+    val filtersExciseProductChoose: String = s"$filtersSection .govuk-form-group:nth-of-type(4) select option:nth-of-type(1)"
+    val filtersDispatchedFrom: String = s"$filtersSection .govuk-form-group:nth-of-type(5) legend"
+    val filtersDispatchedFromDay: String = s"$filtersSection .govuk-form-group:nth-of-type(5) label[for$$=day]"
+    val filtersDispatchedFromMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(5) label[for$$=month]"
+    val filtersDispatchedFromYear: String = s"$filtersSection .govuk-form-group:nth-of-type(5) label[for$$=year]"
+    val filtersDispatchedTo: String = s"$filtersSection .govuk-form-group:nth-of-type(6) legend"
+    val filtersDispatchedToDay: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label[for$$=day]"
+    val filtersDispatchedToMonth: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label[for$$=month]"
+    val filtersDispatchedToYear: String = s"$filtersSection .govuk-form-group:nth-of-type(6) label[for$$=year]"
   }
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/movements")
@@ -96,6 +100,8 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
 
   lazy val twoDraftMovements = Seq(draftMovementModelMax, draftMovementModelMin)
 
+  implicit val config: AppConfig = appConfig
+
   def asDocument(pagination: Option[Pagination], movements: Seq[DraftMovement] = twoDraftMovements)
                 (implicit messages: Messages, request: DataRequest[_]): Document = Jsoup.parse(view(
     form = formProvider(),
@@ -104,8 +110,9 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
     movements = movements,
     sortSelectItems = DraftMovementSortingSelectOption.constructSelectItems(),
     exciseItems = SelectItemHelper.constructSelectItems(Seq(GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE), None),
-    pagination = pagination
-  )(request, implicitly).toString())
+    pagination = pagination,
+    totalMovements = movements.size
+  )(request, implicitly, implicitly).toString())
 
 
   "The ViewAllMovementsPage view" when {
@@ -118,6 +125,8 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
         Selectors.title -> English.title,
         Selectors.h1 -> English.heading,
 
+        Selectors.createNewMovementButton -> English.createNewMovement,
+
         Selectors.searchHeading -> English.searchHeading,
         Selectors.searchText -> English.searchText,
         Selectors.hiddenSearchBoxLabel -> English.searchInputHiddenLabel,
@@ -127,7 +136,8 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
         Selectors.numberOfResultsFound -> English.resultsFound(twoDraftMovements.size),
 
         Selectors.filtersHeading -> English.filtersHeading,
-        Selectors.filtersButton -> English.filtersButton,
+        Selectors.applyFiltersButton -> English.applyFiltersButton,
+        Selectors.clearFiltersLink -> English.clearFiltersLink,
         Selectors.filtersErrors -> English.filtersErrors,
         Selectors.filtersErrorsOption1 -> English.filtersErrorsOption1,
         Selectors.filtersUndischarged -> English.filtersDestinationType,

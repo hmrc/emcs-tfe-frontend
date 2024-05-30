@@ -17,6 +17,7 @@
 package controllers.drafts
 
 import base.SpecBase
+import config.AppConfig
 import controllers.predicates.{BetaAllowListActionImpl, FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
 import fixtures.{DraftMovementsFixtures, ExciseProductCodeFixtures, MemberStatesFixtures}
@@ -64,6 +65,8 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
 
   implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(EN.lang))
 
+  implicit val config: AppConfig = appConfig
+
   lazy val view = app.injector.instanceOf[ViewAllDraftMovementsView]
   lazy val formProvider = app.injector.instanceOf[ViewAllDraftMovementsFormProvider]
 
@@ -91,7 +94,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
       betaAllowList = betaAllowListAction,
       paginationHelper = mockDraftMovementsPaginationHelper,
       formProvider = formProvider
-    )(ec, appConfig)
+    )
 
     MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
     MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(navHubEnabled)))
@@ -99,7 +102,8 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
   }
 
   private def buildView(searchOptions: GetDraftMovementsSearchOptions,
-                        form: Form[GetDraftMovementsSearchOptions])(implicit request: DataRequest[_]): Html =
+                        form: Form[GetDraftMovementsSearchOptions],
+                        numberOfMovements: Int)(implicit request: DataRequest[_]): Html =
     view(
       form = form,
       action = routes.ViewAllDraftMovementsController.onSubmit(testErn, searchOptions),
@@ -107,14 +111,15 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
       movements = movements,
       sortSelectItems = DraftMovementSortingSelectOption.constructSelectItems(Some(DraftMovementSortingSelectOption.Newest.toString)),
       exciseItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
-      pagination = None
+      pagination = None,
+      totalMovements = numberOfMovements
     )
 
-  private def successView(searchOptions: GetDraftMovementsSearchOptions)(implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, formProvider())
+  private def successView(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int)(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, formProvider(), numberOfMovements)
 
-  private def viewWithErrors(searchOptions: GetDraftMovementsSearchOptions)(implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, formProvider().withError(FormError("sortBy", Seq("error.required"))))
+  private def viewWithErrors(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int)(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, formProvider().withError(FormError("sortBy", Seq("error.required"))), numberOfMovements)
 
   "GET /" when {
 
@@ -160,7 +165,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions)
+          Html(contentAsString(result)) shouldBe successView(searchOptions, threePageMovementListResponse.count)
         }
 
         "show the correct view and pagination with an index of 2" in new Test {
@@ -180,7 +185,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions)
+          Html(contentAsString(result)) shouldBe successView(searchOptions, threePageMovementListResponse.count)
         }
 
         "show the correct view and pagination with an index of 3" in new Test {
@@ -200,7 +205,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions)
+          Html(contentAsString(result)) shouldBe successView(searchOptions, threePageMovementListResponse.count)
         }
 
         "redirect to the index 1 when current index is above the maximum" in new Test {
@@ -238,7 +243,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions)
+          Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 31)
         }
 
         "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in new Test {
@@ -258,7 +263,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions)
+          Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 39)
         }
       }
 
@@ -356,7 +361,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, threePageMovementListResponse.count)
           }
 
           "show the correct view and pagination with an index of 2" in new Test {
@@ -378,7 +383,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, threePageMovementListResponse.count)
           }
 
           "show the correct view and pagination with an index of 3" in new Test {
@@ -400,7 +405,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, threePageMovementListResponse.count)
           }
 
           "redirect to the index 1 when current index is above the maximum" in new Test {
@@ -442,7 +447,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, numberOfMovements = 31)
           }
 
           "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in new Test {
@@ -464,7 +469,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, numberOfMovements = 39)
           }
         }
 
