@@ -49,7 +49,8 @@ class DraftMovementsListSpec extends ViewSpecBase with ViewBehaviours with Draft
             PaginationItem(s"link-2", Some("2")),
             PaginationItem(s"link-3", Some("3"))
           ))
-        ))
+        )),
+        totalMovements = twoDraftMovements.size
       ))
 
       doc.selectFirst(s"$sortBySelector select").childrenSize() mustBe MovementSortingSelectOption.values.size
@@ -69,12 +70,13 @@ class DraftMovementsListSpec extends ViewSpecBase with ViewBehaviours with Draft
             PaginationItem(s"link-2", Some("2")),
             PaginationItem(s"link-3", Some("3"))
           ))
-        ))
+        )),
+        totalMovements = 0
       ))
 
       doc.selectFirst(s"$sortBySelector select").childrenSize() mustBe MovementSortingSelectOption.values.size
-      doc.selectFirst(tableSelector) mustBe null
-      doc.selectFirst(paginationSelector) mustBe null
+      doc.select(tableSelector).isEmpty mustBe true
+      doc.select(paginationSelector).isEmpty mustBe true
     }
   }
 }

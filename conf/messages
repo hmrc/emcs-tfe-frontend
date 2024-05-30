@@ -918,12 +918,14 @@ destinationType.10 = Temporary certified consignee
 
 viewAllDraftMovements.heading = Drafts
 viewAllDraftMovements.title = Drafts
+viewAllDraftMovements.createMovement.button = Create a new movement
 viewAllDraftMovements.search.heading = Search for a draft
 viewAllDraftMovements.search.p1 = You can search by Local Reference Number (LRN), consignee name, Excise Reference Number (ERN) or tax warehouse ERN.
 viewAllDraftMovements.search.button = Search
 
 viewAllDraftMovements.filters.heading = Filters
 viewAllDraftMovements.filters.button = Apply filters
+viewAllDraftMovements.filters.clear.button = Clear filters
 viewAllDraftMovements.filters.errors.heading = Errors
 viewAllDraftMovements.filters.errors.draftHasErrors = Draft has errors
 viewAllDraftMovements.filters.destinationType.heading = Destination type
