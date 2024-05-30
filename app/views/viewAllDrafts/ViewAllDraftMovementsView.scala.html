@@ -25,6 +25,7 @@
 @import viewmodels.draftMovements._
 @import views.html._
 @import views.html.components._
+@import config.Constants.TFE_DELETED_DRAFT_LRN
 
 @this(
         layout: templates.Layout,
@@ -42,7 +43,8 @@
         govukCheckboxes: GovukCheckboxes,
         govukSkipLink: GovukSkipLink,
         draftMovementList: DraftMovementsList,
-        helper: ViewAllMovementsTableHelper
+        helper: ViewAllMovementsTableHelper,
+        notificationBanner: GovukNotificationBanner
 )
 
 @(
@@ -98,6 +100,16 @@
                     case FormError(key, _, args) => key -> s"$key.${args.headOption.getOrElse("day")}"
                 }.toMap
             }))
+        }
+
+        @request.flash.get(TFE_DELETED_DRAFT_LRN).map { lrn =>
+            @notificationBanner(
+                NotificationBanner(
+                    title = messages("viewAllDraftMovements.draft.deletedNotification.title"),
+                    content = messages("viewAllDraftMovements.draft.deletedNotification.content", lrn),
+                    classes = "govuk-notification-banner--success"
+                )
+            )
         }
 
         @h1() {

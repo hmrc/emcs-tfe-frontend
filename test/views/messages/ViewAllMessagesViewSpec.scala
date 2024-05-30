@@ -38,8 +38,6 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
     val sortBySelectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
     val sortButton = "#sortBySubmit"
 
-    val successBannerSelector = "#main-content > div > div > div > div > div"
-
     val tableSelector = "#main-content > div > div > div > table"
 
     val messageRow = (i: Int) => s"$tableSelector > tbody > tr:nth-child($i) > th > a"
@@ -114,7 +112,8 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
     "show the success banner" when {
       implicit val doc: Document = asDocument(1, Some("messages.IE871.true.0.description"))
       val successNotificationBanner = Seq(
-        Selectors.successBannerSelector -> "Success Message deleted: Explanation for a shortage or excess submitted successfully"
+        Selectors.notificationBannerTitle -> "Success",
+        Selectors.notificationBannerContent -> "Message deleted: Explanation for a shortage or excess submitted successfully"
       )
 
       behave like pageWithExpectedElementsAndMessages(expectedElementsForNoPagination ++ successNotificationBanner)

@@ -29,7 +29,6 @@ import viewmodels.helpers.SummaryListHelper._
 import views.html.components.{h2, h3, summaryCard}
 
 import javax.inject.{Inject, Singleton}
-import scala.language.postfixOps
 
 @Singleton
 class ViewMovementTransportHelper @Inject()(
