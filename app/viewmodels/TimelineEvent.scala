@@ -20,4 +20,6 @@ import models.EventTypes
 
 import java.time.LocalDateTime
 
-case class TimelineEvent(eventType: EventTypes, title: String, dateTime: LocalDateTime, url: String)
+case class TimelineEvent(eventType: EventTypes, title: String, dateTime: LocalDateTime, url: String) {
+  val id: String = title.replace(" ", "-").toLowerCase
+}
