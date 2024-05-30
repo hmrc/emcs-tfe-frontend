@@ -396,6 +396,7 @@ class MovementEventHelper @Inject()(
       Details(
         summary = Text(messages("movementCreatedView.section.item.viewAllInformation", index + 1)),
         classes = "govuk-details govuk-!-margin-bottom-2",
+        id = Some(s"item-information-details-${index + 1}"),
         content = HtmlContent(
           buildOverviewPartial(
             summaryListRows = Seq(
@@ -430,6 +431,7 @@ class MovementEventHelper @Inject()(
       Details(
         summary = Text(messages("movementCreatedView.section.item.viewAllPackagingInformation", index + 1)),
         classes = "govuk-details govuk-!-margin-top-2",
+        id = Some(s"item-packaging-details-${index + 1}"),
         content =
           HtmlContent(
             HtmlFormat.fill(
