@@ -73,7 +73,7 @@ class EventsHelper @Inject()(
     p(classes = "govuk-body no-print")(
       HtmlFormat.fill(
         Seq(
-          link(classes = "govuk-link", link ="javascript:if(window.print)window.print()", id = Some("print-page"), messageKey=linkContentKey),
+          link(classes = "govuk-link", link ="javascript:if(window.print)window.print()", id = Some("print-link"), messageKey=linkContentKey),
           Html(messages(linkTrailingMessageKey))
         )
       )
