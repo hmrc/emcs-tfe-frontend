@@ -35,8 +35,8 @@ class EventsHelper @Inject()(
 
   def constructEventInformation(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
     (event.eventType, event.messageRole) match {
-      case (IE801, _)  => ie801Html(event, movement)
-      case (IE802, 1) | (IE802, 3) => ie802Html(event)
+      case (IE801, _) => ie801Html(event, movement)
+      case (IE802, _) => ie802Html(event)
       case _ => Empty.asHtml
     }
   }

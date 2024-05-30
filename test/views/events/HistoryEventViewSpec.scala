@@ -287,6 +287,22 @@ class HistoryEventViewSpec extends ViewSpecBase
           }
         }
 
+        "rendering an IE802 event (Report Of Receipt Reminder)" should {
+
+          "render the main detail section of the view" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie802ReportReceiptTitle,
+                Selectors.h1 -> messagesForLanguage.ie802ReportReceiptHeading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie802ReportReceiptP1,
+                Selectors.p(2) -> messagesForLanguage.printScreenContent
+              )
+            )(createDocument(ie802EventReportOfReceipt, getMovementResponseModel))
+          }
+        }
+
         "rendering an IE802 event (Movement Destination Reminder)" should {
 
           "render the main detail section of the view" should {

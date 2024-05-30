@@ -31,12 +31,17 @@ object MovementEventMessages {
     val ie801Title: String = titleHelper(ie801Heading)
     val ie801P1: String = "This is the first notification for the movement."
 
-    //IE802 Change Destination
+    //IE802 Change Destination Reminder
     val ie802ChangeDestinationHeading: String = "Reminder to provide change of destination"
     val ie802ChangeDestinationTitle: String = titleHelper(ie802ChangeDestinationHeading)
     val ie802ChangeDestinationP1 = "A change of destination for this movement must be submitted."
 
-    //IE802 Movement Destination
+    //IE802 Report of Receipt Reminder
+    val ie802ReportReceiptHeading: String = "Reminder to provide report of receipt"
+    val ie802ReportReceiptTitle: String = titleHelper(ie802ReportReceiptHeading)
+    val ie802ReportReceiptP1 = "A report of receipt for this movement must be submitted."
+
+    //IE802 Movement Destination Reminder
     val ie802MovementDestinationHeading: String = "Reminder to provide destination"
     val ie802MovementDestinationTitle: String = titleHelper(ie802MovementDestinationHeading)
     val ie802MovementDestinationP1 = "A destination for this movement must be submitted."
