@@ -17,6 +17,7 @@
 package views.viewAllDrafts
 
 import base.ViewSpecBase
+import config.Constants.TFE_DELETED_DRAFT_LRN
 import fixtures.DraftMovementsFixtures
 import fixtures.messages.ViewAllDraftMovementsMessages.English
 import forms.ViewAllDraftMovementsFormProvider
@@ -96,7 +97,7 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
   lazy val twoDraftMovements = Seq(draftMovementModelMax, draftMovementModelMin)
 
   def asDocument(pagination: Option[Pagination], movements: Seq[DraftMovement] = twoDraftMovements)
-                (implicit messages: Messages): Document = Jsoup.parse(view(
+                (implicit messages: Messages, request: DataRequest[_]): Document = Jsoup.parse(view(
     form = formProvider(),
     action = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad("ern", GetDraftMovementsSearchOptions()),
     ern = testErn,
@@ -104,7 +105,7 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
     sortSelectItems = DraftMovementSortingSelectOption.constructSelectItems(),
     exciseItems = SelectItemHelper.constructSelectItems(Seq(GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE), None),
     pagination = pagination
-  ).toString())
+  )(request, implicitly).toString())
 
 
   "The ViewAllMovementsPage view" when {
@@ -161,6 +162,11 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
         Selectors.sortBySelectOption(3) -> English.sortNewest,
         Selectors.sortBySelectOption(4) -> English.sortOldest,
         Selectors.sortButton -> English.sortByButton
+      ))
+
+      behave like pageWithElementsNotPresent(Seq(
+        Selectors.notificationBannerTitle,
+        Selectors.notificationBannerContent
       ))
 
       "have the correct links the draft movement" in {
@@ -227,6 +233,38 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
           Selectors.numberOfResultsFound -> English.noResultsFound
         ))
       }
+    }
+
+    "being rendered when a draft has been deleted" when {
+
+      implicit val doc: Document = asDocument(Some(Pagination(
+        items = Some(Seq(
+          PaginationItem(s"link-1", Some("1")),
+          PaginationItem(s"link-2", Some("2")),
+          PaginationItem(s"link-3", Some("3"))
+        )),
+        previous = Some(PaginationLink("previous-link")),
+        next = Some(PaginationLink("next-link"))
+      )))(request = dr.copy(userRequest(FakeRequest().withFlash(TFE_DELETED_DRAFT_LRN -> testLrn))), messages = implicitly)
+
+      behave like pageWithExpectedElementsAndMessages(Seq(
+        Selectors.title -> English.title,
+        Selectors.notificationBannerTitle -> English.draftDeletedNotificationBannerTitle,
+        Selectors.notificationBannerContent -> English.draftDeletedNotificationBannerContent(testLrn),
+        Selectors.h1 -> English.heading,
+        Selectors.searchHeading -> English.searchHeading,
+        Selectors.searchText -> English.searchText,
+        Selectors.hiddenSearchBoxLabel -> English.searchInputHiddenLabel,
+        Selectors.searchButton -> English.searchButton,
+        Selectors.skipToResultsLink -> English.skipToResults,
+        Selectors.numberOfResultsFound -> English.resultsFound(twoDraftMovements.size),
+        Selectors.label("sortBy") -> English.sortByLabel,
+        Selectors.sortBySelectOption(1) -> English.sortLrnAscending,
+        Selectors.sortBySelectOption(2) -> English.sortLrnDescending,
+        Selectors.sortBySelectOption(3) -> English.sortNewest,
+        Selectors.sortBySelectOption(4) -> English.sortOldest,
+        Selectors.sortButton -> English.sortByButton
+      ))
     }
   }
 }

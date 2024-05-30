@@ -55,6 +55,9 @@ trait BaseSelectors {
   def detailsSummary(i: Int) = s"main details:nth-of-type($i) summary"
 
   def id(i: String) = s"#$i"
+
+  val notificationBannerTitle: String = ".govuk-notification-banner__title"
+  val notificationBannerContent: String = ".govuk-notification-banner__content"
 }
 
 object BaseSelectors extends BaseSelectors
