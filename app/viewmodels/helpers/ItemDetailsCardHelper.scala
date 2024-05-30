@@ -191,7 +191,7 @@ class ItemDetailsCardHelper @Inject()(list: list, link: link, appConfig: AppConf
       item.unitOfMeasure.map { unitOfMeasure =>
         summaryListRowBuilder(
           messages("itemDetails.key.density"),
-          messages("itemDetails.value.density", density.toString(), messages(s"itemDetails.value.density.$unitOfMeasure"))
+          Html(messages("itemDetails.value.density", density.toString(), messages(s"itemDetails.value.density.$unitOfMeasure")))
         )
       }
     }
