@@ -22,6 +22,7 @@ import fixtures.messages.EN
 import fixtures.{GetMovementResponseFixtures, MessagesFixtures}
 import mocks.config.MockAppConfig
 import mocks.services.{MockGetMovementHistoryEventsService, MockGetMovementService}
+import models.EventTypes
 import models.EventTypes._
 import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
@@ -55,61 +56,59 @@ class ViewEventControllerSpec
 
   lazy val view = app.injector.instanceOf[HistoryEventView]
 
-  class Test {
-
-    lazy val controller: ViewEventController = new ViewEventController(
-      mcc = app.injector.instanceOf[MessagesControllerComponents],
-      auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
-      betaAllowList = new FakeBetaAllowListAction,
-      getMovementHistoryEventsService = mockGetMovementHistoryEventsService,
-      getMovementService = mockGetMovementService,
-      view = view,
-      errorHandler = errorHandler
-    )(ec, appConfig)
-  }
+  lazy val controller: ViewEventController = new ViewEventController(
+    mcc = app.injector.instanceOf[MessagesControllerComponents],
+    auth = FakeSuccessAuthAction,
+    getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+    betaAllowList = new FakeBetaAllowListAction,
+    getMovementHistoryEventsService = mockGetMovementHistoryEventsService,
+    getMovementService = mockGetMovementService,
+    view = view,
+    errorHandler = errorHandler
+  )(ec, appConfig)
 
 
-  private def renderASuccessfulEventView(event: MovementHistoryEvent) = {
-    "render a view" in new Test {
+  private def renderASuccessfulEventView(event: MovementHistoryEvent, controllerMethod: () => Future[Result]): Unit = {
+    "render a view" in {
       val testHistoryEvents = getMovementHistoryEventsModel :+ event
       val testMovement = getMovementResponseModel.copy(eventHistorySummary = Some(testHistoryEvents))
 
       MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
       MockGetMovementService.getMovement(testErn, testArc, Some(event.sequenceNumber)).returns(Future.successful(testMovement))
 
-      val result: Future[Result] = controller.movementCreated(testErn, testArc, 853932155)(fakeRequest)
+      val result: Future[Result] = controllerMethod()
 
       status(result) shouldBe Status.OK
     }
   }
 
-  private def handle404s(event: MovementHistoryEvent) = {
+  private def handle404s(event: MovementHistoryEvent, controllerMethod: () => Future[Result]): Unit = {
     "return a 404 not found" when {
-      "when the wrong event id is requested" in new Test {
-        val testHistoryEvents = getMovementHistoryEventsModel :+ event
+      "when the wrong event id is requested" in {
+        val testHistoryEvents = getMovementHistoryEventsModel :+ event.copy(eventDate = "1999-12-31T23:59:59")
 
         MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
 
-        val result: Future[Result] = controller.movementCreated(testErn, testArc, 1234567)(fakeRequest)
+        val result: Future[Result] = controllerMethod()
 
         status(result) shouldBe Status.NOT_FOUND
       }
-      "when the matching event is not an IE801 event" in new Test {
-        val testHistoryEvents = getMovementHistoryEventsModel :+ event.copy(eventType = IE819)
+      s"when the matching event is not an ${simpleName(event.eventType)} event" in {
+        val otherEventTypes: Seq[EventTypes] = EventTypes.values.filterNot(_ == event.eventType)
+        val testHistoryEvents = getMovementHistoryEventsModel :+ event.copy(eventType = otherEventTypes.head)
 
         MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
 
-        val result: Future[Result] = controller.movementCreated(testErn, testArc, 1234567)(fakeRequest)
+        val result: Future[Result] = controllerMethod()
 
         status(result) shouldBe Status.NOT_FOUND
       }
-      "when there are no history events for the movement" in new Test {
+      "when there are no history events for the movement" in {
         val testHistoryEvents = Seq[MovementHistoryEvent]().empty
 
         MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
 
-        val result: Future[Result] = controller.movementCreated(testErn, testArc, 1234567)(fakeRequest)
+        val result: Future[Result] = controllerMethod()
 
         status(result) shouldBe Status.NOT_FOUND
       }
@@ -126,12 +125,11 @@ class ViewEventControllerSpec
       isFirstEventTypeInHistory = true
     )
 
-    renderASuccessfulEventView(testEvent)
-    handle404s(testEvent)
+    renderASuccessfulEventView(testEvent, () => controller.movementCreated(testErn, testArc, 853932155)(fakeRequest))
+    handle404s(testEvent, () => controller.movementCreated(testErn, testArc, 853932155)(fakeRequest))
   }
 
   ".movementUpdated" must {
-
     val testEvent = MovementHistoryEvent(
       eventType = IE801,
       eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
@@ -141,9 +139,8 @@ class ViewEventControllerSpec
       isFirstEventTypeInHistory = false
     )
 
-    renderASuccessfulEventView(testEvent)
-    handle404s(testEvent)
-
+    renderASuccessfulEventView(testEvent, () => controller.movementUpdated(testErn, testArc, 853932155)(fakeRequest))
+    handle404s(testEvent, () => controller.movementUpdated(testErn, testArc, 853932155)(fakeRequest))
   }
 
 }
