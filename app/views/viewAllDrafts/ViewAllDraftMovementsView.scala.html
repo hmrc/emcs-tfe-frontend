@@ -107,13 +107,17 @@
         }
 
         @request.flash.get(TFE_DELETED_DRAFT_LRN).map { lrn =>
-            @notificationBanner(
-                NotificationBanner(
-                    title = messages("viewAllDraftMovements.draft.deletedNotification.title"),
-                    content = messages("viewAllDraftMovements.draft.deletedNotification.content", lrn),
-                    classes = "govuk-notification-banner--success"
-                )
-            )
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    @notificationBanner(
+                        NotificationBanner(
+                            title = messages("viewAllDraftMovements.draft.deletedNotification.title"),
+                            content = messages("viewAllDraftMovements.draft.deletedNotification.content", lrn),
+                            classes = "govuk-notification-banner--success"
+                        )
+                    )
+                </div>
+            </div>
         }
 
         @h1() {
