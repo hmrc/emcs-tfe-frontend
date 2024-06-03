@@ -19,7 +19,7 @@ package viewmodels.helpers.events
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import models.common.DestinationType.{Export, TemporaryRegisteredConsignee}
-import models.common.GuarantorType.{Consignee, Consignor, Owner, Transporter}
+import models.common.GuarantorType.{Consignee, Consignor, GuarantorNotRequired, NoGuarantor, Owner, Transporter}
 import models.common.TransportArrangement.OwnerOfGoods
 import models.common.{AddressModel, TraderModel, TransportMode}
 import models.requests.DataRequest
@@ -392,7 +392,36 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Identification number for temporary registered consignee"
         doc.select(Selectors.summaryListRowValue(2)).text() mustBe "GB12345GTR144"
       }
+
+      "the guarantor type is a GuarantorNotRequired" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+          movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
+            guarantorTypeCode = GuarantorNotRequired
+          )
+        )
+
+        val result = helper.guarantorInformationCard()
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
+        doc.select(Selectors.summaryListRowValue(1)).text() mustBe "No guarantor required"
+      }
     }
+
+    "the guarantor type is a NoGuarantor" in {
+      implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+        movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
+          guarantorTypeCode = NoGuarantor
+        )
+      )
+
+      val result = helper.guarantorInformationCard()
+      val doc = Jsoup.parse(result.toString())
+
+      doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
+      doc.select(Selectors.summaryListRowValue(1)).text() mustBe "No guarantor required"
+    }
+
   }
 
   "journeyInformationCard" must {
