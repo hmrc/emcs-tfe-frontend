@@ -20,7 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.EventTypes
-import models.EventTypes.IE801
+import models.EventTypes.{IE801, IE802}
 import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.I18nSupport
@@ -54,6 +54,8 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
   def movementUpdated(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE801)
 
+  def changeDestinationDue(ern: String, arc: String, eventId: Int): Action[AnyContent] =
+    onPageLoad(ern, arc, eventId, IE802)
 
   private def onPageLoad(ern: String, arc: String, eventId: Int, eventType: EventTypes): Action[AnyContent] = {
     authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>

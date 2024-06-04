@@ -68,11 +68,11 @@ class HistoryEventViewSpec extends ViewSpecBase
           "render the main detail section of the view" should {
             behave like pageWithExpectedElementsAndMessages(
               Seq(
-                Selectors.title -> messagesForLanguage.title,
-                Selectors.h1 -> messagesForLanguage.heading,
+                Selectors.title -> messagesForLanguage.ie801Title,
+                Selectors.h1 -> messagesForLanguage.ie801Heading,
                 Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
-                Selectors.p(1) -> messagesForLanguage.paragraph,
+                Selectors.p(1) -> messagesForLanguage.ie801P1,
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
               )
             )(createDocument(ie801Event, getMovementResponseModel))
@@ -268,6 +268,22 @@ class HistoryEventViewSpec extends ViewSpecBase
             doc.select(headingId).text() mustBe "Documents"
             doc.select(s"$summaryId-1").isEmpty mustBe false
             doc.select(s"$summaryId-2").isEmpty mustBe false
+          }
+        }
+
+        "rendering an IE802 event (Change Destination Reminder)" should {
+
+          "render the main detail section of the view" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie802ChangeDestinationTitle,
+                Selectors.h1 -> messagesForLanguage.ie802ChangeDestinationHeading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie802ChangeDestinationP1,
+                Selectors.p(2) -> messagesForLanguage.printScreenContent
+              )
+            )(createDocument(ie802ChangeDestinationEvent, getMovementResponseModel))
           }
         }
       }
