@@ -48,6 +48,13 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
     with Logging
     with BetaChecks {
 
+  def movementCreated(ern: String, arc: String, eventId: Int): Action[AnyContent] =
+    onPageLoad(ern, arc, eventId, IE801)
+
+  def movementUpdated(ern: String, arc: String, eventId: Int): Action[AnyContent] =
+    onPageLoad(ern, arc, eventId, IE801)
+
+
   private def onPageLoad(ern: String, arc: String, eventId: Int, eventType: EventTypes): Action[AnyContent] = {
     authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
       withHistoryEvent(ern, arc, eventType, eventId) { event =>
@@ -59,9 +66,6 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def movementCreated(ern: String, arc: String, eventId: Int): Action[AnyContent] = {
-    onPageLoad(ern, arc, eventId, IE801)
-  }
 
   private def withHistoryEvent(ern:String, arc: String, eventType: EventTypes, eventId: Int)
                       (f: MovementHistoryEvent => Future[Result])(implicit request: DataRequest[_]): Future[Result] =

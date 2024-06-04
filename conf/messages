@@ -220,6 +220,7 @@ movementHistoryEvent.IE801.first.urlLabel = movement-created
 movementHistoryEvent.IE801.first.p1 = This is the first notification for the movement.
 movementHistoryEvent.IE801.further.label = Update to movement
 movementHistoryEvent.IE801.further.urlLabel = movement-updated
+movementHistoryEvent.IE801.further.p1 = This movement has been updated. This is version {0} of the movement.
 movementHistoryEvent.IE802.cod.label = Reminder to provide change of destination
 movementHistoryEvent.IE802.cod.urlLabel = change-destination-due
 movementHistoryEvent.IE802.ror.label = Report of receipt due

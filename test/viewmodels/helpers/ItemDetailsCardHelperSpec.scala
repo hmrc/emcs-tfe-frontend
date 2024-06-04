@@ -92,7 +92,7 @@ class ItemDetailsCardHelperSpec extends SpecBase with ItemFixtures {
               )),
               Seq(summaryListRowBuilder(
                 Text(langMessages.densityKey),
-                Text(langMessages.densityValue(item.density.get))
+                HtmlContent(langMessages.densityValue(item.density.get))
               )),
               Seq(summaryListRowBuilder(
                 Text(langMessages.alcoholicStrengthKey),
