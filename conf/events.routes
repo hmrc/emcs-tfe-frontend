@@ -1,6 +1,6 @@
 GET        /trader/:ern/movement/:arc/event/:eventId/movement-created                        controllers.events.ViewEventController.movementCreated(ern: String, arc: String, eventId: Int)
 GET        /trader/:ern/movement/:arc/event/:eventId/movement-updated                        controllers.events.ViewEventController.movementUpdated(ern: String, arc: String, eventId: Int)
-#GET        /trader/:ern/movement/:arc/event/:eventId/change-destination-due                  controllers.events.ViewEventController.changeDestinationDue(ern: String, arc: String, eventId: Int)
+GET        /trader/:ern/movement/:arc/event/:eventId/change-destination-due                  controllers.events.ViewEventController.changeDestinationDue(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/report-receipt-due                      controllers.events.ViewEventController.reportReceiptDue(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/report-receipt-due                      controllers.events.ViewEventController.reportReceiptDue(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/movement-destination-due                controllers.events.ViewEventController.movementDestinationDue(ern: String, arc: String, eventId: Int)

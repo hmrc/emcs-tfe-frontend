@@ -21,12 +21,20 @@ import fixtures.messages.{BaseEnglish, EN, i18n}
 object MovementEventMessages {
 
   sealed trait EventMessages extends BaseEnglish { _ : i18n =>
-    val title: String = "Movement created - Excise Movement and Control System - GOV.UK"
-    val heading: String = "Movement created"
+
     val messageIssued = "Message issued 4 December 2024 at 5:00 pm"
     def arc(arc: String) = s"ARC: $arc"
-    val paragraph: String = "This is the first notification for the movement."
     val printScreenContent: String = "Print this screen to make a record of this message."
+
+    //IE801 First Notification of Movement
+    val ie801Heading: String = "Movement created"
+    val ie801Title: String = titleHelper(ie801Heading)
+    val ie801P1: String = "This is the first notification for the movement."
+
+    //IE802 Change Destination
+    val ie802ChangeDestinationHeading: String = "Reminder to provide change of destination"
+    val ie802ChangeDestinationTitle: String = titleHelper(ie802ChangeDestinationHeading)
+    val ie802ChangeDestinationP1 = "A change of destination for this movement must be submitted."
   }
 
   object English extends EventMessages with EN

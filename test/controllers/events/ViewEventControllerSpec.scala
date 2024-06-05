@@ -19,11 +19,10 @@ package controllers.events
 import base.SpecBase
 import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
-import fixtures.{GetMovementResponseFixtures, MessagesFixtures}
+import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures, MessagesFixtures}
 import mocks.config.MockAppConfig
 import mocks.services.{MockGetMovementHistoryEventsService, MockGetMovementService}
 import models.EventTypes
-import models.EventTypes._
 import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
@@ -44,7 +43,8 @@ class ViewEventControllerSpec
   with MockAppConfig
   with MockGetMovementHistoryEventsService
   with MockGetMovementService
-  with GetMovementResponseFixtures {
+  with GetMovementResponseFixtures
+  with GetMovementHistoryEventsResponseFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -116,31 +116,20 @@ class ViewEventControllerSpec
   }
 
   ".movementCreated" must {
-    val testEvent = MovementHistoryEvent(
-      eventType = IE801,
-      eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
-      sequenceNumber = 1,
-      messageRole = 0,
-      upstreamArc = None,
-      isFirstEventTypeInHistory = true
-    )
-
-    renderASuccessfulEventView(testEvent, () => controller.movementCreated(testErn, testArc, 853932155)(fakeRequest))
-    handle404s(testEvent, () => controller.movementCreated(testErn, testArc, 853932155)(fakeRequest))
+    renderASuccessfulEventView(ie801Event, () => controller.movementCreated(testErn, testArc, 853932155)(fakeRequest))
+    handle404s(ie801Event, () => controller.movementCreated(testErn, testArc, 853932155)(fakeRequest))
   }
 
   ".movementUpdated" must {
-    val testEvent = MovementHistoryEvent(
-      eventType = IE801,
-      eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
-      sequenceNumber = 2,
-      messageRole = 0,
-      upstreamArc = None,
-      isFirstEventTypeInHistory = false
-    )
+    val testEvent = ie801Event.copy(sequenceNumber = 2, isFirstEventTypeInHistory = false)
 
     renderASuccessfulEventView(testEvent, () => controller.movementUpdated(testErn, testArc, 853932155)(fakeRequest))
     handle404s(testEvent, () => controller.movementUpdated(testErn, testArc, 853932155)(fakeRequest))
+  }
+
+  ".changeDestinationDue" must {
+    renderASuccessfulEventView(ie802ChangeDestinationEvent, () => controller.changeDestinationDue(testErn, testArc, 853932155)(fakeRequest))
+    handle404s(ie802ChangeDestinationEvent, () => controller.changeDestinationDue(testErn, testArc, 853932155)(fakeRequest))
   }
 
 }
