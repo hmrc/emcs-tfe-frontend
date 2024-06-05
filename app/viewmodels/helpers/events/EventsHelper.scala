@@ -36,8 +36,8 @@ class EventsHelper @Inject()(
   def constructEventInformation(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
     (event.eventType, event.messageRole) match {
       case (IE801, _)  => ie801Html(event, movement)
-      case (IE802, 1)  => ie802ChangeDestinationDueHtml(event)
-      case _      => Empty.asHtml
+      case (IE802, 1) | (IE802, 3) => ie802Html(event)
+      case _ => Empty.asHtml
     }
   }
 
@@ -47,7 +47,7 @@ class EventsHelper @Inject()(
     HtmlFormat.fill(
       Seq(
         p(classes = "govuk-body-l")(Html(
-            messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
+          messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
         )),
         printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         eventHelper.movementInformationCard(),
@@ -70,7 +70,7 @@ class EventsHelper @Inject()(
     )
   }
 
-  private def ie802ChangeDestinationDueHtml(event: MovementHistoryEvent)(implicit messages: Messages): Html =
+  private def ie802Html(event: MovementHistoryEvent)(implicit messages: Messages): Html =
     HtmlFormat.fill(
       Seq(
         p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),

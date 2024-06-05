@@ -286,6 +286,22 @@ class HistoryEventViewSpec extends ViewSpecBase
             )(createDocument(ie802ChangeDestinationEvent, getMovementResponseModel))
           }
         }
+
+        "rendering an IE802 event (Movement Destination Reminder)" should {
+
+          "render the main detail section of the view" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie802MovementDestinationTitle,
+                Selectors.h1 -> messagesForLanguage.ie802MovementDestinationHeading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie802MovementDestinationP1,
+                Selectors.p(2) -> messagesForLanguage.printScreenContent
+              )
+            )(createDocument(ie802MovementDestinationEvent, getMovementResponseModel))
+          }
+        }
       }
     }
   }

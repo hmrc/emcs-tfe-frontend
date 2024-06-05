@@ -228,6 +228,7 @@ movementHistoryEvent.IE802.ror.label = Reminder to provide report of receipt
 movementHistoryEvent.IE802.ror.urlLabel = report-receipt-due
 movementHistoryEvent.IE802.des.label = Reminder to provide destination
 movementHistoryEvent.IE802.des.urlLabel = movement-destination-due
+movementHistoryEvent.IE802.des.p1 = A destination for this movement must be submitted.
 movementHistoryEvent.IE803.diverted.label = Diverted movement
 movementHistoryEvent.IE803.diverted.urlLabel = movement-diverted
 movementHistoryEvent.IE803.split.label = Notification of split movement

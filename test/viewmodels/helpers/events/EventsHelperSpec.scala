@@ -56,6 +56,18 @@ class EventsHelperSpec extends SpecBase
             body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
           }
         }
+
+        "being called with event type IE802 and message role 3 (movement destination reminder)" must {
+
+          "render the correct HTML" in {
+
+            val result = helper.constructEventInformation(ie802MovementDestinationEvent, getMovementResponseModel)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802MovementDestinationP1
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+          }
+        }
       }
     }
   }
