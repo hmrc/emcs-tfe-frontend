@@ -287,7 +287,7 @@ class HistoryEventViewSpec extends ViewSpecBase
           }
         }
 
-        "rendering an IE803 event (Movement Destination Reminder)" should {
+        "rendering an IE802 event (Movement Destination Reminder)" should {
 
           "render the main detail section of the view" should {
             behave like pageWithExpectedElementsAndMessages(
