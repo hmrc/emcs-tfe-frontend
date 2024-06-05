@@ -73,9 +73,7 @@ class EventsHelper @Inject()(
   private def ie802ChangeDestinationDueHtml(event: MovementHistoryEvent)(implicit messages: Messages): Html =
     HtmlFormat.fill(
       Seq(
-        p(classes = "govuk-body-l")(Html(
-          messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
-        )),
+        p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
         printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
       )
     )
