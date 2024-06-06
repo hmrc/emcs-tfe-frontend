@@ -6,39 +6,28 @@ if (window.history && window.history.replaceState && typeof window.history.repla
 document.addEventListener('DOMContentLoaded', function(event) {
 
   // handle back click
-  var backLink = document.querySelector('.govuk-back-link');
-  if (backLink !== null) {
+  const backLink = document.querySelector('.govuk-back-link');
+  if (backLink) {
     backLink.addEventListener('click', function(e){
       e.preventDefault();
       e.stopPropagation();
       window.history.back();
     });
   }
-});
 
-document.addEventListener('DOMContentLoaded', function(event) {
-
-  // handle back click
-  var printPageLink = document.querySelector('#print-page');
-  if (printPageLink !== null) {
-    printPageLink.addEventListener('click', function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      window.print();
-    });
+  // handle print link visibility  click
+  const printPageContainer = document.querySelector('.print-page');
+  if (printPageContainer) {
+    printPageContainer.classList.remove('govuk-!-display-none'); //Remove the hide class from the link (JS enabled = show, JS disabled = hide)
   }
-});
 
-function printLink() {
   const printLink = document.getElementById('print-link');
 
-  if (printLink != null && printLink != 'undefined') {
+  if (printLink) {
     printLink.addEventListener('click', function (e) {
       e.preventDefault();
       window.print();
     });
   }
-}
-document.addEventListener('DOMContentLoaded', function (event){
-  printLink();
 });
+

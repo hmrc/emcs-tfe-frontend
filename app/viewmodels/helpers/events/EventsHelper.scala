@@ -22,8 +22,9 @@ import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
+import utils.DateUtils
 import viewmodels.helpers.TimelineHelper
-import views.html.components.{link, p}
+import views.html.components.{bullets, link, p}
 
 import javax.inject.Inject
 
@@ -31,12 +32,14 @@ class EventsHelper @Inject()(
                               timelineHelper: TimelineHelper,
                               eventHelper: MovementEventHelper,
                               link: link,
-                              p: p) {
+                              p: p,
+                              bullets: bullets) extends DateUtils {
 
   def constructEventInformation(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
     (event.eventType, event.messageRole) match {
       case (IE801, _) => ie801Html(event, movement)
       case (IE802, _) => ie802Html(event)
+      case (IE803, _) => ie803Html(event, movement)
       case _ => Empty.asHtml
     }
   }
@@ -78,11 +81,35 @@ class EventsHelper @Inject()(
       )
     )
 
+  private def ie803Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html =
+    HtmlFormat.fill(
+      Seq(
+        movement.notificationOfDivertedMovement.flatMap { notificationOfDivertedMovement =>
+          Option.when(notificationOfDivertedMovement.downstreamArcs.nonEmpty) {
+            //Split movement
+            HtmlFormat.fill(Seq(
+              p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1", notificationOfDivertedMovement.notificationDateAndTime.toLocalDate.formatDateForUIOutput()))),
+              p()(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p2"))),
+              bullets(notificationOfDivertedMovement.downstreamArcs.map(Html(_)))
+            ))
+          }.orElse {
+            //Diverted movement
+            Some {
+              HtmlFormat.fill(Seq(
+                p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1")))
+              ))
+            }
+          }
+        },
+        Some(printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"))
+      ).flatten
+    )
+
   private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
-    p(classes = "govuk-body no-print")(
+    p(classes = "govuk-body no-print govuk-!-display-none print-page")(
       HtmlFormat.fill(
         Seq(
-          link(classes = "govuk-link", link ="javascript:if(window.print)window.print()", id = Some("print-link"), messageKey=linkContentKey),
+          link(classes = "govuk-link", link = "#", id = Some("print-link"), messageKey = linkContentKey),
           Html(messages(linkTrailingMessageKey))
         )
       )

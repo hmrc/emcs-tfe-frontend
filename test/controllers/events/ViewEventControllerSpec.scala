@@ -142,4 +142,9 @@ class ViewEventControllerSpec
     handle404s(ie802MovementDestinationEvent, () => controller.movementDestinationDue(testErn, testArc, 853932155)(fakeRequest))
   }
 
+  ".movementSplit" must {
+    renderASuccessfulEventView(ie803MovementSplitEvent, () => controller.movementSplit(testErn, testArc, 853932155)(fakeRequest))
+    handle404s(ie803MovementSplitEvent, () => controller.movementSplit(testErn, testArc, 853932155)(fakeRequest))
+  }
+
 }
