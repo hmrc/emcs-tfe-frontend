@@ -22,11 +22,12 @@ import models.common.GuarantorType.Consignee
 import models.common.OriginType.TaxWarehouse
 import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Shortage}
 import models.common._
+import models.response.emcsTfe.NotificationOfDivertedMovementType.ChangeOfDestination
 import models.response.emcsTfe.reportOfReceipt.{ReceiptedItemsModel, ReportOfReceiptModel, UnsatisfactoryModel}
-import models.response.emcsTfe.{EadEsadModel, GetMovementResponse, HeaderEadEsadModel, TransportModeModel}
+import models.response.emcsTfe.{EadEsadModel, GetMovementResponse, HeaderEadEsadModel, NotificationOfDivertedMovementModel, TransportModeModel}
 import play.api.libs.json.{JsValue, Json}
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEventsResponseFixtures with ExciseProductCodeFixtures {
   _: BaseFixtures =>
@@ -221,7 +222,12 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         Some("Document description 2"),
         Some("Reference of document 2")
       ))
-    )
+    ),
+    notificationOfDivertedMovement = Some(NotificationOfDivertedMovementModel(
+      notificationType = ChangeOfDestination,
+      notificationDateAndTime = LocalDateTime.of(2024, 6, 5, 0, 0, 1),
+      downstreamArcs = Seq(testArc, testArc + "1")
+    ))
   )
 
   val reportOfReceiptJson = Json.obj(
@@ -372,6 +378,13 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       )
     ),
     "reportOfReceipt" -> reportOfReceiptJson,
+    "notificationOfDivertedMovement" -> Json.obj(
+      "notificationType" -> "1",
+      "notificationDateAndTime" -> "2024-06-05T00:00:01",
+      "downstreamArcs" -> Json.arr(
+        testArc, s"${testArc}1"
+      )
+    ),
     "items" -> Json.arr(
       item1Json,
       item2Json
