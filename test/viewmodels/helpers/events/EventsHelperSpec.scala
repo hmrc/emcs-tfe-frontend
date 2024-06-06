@@ -17,8 +17,8 @@
 package viewmodels.helpers.events
 
 import base.SpecBase
-import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
 import fixtures.events.MovementEventMessages
+import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -53,6 +53,18 @@ class EventsHelperSpec extends SpecBase
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802ChangeDestinationP1
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+          }
+        }
+
+        "being called with event type IE802 and message role 2 (report of receipt reminder)" must {
+
+          "render the correct HTML" in {
+
+            val result = helper.constructEventInformation(ie802EventReportOfReceipt, getMovementResponseModel)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802ReportReceiptP1
             body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
           }
         }

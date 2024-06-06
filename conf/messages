@@ -228,6 +228,7 @@ movementHistoryEvent.IE802.cod.urlLabel = change-destination-due
 movementHistoryEvent.IE802.cod.p1 = A change of destination for this movement must be submitted.
 movementHistoryEvent.IE802.ror.label = Reminder to provide report of receipt
 movementHistoryEvent.IE802.ror.urlLabel = report-receipt-due
+movementHistoryEvent.IE802.ror.p1 = A report of receipt for this movement must be submitted.
 movementHistoryEvent.IE802.des.label = Reminder to provide destination
 movementHistoryEvent.IE802.des.urlLabel = movement-destination-due
 movementHistoryEvent.IE802.des.p1 = A destination for this movement must be submitted.

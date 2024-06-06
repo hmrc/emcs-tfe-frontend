@@ -132,6 +132,11 @@ class ViewEventControllerSpec
     handle404s(ie802ChangeDestinationEvent, () => controller.changeDestinationDue(testErn, testArc, 853932155)(fakeRequest))
   }
 
+  ".reportReceiptDue" must {
+    renderASuccessfulEventView(ie802EventReportOfReceipt, () => controller.reportReceiptDue(testErn, testArc, 853932155)(fakeRequest))
+    handle404s(ie802EventReportOfReceipt, () => controller.reportReceiptDue(testErn, testArc, 853932155)(fakeRequest))
+  }
+
   ".movementDestinationDue" must {
     renderASuccessfulEventView(ie802MovementDestinationEvent, () => controller.movementDestinationDue(testErn, testArc, 853932155)(fakeRequest))
     handle404s(ie802MovementDestinationEvent, () => controller.movementDestinationDue(testErn, testArc, 853932155)(fakeRequest))
