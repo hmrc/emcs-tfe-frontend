@@ -83,15 +83,16 @@ class EventsHelperSpec extends SpecBase
           }
         }
 
-        "being called with event type IE803 and message role 1 (change destination notification)" must {
+        "being called with event type IE803 and message role 1 (diverted movement notification)" must {
 
-          "render the correct HTML" ignore {
+          "render the correct HTML" in {
 
             val result = helper.constructEventInformation(ie803MovementDiversionEvent, getMovementResponseModel)
             val body = Jsoup.parse(result.toString())
 
-            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802MovementDestinationP1
-            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie803MovementDivertedP1
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.ie803MovementDivertedP2("5 June 2024")
+            body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
           }
         }
 

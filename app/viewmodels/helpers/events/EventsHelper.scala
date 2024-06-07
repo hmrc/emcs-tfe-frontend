@@ -84,21 +84,20 @@ class EventsHelper @Inject()(
   private def ie803Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html =
     HtmlFormat.fill(
       Seq(
-        movement.notificationOfDivertedMovement.flatMap { notificationOfDivertedMovement =>
-          Option.when(notificationOfDivertedMovement.downstreamArcs.nonEmpty) {
+        movement.notificationOfDivertedMovement.map { notificationOfDivertedMovement =>
+          if(event.messageRole == 2) {
             //Split movement
             HtmlFormat.fill(Seq(
               p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1", notificationOfDivertedMovement.notificationDateAndTime.toLocalDate.formatDateForUIOutput()))),
               p()(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p2"))),
               bullets(notificationOfDivertedMovement.downstreamArcs.map(Html(_)))
             ))
-          }.orElse {
+          } else {
             //Diverted movement
-            Some {
-              HtmlFormat.fill(Seq(
-                p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1")))
-              ))
-            }
+            HtmlFormat.fill(Seq(
+              p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
+              p()(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p2", notificationOfDivertedMovement.notificationDateAndTime.toLocalDate.formatDateForUIOutput())))
+            ))
           }
         },
         Some(printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"))

@@ -319,6 +319,23 @@ class HistoryEventViewSpec extends ViewSpecBase
           }
         }
 
+        "rendering an IE803 event (Diverted Notification)" should {
+
+          "render the main detail section of the view" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie803MovementDivertedTitle,
+                Selectors.h1 -> messagesForLanguage.ie803MovementDivertedHeading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie803MovementDivertedP1,
+                Selectors.p(2) -> messagesForLanguage.ie803MovementDivertedP2("5 June 2024"),
+                Selectors.p(3) -> messagesForLanguage.printScreenContent
+              )
+            )(createDocument(ie803MovementDiversionEvent, getMovementResponseModel))
+          }
+        }
+
         "rendering an IE803 event (Movement Split Notification)" should {
 
           "render the main detail section of the view" should {

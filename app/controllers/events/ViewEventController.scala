@@ -66,6 +66,9 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
   def movementSplit(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE803)
 
+  def movementDiverted(ern: String, arc: String, eventId: Int): Action[AnyContent] =
+    onPageLoad(ern, arc, eventId, IE803)
+
   private def onPageLoad(ern: String, arc: String, eventId: Int, eventType: EventTypes): Action[AnyContent] = {
     authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
       withHistoryEvent(ern, arc, eventType, eventId) { event =>
