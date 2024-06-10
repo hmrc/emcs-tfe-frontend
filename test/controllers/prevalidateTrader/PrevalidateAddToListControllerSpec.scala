@@ -78,7 +78,7 @@ class PrevalidateAddToListControllerSpec extends SpecBase
       betaAllowList = betaAllowListAction,
       navigator = new FakePrevalidateNavigator(testOnwardRoute),
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
       requireData = new PrevalidateTraderDataRetrievalAction(mockUserAnswersService),
       formProvider = formProvider,
       controllerComponents = messagesControllerComponents,

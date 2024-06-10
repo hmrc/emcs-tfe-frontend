@@ -16,9 +16,9 @@
 
 package controllers.predicates
 
-import play.api.mvc.ActionTransformer
 import models.auth.UserRequest
 import models.requests.DataRequest
+import play.api.mvc.ActionTransformer
 import services.{GetMessageStatisticsService, GetTraderKnownFactsService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
@@ -40,7 +40,7 @@ class DataRetrievalActionImpl @Inject()(getTraderKnownFactsService: GetTraderKno
 
       for {
         traderKnownFacts <- getTraderKnownFactsService.getTraderKnownFacts(request.ern)
-        messageStatistics <- getMessageStatisticsService.getMessageStatistics(request.ern)
+        messageStatistics <- getMessageStatisticsService.getMessageStatistics(request.ern)(hc, request)
       } yield {
         DataRequest(request, traderKnownFacts, messageStatistics)
       }

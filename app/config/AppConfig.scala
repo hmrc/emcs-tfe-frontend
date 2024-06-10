@@ -150,4 +150,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def prevalidateTraderUserAnswersReplaceIndexes: Boolean = configuration.get[Boolean]("mongodb.prevalidateTraderUserAnswers.replaceIndexes")
 
   def betaAllowListCheckingEnabled: Boolean = isEnabled(CheckBetaAllowList)
+
+  def messageStatisticsNotificationEnabled: Boolean = isEnabled(MessageStatisticsNotification)
 }

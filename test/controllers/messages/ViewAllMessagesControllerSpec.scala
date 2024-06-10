@@ -58,7 +58,7 @@ class ViewAllMessagesControllerSpec
     lazy val controller: ViewAllMessagesController = new ViewAllMessagesController(
       mcc = app.injector.instanceOf[MessagesControllerComponents],
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
       betaAllowList = betaAllowListAction,
       getMessagesService = mockGetMessagesService,
       view = view,

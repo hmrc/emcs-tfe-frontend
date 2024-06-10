@@ -49,7 +49,11 @@
                            class="moj-primary-navigation__link"
                            @if(navInfo.currentSection == PageSection.Messages) { aria-current="page" }
                            href="@appConfig.emcsTfeMessagesUrl(navInfo.ern)">@messages("navigation.messages")
-                            <span class="hmrc-notification-badge govuk-!-margin-left-1">@navInfo.countOfNewMessages</span>
+                            @if(appConfig.messageStatisticsNotificationEnabled) {
+                                @navInfo.countOfNewMessages.map { count =>
+                                    <span class="hmrc-notification-badge govuk-!-margin-left-1">@count</span>
+                                }
+                            }
                         </a>
                     </li>
 

@@ -65,7 +65,7 @@ class PrevalidateRemoveExciseProductCodeControllerSpec
     lazy val controller: PrevalidateRemoveExciseProductCodeController = new PrevalidateRemoveExciseProductCodeController(
       controllerComponents = app.injector.instanceOf[MessagesControllerComponents],
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
       betaAllowList = betaAllowListAction,
       requireData = new PrevalidateTraderDataRetrievalAction(mockUserAnswersService),
       userAnswersService = mockUserAnswersService,

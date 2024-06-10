@@ -16,21 +16,37 @@
 
 package services
 
+import config.AppConfig
 import connectors.emcsTfe.GetMessageStatisticsConnector
+import featureswitch.core.config.{FeatureSwitching, MessageStatisticsNotification}
+import models.auth.UserRequest
+import models.messages.MessagesSearchOptions
 import models.response.MessageStatisticsException
 import models.response.emcsTfe.GetMessageStatisticsResponse
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
+import controllers.messages.routes
 
 @Singleton
-class GetMessageStatisticsService @Inject()(connector: GetMessageStatisticsConnector)(implicit ec: ExecutionContext) {
+class GetMessageStatisticsService @Inject()(connector: GetMessageStatisticsConnector,
+                                            override val config: AppConfig
+                                           )(implicit ec: ExecutionContext) extends FeatureSwitching {
 
-  def getMessageStatistics(ern: String)(implicit hc: HeaderCarrier): Future[GetMessageStatisticsResponse] = {
-    connector.getMessageStatistics(ern).map {
-      case Right(messageStatistics) => messageStatistics
-      case _ => throw MessageStatisticsException(s"No message statistics found for trader $ern")
+  def getMessageStatistics(ern: String)(implicit hc: HeaderCarrier, request: UserRequest[_]): Future[Option[GetMessageStatisticsResponse]] = {
+
+    val isOnMessagesPage = request.request.path.contains(
+      routes.ViewAllMessagesController.onPageLoad(request.ern, MessagesSearchOptions()).path().split("\\?").head
+    )
+
+    if(config.messageStatisticsNotificationEnabled || isOnMessagesPage) {
+      connector.getMessageStatistics(ern).map {
+        case Right(messageStatistics) => Some(messageStatistics)
+        case _ => throw MessageStatisticsException(s"No message statistics found for trader $ern")
+      }
+    } else {
+      Future.successful(None)
     }
   }
 

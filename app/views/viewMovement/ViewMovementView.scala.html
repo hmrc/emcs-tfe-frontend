@@ -45,14 +45,13 @@
     subNavigationTabs: Seq[SubNavigationTab],
     currentSubNavigationTab: SubNavigationTab,
     movementTabBody: Html,
-    historyEvents: Seq[TimelineEvent],
-    messageStatistics: GetMessageStatisticsResponse
+    historyEvents: Seq[TimelineEvent]
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
     titleNoForm(arc, Some(currentSubNavigationTab.name)),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, messageStatistics.countOfNewMessages, Movements)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, request.messageStatistics.map(_.countOfNewMessages), Movements)),
     fullWidthContent = true
 ) {
 

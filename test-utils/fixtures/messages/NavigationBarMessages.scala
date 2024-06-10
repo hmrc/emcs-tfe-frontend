@@ -20,7 +20,10 @@ object NavigationBarMessages {
 
   sealed trait ViewMessages { _: i18n =>
     val home: String = "Home"
-    def messages(numberOfUnreadMessages: Int): String = s"Messages $numberOfUnreadMessages"
+    def messages(numberOfUnreadMessages: Option[Int]): String = numberOfUnreadMessages match {
+      case Some(n) => s"Messages $n"
+      case _ => "Messages"
+    }
     val drafts = "Drafts"
     val movements = "Movements"
   }

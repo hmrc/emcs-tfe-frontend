@@ -53,7 +53,7 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec
     lazy val controller: PrevalidateConsigneeTraderIdentificationController = new PrevalidateConsigneeTraderIdentificationController(
       controllerComponents = app.injector.instanceOf[MessagesControllerComponents],
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
       betaAllowList = betaAllowListAction,
       userAnswersAction = new PrevalidateTraderDataRetrievalAction(mockUserAnswersService),
       userAnswersService = mockUserAnswersService,

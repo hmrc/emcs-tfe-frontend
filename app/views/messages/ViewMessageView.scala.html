@@ -41,7 +41,7 @@
 @layout(
     pageTitle = titleNoForm(messages(messageHelper.messageDescriptionKey(message.message))),
     maybeShowActiveTrader = None,
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, models.PageSection.Messages)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), models.PageSection.Messages)),
     fullWidthContent = false
 ) {
 

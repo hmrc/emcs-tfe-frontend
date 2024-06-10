@@ -49,7 +49,7 @@ class PrevalidateTraderStartControllerSpec
     lazy val controller: PrevalidateTraderStartController = new PrevalidateTraderStartController(
       mcc = app.injector.instanceOf[MessagesControllerComponents],
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
       betaAllowList = betaAllowListAction,
       userAnswersService = mockUserAnswersService,
       view = view

@@ -59,7 +59,7 @@ class ViewEventControllerSpec
   lazy val controller: ViewEventController = new ViewEventController(
     mcc = app.injector.instanceOf[MessagesControllerComponents],
     auth = FakeSuccessAuthAction,
-    getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+    getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
     betaAllowList = new FakeBetaAllowListAction,
     getMovementHistoryEventsService = mockGetMovementHistoryEventsService,
     getMovementService = mockGetMovementService,

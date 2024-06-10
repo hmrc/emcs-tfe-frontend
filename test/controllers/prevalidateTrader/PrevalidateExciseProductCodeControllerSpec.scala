@@ -74,7 +74,7 @@ class PrevalidateExciseProductCodeControllerSpec extends SpecBase
       userAnswersService = mockUserAnswersService,
       navigator = new FakePrevalidateNavigator(testOnwardRoute),
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
       betaAllowList = betaAllowListAction,
       requireData = new PrevalidateTraderDataRetrievalAction(mockUserAnswersService),
       formProvider = formProvider,
