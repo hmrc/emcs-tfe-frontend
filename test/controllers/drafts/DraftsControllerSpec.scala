@@ -54,7 +54,7 @@ class DraftsControllerSpec extends SpecBase with FakeAuthAction with MockFactory
     val controller: DraftsController = new DraftsController(
       app.injector.instanceOf[MessagesControllerComponents],
       FakeSuccessAuthAction,
-      new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
       betaAllowListAction
     )(ec, appConfig)
 

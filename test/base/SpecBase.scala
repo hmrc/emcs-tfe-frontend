@@ -58,7 +58,7 @@ trait SpecBase extends AnyWordSpecLike
     UserRequest(request, ern, testInternalId, testCredId, hasMultipleErns = false)
 
   def dataRequest[A](request: Request[A], ern: String = testErn): DataRequest[A] =
-    DataRequest(userRequest(request, ern), testMinTraderKnownFacts, testMessageStatistics)
+    DataRequest(userRequest(request, ern), testMinTraderKnownFacts, Some(testMessageStatistics))
 
   def userAnswersRequest[A](request: Request[A], userAnswers: UserAnswers = emptyUserAnswers): UserAnswersRequest[A] =
     UserAnswersRequest(dataRequest(request, userAnswers.ern), userAnswers)

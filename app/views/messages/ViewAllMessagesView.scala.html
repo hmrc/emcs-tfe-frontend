@@ -44,9 +44,9 @@
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
-    pageTitle = titleNoForm(messages("viewAllMessages.title", request.messageStatistics.countOfAllMessages)),
+    pageTitle = titleNoForm(messages("viewAllMessages.title", request.messageStatistics.map(_.countOfAllMessages).getOrElse(0))),
     maybeShowActiveTrader = None,
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.countOfNewMessages, models.PageSection.Messages)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), models.PageSection.Messages)),
     fullWidthContent = true
 ) {
 
@@ -68,12 +68,12 @@
 
     <div class="govuk-grid-row govuk-!-padding-right-3 govuk-!-padding-left-3">
          @h1() {
-             @messages("viewAllMessages.heading", request.messageStatistics.countOfAllMessages)
+             @messages("viewAllMessages.heading", request.messageStatistics.map(_.countOfAllMessages).getOrElse(0))
          }
 
          <div class="inbox">
             @p(classes = "govuk-body-l") {
-                 @messages("viewAllMessages.totalNumberOfMessages", request.messageStatistics.countOfNewMessages)
+                 @messages("viewAllMessages.totalNumberOfMessages", request.messageStatistics.map(_.countOfNewMessages).getOrElse(0))
              }
 
             <form>

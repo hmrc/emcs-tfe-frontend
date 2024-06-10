@@ -16,9 +16,10 @@
 
 package mocks.services
 
+import models.auth.UserRequest
 import models.response.emcsTfe.GetMessageStatisticsResponse
+import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
-import org.scalamock.handlers.CallHandler2
 import services.GetMessageStatisticsService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -29,7 +30,7 @@ trait MockGetMessageStatisticsService extends MockFactory {
   lazy val mockGetMessageStatisticsService: GetMessageStatisticsService = mock[GetMessageStatisticsService]
 
   object MockGetMessageStatisticsService {
-    def getMessageStatistics(ern: String): CallHandler2[String, HeaderCarrier, Future[GetMessageStatisticsResponse]] =
-      (mockGetMessageStatisticsService.getMessageStatistics(_: String)(_: HeaderCarrier)).expects(ern, *)
+    def getMessageStatistics(ern: String): CallHandler3[String, HeaderCarrier, UserRequest[_], Future[Option[GetMessageStatisticsResponse]]] =
+      (mockGetMessageStatisticsService.getMessageStatistics(_: String)(_: HeaderCarrier, _: UserRequest[_])).expects(ern, *, *)
   }
 }

@@ -17,6 +17,8 @@
 package views.components
 
 import base.SpecBase
+import config.AppConfig
+import featureswitch.core.config.{FeatureSwitching, MessageStatisticsNotification}
 import fixtures.messages.NavigationBarMessages
 import models.PageSection.Movements
 import models.common.RoleType
@@ -25,67 +27,79 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import views.html.components.navigation_bar
 
-class NavigationBarSpec extends SpecBase {
+class NavigationBarSpec extends SpecBase with FeatureSwitching {
 
-  val navigation_bar: navigation_bar = app.injector.instanceOf[navigation_bar]
+  override lazy val config = app.injector.instanceOf[AppConfig]
+  lazy val navigationBar: navigation_bar = app.injector.instanceOf[navigation_bar]
+
+  class Test(messageStatisticsNotificationEnabled: Boolean) {
+    if(messageStatisticsNotificationEnabled) enable(MessageStatisticsNotification) else disable(MessageStatisticsNotification)
+  }
 
   "navigation_bar" when {
 
-    Seq(NavigationBarMessages.English).foreach { messagesForLanguage =>
+    Seq(true, false).foreach { messageStatisticsNotificationEnabled =>
 
-      implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
+      s"MessageStatisticsNotification enabled is '$messageStatisticsNotificationEnabled'" when {
 
-      RoleType.values.foreach {
-        roleType =>
-          val ern = {
-            val prefix = roleType.descriptionKey.split('.').last // accountHome.roleType.GBWK -> GBWK etc
+        val newMessageCount = Option.when(messageStatisticsNotificationEnabled)(testMessageStatistics.countOfNewMessages)
 
-            prefix + "123"
-          }
+        Seq(NavigationBarMessages.English).foreach { messagesForLanguage =>
 
-          val html = navigation_bar(NavigationBannerInfo(ern, testMessageStatistics.countOfNewMessages, Movements))
-          val doc = Jsoup.parse(html.toString())
+          implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
 
-          s"Role Type is [${msgs(roleType.descriptionKey)}]" must {
-            "render the Home link" in {
-              doc.select("#navigation-home-link").text() mustBe messagesForLanguage.home
-            }
-            "render the Messages link" in {
-              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(testMessageStatistics.countOfNewMessages)
-            }
-            if (roleType.isConsignor) {
-              "render the Drafts link" in {
-                doc.select("#navigation-drafts-link").text() mustBe messagesForLanguage.drafts
+          RoleType.values.foreach {
+            roleType =>
+              val ern = {
+                val prefix = roleType.descriptionKey.split('.').last // accountHome.roleType.GBWK -> GBWK etc
+
+                prefix + "123"
               }
-            } else {
-              "not render the Drafts link" in {
-                doc.select("#navigation-drafts-link").size() mustBe 0
-              }
-            }
 
-            "render the Movements link" in {
-              doc.select("#navigation-movements-link").text() mustBe messagesForLanguage.movements
-            }
-
-            "show the user which page they are currently on" in {
-              doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
-            }
-          }
-      }
-
-      PageSection.values.foreach {
-        pageSection =>
-          s"When page section is [$pageSection]" must {
-            "only have one link with an aria-current attribute, where the value is 'page'" in {
-              val html = navigation_bar(NavigationBannerInfo(testErn, testMessageStatistics.countOfNewMessages, pageSection))
+              val html = navigationBar(NavigationBannerInfo(ern, newMessageCount, Movements))
               val doc = Jsoup.parse(html.toString())
 
-              doc.select("a[aria-current]").size() mustBe 1
-              doc.select("a[aria-current]").get(0).attr("aria-current") mustBe "page"
-            }
-          }
-      }
+              s"Role Type is [${msgs(roleType.descriptionKey)}]" must {
+                "render the Home link" in new Test(messageStatisticsNotificationEnabled) {
+                  doc.select("#navigation-home-link").text() mustBe messagesForLanguage.home
+                }
+                "render the Messages link" in new Test(messageStatisticsNotificationEnabled) {
+                  doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(newMessageCount)
+                }
+                if (roleType.isConsignor) {
+                  "render the Drafts link" in new Test(messageStatisticsNotificationEnabled) {
+                    doc.select("#navigation-drafts-link").text() mustBe messagesForLanguage.drafts
+                  }
+                } else {
+                  "not render the Drafts link" in new Test(messageStatisticsNotificationEnabled) {
+                    doc.select("#navigation-drafts-link").size() mustBe 0
+                  }
+                }
 
+                "render the Movements link" in new Test(messageStatisticsNotificationEnabled) {
+                  doc.select("#navigation-movements-link").text() mustBe messagesForLanguage.movements
+                }
+
+                "show the user which page they are currently on" in new Test(messageStatisticsNotificationEnabled) {
+                  doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
+                }
+              }
+          }
+
+          PageSection.values.foreach {
+            pageSection =>
+              s"When page section is [$pageSection]" must {
+                "only have one link with an aria-current attribute, where the value is 'page'" in new Test(messageStatisticsNotificationEnabled) {
+                  val html = navigationBar(NavigationBannerInfo(testErn, Some(testMessageStatistics.countOfNewMessages), pageSection))
+                  val doc = Jsoup.parse(html.toString())
+
+                  doc.select("a[aria-current]").size() mustBe 1
+                  doc.select("a[aria-current]").get(0).attr("aria-current") mustBe "page"
+                }
+              }
+          }
+        }
+      }
     }
   }
 }

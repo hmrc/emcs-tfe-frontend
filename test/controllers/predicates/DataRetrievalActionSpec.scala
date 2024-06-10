@@ -44,13 +44,13 @@ class DataRetrievalActionSpec
     "return a DataRequest" when {
       "downstream calls are successful" in {
         MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(testMinTraderKnownFacts))
-        MockGetMessageStatisticsService.getMessageStatistics(testErn).returns(Future.successful(testMessageStatistics))
+        MockGetMessageStatisticsService.getMessageStatistics(testErn).returns(Future.successful(Some(testMessageStatistics)))
 
         val result = dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)).futureValue.toOption.get
 
         result mustBe a[DataRequest[_]]
         result.traderKnownFacts mustBe testMinTraderKnownFacts
-        result.messageStatistics mustBe testMessageStatistics
+        result.messageStatistics mustBe Some(testMessageStatistics)
       }
     }
 

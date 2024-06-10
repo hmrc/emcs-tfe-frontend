@@ -80,7 +80,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
       betaAllowList = betaAllowListAction,
       navigator = new FakePrevalidateNavigator(testOnwardRoute),
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
       prevalidateTraderService = mockPrevalidateTraderService,
       requireData = new PrevalidateTraderDataRetrievalAction(mockUserAnswersService),
       controllerComponents = messagesControllerComponents,

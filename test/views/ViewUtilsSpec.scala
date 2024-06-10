@@ -36,7 +36,7 @@ class ViewUtilsSpec extends SpecBase with BaseFixtures {
     DataRequest(
       UserRequest(FakeRequest("GET", s"/consignment/$testErn/$testArc"), testErn, testInternalId, testCredId, hasMultipleErns)(messagesApi),
       testMinTraderKnownFacts,
-      testMessageStatistics
+      Some(testMessageStatistics)
     )
 
   ".title" in {

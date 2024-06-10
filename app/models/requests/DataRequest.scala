@@ -24,7 +24,7 @@ import models.response.emcsTfe.GetMessageStatisticsResponse
 
 case class DataRequest[A](request: UserRequest[A],
                           traderKnownFacts: TraderKnownFacts,
-                          messageStatistics: GetMessageStatisticsResponse) extends WrappedRequest[A](request) {
+                          messageStatistics: Option[GetMessageStatisticsResponse]) extends WrappedRequest[A](request) {
   val internalId: String = request.internalId
   val ern: String = request.ern
   val isWarehouseKeeper: Boolean = request.isWarehouseKeeper

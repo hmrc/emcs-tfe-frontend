@@ -25,7 +25,13 @@ import javax.inject.Singleton
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches: Seq[FeatureSwitch] = Seq(StubGetTraderKnownFacts, ReturnToLegacy, DenyDutyPaidUsers, CheckBetaAllowList)
+  val switches: Seq[FeatureSwitch] = Seq(
+    StubGetTraderKnownFacts,
+    ReturnToLegacy,
+    DenyDutyPaidUsers,
+    CheckBetaAllowList,
+    MessageStatisticsNotification
+  )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
@@ -52,4 +58,9 @@ case object DenyDutyPaidUsers extends FeatureSwitch {
 case object CheckBetaAllowList extends FeatureSwitch {
   override val configName: String = "features.checkBetaAllowList"
   override val displayName: String = "Check beta allow list"
+}
+
+case object MessageStatisticsNotification extends FeatureSwitch {
+  override val configName: String = "features.messageStatisticsNotification"
+  override val displayName: String = "Show the message statistics red notification badge (new messages count)"
 }

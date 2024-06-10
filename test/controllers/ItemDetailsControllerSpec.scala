@@ -51,7 +51,7 @@ class ItemDetailsControllerSpec
     lazy val controller: ItemDetailsController = new ItemDetailsController(
       mcc = app.injector.instanceOf[MessagesControllerComponents],
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
       betaAllowList = betaAllowListAction,
       view = view,
       movementService = mockGetMovementService

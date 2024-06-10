@@ -56,7 +56,7 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
       app.injector.instanceOf[MessagesControllerComponents],
       view,
       FakeSuccessAuthAction,
-      new FakeDataRetrievalAction(testMinTraderKnownFacts, testMessageStatistics),
+      new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
       betaAllowListAction
     )(ec, appConfig)
 
