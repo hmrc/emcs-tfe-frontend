@@ -9,7 +9,7 @@ import models.response.UnexpectedDownstreamResponseError
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{EitherValues, OptionValues}
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier}
@@ -44,12 +44,12 @@ class BetaAllowListConnectorISpec
       connector.check(testErn, navigationHubBetaGuard()._1).futureValue mustBe Right(true)
     }
 
-    "must return false when the server responds NOT_FOUND" in {
+    "must return false when the server responds NO_CONTENT" in {
 
       wireMockServer.stubFor(
         get(urlEqualTo(url))
           .withHeader(AUTHORIZATION, equalTo(authToken))
-          .willReturn(aResponse().withStatus(NOT_FOUND))
+          .willReturn(aResponse().withStatus(NO_CONTENT))
       )
 
       connector.check(testErn, navigationHubBetaGuard()._1).futureValue mustBe Right(false)

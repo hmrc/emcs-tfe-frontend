@@ -17,7 +17,7 @@
 package connectors.betaAllowList
 
 import models.response.{ErrorResponse, UnexpectedDownstreamResponseError}
-import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.http.Status.{NO_CONTENT, OK}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.Logging
 
@@ -27,7 +27,7 @@ trait BetaAllowListHttpParser extends Logging {
     override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, Boolean] = {
       response.status match {
         case OK => Right(true)
-        case NOT_FOUND => Right(false)
+        case NO_CONTENT => Right(false)
         case status =>
           logger.warn(s"[read] Unexpected status from emcs-tfe: $status")
           Left(UnexpectedDownstreamResponseError)
