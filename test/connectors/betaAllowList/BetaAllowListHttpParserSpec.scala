@@ -34,8 +34,8 @@ class BetaAllowListHttpParserSpec extends SpecBase with BetaAllowListHttpParser 
 
     "return 'false'" when {
 
-      s"a NOT_FOUND (${Status.NOT_FOUND}) response is retrieved" in {
-        BetaAllowListReads.read("", "", HttpResponse(Status.NOT_FOUND, "")) mustBe Right(false)
+      s"a NO_CONTENT (${Status.NO_CONTENT}) response is retrieved" in {
+        BetaAllowListReads.read("", "", HttpResponse(Status.NO_CONTENT, "")) mustBe Right(false)
       }
     }
 
