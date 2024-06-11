@@ -531,4 +531,34 @@ class MovementEventHelper @Inject()(
 
     optContent.getOrElse(Html(""))
   }
+
+  def rorDestinationCard(event: MovementHistoryEvent)(implicit movement: GetMovementResponse, messages: Messages): Html = {
+    val optContent: Option[Html] = for {
+      reportOfReceipt <- movement.reportOfReceipt
+      deliveryPlaceTrader <- reportOfReceipt.deliveryPlaceTrader
+      if movement.destinationType != DestinationType.Export
+    } yield {
+      val ernRow: Option[SummaryListRow] =
+        if(movement.destinationType == DestinationType.TaxWarehouse) {
+          deliveryPlaceTrader.traderExciseNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.ern", _))
+        } else {
+          None
+        }
+
+      buildOverviewPartial(
+        headingId = None,
+        headingTitle = Some(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.h2"),
+        cardTitleMessageKey = None,
+        cardFooterHtml = None,
+        summaryListRows = Seq(
+          deliveryPlaceTrader.traderName.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.name", _)),
+          ernRow,
+          deliveryPlaceTrader.vatNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.vatNumber", _)),
+          deliveryPlaceTrader.address.map(address => summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.address", renderAddress(address))),
+        )
+      )
+    }
+
+    optContent.getOrElse(Html(""))
+  }
 }

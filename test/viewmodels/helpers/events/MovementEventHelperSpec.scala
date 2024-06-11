@@ -788,4 +788,107 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
       }
     }
   }
+
+  "rorDestinationCard" when {
+    "deliveryPlaceTrader is present" must {
+      "render the place of destination section header" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.rorDestinationCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).text() mustBe "Place of destination"
+      }
+      "render the Name row" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.rorDestinationCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(0).getElementsByTag("dt").text() mustBe "Name"
+        summaryListRows.get(0).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.deliveryPlaceTrader.get.traderName.get
+      }
+      "render the Excise Registration Number (ERN) row when destination type = tax warehouse" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = DestinationType.TaxWarehouse)
+
+        val result = helper.rorDestinationCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(1).getElementsByTag("dt").text() mustBe "Warehouse excise ID"
+        summaryListRows.get(1).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.deliveryPlaceTrader.get.traderExciseNumber.get
+      }
+      "not render the Excise Registration Number (ERN) row when destination type != tax warehouse" in {
+        DestinationType.values
+          .filterNot(_ == DestinationType.TaxWarehouse)
+          .filterNot(_ == DestinationType.Export)
+          .foreach {
+            destinationType =>
+              implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = destinationType)
+
+              val result = helper.rorDestinationCard(ie818Event)
+              val doc = Jsoup.parse(result.toString())
+
+              val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+              val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+              summaryListRows.get(1).getElementsByTag("dt").text() must not be "Warehouse excise ID"
+          }
+      }
+      "render the Identification number row if deliveryPlace vatNumber is present" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.rorDestinationCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(2).getElementsByTag("dt").text() mustBe "VAT registration number"
+        summaryListRows.get(2).getElementsByTag("dd").text() mustBe "GB123456789"
+
+      }
+      "render the Address row" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.rorDestinationCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(3).getElementsByTag("dt").text() mustBe "Address"
+        summaryListRows.get(3).getElementsByTag("dd").text() mustBe "Main101 Zeebrugge ZZ78"
+      }
+    }
+    "destinationType == Export" must {
+      "return empty HTML" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = DestinationType.Export)
+
+        val result = helper.rorDestinationCard(ie818Event)
+        result mustBe Html("")
+      }
+    }
+    "no deliveryPlaceTrader in movement history" must {
+      "return empty HTML" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(reportOfReceipt = Some(reportOfReceiptResponse.copy(deliveryPlaceTrader = None)))
+
+        val result = helper.rorDestinationCard(ie818Event)
+        result mustBe Html("")
+      }
+    }
+    "no ror in movement history" must {
+      "return empty HTML" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(reportOfReceipt = None)
+
+        val result = helper.rorDestinationCard(ie818Event)
+        result mustBe Html("")
+      }
+    }
+  }
 }

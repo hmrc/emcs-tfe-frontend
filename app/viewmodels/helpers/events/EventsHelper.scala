@@ -122,6 +122,7 @@ class EventsHelper @Inject()(
         printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         eventHelper.rorDetailsCard(event),
         eventHelper.rorConsigneeCard(event),
+        eventHelper.rorDestinationCard(event),
       )
     )
   }
