@@ -36,6 +36,7 @@ import views.html.events.HistoryEventView
 
 import scala.concurrent.Future
 
+// scalastyle:off magic.number
 class ViewEventControllerSpec
   extends SpecBase
   with MessagesFixtures
@@ -70,7 +71,7 @@ class ViewEventControllerSpec
 
   private def renderASuccessfulEventView(event: MovementHistoryEvent, controllerMethod: () => Future[Result]): Unit = {
     "render a view" in {
-      val testHistoryEvents = getMovementHistoryEventsModel :+ event
+      val testHistoryEvents = (getMovementHistoryEventsModel :+ event).distinct
       val testMovement = getMovementResponseModel.copy(eventHistorySummary = Some(testHistoryEvents))
 
       MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
@@ -85,7 +86,7 @@ class ViewEventControllerSpec
   private def handle404s(event: MovementHistoryEvent, controllerMethod: () => Future[Result]): Unit = {
     "return a 404 not found" when {
       "when the wrong event id is requested" in {
-        val testHistoryEvents = getMovementHistoryEventsModel :+ event.copy(eventDate = "1999-12-31T23:59:59")
+        val testHistoryEvents = getMovementHistoryEventsModel.filterNot(_.eventType == event.eventType) :+ event.copy(eventDate = "1999-12-31T23:59:59")
 
         MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
 
@@ -95,7 +96,7 @@ class ViewEventControllerSpec
       }
       s"when the matching event is not an ${simpleName(event.eventType)} event" in {
         val otherEventTypes: Seq[EventTypes] = EventTypes.values.filterNot(_ == event.eventType)
-        val testHistoryEvents = getMovementHistoryEventsModel :+ event.copy(eventType = otherEventTypes.head)
+        val testHistoryEvents = getMovementHistoryEventsModel.filterNot(_.eventType == event.eventType) :+ event.copy(eventType = otherEventTypes.head)
 
         MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
 
@@ -150,6 +151,11 @@ class ViewEventControllerSpec
   ".movementDiverted" must {
     renderASuccessfulEventView(ie803MovementDiversionEvent, () => controller.movementDiverted(testErn, testArc, 853932155)(fakeRequest))
     handle404s(ie803MovementDiversionEvent, () => controller.movementDiverted(testErn, testArc, 853932155)(fakeRequest))
+  }
+
+  ".reportReceiptSubmitted" must {
+    renderASuccessfulEventView(ie818Event, () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
+    handle404s(ie818Event, () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
   }
 
 }

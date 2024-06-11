@@ -21,13 +21,15 @@ import fixtures.GetMovementResponseFixtures
 import models.common.DestinationType.{Export, TemporaryRegisteredConsignee}
 import models.common.GuarantorType.{Consignee, Consignor, GuarantorNotRequired, NoGuarantor, Owner, Transporter}
 import models.common.TransportArrangement.OwnerOfGoods
-import models.common.{AddressModel, TraderModel, TransportMode}
+import models.common.{AddressModel, DestinationType, TraderModel, TransportMode}
 import models.requests.DataRequest
 import models.response.emcsTfe.{GetMovementResponse, HeaderEadEsadModel, TransportModeModel}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
+import play.twirl.api.Html
 import views.BaseSelectors
+import views.ViewUtils.LocalDateExtensions
 
 // scalastyle:off magic.number
 class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures {
@@ -40,7 +42,9 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
 
   object Selectors extends BaseSelectors {
     override def h2(i: Int) = s"h2:nth-of-type($i)"
+
     def summaryListRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
+
     def summaryListRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
   }
 
@@ -427,7 +431,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
   "journeyInformationCard" must {
     "output the correct rows when all data is present" in {
       implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-        transportMode =  TransportModeModel(
+        transportMode = TransportModeModel(
           transportModeCode = TransportMode.AirTransport,
           complementaryInformation = Some("transport complementary information"),
         )
@@ -582,6 +586,57 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
       val doc = Jsoup.parse(result.toString())
 
       doc.body().text() mustBe ""
+    }
+  }
+
+  "rorDetailsCard" when {
+    "export" must {
+      "output the correct rows when all data is present" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = DestinationType.Export)
+
+        val result = helper.rorDetailsCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).text() mustBe "Report of export details"
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(0).getElementsByTag("dt").text() mustBe "Date of arrival"
+        summaryListRows.get(0).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.dateOfArrival.formatDateForUIOutput()
+        summaryListRows.get(1).getElementsByTag("dt").text() mustBe "Export status"
+        summaryListRows.get(1).getElementsByTag("dd").text() mustBe "Accepted although unsatisfactory"
+        summaryListRows.get(2).getElementsByTag("dt").text() mustBe "More information"
+        summaryListRows.get(2).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.otherInformation.get
+      }
+    }
+    "not export" must {
+      "output the correct rows when all data is present" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.rorDetailsCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).text() mustBe "Report of receipt details"
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(0).getElementsByTag("dt").text() mustBe "Date of arrival"
+        summaryListRows.get(0).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.dateOfArrival.formatDateForUIOutput()
+        summaryListRows.get(1).getElementsByTag("dt").text() mustBe "Receipt status"
+        summaryListRows.get(1).getElementsByTag("dd").text() mustBe "Accepted although unsatisfactory"
+        summaryListRows.get(2).getElementsByTag("dt").text() mustBe "More information"
+        summaryListRows.get(2).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.otherInformation.get
+      }
+    }
+    "no ror in movement history" must {
+      "return empty HTML" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(reportOfReceipt = None)
+
+        val result = helper.rorDetailsCard(ie818Event)
+        result mustBe Html("")
+      }
     }
   }
 }

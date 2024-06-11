@@ -16,8 +16,10 @@
 
 package viewmodels.helpers.events
 
+import models.common.DestinationType
 import models.common.DestinationType._
 import models.common.GuarantorType._
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.{GetMovementResponse, MovementItem}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
@@ -27,6 +29,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import viewmodels.helpers.SummaryListHelper._
 import viewmodels.helpers.{ItemDetailsCardHelper, ItemPackagingCardHelper, ViewMovementTransportHelper}
+import views.ViewUtils.LocalDateExtensions
 import views.html.components.h2
 import views.html.viewMovement.partials.overview_partial
 
@@ -458,5 +461,35 @@ class MovementEventHelper @Inject()(
           )
       )
     )
+  }
+
+  def rorDetailsCard(event: MovementHistoryEvent)(implicit movement: GetMovementResponse, messages: Messages): Html = {
+    movement.reportOfReceipt match {
+      case Some(reportOfReceipt) =>
+        val headingTitle: String = if(movement.destinationType == DestinationType.Export) {
+          messages(s"movementHistoryEvent.${event.eventType}.h2.export")
+        } else {
+          messages(s"movementHistoryEvent.${event.eventType}.h2")
+        }
+
+        val statusKey: String = if (movement.destinationType == DestinationType.Export) {
+          s"movementHistoryEvent.${event.eventType}.rorDetails.status.export"
+        } else {
+          s"movementHistoryEvent.${event.eventType}.rorDetails.status"
+        }
+
+        buildOverviewPartial(
+          headingId = None,
+          headingTitle = Some(headingTitle),
+          cardTitleMessageKey = None,
+          cardFooterHtml = None,
+          summaryListRows = Seq(
+            Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDetails.dateOfArrival", reportOfReceipt.dateOfArrival.formatDateForUIOutput())),
+            Some(summaryListRowBuilder(statusKey, messages(s"movementHistoryEvent.${event.eventType}.rorDetails.status.value.${reportOfReceipt.acceptMovement}"))),
+            Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDetails.moreInformation", reportOfReceipt.otherInformation.getOrElse(s"movementHistoryEvent.${event.eventType}.rorDetails.moreInformation.notProvided"))),
+          )
+        )
+      case None => Html("")
+    }
   }
 }

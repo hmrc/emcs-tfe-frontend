@@ -22,7 +22,7 @@ import play.api.libs.json.{JsValue, Json}
 
 trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
-  val getMovementHistoryEventsModel: Seq[MovementHistoryEvent] = Seq(
+  lazy val getMovementHistoryEventsModel: Seq[MovementHistoryEvent] = Seq(
     MovementHistoryEvent(
       eventType = IE813,
       eventDate = "2023-12-01T15:00:00",
@@ -39,14 +39,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
       upstreamArc = Some(testArc),
       isFirstEventTypeInHistory = false
     ),
-    MovementHistoryEvent(
-      eventType = IE818,
-      eventDate = "2023-12-04T08:00:00",
-      sequenceNumber = 3,
-      messageRole = 1,
-      upstreamArc = Some(testArc),
-      isFirstEventTypeInHistory = true
-    )
+    ie818Event
   )
 
   val getMovementHistoryEventsResponseInputJson: JsValue = Json.arr(
@@ -66,7 +59,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
     ),
     Json.obj(
       "eventType" -> "IE818",
-      "eventDate" -> "2023-12-04T08:00:00",
+      "eventDate" -> "2024-12-04T17:00:00",
       "sequenceNumber" -> 3,
       "messageRole" -> 1,
       "upstreamArc" -> testArc
@@ -125,5 +118,14 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
     messageRole = 2,
     upstreamArc = None,
     isFirstEventTypeInHistory = false
+  )
+
+  val ie818Event = MovementHistoryEvent(
+    eventType = IE818,
+    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    sequenceNumber = 3,
+    messageRole = 1,
+    upstreamArc = Some(testArc),
+    isFirstEventTypeInHistory = true
   )
 }

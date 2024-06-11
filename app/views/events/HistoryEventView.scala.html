@@ -39,14 +39,14 @@
 @(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
-    pageTitle = titleNoForm(messages(timelineHelper.getEventTitleKey(event))),
+    pageTitle = titleNoForm(messages(timelineHelper.getEventTitleKey(event, movement))),
     maybeShowActiveTrader = None,
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), models.PageSection.Movements)),
     fullWidthContent = false
 ) {
 
     @h1(classes = "govuk-heading-xl govuk-!-margin-bottom-4") {
-        @messages(timelineHelper.getEventTitleKey(event))
+        @messages(timelineHelper.getEventTitleKey(event, movement))
     }
 
     @span(

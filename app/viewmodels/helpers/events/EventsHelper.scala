@@ -17,6 +17,7 @@
 package viewmodels.helpers.events
 
 import models.EventTypes._
+import models.common.DestinationType
 import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.Messages
@@ -40,6 +41,7 @@ class EventsHelper @Inject()(
       case (IE801, _) => ie801Html(event, movement)
       case (IE802, _) => ie802Html(event)
       case (IE803, _) => ie803Html(event, movement)
+      case (IE818, _) => ie818Html(event, movement)
       case _ => Empty.asHtml
     }
   }
@@ -103,6 +105,25 @@ class EventsHelper @Inject()(
         Some(printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"))
       ).flatten
     )
+
+  private def ie818Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+    implicit val _movement: GetMovementResponse = movement
+
+    val lede: String = if(movement.destinationType == DestinationType.Export) {
+      messages(s"${timelineHelper.getEventBaseKey(event)}.lede.export")
+    } else {
+      messages(s"${timelineHelper.getEventBaseKey(event)}.lede")
+    }
+
+    HtmlFormat.fill(
+      Seq(
+        p(classes = "govuk-body-l")(Html(lede)),
+        p()(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
+        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        eventHelper.rorDetailsCard(event)
+      )
+    )
+  }
 
   private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
     p(classes = "govuk-body js-visible govuk-!-display-none-print")(

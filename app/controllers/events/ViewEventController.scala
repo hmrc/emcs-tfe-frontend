@@ -69,6 +69,9 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
   def movementDiverted(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE803)
 
+  def reportReceiptSubmitted(ern: String, arc: String, eventId: Int): Action[AnyContent] =
+    onPageLoad(ern, arc, eventId, IE818)
+
   private def onPageLoad(ern: String, arc: String, eventId: Int, eventType: EventTypes): Action[AnyContent] = {
     authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
       withHistoryEvent(ern, arc, eventType, eventId) { event =>
@@ -81,8 +84,8 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
   }
 
 
-  private def withHistoryEvent(ern:String, arc: String, eventType: EventTypes, eventId: Int)
-                      (f: MovementHistoryEvent => Future[Result])(implicit request: DataRequest[_]): Future[Result] =
+  private def withHistoryEvent(ern: String, arc: String, eventType: EventTypes, eventId: Int)
+                              (f: MovementHistoryEvent => Future[Result])(implicit request: DataRequest[_]): Future[Result] =
 
     getMovementHistoryEventsService.getMovementHistoryEvents(ern, arc).flatMap {
       case events if events.nonEmpty =>
@@ -91,12 +94,12 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
             f(matchedEvent)
           case None =>
             logger.warn(s"[withHistoryEvent] - Unable to find the movement history for event id $eventId")
-            Future.successful( NotFound(errorHandler.notFoundTemplate) )
+            Future.successful(NotFound(errorHandler.notFoundTemplate))
         }
 
       case _ =>
         logger.warn(s"[withHistoryEvent] - There are no movement history events for ERN:$ern, ARC:$arc")
-        Future.successful( NotFound(errorHandler.notFoundTemplate) )
+        Future.successful(NotFound(errorHandler.notFoundTemplate))
     }
 
 }

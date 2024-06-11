@@ -19,6 +19,7 @@ package viewmodels.helpers.events
 import base.SpecBase
 import fixtures.events.MovementEventMessages
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
+import models.common.DestinationType
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -108,6 +109,35 @@ class EventsHelperSpec extends SpecBase
             body.select(Selectors.bullet(1)).text() mustBe testArc
             body.select(Selectors.bullet(2)).text() mustBe (testArc.dropRight(1) + "1")
             body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
+          }
+        }
+
+        "being called with event type IE818 and destination type Export" must {
+
+          "render the correct HTML" in {
+
+            val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = DestinationType.Export))
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie818P1Export
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.ie818P2
+            body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
+          }
+        }
+
+        "being called with event type IE818 and destination type not Export" must {
+
+          "render the correct HTML" in {
+
+            DestinationType.values.filterNot(_ == DestinationType.Export).foreach {
+              destinationType =>
+                val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = destinationType))
+                val body = Jsoup.parse(result.toString())
+
+                body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie818P1
+                body.select(Selectors.p(2)).text() mustBe messagesForLanguage.ie818P2
+                body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
+            }
           }
         }
       }
