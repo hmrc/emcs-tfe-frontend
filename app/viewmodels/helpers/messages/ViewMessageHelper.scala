@@ -101,7 +101,7 @@ class ViewMessageHelper @Inject()(
       messageKey = "viewMessage.link.viewMovement.description", id = Some("view-movement")
     )
     lazy val printMessageLink: Html = link(
-      link = "#print-dialogue", messageKey = "viewMessage.link.printMessage.description", id = Some("print-link"), classes = "govuk-link print-page govuk-!-display-none"
+      link = "#print-dialogue", messageKey = "viewMessage.link.printMessage.description", id = Some("print-link"), classes = "govuk-link js-visible"
     )
     lazy val deleteMessageLink: Html = link(
       link = controllers.messages.routes.DeleteMessageController.onPageLoad(request.ern, message.uniqueMessageIdentifier).url,

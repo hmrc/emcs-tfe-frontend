@@ -15,12 +15,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
     });
   }
 
-  // handle print link visibility  click
-  const printPageContainer = document.querySelector('.print-page');
-  if (printPageContainer) {
-    printPageContainer.classList.remove('govuk-!-display-none'); //Remove the hide class from the link (JS enabled = show, JS disabled = hide)
-  }
-
   const printLink = document.getElementById('print-link');
 
   if (printLink) {
