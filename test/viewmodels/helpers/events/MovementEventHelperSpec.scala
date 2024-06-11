@@ -891,4 +891,48 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
       }
     }
   }
+
+  "rorExportCard" when {
+    "destinationType == Export" must {
+      "render the export section header" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = DestinationType.Export)
+
+        val result = helper.rorExportCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).text() mustBe "Export"
+      }
+      "render the Name row" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = DestinationType.Export)
+
+        val result = helper.rorExportCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(0).getElementsByTag("dt").text() mustBe "Customs office code"
+        summaryListRows.get(0).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.destinationOffice
+      }
+    }
+    "destinationType != Export" must {
+      "return empty HTML" in {
+        DestinationType.values.filterNot(_ == DestinationType.Export).foreach {
+          destinationType =>
+            implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = destinationType)
+
+            val result = helper.rorExportCard(ie818Event)
+            result mustBe Html("")
+        }
+      }
+    }
+    "no ror in movement history" must {
+      "return empty HTML" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(reportOfReceipt = None)
+
+        val result = helper.rorExportCard(ie818Event)
+        result mustBe Html("")
+      }
+    }
+  }
 }

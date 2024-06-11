@@ -561,4 +561,24 @@ class MovementEventHelper @Inject()(
 
     optContent.getOrElse(Html(""))
   }
+
+  def rorExportCard(event: MovementHistoryEvent)(implicit movement: GetMovementResponse, messages: Messages): Html = {
+    val optContent: Option[Html] = for {
+      reportOfReceipt <- movement.reportOfReceipt
+      if movement.destinationType == DestinationType.Export
+    } yield {
+      buildOverviewPartial(
+        headingId = None,
+        headingTitle = Some(s"movementHistoryEvent.${event.eventType}.rorExport.h2"),
+        cardTitleMessageKey = None,
+        cardFooterHtml = None,
+        summaryListRows = Seq(
+          // TODO: check if destinationOffice is correct
+          Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorExport.customsOfficeCode", reportOfReceipt.destinationOffice))
+        )
+      )
+    }
+
+    optContent.getOrElse(Html(""))
+  }
 }

@@ -123,6 +123,7 @@ class EventsHelper @Inject()(
         eventHelper.rorDetailsCard(event),
         eventHelper.rorConsigneeCard(event),
         eventHelper.rorDestinationCard(event),
+        eventHelper.rorExportCard(event),
       )
     )
   }
