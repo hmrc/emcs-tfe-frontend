@@ -226,7 +226,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     notificationOfDivertedMovement = Some(NotificationOfDivertedMovementModel(
       notificationType = ChangeOfDestination,
       notificationDateAndTime = LocalDateTime.of(2024, 6, 5, 0, 0, 1),
-      downstreamArcs = Seq(testArc, testArc + "1")
+      downstreamArcs = Seq(testArc, testArc.dropRight(1) + "1")
     ))
   )
 
@@ -382,7 +382,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       "notificationType" -> "1",
       "notificationDateAndTime" -> "2024-06-05T00:00:01",
       "downstreamArcs" -> Json.arr(
-        testArc, s"${testArc}1"
+        testArc, s"${testArc.dropRight(1)}1"
       )
     ),
     "items" -> Json.arr(

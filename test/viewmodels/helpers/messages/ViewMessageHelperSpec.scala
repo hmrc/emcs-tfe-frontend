@@ -161,6 +161,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -202,6 +203,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -233,6 +235,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -269,6 +272,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -310,6 +314,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -343,6 +348,7 @@ class ViewMessageHelperSpec extends SpecBase
                     link(
                       link = "#print-dialogue",
                       messageKey = "viewMessage.link.printMessage.description",
+                      classes = "govuk-link print-page govuk-!-display-none",
                       id = Some("print-link")
                     ),
                     link(
@@ -384,6 +390,7 @@ class ViewMessageHelperSpec extends SpecBase
                     link(
                       link = "#print-dialogue",
                       messageKey = "viewMessage.link.printMessage.description",
+                      classes = "govuk-link print-page govuk-!-display-none",
                       id = Some("print-link")
                     ),
                     link(
@@ -416,6 +423,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -457,6 +465,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -488,6 +497,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -519,6 +529,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -550,6 +561,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -586,6 +598,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(
@@ -617,6 +630,7 @@ class ViewMessageHelperSpec extends SpecBase
                   link(
                     link = "#print-dialogue",
                     messageKey = "viewMessage.link.printMessage.description",
+                    classes = "govuk-link print-page govuk-!-display-none",
                     id = Some("print-link")
                   ),
                   link(

@@ -37,6 +37,8 @@ class EventsHelperSpec extends SpecBase
 
   object Selectors extends BaseSelectors {
     override val p: Int => String = i => s"p:nth-of-type($i)"
+
+    override def bullet(i: Int, ul: Int): String = s"ul.govuk-list:nth-of-type($ul) li:nth-of-type($i)"
   }
 
   Seq(MovementEventMessages.English).foreach { messagesForLanguage =>
@@ -78,6 +80,34 @@ class EventsHelperSpec extends SpecBase
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802MovementDestinationP1
             body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+          }
+        }
+
+        "being called with event type IE803 and message role 1 (diverted movement notification)" must {
+
+          "render the correct HTML" in {
+
+            val result = helper.constructEventInformation(ie803MovementDiversionEvent, getMovementResponseModel)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie803MovementDivertedP1
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.ie803MovementDivertedP2("5 June 2024")
+            body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
+          }
+        }
+
+        "being called with event type IE803 and message role 2 (split movement notification)" must {
+
+          "render the correct HTML" in {
+
+            val result = helper.constructEventInformation(ie803MovementSplitEvent, getMovementResponseModel)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie803MovementSplitP1("5 June 2024")
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.ie803MovementSplitP2
+            body.select(Selectors.bullet(1)).text() mustBe testArc
+            body.select(Selectors.bullet(2)).text() mustBe (testArc.dropRight(1) + "1")
+            body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
           }
         }
       }

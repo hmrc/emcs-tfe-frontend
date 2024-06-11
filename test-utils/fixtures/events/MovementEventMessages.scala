@@ -45,6 +45,18 @@ object MovementEventMessages {
     val ie802MovementDestinationHeading: String = "Reminder to provide destination"
     val ie802MovementDestinationTitle: String = titleHelper(ie802MovementDestinationHeading)
     val ie802MovementDestinationP1 = "A destination for this movement must be submitted."
+
+    //IE803 Movement Diverted Notification
+    val ie803MovementDivertedHeading: String = "Diverted movement"
+    val ie803MovementDivertedTitle: String = titleHelper(ie803MovementDivertedHeading)
+    val ie803MovementDivertedP1 = "This movement has been diverted."
+    def ie803MovementDivertedP2(dateOfSplit: String) = s"A change of destination for the movement was submitted on $dateOfSplit. You are receiving this message because you are no longer the intended consignee for the diverted movement. You can find more details in the change of destination message."
+
+    //IE803 Movement Split Notification
+    val ie803MovementSplitHeading: String = "Movement split"
+    val ie803MovementSplitTitle: String = titleHelper(ie803MovementSplitHeading)
+    def ie803MovementSplitP1(dateOfSplit: String) = s"A request to split this movement was submitted on $dateOfSplit."
+    val ie803MovementSplitP2 = "The new ARCs for the split movement are:"
   }
 
   object English extends EventMessages with EN
