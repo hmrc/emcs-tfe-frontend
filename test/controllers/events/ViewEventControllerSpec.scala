@@ -71,7 +71,7 @@ class ViewEventControllerSpec
 
   private def renderASuccessfulEventView(event: MovementHistoryEvent, controllerMethod: () => Future[Result]): Unit = {
     "render a view" in {
-      val testHistoryEvents = (getMovementHistoryEventsModel :+ event).distinct
+      val testHistoryEvents = getMovementHistoryEventsModel.filterNot(_.eventType == event.eventType) :+ event
       val testMovement = getMovementResponseModel.copy(eventHistorySummary = Some(testHistoryEvents))
 
       MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
