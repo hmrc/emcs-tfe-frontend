@@ -18,7 +18,6 @@ package viewmodels.helpers.events
 
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
-import models.common.DestinationType.{Export, TemporaryRegisteredConsignee}
 import models.common.GuarantorType.{Consignee, Consignor, GuarantorNotRequired, NoGuarantor, Owner, Transporter}
 import models.common.TransportArrangement.OwnerOfGoods
 import models.common.{AddressModel, DestinationType, TraderModel, TransportMode}
@@ -190,7 +189,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
     }
 
     "output the identifier number summary row when the destination type is a TemporaryRegisteredConsignee" in {
-      val result = helper.consigneeInformationCard()(_movement.copy(destinationType = TemporaryRegisteredConsignee), messages)
+      val result = helper.consigneeInformationCard()(_movement.copy(destinationType = DestinationType.TemporaryRegisteredConsignee), messages)
       val doc = Jsoup.parse(result.toString())
 
       doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Identification number for temporary registered consignee"
@@ -368,7 +367,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
             guarantorTypeCode = Consignee
           ),
-          destinationType = Export
+          destinationType = DestinationType.Export
         )
 
         val result = helper.guarantorInformationCard()
@@ -385,7 +384,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
             guarantorTypeCode = Consignee
           ),
-          destinationType = TemporaryRegisteredConsignee
+          destinationType = DestinationType.TemporaryRegisteredConsignee
         )
 
         val result = helper.guarantorInformationCard()
@@ -458,7 +457,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         headerEadEsad = HeaderEadEsadModel(
           sequenceNumber = 1,
           dateAndTimeOfUpdateValidation = "2023-12-01T12:00:00Z",
-          destinationType = TemporaryRegisteredConsignee,
+          destinationType = DestinationType.TemporaryRegisteredConsignee,
           journeyTime = "20 days",
           transportArrangement = OwnerOfGoods
         ),
@@ -635,6 +634,156 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(reportOfReceipt = None)
 
         val result = helper.rorDetailsCard(ie818Event)
+        result mustBe Html("")
+      }
+    }
+  }
+
+  "rorConsigneeCard" when {
+    "consignee is present" must {
+      "render the consignee section header" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.rorConsigneeCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).text() mustBe "Consignee"
+      }
+      "render the Name row" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.rorConsigneeCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(0).getElementsByTag("dt").text() mustBe "Name"
+        summaryListRows.get(0).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.consigneeTrader.get.traderName.get
+      }
+      "render the Excise Registration Number (ERN) row when destination type = tax warehouse, direct delivery or registered consignee" in {
+        Seq(DestinationType.TaxWarehouse, DestinationType.DirectDelivery, DestinationType.RegisteredConsignee).foreach {
+          destinationType =>
+            implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = destinationType)
+
+            val result = helper.rorConsigneeCard(ie818Event)
+            val doc = Jsoup.parse(result.toString())
+
+            val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+            val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+            summaryListRows.get(1).getElementsByTag("dt").text() mustBe "Excise Registration Number (ERN)"
+            summaryListRows.get(1).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.consigneeTrader.get.traderExciseNumber.get
+        }
+      }
+      "not render the Excise Registration Number (ERN) row when destination type != tax warehouse, direct delivery or registered consignee" in {
+        DestinationType.values
+          .filterNot(Seq(DestinationType.TaxWarehouse, DestinationType.DirectDelivery, DestinationType.RegisteredConsignee).contains)
+          .foreach {
+            destinationType =>
+              implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = destinationType)
+
+              val result = helper.rorConsigneeCard(ie818Event)
+              val doc = Jsoup.parse(result.toString())
+
+              val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+              val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+              summaryListRows.get(1).getElementsByTag("dt").text() must not be "Excise Registration Number (ERN)"
+          }
+      }
+      "render the Identification number for temporary registered consignee row when destination type = temporary registered consignee" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = DestinationType.TemporaryRegisteredConsignee)
+
+        val result = helper.rorConsigneeCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(1).getElementsByTag("dt").text() mustBe "Identification number for temporary registered consignee"
+        summaryListRows.get(1).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.consigneeTrader.get.traderExciseNumber.get
+      }
+      "not render the Identification number for temporary registered consignee row when destination type != temporary registered consignee" in {
+        DestinationType.values
+          .filterNot(_ == DestinationType.TemporaryRegisteredConsignee)
+          .foreach {
+            destinationType =>
+              implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = destinationType)
+
+              val result = helper.rorConsigneeCard(ie818Event)
+              val doc = Jsoup.parse(result.toString())
+
+              val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+              val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+              summaryListRows.get(1).getElementsByTag("dt").text() must not be "Identification number for temporary registered consignee"
+          }
+      }
+      "render the Identification number row if consignee vatNumber is present" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.rorConsigneeCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(2).getElementsByTag("dt").text() mustBe "Identification number"
+        summaryListRows.get(2).getElementsByTag("dd").text() mustBe "GB123456789"
+
+      }
+      "render the Address row" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.rorConsigneeCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(3).getElementsByTag("dt").text() mustBe "Address"
+        summaryListRows.get(3).getElementsByTag("dd").text() mustBe "Main101 Zeebrugge ZZ78"
+      }
+      "render the EORI number row if consignee eoriNumber is present" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(reportOfReceipt = Some(reportOfReceiptResponse.copy(
+          consigneeTrader = Some(TraderModel(
+            traderExciseNumber = Some("GBRC345GTR145"),
+            traderName = Some("Current 801 Consignee"),
+            address = Some(AddressModel(
+              streetNumber = None,
+              street = Some("Main101"),
+              postcode = Some("ZZ78"),
+              city = Some("Zeebrugge")
+            )),
+            vatNumber = Some("GB123456789"),
+            eoriNumber = Some("GB123456789")
+          ))
+        )))
+
+        val result = helper.rorConsigneeCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(4).getElementsByTag("dt").text() mustBe "EORI number"
+        summaryListRows.get(4).getElementsByTag("dd").text() mustBe "GB123456789"
+      }
+    }
+    "no consignee in movement history" must {
+      "return empty HTML" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(reportOfReceipt = Some(reportOfReceiptResponse.copy(consigneeTrader = None)))
+
+        val result = helper.rorConsigneeCard(ie818Event)
+        result mustBe Html("")
+      }
+    }
+    "no ror in movement history" must {
+      "return empty HTML" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(reportOfReceipt = None)
+
+        val result = helper.rorConsigneeCard(ie818Event)
         result mustBe Html("")
       }
     }

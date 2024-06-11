@@ -120,7 +120,8 @@ class EventsHelper @Inject()(
         p(classes = "govuk-body-l")(Html(lede)),
         p()(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
         printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
-        eventHelper.rorDetailsCard(event)
+        eventHelper.rorDetailsCard(event),
+        eventHelper.rorConsigneeCard(event),
       )
     )
   }

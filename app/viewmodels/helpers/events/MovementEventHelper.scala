@@ -467,9 +467,9 @@ class MovementEventHelper @Inject()(
     movement.reportOfReceipt match {
       case Some(reportOfReceipt) =>
         val headingTitle: String = if(movement.destinationType == DestinationType.Export) {
-          messages(s"movementHistoryEvent.${event.eventType}.h2.export")
+          messages(s"movementHistoryEvent.${event.eventType}.rorDetails.h2.export")
         } else {
-          messages(s"movementHistoryEvent.${event.eventType}.h2")
+          messages(s"movementHistoryEvent.${event.eventType}.rorDetails.h2")
         }
 
         val statusKey: String = if (movement.destinationType == DestinationType.Export) {
@@ -491,5 +491,44 @@ class MovementEventHelper @Inject()(
         )
       case None => Html("")
     }
+  }
+
+  def rorConsigneeCard(event: MovementHistoryEvent)(implicit movement: GetMovementResponse, messages: Messages): Html = {
+    val optContent: Option[Html] = for {
+      reportOfReceipt <- movement.reportOfReceipt
+      consigneeTrader <- reportOfReceipt.consigneeTrader
+    } yield {
+
+      val ernRow: Option[SummaryListRow] =
+        if(Seq(DestinationType.TaxWarehouse, DestinationType.DirectDelivery, DestinationType.RegisteredConsignee).contains(movement.destinationType)) {
+          consigneeTrader.traderExciseNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.ern", _))
+        } else {
+          None
+        }
+
+      val temporaryAuthorisationReferenceRow: Option[SummaryListRow] =
+        if(movement.destinationType == DestinationType.TemporaryRegisteredConsignee) {
+          consigneeTrader.traderExciseNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.temporaryReference", _))
+        } else {
+          None
+        }
+
+      buildOverviewPartial(
+        headingId = None,
+        headingTitle = Some(s"movementHistoryEvent.${event.eventType}.rorConsignee.h2"),
+        cardTitleMessageKey = None,
+        cardFooterHtml = None,
+        summaryListRows = Seq(
+          consigneeTrader.traderName.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.name", _)),
+          ernRow,
+          temporaryAuthorisationReferenceRow,
+          consigneeTrader.vatNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.vatNumber", _)),
+          consigneeTrader.address.map(address => summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.address", renderAddress(address))),
+          consigneeTrader.eoriNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.eoriNumber", _))
+        )
+      )
+    }
+
+    optContent.getOrElse(Html(""))
   }
 }
