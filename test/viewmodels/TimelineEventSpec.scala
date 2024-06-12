@@ -26,26 +26,26 @@ class TimelineEventSpec extends AnyFlatSpec with Matchers {
 
   "id" should "replace spaces with dashes and convert to lowercase" in {
     val event = TimelineEvent(EventTypes.IE801, "Test Title", LocalDateTime.now(), "/test/url")
-    event.id should be ("test-title")
+    event.id() should be ("test-title")
   }
 
   it should "handle titles with no spaces" in {
     val event = TimelineEvent(EventTypes.IE801, "TestTitle", LocalDateTime.now(), "/test/url")
-    event.id should be ("testtitle")
+    event.id(1) should be ("testtitle-2")
   }
 
   it should "handle empty titles" in {
     val event = TimelineEvent(EventTypes.IE801, "", LocalDateTime.now(), "/test/url")
-    event.id should be ("")
+    event.id() should be ("")
   }
 
   it should "handle titles with multiple consecutive spaces" in {
     val event = TimelineEvent(EventTypes.IE801, "Test  Title", LocalDateTime.now(), "/test/url")
-    event.id should be ("test--title")
+    event.id(2) should be ("test--title-3")
   }
 
   it should "handle titles with multiple words" in {
     val event = TimelineEvent(EventTypes.IE801, "Test this title", LocalDateTime.now(), "/test/url")
-    event.id should be ("test-this-title")
+    event.id() should be ("test-this-title")
   }
 }

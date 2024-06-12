@@ -21,5 +21,5 @@ import models.EventTypes
 import java.time.LocalDateTime
 
 case class TimelineEvent(eventType: EventTypes, title: String, dateTime: LocalDateTime, url: String) {
-  val id: String = title.replace(" ", "-").toLowerCase
+  def id(idx: Int = 0): String = title.replace(" ", "-").toLowerCase + (if(idx > 0) s"-${idx + 1}" else "")
 }
