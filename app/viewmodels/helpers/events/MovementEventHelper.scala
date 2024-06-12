@@ -215,7 +215,7 @@ class MovementEventHelper @Inject()(
 
     val identificationNumber = (guarantor.guarantorTypeCode, movement.destinationType) match {
       case (Consignee, Export) =>
-        movement.consigneeTrader.flatMap(_.vatNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.identificationNumber", _)))
+        movement.consigneeTrader.flatMap(_.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.identificationNumber", _)))
       case _ => None
     }
 

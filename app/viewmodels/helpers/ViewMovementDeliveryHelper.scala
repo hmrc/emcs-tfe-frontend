@@ -16,6 +16,8 @@
 
 package viewmodels.helpers
 
+import models.common.DestinationType
+import models.common.DestinationType.{Export, TemporaryCertifiedConsignee, TemporaryRegisteredConsignee}
 import models.response.emcsTfe.GetMovementResponse
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
@@ -49,8 +51,9 @@ class ViewMovementDeliveryHelper @Inject()(
     val optConsigneeSummaryCards = movementResponse.consigneeTrader.map { consigneeTrader =>
       Seq(
         consigneeTrader.traderName.map(name => summaryListRowBuilder("viewMovement.delivery.consignee.name", name)),
-        consigneeTrader.traderExciseNumber.map(ern => summaryListRowBuilder("viewMovement.delivery.consignee.ern", ern)),
-        consigneeTrader.address.map(address => summaryListRowBuilder("viewMovement.delivery.consignee.address", renderAddress(address)))
+        consigneeTrader.traderExciseNumber.map(identificationNumber => summaryListRowBuilder(s"viewMovement.delivery.consignee.${getConsigneeErnMessageKeySuffix(movementResponse.destinationType)}", identificationNumber)),
+        consigneeTrader.address.map(address => summaryListRowBuilder("viewMovement.delivery.consignee.address", renderAddress(address))),
+        consigneeTrader.eoriNumber.map(eori => summaryListRowBuilder("viewMovement.delivery.consignee.eori", eori))
       )
     }
 
@@ -99,5 +102,12 @@ class ViewMovementDeliveryHelper @Inject()(
         )
       }.getOrElse(Html(""))
     ))
+  }
+
+  private def getConsigneeErnMessageKeySuffix(destinationType: DestinationType): String = destinationType match {
+    case Export => "identificationNumber"
+    case TemporaryRegisteredConsignee => "identificationNumber.temporaryRegisteredConsignee"
+    case TemporaryCertifiedConsignee => "identificationNumber.temporaryCertifiedConsignee"
+    case _ => "ern"
   }
 }
