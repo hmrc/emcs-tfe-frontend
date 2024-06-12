@@ -49,7 +49,7 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
     with Logging
     with BetaChecks {
 
-  private val messagesThatNeedMovement = Seq("IE871")
+  private val messagesThatNeedMovement = Seq("IE871", "IE802")
 
   def onPageLoad(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
     authorisedDataRequestAsync(ern, messageInboxBetaGuard(ern)) { implicit request =>
