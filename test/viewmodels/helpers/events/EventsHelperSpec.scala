@@ -52,7 +52,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie802ChangeDestinationEvent, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie802ChangeDestinationEvent, getMovementResponseModel, Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802ChangeDestinationP1
@@ -64,7 +64,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie802EventReportOfReceipt, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie802EventReportOfReceipt, getMovementResponseModel, Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802ReportReceiptP1
@@ -76,7 +76,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie802MovementDestinationEvent, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie802MovementDestinationEvent, getMovementResponseModel, Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802MovementDestinationP1
@@ -88,7 +88,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie803MovementDiversionEvent, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie803MovementDiversionEvent, getMovementResponseModel, Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie803MovementDivertedP1
@@ -101,7 +101,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie803MovementSplitEvent, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie803MovementSplitEvent, getMovementResponseModel, Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie803MovementSplitP1("5 June 2024")
@@ -116,7 +116,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = DestinationType.Export))
+            val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = DestinationType.Export), Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie818P1Export
@@ -131,7 +131,7 @@ class EventsHelperSpec extends SpecBase
 
             DestinationType.values.filterNot(_ == DestinationType.Export).foreach {
               destinationType =>
-                val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = destinationType))
+                val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = destinationType), Seq.empty)
                 val body = Jsoup.parse(result.toString())
 
                 body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie818P1

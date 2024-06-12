@@ -21,11 +21,14 @@ import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
 import models.EventTypes
 import models.EventTypes._
+import models.common.AcceptMovement
 import models.requests.DataRequest
+import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
+import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{GetMovementHistoryEventsService, GetMovementService}
+import services.{GetCnCodeInformationService, GetMovementHistoryEventsService, GetMovementService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logging
 import views.html.events.HistoryEventView
@@ -39,6 +42,7 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
                                     val betaAllowList: BetaAllowListAction,
                                     getMovementHistoryEventsService: GetMovementHistoryEventsService,
                                     getMovementService: GetMovementService,
+                                    getCnCodeInformationService: GetCnCodeInformationService,
                                     view: HistoryEventView,
                                     errorHandler: ErrorHandler
                                    )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
@@ -75,12 +79,38 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
   private def onPageLoad(ern: String, arc: String, eventId: Int, eventType: EventTypes): Action[AnyContent] = {
     authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
       withHistoryEvent(ern, arc, eventType, eventId) { event =>
-        getMovementService.getMovement(ern = ern, arc = arc, sequenceNumber = Some(event.sequenceNumber)).map {
+        getMovementService.getMovement(ern = ern, arc = arc, sequenceNumber = Some(event.sequenceNumber)).flatMap {
           movement =>
-            Ok(view(event, movement))
+            withIE818ItemModelWithCnCodeInformation(eventType, movement) {
+              ie818ItemModelWithCnCodeInformation =>
+                Ok(view(event, movement, ie818ItemModelWithCnCodeInformation))
+            }
         }
       }
     }
+  }
+
+  private def withIE818ItemModelWithCnCodeInformation(eventType: EventTypes, movement: GetMovementResponse)
+                                                     (f: Seq[IE818ItemModelWithCnCodeInformation] => Result)
+                                                     (implicit request: DataRequest[_]): Future[Result] = {
+    val ie818ItemModelWithCnCodeInformationFuture: Future[Seq[IE818ItemModelWithCnCodeInformation]] = if (eventType == IE818) {
+      (for {
+        reportOfReceipt <- movement.reportOfReceipt
+        if reportOfReceipt.acceptMovement != AcceptMovement.Satisfactory
+      } yield {
+        getCnCodeInformationService.getCnCodeInformation(movement.items).map {
+          _.flatMap {
+            case (item, information) => reportOfReceipt.individualItems.collect {
+              case rorItem if rorItem.eadBodyUniqueReference == item.itemUniqueReference =>
+                IE818ItemModelWithCnCodeInformation(rorItem, information)
+            }
+          }
+        }
+      }).getOrElse(Future.successful(Seq.empty))
+    } else {
+      Future.successful(Seq.empty)
+    }
+    ie818ItemModelWithCnCodeInformationFuture.map(f)
   }
 
 

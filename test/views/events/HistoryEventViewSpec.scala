@@ -53,7 +53,7 @@ class HistoryEventViewSpec extends ViewSpecBase
 
   def createDocument(event: MovementHistoryEvent, movement: GetMovementResponse): Document = {
     Jsoup.parse(
-      view(event, movement).toString()
+      view(event, movement, Seq.empty).toString()
     )
   }
 

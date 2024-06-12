@@ -28,6 +28,8 @@
 @(
         headingMessageKey: Option[String],
         cardTitleMessageKey: Option[String],
+        cardTitleHeadingLevel: Option[Int] = None,
+        cardAction: Option[ActionItem] = None,
         summaryListRows: Seq[SummaryListRow],
         summaryListAttributes: Map[String, String] = Map.empty,
         cardFooterHtml: Option[Html] = None,
@@ -50,7 +52,10 @@
 }
 
 @summaryCard(
-    cardTitleMessageKey.map(msgKey => Card(Some(CardTitle(Text(messages(msgKey)))))),
+    cardTitleMessageKey.map(msgKey => Card(
+     Some(CardTitle(Text(messages(msgKey)), cardTitleHeadingLevel)),
+     actions = cardAction.map(act => Actions(items = Seq(act)))
+    )),
     summaryListRows,
     summaryListAttributes,
     cardFooterHtml

@@ -16,8 +16,9 @@
 
 @import config.AppConfig
 @import models.requests.DataRequest
-@import models.response.emcsTfe.GetMovementResponse
+@import models.response.emcsTfe.{GetMovementResponse, MovementItem}
 @import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
+@import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
 @import viewmodels.helpers.TimelineHelper
 @import viewmodels.helpers.events.EventsHelper
 @import views.html._
@@ -35,8 +36,7 @@
         appConfig: AppConfig
 )
 
-
-@(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages)
+@(event: MovementHistoryEvent, movement: GetMovementResponse, ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation])(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
     pageTitle = titleNoForm(messages(timelineHelper.getEventTitleKey(event, movement))),
@@ -65,7 +65,7 @@
         classes = "govuk-caption-m govuk-!-margin-bottom-7"
     )
 
-    @eventsHelper.constructEventInformation(event, movement)
+    @eventsHelper.constructEventInformation(event, movement, ie818ItemModelWithCnCodeInformation)
 }
 
 @{

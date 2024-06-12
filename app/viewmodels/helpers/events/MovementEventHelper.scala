@@ -16,10 +16,12 @@
 
 package viewmodels.helpers.events
 
-import models.common.DestinationType
 import models.common.DestinationType._
 import models.common.GuarantorType._
+import models.common.{AcceptMovement, DestinationType, WrongWithMovement}
+import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
+import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, UnsatisfactoryModel}
 import models.response.emcsTfe.{GetMovementResponse, MovementItem}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
@@ -27,23 +29,25 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Details
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukDetails
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
+import viewmodels.govuk.all.{ActionItemViewModel, FluentActionItem}
 import viewmodels.helpers.SummaryListHelper._
 import viewmodels.helpers.{ItemDetailsCardHelper, ItemPackagingCardHelper, ViewMovementTransportHelper}
 import views.ViewUtils.LocalDateExtensions
-import views.html.components.h2
+import views.html.components.{h2, list}
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class MovementEventHelper @Inject()(
-                                               h2: h2,
-                                               overview_partial: overview_partial,
-                                               govukDetails : GovukDetails,
-                                               transportCardHelper: ViewMovementTransportHelper,
-                                               itemDetailsCardHelper: ItemDetailsCardHelper,
-                                               packagingCardHelper: ItemPackagingCardHelper
-                                             ) {
+                                     h2: h2,
+                                     list: list,
+                                     overview_partial: overview_partial,
+                                     govukDetails: GovukDetails,
+                                     transportCardHelper: ViewMovementTransportHelper,
+                                     itemDetailsCardHelper: ItemDetailsCardHelper,
+                                     packagingCardHelper: ItemPackagingCardHelper
+                                   ) {
 
   private def buildOverviewPartial(
                                     headingId: Option[String] = None,
@@ -51,6 +55,8 @@ class MovementEventHelper @Inject()(
                                     headingTitle: Option[String] = None,
                                     headingMessageClass: String = "govuk-heading-m govuk-!-margin-top-9",
                                     cardTitleMessageKey: Option[String] = None,
+                                    cardAction: Option[ActionItem] = None,
+                                    cardTitleHeadingLevel: Option[Int] = None,
                                     cardFooterHtml: Option[Html] = None,
                                     summaryListRows: Seq[Option[SummaryListRow]],
                                     summaryListAttributes: Map[String, String] = Map.empty)(implicit messages: Messages): Html = {
@@ -60,6 +66,8 @@ class MovementEventHelper @Inject()(
       headingMessageKey = headingTitle,
       headingMessageClass = headingMessageClass,
       cardTitleMessageKey = cardTitleMessageKey,
+      cardAction = cardAction,
+      cardTitleHeadingLevel = cardTitleHeadingLevel,
       cardFooterHtml = cardFooterHtml,
       summaryListRows = summaryListRows.flatten,
       summaryListAttributes = summaryListAttributes
@@ -86,8 +94,8 @@ class MovementEventHelper @Inject()(
   }
 
   def consignorInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
-    val name = movement.consignorTrader.traderName.map( summaryListRowBuilder("movementCreatedView.section.consignor.name", _))
-    val ern =  movement.consignorTrader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignor.ern",_))
+    val name = movement.consignorTrader.traderName.map(summaryListRowBuilder("movementCreatedView.section.consignor.name", _))
+    val ern = movement.consignorTrader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignor.ern", _))
     val address = movement.consignorTrader.address.map(address => summaryListRowBuilder("movementCreatedView.section.consignor.address", renderAddress(address)))
 
     buildOverviewPartial(
@@ -204,7 +212,7 @@ class MovementEventHelper @Inject()(
 
     val guarantorErn = (guarantor.guarantorTypeCode, movement.destinationType) match {
       case (Consignor, _) =>
-        movement.consignorTrader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.ern",_))
+        movement.consignorTrader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.ern", _))
       case (Consignee, TaxWarehouse | DirectDelivery | RegisteredConsignee) =>
         movement.consigneeTrader.flatMap(trader => trader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.ern", _)))
       case _ => None
@@ -212,7 +220,7 @@ class MovementEventHelper @Inject()(
 
     val temporaryReference = (guarantor.guarantorTypeCode, movement.destinationType) match {
       case (Consignee, TemporaryRegisteredConsignee) =>
-        movement.consigneeTrader.flatMap(trader => trader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.temporaryReference", _ )))
+        movement.consigneeTrader.flatMap(trader => trader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.temporaryReference", _)))
       case _ => None
     }
 
@@ -253,7 +261,7 @@ class MovementEventHelper @Inject()(
   def journeyInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
     val journeyTime = summaryListRowBuilder("movementCreatedView.section.journey.time", movement.journeyTime)
     val modeOfTransport = summaryListRowBuilder("movementCreatedView.section.journey.mode", movement.transportMode.transportModeCode.messageKey)
-    val modeOfTransportInfo = movement.transportMode.complementaryInformation.map( info => summaryListRowBuilder("movementCreatedView.section.journey.info", info))
+    val modeOfTransportInfo = movement.transportMode.complementaryInformation.map(info => summaryListRowBuilder("movementCreatedView.section.journey.info", info))
 
     buildOverviewPartial(
       headingTitle = Some("movementCreatedView.section.journey"),
@@ -268,9 +276,9 @@ class MovementEventHelper @Inject()(
   }
 
   def transportArrangerInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
-    movement.transportArrangerTrader.map{ trader =>
+    movement.transportArrangerTrader.map { trader =>
       val transportArranger = summaryListRowBuilder("movementCreatedView.section.transportArranger.arranger", movement.headerEadEsad.transportArrangement.messageKey)
-      val transportArrangerName = trader.traderName.map(summaryListRowBuilder("movementCreatedView.section.transportArranger.name",_))
+      val transportArrangerName = trader.traderName.map(summaryListRowBuilder("movementCreatedView.section.transportArranger.name", _))
       val vatRegistrationNumber = trader.vatNumber.map(summaryListRowBuilder("movementCreatedView.section.transportArranger.vat", _))
 
       buildOverviewPartial(
@@ -306,7 +314,7 @@ class MovementEventHelper @Inject()(
   }
 
   def transportUnitsInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
-    transportCardHelper.transportUnits(movement)
+    transportCardHelper.transportUnits(movement, firstHeadingLevelIsH2 = true)
   }
 
   def itemsInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
@@ -317,7 +325,8 @@ class MovementEventHelper @Inject()(
         HtmlFormat.fill(
           Seq(
             buildOverviewPartial(
-              cardTitleMessageKey = Some(messages("movementCreatedView.section.item.heading", index+1 )),
+              cardTitleMessageKey = Some(messages("movementCreatedView.section.item.heading", index + 1)),
+              cardTitleHeadingLevel = Some(3),
               summaryListRows = Seq(
                 itemDetailsCardHelper.brandNameOfProductRow(),
                 itemDetailsCardHelper.commercialDescriptionRow(),
@@ -330,12 +339,12 @@ class MovementEventHelper @Inject()(
                     allItemInformationCard(item, index),
                     allItemPackagingInformationCard(item, index)
                   )
-               )
-             )
-           )
-         )
-       )
-   }
+                )
+              )
+            )
+          )
+        )
+    }
 
     HtmlFormat.fill(
       Seq(
@@ -466,7 +475,7 @@ class MovementEventHelper @Inject()(
   def rorDetailsCard(event: MovementHistoryEvent)(implicit movement: GetMovementResponse, messages: Messages): Html = {
     movement.reportOfReceipt match {
       case Some(reportOfReceipt) =>
-        val headingTitle: String = if(movement.destinationType == DestinationType.Export) {
+        val headingTitle: String = if (movement.destinationType == DestinationType.Export) {
           messages(s"movementHistoryEvent.${event.eventType}.rorDetails.h2.export")
         } else {
           messages(s"movementHistoryEvent.${event.eventType}.rorDetails.h2")
@@ -500,14 +509,14 @@ class MovementEventHelper @Inject()(
     } yield {
 
       val ernRow: Option[SummaryListRow] =
-        if(Seq(DestinationType.TaxWarehouse, DestinationType.DirectDelivery, DestinationType.RegisteredConsignee).contains(movement.destinationType)) {
+        if (Seq(DestinationType.TaxWarehouse, DestinationType.DirectDelivery, DestinationType.RegisteredConsignee).contains(movement.destinationType)) {
           consigneeTrader.traderExciseNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.ern", _))
         } else {
           None
         }
 
       val temporaryAuthorisationReferenceRow: Option[SummaryListRow] =
-        if(movement.destinationType == DestinationType.TemporaryRegisteredConsignee) {
+        if (movement.destinationType == DestinationType.TemporaryRegisteredConsignee) {
           consigneeTrader.traderExciseNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.temporaryReference", _))
         } else {
           None
@@ -539,7 +548,7 @@ class MovementEventHelper @Inject()(
       if movement.destinationType != DestinationType.Export
     } yield {
       val ernRow: Option[SummaryListRow] =
-        if(movement.destinationType == DestinationType.TaxWarehouse) {
+        if (movement.destinationType == DestinationType.TaxWarehouse) {
           deliveryPlaceTrader.traderExciseNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.ern", _))
         } else {
           None
@@ -581,4 +590,116 @@ class MovementEventHelper @Inject()(
 
     optContent.getOrElse(Html(""))
   }
+
+  def rorItemsCard(event: MovementHistoryEvent, ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation])
+                  (implicit request: DataRequest[_], movement: GetMovementResponse, messages: Messages): Html = {
+    val optContent: Option[Html] = for {
+      ror <- movement.reportOfReceipt
+      if ror.acceptMovement != AcceptMovement.Satisfactory
+    } yield {
+      val items: Seq[Html] = ie818ItemModelWithCnCodeInformation.map {
+        case model@IE818ItemModelWithCnCodeInformation(rorItem, information) =>
+          lazy val whatWasWrongRow =
+            Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorItems.whatWasWrong", list(rorItem.unsatisfactoryReasons.map {
+              reason => HtmlContent(messages(s"movementHistoryEvent.${event.eventType}.rorItems.whatWasWrong.${reason.reason}")).asHtml
+            })))
+
+          HtmlFormat.fill(
+            Seq(
+              buildOverviewPartial(
+                cardTitleMessageKey = Some(messages(s"movementHistoryEvent.${event.eventType}.rorItems.h3", rorItem.eadBodyUniqueReference)),
+                cardAction = Some(ActionItemViewModel(
+                  content = Text(messages(s"movementHistoryEvent.${event.eventType}.rorItems.link")),
+                  href = controllers.routes.ItemDetailsController.onPageLoad(request.ern, movement.arc, rorItem.eadBodyUniqueReference).url,
+                  id = s"viewItem-${rorItem.eadBodyUniqueReference}"
+                ).withVisuallyHiddenText(messages(
+                  s"movementHistoryEvent.${event.eventType}.rorItems.link.hidden",
+                  rorItem.eadBodyUniqueReference,
+                  information.cnCodeDescription
+                ))),
+                cardTitleHeadingLevel = Some(3),
+                summaryListRows = Seq(
+                  Seq(whatWasWrongRow),
+                  rorItemRows(event, model),
+                ).flatten
+              )
+            )
+          )
+      }
+
+      HtmlFormat.fill(
+        Seq(
+          h2(messages(s"movementHistoryEvent.${event.eventType}.rorItems.h2"), "govuk-heading-m govuk-!-margin-top-9")
+        ) ++ items
+      )
+    }
+
+    optContent.getOrElse(Html(""))
+  }
+
+  private def generateRoRItemAdditionalInfoKey(row: String)(implicit event: MovementHistoryEvent): String =
+    s"movementHistoryEvent.${event.eventType}.rorItems.additionalInformation.$row"
+
+  private def generateRoRItemAdditionalInfoRow(key: String, additionalInformation: Option[String])
+                                              (implicit messages: Messages): Option[SummaryListRow] = additionalInformation.map {
+    summaryListRowBuilder(
+      key,
+      _
+    )
+  }
+
+  private def generateShortageOrExcessRows(
+                                            isShortage: Boolean,
+                                            quantityOption: Option[BigDecimal],
+                                            additionalInformation: Option[String]
+                                          )(
+                                            implicit event: MovementHistoryEvent,
+                                            ie818ItemModelWithCnCodeInformation: IE818ItemModelWithCnCodeInformation,
+                                            messages: Messages
+                                          ): Seq[Option[SummaryListRow]] = {
+    val quantityRow: Option[SummaryListRow] = quantityOption.map {
+      quantity =>
+        summaryListRowBuilder(
+          s"movementHistoryEvent.${event.eventType}.rorItems.quantity.${if (isShortage) "shortage" else "excess"}",
+          messages(
+            s"movementHistoryEvent.${event.eventType}.rorItems.quantity.value",
+            quantity,
+            ie818ItemModelWithCnCodeInformation.information.unitOfMeasure.toShortFormatMessage()
+          )
+        )
+    }
+
+    val infoRow: Option[SummaryListRow] = additionalInformation.map {
+      info =>
+        summaryListRowBuilder(
+          s"movementHistoryEvent.${event.eventType}.rorItems.additionalInformation.${if (isShortage) "shortage" else "excess"}",
+          info
+        )
+    }
+
+    Seq(quantityRow, infoRow)
+  }
+
+  private def rorItemRows(event: MovementHistoryEvent, ie818ItemModelWithCnCodeInformation: IE818ItemModelWithCnCodeInformation)
+                         (implicit messages: Messages): Seq[Option[SummaryListRow]] = {
+    implicit val _event: MovementHistoryEvent = event
+    implicit val _ie818ItemModelWithCnCodeInformation: IE818ItemModelWithCnCodeInformation = ie818ItemModelWithCnCodeInformation
+
+    ie818ItemModelWithCnCodeInformation.rorItem.unsatisfactoryReasons
+      .sortBy {
+        case UnsatisfactoryModel(reason, _) => UnsatisfactoryModel.sortingOrder(reason)
+      }.flatMap {
+        case UnsatisfactoryModel(WrongWithMovement.Shortage, additionalInformation) =>
+          generateShortageOrExcessRows(isShortage = true, ie818ItemModelWithCnCodeInformation.rorItem.shortageAmount, additionalInformation)
+        case UnsatisfactoryModel(WrongWithMovement.Excess, additionalInformation) =>
+          generateShortageOrExcessRows(isShortage = false, ie818ItemModelWithCnCodeInformation.rorItem.excessAmount, additionalInformation)
+        case UnsatisfactoryModel(WrongWithMovement.Damaged, additionalInformation) =>
+          Seq(generateRoRItemAdditionalInfoRow(generateRoRItemAdditionalInfoKey("damage"), additionalInformation))
+        case UnsatisfactoryModel(WrongWithMovement.BrokenSeals, additionalInformation) =>
+          Seq(generateRoRItemAdditionalInfoRow(generateRoRItemAdditionalInfoKey("seals"), additionalInformation))
+        case UnsatisfactoryModel(WrongWithMovement.Other, additionalInformation) =>
+          Seq(generateRoRItemAdditionalInfoRow(generateRoRItemAdditionalInfoKey("other"), additionalInformation))
+      }
+  }
+
 }

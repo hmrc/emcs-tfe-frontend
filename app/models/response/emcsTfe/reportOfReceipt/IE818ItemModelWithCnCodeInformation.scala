@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,6 @@
 
 package models.response.emcsTfe.reportOfReceipt
 
-import models.common.WrongWithMovement
-import play.api.libs.json.{Json, OFormat}
+import models.response.referenceData.CnCodeInformation
 
-case class UnsatisfactoryModel(reason: WrongWithMovement,
-                               additionalInformation: Option[String])
-
-object UnsatisfactoryModel {
-  implicit val format: OFormat[UnsatisfactoryModel] = Json.format
-
-  val sortingOrder: Map[WrongWithMovement, Int] = Map(
-    WrongWithMovement.Shortage -> 0,
-    WrongWithMovement.Excess -> 1,
-    WrongWithMovement.Damaged -> 2,
-    WrongWithMovement.BrokenSeals -> 3,
-    WrongWithMovement.Other -> 4
-  )
-}
+case class IE818ItemModelWithCnCodeInformation(rorItem: ReceiptedItemsModel, information: CnCodeInformation)
