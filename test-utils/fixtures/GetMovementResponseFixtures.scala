@@ -272,7 +272,29 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
           )
         )
       )
-    ))
+    )),
+    notificationOfAcceptedExport = Some(
+      NotificationOfAcceptedExportModel(
+        customsOfficeNumber = "GB000383",
+        dateOfAcceptance = LocalDate.of(2024, 2, 5),
+        referenceNumberOfSenderCustomsOffice = "GB000101",
+        identificationOfSenderCustomsOfficer = "John Doe",
+        documentReferenceNumber = "645564546",
+        consigneeTrader = TraderModel(
+          traderExciseNumber = Some("BE345345345"),
+          traderName = Some("PEAR Supermarket"),
+          address = Some(
+            AddressModel(
+              streetNumber = None,
+              street = Some("Angels Business Park"),
+              postcode = Some("BD1 3NN"),
+              city = Some("Bradford")
+            )),
+          vatNumber = None,
+          eoriNumber = Some("GB00000578901")
+        )
+      )
+    )
   )
 
   val reportOfReceiptJson = Json.obj(
@@ -427,6 +449,23 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       "notificationDateAndTime" -> "2024-06-05T00:00:01",
       "downstreamArcs" -> Json.arr(
         testArc, s"${testArc.dropRight(1)}1"
+      )
+    ),
+    "notificationOfAcceptedExport" -> Json.obj(
+      "customsOfficeNumber" -> "GB000383",
+      "dateOfAcceptance" -> "2024-02-05",
+      "referenceNumberOfSenderCustomsOffice" -> "GB000101",
+      "identificationOfSenderCustomsOfficer" -> "John Doe",
+      "documentReferenceNumber" -> "645564546",
+      "consigneeTrader" -> Json.obj(
+        "traderExciseNumber" -> "BE345345345",
+        "traderName"         -> "PEAR Supermarket",
+        "address" -> Json.obj(
+          "street"   -> "Angels Business Park",
+          "postcode" -> "BD1 3NN",
+          "city"     -> "Bradford"
+        ),
+        "eoriNumber" -> "GB00000578901"
       )
     ),
     "items" -> Json.arr(

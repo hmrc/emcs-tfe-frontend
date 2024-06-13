@@ -171,6 +171,11 @@ class ViewEventControllerSpec
       event = ie819AlertEvent,
       method = (id: Int) => controller.alertRejectionSubmitted(testErn, testArc, id)
     ),
+    TestFixtureModel(
+      methodName = ".movementAcceptedCustoms",
+      event = ie829MovementAcceptedCustomsEvent,
+      method = (id: Int) => controller.movementAcceptedCustoms(testErn, testArc, id)
+    )
   ).foreach { case TestFixtureModel(methodName, event, method) =>
 
     s"calling $methodName" must {

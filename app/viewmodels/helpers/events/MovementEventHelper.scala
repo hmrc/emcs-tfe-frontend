@@ -22,7 +22,7 @@ import models.common.{AcceptMovement, DestinationType, WrongWithMovement}
 import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, UnsatisfactoryModel}
-import models.response.emcsTfe.{GetMovementResponse, MovementItem, NotificationOfAlertOrRejectionModel}
+import models.response.emcsTfe.{GetMovementResponse, MovementItem, NotificationOfAcceptedExportModel, NotificationOfAlertOrRejectionModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Details
@@ -642,6 +642,48 @@ class MovementEventHelper @Inject()(
       headingId = Some("alert-reject-information-heading"),
       summaryListRows = date ++ reasons ++ reasonInfo,
       summaryListAttributes = Map("id" -> "alert-rejection-information-summary")
+    )
+  }
+
+  def ie829AcceptedExportDetails(implicit notificationOfAcceptedExport: NotificationOfAcceptedExportModel, messages: Messages): Html = {
+    def acceptedExportSummary: Html = {
+      val acceptedDate = summaryListRowBuilder("movementCreatedView.section.ie829.acceptedDate", notificationOfAcceptedExport.dateOfAcceptance.formatDateForUIOutput())
+      val senderCustomsOfficeReference = summaryListRowBuilder("movementCreatedView.section.ie829.senderCustomsOfficeReference", notificationOfAcceptedExport.referenceNumberOfSenderCustomsOffice)
+      val senderCustomsOfficer = summaryListRowBuilder("movementCreatedView.section.ie829.senderCustomsOfficer", notificationOfAcceptedExport.identificationOfSenderCustomsOfficer)
+      val documentReferenceNumber = summaryListRowBuilder("movementCreatedView.section.ie829.documentReferenceNumber", notificationOfAcceptedExport.documentReferenceNumber)
+
+      buildOverviewPartial(
+        summaryListAttributes = Map("id" -> "accepted-export-summary"),
+        summaryListRows = Seq(
+          Some(acceptedDate),
+          Some(senderCustomsOfficeReference),
+          Some(senderCustomsOfficer),
+          Some(documentReferenceNumber)
+        )
+      )
+    }
+
+    def consigneeSummary: Html = {
+      val name = summaryListRowBuilder("movementCreatedView.section.consignee.name", notificationOfAcceptedExport.consigneeTrader.traderName.getOrElse(""))
+      val vat = summaryListRowBuilder("movementCreatedView.section.consignee.vatNumber", notificationOfAcceptedExport.consigneeTrader.traderExciseNumber.getOrElse(""))
+      val address = notificationOfAcceptedExport.consigneeTrader.address.map(address => summaryListRowBuilder("movementCreatedView.section.consignee.address", renderAddress(address)))
+      val eori = summaryListRowBuilder("movementCreatedView.section.consignee.eoriNumber", notificationOfAcceptedExport.consigneeTrader.eoriNumber.getOrElse(""))
+
+      buildOverviewPartial(
+        headingTitle = Some("movementCreatedView.section.ie829.consignee.heading"),
+        headingId = Some("consignee-information-heading"),
+        summaryListRows = Seq(
+          Some(name),
+          Some(vat),
+          address,
+          Some(eori)
+        ),
+        summaryListAttributes = Map("id" -> "consignee-information-summary")
+      )
+    }
+
+    HtmlFormat.fill(
+      Seq(acceptedExportSummary, consigneeSummary)
     )
   }
 }

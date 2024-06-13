@@ -61,7 +61,7 @@ class EventsHelperSpec extends SpecBase
 
           "return empty HTML" in {
             val invalidMovementHistoryEvent = MovementHistoryEvent(EventTypes.Invalid, "", 1, 1, None, true)
-            val result = helper.constructEventInformation(invalidMovementHistoryEvent, getMovementResponseModel, Seq.empty)
+            val result = helper.constructEventInformation(invalidMovementHistoryEvent, getMovementResponseModel)
             result mustBe Empty.asHtml
           }
         }
@@ -70,7 +70,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie802ChangeDestinationEvent, getMovementResponseModel, Seq.empty)
+            val result = helper.constructEventInformation(ie802ChangeDestinationEvent, getMovementResponseModel)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802ChangeDestinationP1
@@ -82,7 +82,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie802EventReportOfReceipt, getMovementResponseModel, Seq.empty)
+            val result = helper.constructEventInformation(ie802EventReportOfReceipt, getMovementResponseModel)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802ReportReceiptP1
@@ -94,7 +94,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie802MovementDestinationEvent, getMovementResponseModel, Seq.empty)
+            val result = helper.constructEventInformation(ie802MovementDestinationEvent, getMovementResponseModel)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802MovementDestinationP1
@@ -106,7 +106,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie803MovementDiversionEvent, getMovementResponseModel, Seq.empty)
+            val result = helper.constructEventInformation(ie803MovementDiversionEvent, getMovementResponseModel)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie803MovementDivertedP1
@@ -119,7 +119,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie803MovementSplitEvent, getMovementResponseModel, Seq.empty)
+            val result = helper.constructEventInformation(ie803MovementSplitEvent, getMovementResponseModel)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie803MovementSplitP1("5 June 2024")
@@ -134,7 +134,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = DestinationType.Export), Seq.empty)
+            val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = DestinationType.Export))
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie818P1Export
@@ -149,7 +149,7 @@ class EventsHelperSpec extends SpecBase
 
             DestinationType.values.filterNot(_ == DestinationType.Export).foreach {
               destinationType =>
-                val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = destinationType), Seq.empty)
+                val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = destinationType))
                 val body = Jsoup.parse(result.toString())
 
                 body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie818P1
@@ -165,7 +165,7 @@ class EventsHelperSpec extends SpecBase
 
             "render the correct HTML" in {
 
-              val result = helper.constructEventInformation(ie819AlertEventMultipleReasons, getMovementResponseModel, Seq.empty)
+              val result = helper.constructEventInformation(ie819AlertEventMultipleReasons, getMovementResponseModel)
               val eventDetails = getMovementResponseModel.notificationOfAlertOrRejection.get.head
               val consigneeDetails = getMovementResponseModel.consigneeTrader.get
               val body = Jsoup.parse(result.toString())
@@ -213,7 +213,7 @@ class EventsHelperSpec extends SpecBase
 
             "render the correct HTML" in {
 
-              val result = helper.constructEventInformation(ie819AlertEvent, getMovementResponseModel, Seq.empty)
+              val result = helper.constructEventInformation(ie819AlertEvent, getMovementResponseModel)
               val consigneeDetails = getMovementResponseModel.consigneeTrader.get
               val body = Jsoup.parse(result.toString())
 
@@ -246,7 +246,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie819RejectionEvent, getMovementResponseModel, Seq.empty)
+            val result = helper.constructEventInformation(ie819RejectionEvent, getMovementResponseModel)
             val consigneeDetails = getMovementResponseModel.consigneeTrader.get
             val body = Jsoup.parse(result.toString())
 
@@ -271,6 +271,40 @@ class EventsHelperSpec extends SpecBase
 
             body.select(Selectors.nthSummaryRowKey(3, n = 2)).text() mustBe "Address"
             body.select(Selectors.nthSummaryRowValue(3, n = 2)).text() must include(consigneeDetails.address.get.street.get)
+          }
+        }
+
+        "being called with event type IE829 (movement accepted by customs)" must {
+          "render the correct HTML" in {
+            val result = helper.constructEventInformation(ie829MovementAcceptedCustomsEvent, getMovementResponseModel)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie829Paragraph1
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+
+            val summaryLists = body.getElementsByClass("govuk-summary-list")
+
+            val exportDetails = summaryLists.get(0)
+            val exportDetailsSummaryListRows = exportDetails.getElementsByClass("govuk-summary-list__row")
+            exportDetailsSummaryListRows.get(0).getElementsByTag("dt").text() mustBe "Accepted date"
+            exportDetailsSummaryListRows.get(0).getElementsByTag("dd").text() mustBe "5 February 2024"
+            exportDetailsSummaryListRows.get(1).getElementsByTag("dt").text() mustBe "Sender customs office reference number"
+            exportDetailsSummaryListRows.get(1).getElementsByTag("dd").text() mustBe "GB000101"
+            exportDetailsSummaryListRows.get(2).getElementsByTag("dt").text() mustBe "Sender customs officer"
+            exportDetailsSummaryListRows.get(2).getElementsByTag("dd").text() mustBe "John Doe"
+            exportDetailsSummaryListRows.get(3).getElementsByTag("dt").text() mustBe "Document reference number"
+            exportDetailsSummaryListRows.get(3).getElementsByTag("dd").text() mustBe "645564546"
+
+            val consigneeDetails = summaryLists.get(1)
+            val consigneeDetailsSummaryListRows = consigneeDetails.getElementsByClass("govuk-summary-list__row")
+            consigneeDetailsSummaryListRows.get(0).getElementsByTag("dt").text() mustBe "Name"
+            consigneeDetailsSummaryListRows.get(0).getElementsByTag("dd").text() mustBe "PEAR Supermarket"
+            consigneeDetailsSummaryListRows.get(1).getElementsByTag("dt").text() mustBe "Identification number"
+            consigneeDetailsSummaryListRows.get(1).getElementsByTag("dd").text() mustBe "BE345345345"
+            consigneeDetailsSummaryListRows.get(2).getElementsByTag("dt").text() mustBe "Address"
+            consigneeDetailsSummaryListRows.get(2).getElementsByTag("dd").text() mustBe "Angels Business Park Bradford BD1 3NN"
+            consigneeDetailsSummaryListRows.get(3).getElementsByTag("dt").text() mustBe "EORI number"
+            consigneeDetailsSummaryListRows.get(3).getElementsByTag("dd").text() mustBe "GB00000578901"
           }
         }
       }

@@ -49,7 +49,7 @@ class EventsHelper @Inject()(
   def constructEventInformation(
                                  event: MovementHistoryEvent,
                                  movement: GetMovementResponse,
-                                 ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation]
+                                 ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation] = Seq.empty
                                )(implicit request: DataRequest[_], messages: Messages): Html = {
     (event.eventType, event.messageRole) match {
       case (IE801, _) => ie801Html(event, movement)
@@ -57,6 +57,7 @@ class EventsHelper @Inject()(
       case (IE803, _) => ie803Html(event, movement)
       case (IE818, _) => ie818Html(event, movement, ie818ItemModelWithCnCodeInformation)
       case (IE819, _) => ie819Html(event, movement)
+      case (IE829, _) => ie829Html(event, movement)
       case _ => Empty.asHtml
     }
   }
@@ -164,6 +165,19 @@ class EventsHelper @Inject()(
       )
     )
   }
+
+  private def ie829Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html =
+    HtmlFormat.fill(
+      Seq(
+        movement.notificationOfAcceptedExport.map { notificationOfAcceptedExport =>
+          HtmlFormat.fill(Seq(
+            p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1", notificationOfAcceptedExport.customsOfficeNumber))),
+            printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+            eventHelper.ie829AcceptedExportDetails(notificationOfAcceptedExport, messages)
+          ))
+        }
+      ).flatten
+    )
 
   private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
     p(classes = "govuk-body js-visible govuk-!-display-none-print")(

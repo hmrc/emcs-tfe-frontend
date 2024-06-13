@@ -53,6 +53,7 @@ case class GetMovementResponse(
                                 reportOfReceipt: Option[ReportOfReceiptModel],
                                 notificationOfDivertedMovement: Option[NotificationOfDivertedMovementModel],
                                 notificationOfAlertOrRejection: Option[Seq[NotificationOfAlertOrRejectionModel]],
+                                notificationOfAcceptedExport: Option[NotificationOfAcceptedExportModel],
                                 items: Seq[MovementItem],
                                 movementGuarantee: MovementGuaranteeModel,
                                 eventHistorySummary: Option[Seq[MovementHistoryEvent]]
@@ -106,6 +107,7 @@ object GetMovementResponse {
     reportOfReceipt <- (__ \ "reportOfReceipt").readNullable[ReportOfReceiptModel]
     notificationOfDivertedMovement <- (__ \ "notificationOfDivertedMovement").readNullable[NotificationOfDivertedMovementModel]
     notificationOfAlertOrRejection <- (__ \ "notificationOfAlertOrRejection").readNullable[Seq[NotificationOfAlertOrRejectionModel]]
+    notificationOfAcceptedExport <- (__ \ "notificationOfAcceptedExport").readNullable[NotificationOfAcceptedExportModel]
     items <- (__ \ "items").read[Seq[MovementItem]]
     eventHistorySummary <- (__ \ "eventHistorySummary").readNullable[Seq[MovementHistoryEvent]](MovementHistoryEvent.seqReads)
   } yield {
@@ -138,7 +140,8 @@ object GetMovementResponse {
       items = items,
       eventHistorySummary = eventHistorySummary,
       notificationOfDivertedMovement = notificationOfDivertedMovement,
-      notificationOfAlertOrRejection = notificationOfAlertOrRejection
+      notificationOfAlertOrRejection = notificationOfAlertOrRejection,
+      notificationOfAcceptedExport = notificationOfAcceptedExport
     )
   }
 }

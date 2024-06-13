@@ -48,8 +48,8 @@ class HistoryEventViewSpec extends ViewSpecBase
   implicit val messages: Messages = messages(fakeRequest)
 
   object Selectors extends BaseSelectors {
-    val eventMessageTimestamp = id("message-issued")
-    val arc = id("arc")
+    val eventMessageTimestamp: String = id("message-issued")
+    val arc: String = id("arc")
 
   }
 
@@ -383,6 +383,21 @@ class HistoryEventViewSpec extends ViewSpecBase
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
               )
             )(createDocument(ie819RejectionEvent, getMovementResponseModel))
+          }
+        }
+
+        "rendering an IE829 event (Movement accepted by customs)" should {
+          "render the main detail section of the view" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie829Title,
+                Selectors.h1 -> messagesForLanguage.ie829Heading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie829MovementAcceptedCustomsEvent.eventDate)),
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie829Paragraph1,
+                Selectors.p(2) -> messagesForLanguage.printScreenContent
+              )
+            )(createDocument(ie829MovementAcceptedCustomsEvent, getMovementResponseModel))
           }
         }
       }
