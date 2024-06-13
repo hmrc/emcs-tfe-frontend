@@ -18,14 +18,14 @@ package models.response.emcsTfe
 
 import play.api.libs.json.{Format, Json}
 
-import java.time.LocalDateTime
+case class AlertOrRejectionReasonModel(reason: AlertOrRejectionReasonType,
+                                       additionalInformation: Option[String])
 
-case class NotificationOfAlertOrRejectionModel(notificationType: AlertOrRejectionType,
-                                               notificationDateAndTime: LocalDateTime,
-                                               alertRejectReason: Seq[AlertOrRejectionReasonModel])
+object AlertOrRejectionReasonModel {
+  implicit val format: Format[AlertOrRejectionReasonModel] = Json.format[AlertOrRejectionReasonModel]
 
-object NotificationOfAlertOrRejectionModel {
-
-  implicit val format: Format[NotificationOfAlertOrRejectionModel] = Json.format[NotificationOfAlertOrRejectionModel]
+  implicit val ordering: Ordering[AlertOrRejectionReasonModel] = Ordering.by { model =>
+    AlertOrRejectionReasonType.values.indexOf(model.reason)
+  }
 
 }

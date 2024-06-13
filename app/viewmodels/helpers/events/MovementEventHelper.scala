@@ -22,7 +22,7 @@ import models.common.{AcceptMovement, DestinationType, WrongWithMovement}
 import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, UnsatisfactoryModel}
-import models.response.emcsTfe.{GetMovementResponse, MovementItem}
+import models.response.emcsTfe.{GetMovementResponse, MovementItem, NotificationOfAlertOrRejectionModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Details
@@ -30,10 +30,13 @@ import uk.gov.hmrc.govukfrontend.views.html.components.GovukDetails
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import viewmodels.govuk.all.{ActionItemViewModel, FluentActionItem}
+import utils.DateUtils
 import viewmodels.helpers.SummaryListHelper._
 import viewmodels.helpers.{ItemDetailsCardHelper, ItemPackagingCardHelper, ViewMovementTransportHelper}
 import views.ViewUtils.LocalDateExtensions
 import views.html.components.{h2, list}
+import views.ViewUtils
+import views.html.components.{bullets, h2}
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
@@ -41,13 +44,13 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class MovementEventHelper @Inject()(
                                      h2: h2,
-                                     list: list,
-                                     overview_partial: overview_partial,
-                                     govukDetails: GovukDetails,
+                                     list: list,overview_partial: overview_partial,
+                                     govukDetails : GovukDetails,
                                      transportCardHelper: ViewMovementTransportHelper,
                                      itemDetailsCardHelper: ItemDetailsCardHelper,
-                                     packagingCardHelper: ItemPackagingCardHelper
-                                   ) {
+                                     packagingCardHelper: ItemPackagingCardHelper,
+                                     bullets: bullets
+                                   ) extends DateUtils {
 
   private def buildOverviewPartial(
                                     headingId: Option[String] = None,
@@ -612,4 +615,35 @@ class MovementEventHelper @Inject()(
       }
   }
 
+
+  def alertRejectInformationCard(event: NotificationOfAlertOrRejectionModel)(implicit messages: Messages): Html = {
+
+    val date = Seq(Some(summaryListRowBuilder(
+      messages(s"movementHistoryEvent.IE819.summary.${event.notificationType}.date"),
+      event.notificationDateAndTime.toLocalDate.formatDateForUIOutput()
+    )))
+
+    val reasons = Seq(
+      Some(summaryListRowBuilder(
+        ViewUtils.pluralSingular(messages(s"movementHistoryEvent.IE819.summary.${event.notificationType}.reason"), event.alertRejectReason.size),
+        bullets(event.alertRejectReason.sorted.map { reason =>
+          Html(messages(s"movementHistoryEvent.IE819.reason.${reason.reason}"))
+        }, if(event.alertRejectReason.size > 1) "govuk-list govuk-list--bullet" else "govuk-list")
+      ))
+    )
+
+    val reasonInfo = event.alertRejectReason.sorted.map(reason => reason.additionalInformation.map { info =>
+      summaryListRowBuilder(
+        messages(s"movementHistoryEvent.IE819.reason.${reason.reason}.info"),
+        info
+      )
+    })
+
+    buildOverviewPartial(
+      headingTitle = Some(s"movementHistoryEvent.IE819.summary.${event.notificationType}.h2"),
+      headingId = Some("alert-reject-information-heading"),
+      summaryListRows = date ++ reasons ++ reasonInfo,
+      summaryListAttributes = Map("id" -> "alert-rejection-information-summary")
+    )
+  }
 }

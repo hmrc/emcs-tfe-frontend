@@ -1,5 +1,5 @@
-@*
- * Copyright 2023 HM Revenue & Customs
+/*
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,18 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package fixtures.messages
 
-@(content: Seq[Html], classes: String = "govuk-list govuk-list--bullet")
+object AlertRejectionReasonMessages {
 
-<ul class="@classes">
- @content.map { bullet =>
-  <li>@bullet</li>
- }
-</ul>
+  sealed trait Messages extends BaseEnglish { _ : i18n =>
+    val consigneeDetailsWrong = "Some or all of the consignee details are wrong"
+    val goodsTypeWrong = "Goods types do not match the order"
+    val goodsQuantityWrong = "Goods quantities do not match the order"
+    val other = "Other"
+  }
 
-@{
- //$COVERAGE-OFF$
+  object English extends Messages with EN
+
 }

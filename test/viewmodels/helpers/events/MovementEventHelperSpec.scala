@@ -18,6 +18,8 @@ package viewmodels.helpers.events
 
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
+import fixtures.events.MovementEventMessages
+import fixtures.messages.AlertRejectionReasonMessages
 import models.common.GuarantorType.{Consignee, Consignor, GuarantorNotRequired, NoGuarantor, Owner, Transporter}
 import models.common.TransportArrangement.OwnerOfGoods
 import models.common.UnitOfMeasure.Kilograms
@@ -31,12 +33,14 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.twirl.api.Html
+import utils.DateUtils
 import viewmodels.helpers.SummaryListHelper.summaryListRowBuilder
 import views.BaseSelectors
-import views.ViewUtils.LocalDateExtensions
+
+import java.time.LocalDateTime
 
 // scalastyle:off magic.number
-class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures {
+class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures with DateUtils {
 
   implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"))
 
@@ -982,6 +986,85 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         Some(summaryListRowBuilder("Information about broken seal(s)", "some info broken seals")),
         Some(summaryListRowBuilder("Other information", "some info other"))
       )
+    }
+  }
+
+  "alertRejectInformationCard" must {
+
+    Seq(MovementEventMessages.English -> AlertRejectionReasonMessages.English).foreach {
+      case (messagesForLanguage, alertRejectionReasonMessages) =>
+
+        s"when language code of '${messagesForLanguage.lang.code}'" when {
+
+          "Alert event exists with multiple reasons" must {
+
+            "render the correct HTML" in {
+
+              implicit val _movement: GetMovementResponse = getMovementResponseModel
+              val eventDetails = _movement.notificationOfAlertOrRejection.get.head
+
+              val result = helper.alertRejectInformationCard(eventDetails)
+              val doc = Jsoup.parse(result.toString())
+
+              doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie819AlertDate
+              doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819AlertEventMultipleReasons.eventDate).toLocalDate.formatDateForUIOutput()
+
+              doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie819AlertSummaryReasons
+              doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.consigneeDetailsWrong
+              doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(2)).text() mustBe alertRejectionReasonMessages.goodsTypeWrong
+              doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(3)).text() mustBe alertRejectionReasonMessages.goodsQuantityWrong
+              doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(4)).text() mustBe alertRejectionReasonMessages.other
+
+              doc.select(Selectors.summaryRowKey(3)).text() mustBe messagesForLanguage.ie819ConsigneeInformation
+              doc.select(Selectors.summaryRowValue(3)).text() mustBe eventDetails.alertRejectReason.head.additionalInformation.get
+
+              doc.select(Selectors.summaryRowKey(4)).text() mustBe messagesForLanguage.ie819GoodsTypeInformation
+              doc.select(Selectors.summaryRowValue(4)).text() mustBe eventDetails.alertRejectReason(1).additionalInformation.get
+
+              doc.select(Selectors.summaryRowKey(5)).text() mustBe messagesForLanguage.ie819GoodsQuantityInformation
+              doc.select(Selectors.summaryRowValue(5)).text() mustBe eventDetails.alertRejectReason(2).additionalInformation.get
+
+              doc.select(Selectors.summaryRowKey(6)).text() mustBe messagesForLanguage.ie819OtherInformation
+              doc.select(Selectors.summaryRowValue(6)).text() mustBe eventDetails.alertRejectReason(3).additionalInformation.get
+            }
+          }
+
+          "Alert event with single reason" must {
+
+            "render the correct HTML" in {
+
+              implicit val _movement: GetMovementResponse = getMovementResponseModel
+              val eventDetails = _movement.notificationOfAlertOrRejection.get(1)
+
+              val result = helper.alertRejectInformationCard(eventDetails)
+              val doc = Jsoup.parse(result.toString())
+
+              doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie819AlertDate
+              doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819AlertEvent.eventDate).toLocalDate.formatDateForUIOutput()
+
+              doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie819AlertSummaryReason
+              doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.consigneeDetailsWrong
+            }
+          }
+
+          "Rejection event" must {
+
+            "render the correct HTML" in {
+
+              implicit val _movement: GetMovementResponse = getMovementResponseModel
+              val eventDetails = _movement.notificationOfAlertOrRejection.get(2)
+
+              val result = helper.alertRejectInformationCard(eventDetails)
+              val doc = Jsoup.parse(result.toString())
+
+              doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie819RejectionDate
+              doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819RejectionEvent.eventDate).toLocalDate.formatDateForUIOutput()
+
+              doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie819RejectionSummaryReason
+              doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.goodsQuantityWrong
+            }
+          }
+        }
     }
   }
 }

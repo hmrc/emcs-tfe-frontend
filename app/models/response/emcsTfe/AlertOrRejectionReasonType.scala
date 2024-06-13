@@ -29,10 +29,10 @@ object AlertOrRejectionReasonType extends Enumerable.Implicits {
   case object QuantityDoesNotMatchOrder extends WithName("3") with AlertOrRejectionReasonType
 
   val values: Seq[AlertOrRejectionReasonType] = Seq(
-    Other,
     EADNotConcernRecipient,
     ProductDoesNotMatchOrder,
-    QuantityDoesNotMatchOrder
+    QuantityDoesNotMatchOrder,
+    Other
   )
 
   implicit val enumerable: Enumerable[AlertOrRejectionReasonType] =

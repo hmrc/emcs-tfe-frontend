@@ -19,16 +19,18 @@ package viewmodels.helpers.events
 import models.EventTypes._
 import models.common.DestinationType
 import models.requests.DataRequest
-import models.response.emcsTfe.GetMovementResponse
+import models.response.emcsTfe.{GetMovementResponse, NotificationOfAlertOrRejectionModel}
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
+import uk.gov.hmrc.http.BadRequestException
 import utils.DateUtils
 import viewmodels.helpers.TimelineHelper
 import views.html.components.{bullets, link, p}
 
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class EventsHelper @Inject()(
@@ -37,6 +39,12 @@ class EventsHelper @Inject()(
                               link: link,
                               p: p,
                               bullets: bullets) extends DateUtils {
+
+  def getEventTitle(event: MovementHistoryEvent, movementResponse: GetMovementResponse)(implicit messages: Messages): String =
+    (event.eventType, event.messageRole) match {
+      case (IE819, _) => messages(s"${timelineHelper.getEventBaseKey(event)}.${getIE819EventDetail(event, movementResponse).notificationType}.label")
+      case _ => messages(timelineHelper.getEventTitleKey(event))
+    }
 
   def constructEventInformation(
                                  event: MovementHistoryEvent,
@@ -48,6 +56,7 @@ class EventsHelper @Inject()(
       case (IE802, _) => ie802Html(event)
       case (IE803, _) => ie803Html(event, movement)
       case (IE818, _) => ie818Html(event, movement, ie818ItemModelWithCnCodeInformation)
+      case (IE819, _) => ie819Html(event, movement)
       case _ => Empty.asHtml
     }
   }
@@ -139,6 +148,23 @@ class EventsHelper @Inject()(
     )
   }
 
+  private def ie819Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+
+    implicit val _movement: GetMovementResponse = movement
+    val eventDetails = getIE819EventDetail(event, movement)
+
+    HtmlFormat.fill(
+      Seq(
+        p(classes = "govuk-body-l")(Html(
+          messages(s"${timelineHelper.getEventBaseKey(event)}.${eventDetails.notificationType}.p1", event.sequenceNumber)
+        )),
+        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        eventHelper.alertRejectInformationCard(eventDetails),
+        eventHelper.consigneeInformationCard()
+      )
+    )
+  }
+
   private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
     p(classes = "govuk-body js-visible govuk-!-display-none-print")(
       HtmlFormat.fill(
@@ -149,5 +175,10 @@ class EventsHelper @Inject()(
       )
     )
   }
+
+  private def getIE819EventDetail(event: MovementHistoryEvent, movement: GetMovementResponse): NotificationOfAlertOrRejectionModel =
+    movement.notificationOfAlertOrRejection.flatMap(_.find(_.notificationDateAndTime == LocalDateTime.parse(event.eventDate))).getOrElse {
+      throw new BadRequestException(s"Unable to find the IE819 event details for the event for the date: ${event.eventDate}}")
+    }
 
 }

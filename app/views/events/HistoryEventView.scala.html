@@ -46,7 +46,7 @@
 ) {
 
     @h1(classes = "govuk-heading-xl govuk-!-margin-bottom-4") {
-        @messages(timelineHelper.getEventTitleKey(event, movement))
+        @messages(eventsHelper.getEventTitle(event, movement))
     }
 
     @span(
