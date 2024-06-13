@@ -373,7 +373,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
         doc.select(Selectors.summaryListRowValue(1)).text() mustBe "Consignee"
         doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Identification number"
-        doc.select(Selectors.summaryListRowValue(2)).text() mustBe "GB123456789"
+        doc.select(Selectors.summaryListRowValue(2)).text() mustBe "GB12345GTR144"
       }
 
       "the guarantor type is a Consignee with a destination of TemporaryRegisteredConsignee" in {

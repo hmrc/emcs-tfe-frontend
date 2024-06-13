@@ -18,7 +18,8 @@ package services
 
 import config.AppConfig
 import connectors.emcsTfe.GetMessageStatisticsConnector
-import featureswitch.core.config.{FeatureSwitching, MessageStatisticsNotification}
+import controllers.messages.routes
+import featureswitch.core.config.FeatureSwitching
 import models.auth.UserRequest
 import models.messages.MessagesSearchOptions
 import models.response.MessageStatisticsException
@@ -27,7 +28,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import controllers.messages.routes
 
 @Singleton
 class GetMessageStatisticsService @Inject()(connector: GetMessageStatisticsConnector,

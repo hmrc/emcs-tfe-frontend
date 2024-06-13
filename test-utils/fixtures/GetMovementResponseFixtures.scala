@@ -146,7 +146,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         postcode = Some("ZZ78"),
         city = Some("Zeebrugge")
       )),
-      vatNumber = Some("GB123456789"),
+      vatNumber = None,
       eoriNumber = None
     )),
     dispatchImportOfficeReferenceNumber = None,
@@ -317,8 +317,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "street" -> "Main101",
         "postcode" -> "ZZ78",
         "city" -> "Zeebrugge"
-      ),
-      "vatNumber" -> "GB123456789"
+      )
     ),
     "movementGuarantee" -> Json.obj(
       "guarantorTypeCode" -> "4",

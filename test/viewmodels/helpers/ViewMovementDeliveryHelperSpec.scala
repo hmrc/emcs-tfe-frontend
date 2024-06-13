@@ -18,6 +18,7 @@ package viewmodels.helpers
 
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
+import models.common.DestinationType.{Export, TemporaryCertifiedConsignee, TemporaryRegisteredConsignee}
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -160,6 +161,70 @@ class ViewMovementDeliveryHelperSpec extends SpecBase with GetMovementResponseFi
         summaryList.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
         summaryList.select(Selectors.summaryListAtIndexRowKey(3, 3)).text() mustBe "Address"
         summaryList.select(Selectors.summaryListAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+      }
+
+      "consignee is present and destination type is Export (VAT and EORI provided)" in {
+        val result = helper.constructMovementDelivery(getMovementResponseModel.copy(consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(
+          eoriNumber = Some("EORI123456")
+        )), destinationType = Export))
+        val summaryList = Jsoup.parse(result.toString())
+
+        summaryList.select(Selectors.h3(3)).text() mustBe "Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 2)).text() mustBe "Identification number"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 4)).text() mustBe "EORI number"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 4)).text() mustBe "EORI123456"
+      }
+
+      "consignee is present and destination type is Export (VAT provided and EORI not provided)" in {
+        val result = helper.constructMovementDelivery(getMovementResponseModel.copy(consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(
+          eoriNumber = None,
+        )), destinationType = Export))
+        val summaryList = Jsoup.parse(result.toString())
+
+        summaryList.select(Selectors.h3(3)).text() mustBe "Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 2)).text() mustBe "Identification number"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 4)).isEmpty mustBe true
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 4)).isEmpty mustBe true
+      }
+
+      "consignee is present and destination type is Temporary registered consignee" in {
+        val result = helper.constructMovementDelivery(getMovementResponseModel.copy(destinationType = TemporaryRegisteredConsignee))
+        val summaryList = Jsoup.parse(result.toString())
+
+        summaryList.select(Selectors.h3(3)).text() mustBe "Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 2)).text() mustBe "Identification number for temporary registered consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 4)).isEmpty mustBe true
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 4)).isEmpty mustBe true
+      }
+
+      "consignee is present and destination type is Temporary certified consignee" in {
+        val result = helper.constructMovementDelivery(getMovementResponseModel.copy(destinationType = TemporaryCertifiedConsignee))
+        val summaryList = Jsoup.parse(result.toString())
+
+        summaryList.select(Selectors.h3(3)).text() mustBe "Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 1)).text() mustBe "Business name"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 1)).text() mustBe "Current 801 Consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 2)).text() mustBe "Identification number for temporary certified consignee"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "GB12345GTR144"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 3)).text() mustBe "Address"
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 3)).text() mustBe "Main101 Zeebrugge ZZ78"
+        summaryList.select(Selectors.summaryListAtIndexRowKey(3, 4)).isEmpty mustBe true
+        summaryList.select(Selectors.summaryListAtIndexRowValue(3, 4)).isEmpty mustBe true
       }
     }
   }
