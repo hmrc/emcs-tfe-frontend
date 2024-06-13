@@ -640,7 +640,7 @@ class MovementEventHelper @Inject()(
   private def generateRoRItemAdditionalInfoKey(row: String)(implicit event: MovementHistoryEvent): String =
     s"movementHistoryEvent.${event.eventType}.rorItems.additionalInformation.$row"
 
-  private def generateRoRItemAdditionalInfoRow(key: String, additionalInformation: Option[String])
+  private[events] def generateRoRItemAdditionalInfoRow(key: String, additionalInformation: Option[String])
                                               (implicit messages: Messages): Option[SummaryListRow] = additionalInformation.map {
     summaryListRowBuilder(
       key,
@@ -648,7 +648,7 @@ class MovementEventHelper @Inject()(
     )
   }
 
-  private def generateShortageOrExcessRows(
+  private[events] def generateShortageOrExcessRows(
                                             isShortage: Boolean,
                                             quantityOption: Option[BigDecimal],
                                             additionalInformation: Option[String]
@@ -680,7 +680,7 @@ class MovementEventHelper @Inject()(
     Seq(quantityRow, infoRow)
   }
 
-  private def rorItemRows(event: MovementHistoryEvent, ie818ItemModelWithCnCodeInformation: IE818ItemModelWithCnCodeInformation)
+  private[events] def rorItemRows(event: MovementHistoryEvent, ie818ItemModelWithCnCodeInformation: IE818ItemModelWithCnCodeInformation)
                          (implicit messages: Messages): Seq[Option[SummaryListRow]] = {
     implicit val _event: MovementHistoryEvent = event
     implicit val _ie818ItemModelWithCnCodeInformation: IE818ItemModelWithCnCodeInformation = ie818ItemModelWithCnCodeInformation

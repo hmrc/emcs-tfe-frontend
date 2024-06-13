@@ -24,9 +24,11 @@ import mocks.config.MockAppConfig
 import mocks.services.{MockGetCnCodeInformationService, MockGetMovementHistoryEventsService, MockGetMovementService}
 import models.EventTypes
 import models.common.AcceptMovement
+import models.common.UnitOfMeasure.Kilograms
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
+import models.response.referenceData.CnCodeInformation
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
@@ -180,7 +182,22 @@ class ViewEventControllerSpec
           ie818Event,
           model,
           () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest),
-          () => MockGetCnCodeInformationService.getCnCodeInformation(getMovementResponseModel.items).returns(Future.successful(Seq.empty))
+          () => MockGetCnCodeInformationService.getCnCodeInformation(getMovementResponseModel.items).returns(Future.successful(Seq(
+            item1WithWineAndPackaging -> CnCodeInformation(
+              cnCode = "T400",
+              cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+              exciseProductCode = "24029000",
+              exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+              unitOfMeasure = Kilograms
+            ),
+            item2WithWineAndPackaging -> CnCodeInformation(
+              cnCode = "T400",
+              cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+              exciseProductCode = "24029000",
+              exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+              unitOfMeasure = Kilograms
+            )
+          )))
         )
         handle404s(ie818Event, () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
       }

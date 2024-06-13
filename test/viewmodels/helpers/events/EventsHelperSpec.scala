@@ -19,11 +19,14 @@ package viewmodels.helpers.events
 import base.SpecBase
 import fixtures.events.MovementEventMessages
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
+import models.EventTypes
 import models.common.DestinationType
 import models.requests.DataRequest
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
 import views.BaseSelectors
 
 class EventsHelperSpec extends SpecBase
@@ -47,6 +50,15 @@ class EventsHelperSpec extends SpecBase
     s"when language code of '${messagesForLanguage.lang.code}'" should {
 
       ".constructEventInformation" when {
+
+        "being called with an invalid event type" must {
+
+          "return empty HTML" in {
+            val invalidMovementHistoryEvent = MovementHistoryEvent(EventTypes.Invalid, "", 1, 1, None, true)
+            val result = helper.constructEventInformation(invalidMovementHistoryEvent, getMovementResponseModel, Seq.empty)
+            result mustBe Empty.asHtml
+          }
+        }
 
         "being called with event type IE802 and message role 1 (change destination reminder)" must {
 
