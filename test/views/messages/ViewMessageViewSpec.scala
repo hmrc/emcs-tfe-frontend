@@ -88,7 +88,7 @@ class ViewMessageViewSpec extends ViewSpecBase
 
   Seq(
     ie801ReceivedMovement, ie801SubmittedMovement,
-    ie802ReminderToChangeDestination, ie802ReminderToReportReceipt, ie802ReminderToProvideDestination,
+    ie802ReminderToChangeDestination, ie802ReminderToProvideDestination,
     ie803ReceivedChangeDestination, ie803ReceivedSplit,
     ie818ReceivedReportOfReceipt, ie818SubmittedReportOfReceipt,
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
@@ -168,6 +168,153 @@ class ViewMessageViewSpec extends ViewSpecBase
           behave like pageWithExpectedElementsAndMessages(
             Seq(
               Selectors.explainShortageLink -> English.explainShortageExcessLinkText
+            )
+          )
+        }
+      }
+    }
+  }
+
+  "when being rendered with an IE802 Reminder for report of receipt message" when {
+
+    val testMessage = ie802ReminderToReportReceipt
+
+    "the logged in user is not the consignee of the movement" should {
+
+      val movementWithLoggedInUserAsConsignor = Some(getMovementResponseModel
+        .copy(
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(testErn)),
+          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some("GB00000000000")))
+        )
+      )
+
+      implicit val doc: Document = asDocument(testMessage.message, optMovement = movementWithLoggedInUserAsConsignor)
+
+      "show the correct title and H1" when {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.h1 -> testMessage.messageTitle,
+          )
+        )
+      }
+
+      "show the correct table content" when {
+        testMessage.messageSubTitle match {
+          case Some(subTitle) =>
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.summaryRowKey(1) -> English.labelMessageType,
+                Selectors.summaryRowValue(1) -> subTitle,
+                Selectors.summaryRowKey(2) -> English.labelArc,
+                Selectors.summaryRowValue(2) -> message1.arc.getOrElse(""),
+                Selectors.summaryRowKey(3) -> English.labelLrn,
+                Selectors.summaryRowValue(3) -> message1.lrn.getOrElse("")
+              )
+            )
+          case None =>
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.summaryRowKey(1) -> English.labelArc,
+                Selectors.summaryRowValue(1) -> message1.arc.getOrElse(""),
+                Selectors.summaryRowKey(2) -> English.labelLrn,
+                Selectors.summaryRowValue(2) -> message1.lrn.getOrElse("")
+              )
+            )
+        }
+      }
+
+      "show the correct actions" when {
+        movementActionsLinksTest()
+
+        behave like pageWithElementsNotPresent(Seq(Selectors.reportOfReceiptLink))
+
+        if (testMessage.explainDelayLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.explainDelayLink -> English.explainDelayLinkText
+            )
+          )
+        }
+
+        if (testMessage.changeDestinationLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.changeDestinationLink -> English.changeDestinationLinkText
+            )
+          )
+        }
+      }
+    }
+
+    "the logged in user is the consignee of the movement" should {
+
+      val movementWithLoggedInUserAsConsignor = Some(getMovementResponseModel
+        .copy(
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GB00000000000")),
+          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some(testErn)))
+        )
+      )
+
+      implicit val doc: Document = asDocument(testMessage.message, optMovement = movementWithLoggedInUserAsConsignor)
+
+      "show the correct title and H1" when {
+        behave like pageWithExpectedElementsAndMessages(
+          Seq(
+            Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.h1 -> testMessage.messageTitle,
+          )
+        )
+      }
+
+      "show the correct table content" when {
+        testMessage.messageSubTitle match {
+          case Some(subTitle) =>
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.summaryRowKey(1) -> English.labelMessageType,
+                Selectors.summaryRowValue(1) -> subTitle,
+                Selectors.summaryRowKey(2) -> English.labelArc,
+                Selectors.summaryRowValue(2) -> message1.arc.getOrElse(""),
+                Selectors.summaryRowKey(3) -> English.labelLrn,
+                Selectors.summaryRowValue(3) -> message1.lrn.getOrElse("")
+              )
+            )
+          case None =>
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.summaryRowKey(1) -> English.labelArc,
+                Selectors.summaryRowValue(1) -> message1.arc.getOrElse(""),
+                Selectors.summaryRowKey(2) -> English.labelLrn,
+                Selectors.summaryRowValue(2) -> message1.lrn.getOrElse("")
+              )
+            )
+        }
+      }
+
+      "show the correct actions" when {
+        movementActionsLinksTest()
+
+        if (testMessage.reportOfReceiptLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.reportOfReceiptLink -> English.reportOfReceiptLinkText
+            )
+          )
+        }
+
+        if (testMessage.explainDelayLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.explainDelayLink -> English.explainDelayLinkText
+            )
+          )
+        }
+
+        if (testMessage.changeDestinationLink) {
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.changeDestinationLink -> English.changeDestinationLinkText
             )
           )
         }

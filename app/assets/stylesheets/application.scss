@@ -63,9 +63,6 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
   header, nav, footer {
     display: none;
   }
-  .no-print, .no-print * {
-    display: none !important;
-  }
 }
 
 .filter-panel {
@@ -82,9 +79,9 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
 }
 
 .js-visible {
-  display: none !important;
+  display: none;
 }
 .js-enabled .js-visible {
-  display: inline-block !important;
+  display: inline-block;
 }
 

@@ -113,8 +113,10 @@ class ViewMessageHelper @Inject()(
         Seq(viewMovementLink, changeDestinationLink, printMessageLink, deleteMessageLink)
       case ("IE802", false, 1, _) =>
         Seq(changeDestinationLink, explainDelayLink,viewMovementLink, printMessageLink, deleteMessageLink)
-      case ("IE802", false, 2, _) =>
+      case ("IE802", false, 2, _) if movement.exists(_.isConsigneeOfMovement(request.ern)) =>
         Seq(viewMovementLink, reportOfReceiptLink, explainDelayLink, printMessageLink, deleteMessageLink)
+      case ("IE802", false, 2, _) =>
+        Seq(viewMovementLink, explainDelayLink, printMessageLink, deleteMessageLink)
       case ("IE802", false, 3, _) =>
         Seq(changeDestinationLink, explainDelayLink, viewMovementLink, printMessageLink, deleteMessageLink)
       case ("IE829", false, _, _) | ("IE837", true, 2, _) | ("IE839", false, _, _) =>

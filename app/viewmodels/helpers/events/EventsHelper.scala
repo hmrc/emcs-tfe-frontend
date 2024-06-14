@@ -105,7 +105,7 @@ class EventsHelper @Inject()(
     )
 
   private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
-    p(classes = "govuk-body no-print js-visible")(
+    p(classes = "govuk-body js-visible govuk-!-display-none-print")(
       HtmlFormat.fill(
         Seq(
           link(classes = "govuk-link", link = "#", id = Some("print-link"), messageKey = linkContentKey),
