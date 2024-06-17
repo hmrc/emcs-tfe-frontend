@@ -36,14 +36,9 @@ class DeleteMessageService @Inject()(deleteMessageConnector: DeleteMessageConnec
 
     deleteMessageConnector.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier).flatMap {
       case Right(deleteMessageResponse) =>
-        if (deleteMessageResponse.recordsAffected == 1) {
-          messageInboxRepository.delete(exciseRegistrationNumber, uniqueMessageIdentifier).map(_ => {
-            deleteMessageResponse
-          })
-        } else {
-          Future(deleteMessageResponse)
-        }
-
+        messageInboxRepository.delete(exciseRegistrationNumber, uniqueMessageIdentifier).map(_ =>
+          deleteMessageResponse
+        )
       case Left(errorResponse) =>
         throw DeleteMessageException(s"Error deleting message $uniqueMessageIdentifier for trader $exciseRegistrationNumber: ${errorResponse.message}")
     }

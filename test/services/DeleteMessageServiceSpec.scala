@@ -48,9 +48,13 @@ class DeleteMessageServiceSpec extends SpecBase with ItemFixtures with MockDelet
         testService.deleteMessage(testErn, testUniqueMessageIdentifier)(hc).futureValue mustBe DeleteMessageResponse(1)
       }
 
-      "Connector returns success, but no records deleted" in {
+      "Connector returns success, but no records deleted (still check if cache needs to be deleted in case our copy still exists)" in {
         MockDeleteMessageConnector.deleteMessage(testErn, testUniqueMessageIdentifier).returns(
           Future.successful(Right(DeleteMessageResponse(recordsAffected = 0)))
+        )
+
+        MockMessageInboxRepository.delete(testErn, testUniqueMessageIdentifier).returns(
+          Future.successful(true)
         )
 
         testService.deleteMessage(testErn, testUniqueMessageIdentifier)(hc).futureValue mustBe DeleteMessageResponse(0)
