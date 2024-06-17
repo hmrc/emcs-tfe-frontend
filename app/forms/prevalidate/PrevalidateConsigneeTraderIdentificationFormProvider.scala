@@ -37,7 +37,7 @@ class PrevalidateConsigneeTraderIdentificationFormProvider @Inject() extends Map
               regexpUnlessEmpty(EXCISE_NUMBER_REGEX, "prevalidateTrader.consigneeTraderIdentification.ern.error.invalidRegex")
             )
           ),
-        "entityGroup" -> enumerable[EntityGroup]("prevalidateTrader.consigneeTraderIdentification.entityGroup.error.required")(EntityGroup.enumerable)
+        "entityGroup" -> enumerable[EntityGroup]("prevalidateTrader.consigneeTraderIdentification.entityGroup.error.required")
       )(PrevalidateTraderModel.apply)(PrevalidateTraderModel.unapply)
     )
 }
