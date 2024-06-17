@@ -22,13 +22,23 @@ import uk.gov.hmrc.emcstfefrontend.models.WithName
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-sealed trait EntityGroup
+sealed trait EntityGroup {
+  val messageKey: String
+}
 
 object EntityGroup extends Enumerable.Implicits {
-  case object UKTrader extends WithName("UK Record") with EntityGroup
-  case object EUTrader extends WithName("EU Trader") with EntityGroup
-  case object EUWarehouse extends WithName("EU Warehouse") with EntityGroup
-  case object EUTemporaryAuthorisation extends WithName("EU Temporary Authorisation") with EntityGroup
+  case object UKTrader extends WithName("UK Record") with EntityGroup {
+    override val messageKey: String = "prevalidateTrader.consigneeTraderIdentification.entityGroup.UKRecord"
+  }
+  case object EUTrader extends WithName("EU Trader") with EntityGroup {
+    override val messageKey: String = "prevalidateTrader.consigneeTraderIdentification.entityGroup.EUTrader"
+  }
+  case object EUWarehouse extends WithName("EU Warehouse") with EntityGroup {
+    override val messageKey: String = "prevalidateTrader.consigneeTraderIdentification.entityGroup.EUWarehouse"
+  }
+  case object EUTemporaryAuthorisation extends WithName("EU Temporary Authorisation") with EntityGroup {
+    override val messageKey: String = "prevalidateTrader.consigneeTraderIdentification.entityGroup.EUTemporaryAuthorisation"
+  }
 
   val values: Seq[EntityGroup] = Seq(EUTemporaryAuthorisation, EUTrader, EUWarehouse, UKTrader)
 
@@ -39,7 +49,7 @@ object EntityGroup extends Enumerable.Implicits {
     values.map {
       value =>
         RadioItem(
-          content = Text(messages(s"prevalidateTrader.consigneeTraderIdentification.entityGroup.${value.toString.replaceAll(" ", "")}")),
+          content = Text(messages(s"prevalidateTrader.consigneeTraderIdentification.entityGroup.${messages(value.messageKey)}")),
           value = Some(value.toString)
         )
     }
