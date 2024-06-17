@@ -34,7 +34,7 @@ class PrevalidateTraderServiceSpec extends SpecBase with MockPrevalidateTraderCo
   lazy val testService = new PrevalidateTraderService(mockPrevalidateTraderConnector)
 
   val ernToCheck = "GBWK002281023"
-  val entityGroupToCheck = EntityGroup.UKTrader.toString
+  val entityGroupToCheck = EntityGroup.UKTrader
 
   val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, entityGroupToCheck, Seq(testEpcWine, testEpcBeer))
 

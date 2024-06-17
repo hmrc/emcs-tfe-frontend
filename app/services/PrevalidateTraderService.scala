@@ -17,6 +17,7 @@
 package services
 
 import connectors.emcsTfe.PrevalidateTraderConnector
+import models.prevalidate.EntityGroup
 import models.requests.PrevalidateTraderRequest
 import models.response.PrevalidateTraderException
 import models.response.emcsTfe.prevalidateTrader.PreValidateTraderApiResponse
@@ -29,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PrevalidateTraderService @Inject()(connector: PrevalidateTraderConnector)
                                         (implicit ec: ExecutionContext) {
 
-  def prevalidateTrader(ern: String, ernToCheck: String, entityGroup: String, productCodesToCheck: Seq[String])(implicit hc: HeaderCarrier): Future[PreValidateTraderApiResponse] = {
+  def prevalidateTrader(ern: String, ernToCheck: String, entityGroup: EntityGroup, productCodesToCheck: Seq[String])(implicit hc: HeaderCarrier): Future[PreValidateTraderApiResponse] = {
 
     val requestModel = PrevalidateTraderRequest(ernToCheck, entityGroup, productCodesToCheck)
     connector.prevalidateTrader(ern, requestModel).map {

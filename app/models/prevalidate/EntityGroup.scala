@@ -49,7 +49,7 @@ object EntityGroup extends Enumerable.Implicits {
     values.map {
       value =>
         RadioItem(
-          content = Text(messages(s"prevalidateTrader.consigneeTraderIdentification.entityGroup.${messages(value.messageKey)}")),
+          content = Text(messages(messages(value.messageKey))),
           value = Some(value.toString)
         )
     }

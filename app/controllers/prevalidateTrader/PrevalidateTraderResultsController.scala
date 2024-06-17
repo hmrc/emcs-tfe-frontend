@@ -63,7 +63,7 @@ class PrevalidateTraderResultsController @Inject()(
         val prevalidateTraderUserAnswers: PrevalidateTraderModel = request.userAnswers.get(PrevalidateConsigneeTraderIdentificationPage).get
 
         getExciseProductCodesService.getExciseProductCodes().flatMap { epcs =>
-          prevalidateTraderService.prevalidateTrader(ern, prevalidateTraderUserAnswers.ern, prevalidateTraderUserAnswers.entityGroup.toString, enteredEPCs).map { prevalidateTraderResult =>
+          prevalidateTraderService.prevalidateTrader(ern, prevalidateTraderUserAnswers.ern, prevalidateTraderUserAnswers.entityGroup, enteredEPCs).map { prevalidateTraderResult =>
             //Spec says that whilst the "exciseTraderResponse" is an array, it has a fixed size of 1, hence headOption (option just in case)
             val firstPrevalidateEntry: Option[ExciseTraderResponse] = prevalidateTraderResult.exciseTraderValidationResponse.exciseTraderResponse.headOption
             val validTraderErn: Option[String] = Option.when(firstPrevalidateEntry.exists(_.validTrader))(firstPrevalidateEntry.map(_.exciseRegistrationNumber)).flatten

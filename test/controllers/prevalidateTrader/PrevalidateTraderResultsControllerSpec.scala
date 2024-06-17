@@ -105,7 +105,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
           .set(PrevalidateEPCPage(testIndex1), beerExciseProductCode)
       ) {
 
-        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck.toString, Seq(beerExciseProductCode.code)).returns(Future.successful(
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck, Seq(beerExciseProductCode.code)).returns(Future.successful(
           PreValidateTraderApiResponse(ExciseTraderValidationResponse(
             validationTimestamp = validationTimestamp,
             exciseTraderResponse = Seq(exciseTraderResponse.copy(validTrader = false))
@@ -137,7 +137,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
           .set(PrevalidateEPCPage(8), wineExciseProductCode)
       ) {
 
-        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck.toString, (1 to 9).map(_ => wineExciseProductCode.code))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck, (1 to 9).map(_ => wineExciseProductCode.code))
           .returns(Future.successful(preValidateApiResponseModel))
 
         val result = controller.onPageLoad(testErn)(request)
@@ -166,7 +166,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
           .set(PrevalidateEPCPage(9), wineExciseProductCode)
       ) {
 
-        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck.toString, (1 to 10).map(_ => wineExciseProductCode.code))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck, (1 to 10).map(_ => wineExciseProductCode.code))
           .returns(Future.successful(preValidateApiResponseModel))
 
         val result = controller.onPageLoad(testErn)(request)
@@ -196,7 +196,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
           .set(PrevalidateEPCPage(10), wineExciseProductCode)
       ) {
 
-        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck.toString, (1 to 11).map(_ => wineExciseProductCode.code))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck, (1 to 11).map(_ => wineExciseProductCode.code))
           .returns(Future.successful(preValidateApiResponseModel))
 
         val result = controller.onPageLoad(testErn)(request)
@@ -218,7 +218,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
           .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
       ) {
 
-        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck.toString, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
           .returns(Future.successful(preValidateApiResponseModel))
 
         val result = controller.onPageLoad(testErn)(request)
@@ -240,7 +240,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
           .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
       ) {
 
-        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck.toString, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
           .returns(Future.successful(preValidateApiResponseModel.copy(
             exciseTraderValidationResponse = ExciseTraderValidationResponse(
               validationTimestamp = validationTimestamp,
@@ -276,7 +276,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
           .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
       ) {
 
-        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck.toString, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
+        MockPrevalidateTraderService.prevalidate(testErn, ernToCheck, entityGroupToCheck, Seq(wineExciseProductCode, beerExciseProductCode, tobaccoExciseProductCode).map(_.code))
           .returns(Future.successful(preValidateApiResponseModel.copy(
             exciseTraderValidationResponse = ExciseTraderValidationResponse(
               validationTimestamp = validationTimestamp,

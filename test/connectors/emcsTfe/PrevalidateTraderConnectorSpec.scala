@@ -39,7 +39,7 @@ class PrevalidateTraderConnectorSpec extends SpecBase
 
   lazy val connector = new PrevalidateTraderConnector(mockHttpClient, appConfig)
 
-  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(testErn, testEntityGroup.toString, Seq(testEpcWine, testEpcBeer))
+  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(testErn, testEntityGroup, Seq(testEpcWine, testEpcBeer))
 
   "prevalidateTrader" should {
 

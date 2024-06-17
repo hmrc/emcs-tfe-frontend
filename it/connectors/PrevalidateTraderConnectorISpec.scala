@@ -44,7 +44,7 @@ class PrevalidateTraderConnectorISpec extends IntegrationBaseSpec
   val ernToCheck = "GBWK002281023"
   val entityGroupToCheck = testEntityGroup
 
-  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, entityGroupToCheck.toString, Seq(testEpcWine, testEpcBeer))
+  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, entityGroupToCheck, Seq(testEpcWine, testEpcBeer))
 
   ".markMessageAsRead" must {
 
