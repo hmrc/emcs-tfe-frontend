@@ -38,6 +38,7 @@ trait BaseSelectors {
   val hiddenText = s".govuk-visually-hidden"
   val strong: Int => String = i => s"main span.govuk-\\!-font-weight-bold:nth-of-type($i)"
   val legend = "main legend"
+  val fieldSetLegend = "fieldset > legend"
   def checkboxDividerItem(index: Int) = s".govuk-checkboxes > div:nth-child($index)"
   val dateDay = s".govuk-date-input .govuk-date-input__item:nth-of-type(1)"
   val dateMonth = s".govuk-date-input .govuk-date-input__item:nth-of-type(2)"

@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import models.prevalidate.EntityGroup
 @import models.requests.UserAnswersRequest
 @import views.html.components._
 @import views.html.templates.Layout
@@ -27,9 +28,11 @@
         saveAndContinue: saveAndContinue,
         formHelper: FormWithCSRF,
         govukInput: GovukInput,
+        govukRadio: GovukRadios,
         govukErrorSummary: GovukErrorSummary,
         govukButton: GovukButton
 )
+
 @(form: Form[_], action: Call)(implicit request: UserAnswersRequest[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("prevalidateTrader.consigneeTraderIdentification.title")), maybeShowActiveTrader = maybeShowActiveTrader(request.request), maybeShowNavigationBanner = None) {
@@ -49,14 +52,26 @@
 
         @govukInput(
             InputViewModel(
-                field = form("value"),
-                label = LabelViewModel(HtmlContent(messages("prevalidateTrader.consigneeTraderIdentification.label"))).withCssClass("govuk-label--s")
+                field = form("ern"),
+                label = LabelViewModel(HtmlContent(messages("prevalidateTrader.consigneeTraderIdentification.ern.label"))).withCssClass("govuk-label--s")
             ).withHint(
                 Hint(
                     id = Some("hint"),
                     classes = "govuk-hint",
-                    content = messages("prevalidateTrader.consigneeTraderIdentification.hint")
+                    content = messages("prevalidateTrader.consigneeTraderIdentification.ern.hint")
                 )
+            )
+        )
+
+        @govukRadio(
+            RadiosViewModel(
+                field = form("entityGroup"),
+                legend = Legend(
+                    content = Text(messages("prevalidateTrader.consigneeTraderIdentification.entityGroup.label")),
+                    classes = "govuk-fieldset__legend--s",
+                    isPageHeading = false
+                ),
+                items =  EntityGroup.radioOptions()
             )
         )
 

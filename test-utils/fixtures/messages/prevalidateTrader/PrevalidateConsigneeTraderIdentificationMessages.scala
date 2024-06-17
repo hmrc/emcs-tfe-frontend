@@ -26,6 +26,11 @@ object PrevalidateConsigneeTraderIdentificationMessages {
     val p: String = "This could be an excise registration number (ERN) or a temporary authorisation reference for temporary consignees, sometimes known as a Temporary Consignment Authorisation (TCA) number."
     val label: String = "Enter consignee trader ID"
     val hint: String = "The ID contains 13 characters, starting with 2 letters of the member state of the consignee, such as GBWK123456789"
+    val entityGroupLabel = "Select the trader type"
+    val radio1 = "EU Temporary Authorisation"
+    val radio2 = "EU Trader"
+    val radio3 = "EU Warehouse"
+    val radio4 = "UK Trader"
   }
 
   object English extends ViewMessages with BaseEnglish

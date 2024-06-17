@@ -42,8 +42,9 @@ class PrevalidateTraderConnectorISpec extends IntegrationBaseSpec
   def url(): String = s"/emcs-tfe/pre-validate-trader/$testErn"
 
   val ernToCheck = "GBWK002281023"
+  val entityGroupToCheck = testEntityGroup
 
-  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, Seq(testEpcWine, testEpcBeer))
+  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, entityGroupToCheck.toString, Seq(testEpcWine, testEpcBeer))
 
   ".markMessageAsRead" must {
 

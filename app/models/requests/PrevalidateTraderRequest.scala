@@ -18,7 +18,7 @@ package models.requests
 
 import play.api.libs.json.{Format, Json}
 
-case class PrevalidateTraderRequest(ern: String, productCodes: Seq[String])
+case class PrevalidateTraderRequest(ern: String, entityGroup: String, productCodes: Seq[String])
 
 object PrevalidateTraderRequest {
 

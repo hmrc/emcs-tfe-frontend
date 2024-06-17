@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package pages.prevalidateTrader
+package models.prevalidate
 
-import models.prevalidate.PrevalidateModel
-import pages.QuestionPage
-import play.api.libs.json.JsPath
+import play.api.libs.json.{Json, OFormat}
 
-case object PrevalidateConsigneeTraderIdentificationPage extends QuestionPage[PrevalidateModel] {
-  override val toString: String = "consigneeTraderIdentification"
-  override val path: JsPath = PrevalidateTraderSection.path \ toString
+case class PrevalidateModel (ern: String, entityGroup: EntityGroup)
+
+object PrevalidateModel {
+
+  implicit val format: OFormat[PrevalidateModel] = Json.format[PrevalidateModel]
 }

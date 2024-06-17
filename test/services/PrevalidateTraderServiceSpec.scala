@@ -19,6 +19,7 @@ package services
 import base.SpecBase
 import fixtures.{ExciseProductCodeFixtures, PrevalidateTraderFixtures}
 import mocks.connectors.MockPrevalidateTraderConnector
+import models.prevalidate.EntityGroup
 import models.requests.PrevalidateTraderRequest
 import models.response.{PrevalidateTraderException, UnexpectedDownstreamResponseError}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -33,8 +34,9 @@ class PrevalidateTraderServiceSpec extends SpecBase with MockPrevalidateTraderCo
   lazy val testService = new PrevalidateTraderService(mockPrevalidateTraderConnector)
 
   val ernToCheck = "GBWK002281023"
+  val entityGroupToCheck = EntityGroup.UKTrader.toString
 
-  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, Seq(testEpcWine, testEpcBeer))
+  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, entityGroupToCheck, Seq(testEpcWine, testEpcBeer))
 
   ".prevalidateTrader" must {
 
@@ -44,7 +46,7 @@ class PrevalidateTraderServiceSpec extends SpecBase with MockPrevalidateTraderCo
 
         MockPrevalidateTraderConnector.prevalidateTrader(testErn, requestModel).returns(Future(Right(preValidateApiResponseModel)))
 
-        val actualResults = testService.prevalidateTrader(testErn, ernToCheck, Seq(testEpcWine, testEpcBeer)).futureValue
+        val actualResults = testService.prevalidateTrader(testErn, ernToCheck, entityGroupToCheck, Seq(testEpcWine, testEpcBeer)).futureValue
 
         actualResults mustBe preValidateApiResponseModel
       }
@@ -59,7 +61,7 @@ class PrevalidateTraderServiceSpec extends SpecBase with MockPrevalidateTraderCo
         MockPrevalidateTraderConnector.prevalidateTrader(testErn, requestModel).returns(Future(Left(UnexpectedDownstreamResponseError)))
 
         val actualResult = intercept[PrevalidateTraderException](
-          await(testService.prevalidateTrader(testErn, ernToCheck, Seq(testEpcWine, testEpcBeer)))
+          await(testService.prevalidateTrader(testErn, ernToCheck, entityGroupToCheck, Seq(testEpcWine, testEpcBeer)))
         ).getMessage
 
         actualResult mustBe expectedResult

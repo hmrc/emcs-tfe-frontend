@@ -877,11 +877,17 @@ prevalidateTrader.start.p1 = You can use this tool to check if the consignee is 
 prevalidateTrader.consigneeTraderIdentification.title = What is the consignee’s trader ID?
 prevalidateTrader.consigneeTraderIdentification.h1 = What is the consignee’s trader ID?
 prevalidateTrader.consigneeTraderIdentification.p1 = This could be an excise registration number (ERN) or a temporary authorisation reference for temporary consignees, sometimes known as a Temporary Consignment Authorisation (TCA) number.
-prevalidateTrader.consigneeTraderIdentification.label = Enter consignee trader ID
-prevalidateTrader.consigneeTraderIdentification.hint = The ID contains 13 characters, starting with 2 letters of the member state of the consignee, such as GBWK123456789
-prevalidateTrader.consigneeTraderIdentification.error.required = Enter the consignee trader ID
-prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters = Consignee trader ID must only contain letters and numbers
-prevalidateTrader.consigneeTraderIdentification.error.invalidRegex = Consignee trader ID must start with 2 capital letters followed by 11 numbers or mixed letters and numbers
+prevalidateTrader.consigneeTraderIdentification.ern.label = Enter consignee trader ID
+prevalidateTrader.consigneeTraderIdentification.ern.hint = The ID contains 13 characters, starting with 2 letters of the member state of the consignee, such as GBWK123456789
+prevalidateTrader.consigneeTraderIdentification.ern.error.required = Enter the consignee trader ID
+prevalidateTrader.consigneeTraderIdentification.ern.error.invalidCharacters = Consignee trader ID must only contain letters and numbers
+prevalidateTrader.consigneeTraderIdentification.ern.error.invalidRegex = Consignee trader ID must start with 2 capital letters followed by 11 numbers or mixed letters and numbers
+prevalidateTrader.consigneeTraderIdentification.entityGroup.label = Select the trader type
+prevalidateTrader.consigneeTraderIdentification.entityGroup.error.required = Select the trader type
+prevalidateTrader.consigneeTraderIdentification.entityGroup.UKRecord = UK Trader
+prevalidateTrader.consigneeTraderIdentification.entityGroup.EUTrader = EU Trader
+prevalidateTrader.consigneeTraderIdentification.entityGroup.EUWarehouse = EU Warehouse
+prevalidateTrader.consigneeTraderIdentification.entityGroup.EUTemporaryAuthorisation = EU Temporary Authorisation
 
 # Prevalidate trader - EPC page
 prevalidateTrader.exciseProductCode.select.defaultValue = Choose excise product code
