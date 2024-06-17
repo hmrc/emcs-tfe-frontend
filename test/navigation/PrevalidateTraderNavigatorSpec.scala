@@ -19,7 +19,7 @@ package navigation
 import base.SpecBase
 import controllers.prevalidateTrader.routes
 import fixtures.ExciseProductCodeFixtures
-import models.prevalidate.PrevalidateModel
+import models.prevalidate.PrevalidateTraderModel
 import models.{CheckMode, NormalMode}
 import pages.Page
 import pages.prevalidateTrader.{PrevalidateAddToListPage, PrevalidateConsigneeTraderIdentificationPage, PrevalidateEPCPage}
@@ -46,7 +46,7 @@ class PrevalidateTraderNavigatorSpec extends SpecBase with ExciseProductCodeFixt
 
         "go to PrevalidateAddExciseProductCodePage" in {
 
-          val userAnswers = emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateModel(ern = "AB123456", entityGroup = testEntityGroup))
+          val userAnswers = emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel(ern = "AB123456", entityGroup = testEntityGroup))
 
           navigator.nextPage(PrevalidateConsigneeTraderIdentificationPage, NormalMode, userAnswers) mustBe
             routes.PrevalidateExciseProductCodeController.onPageLoad(testErn, testIndex1, NormalMode)
@@ -58,7 +58,7 @@ class PrevalidateTraderNavigatorSpec extends SpecBase with ExciseProductCodeFixt
         "go to PrevalidateAddToListPage" in {
 
           val userAnswers = emptyUserAnswers
-            .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateModel(ern = "AB123456", entityGroup = testEntityGroup))
+            .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel(ern = "AB123456", entityGroup = testEntityGroup))
             .set(PrevalidateEPCPage(testIndex1), beerExciseProductCode)
 
           navigator.nextPage(PrevalidateConsigneeTraderIdentificationPage, NormalMode, userAnswers) mustBe

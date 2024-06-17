@@ -23,7 +23,7 @@ import fixtures.{ExciseProductCodeFixtures, ItemFixtures, PrevalidateTraderFixtu
 import mocks.config.MockAppConfig
 import mocks.connectors.MockBetaAllowListConnector
 import mocks.services.{MockGetExciseProductCodesService, MockPrevalidateTraderService, MockPrevalidateUserAnswersService}
-import models.prevalidate.{EntityGroup, PrevalidateModel}
+import models.prevalidate.{EntityGroup, PrevalidateTraderModel}
 import models.requests.UserAnswersRequest
 import models.response.emcsTfe.prevalidateTrader.{ExciseTraderValidationResponse, PreValidateTraderApiResponse, ProductError, ValidateProductAuthorisationResponse}
 import models.{ExciseProductCode, Index, NormalMode, UserAnswers}
@@ -101,7 +101,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
 
       "must return OK and the correct view when there the ERN is invalid" in new Setup(
         emptyUserAnswers
-          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateModel(ern = ernToCheck, entityGroup = testEntityGroup))
+          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel(ern = ernToCheck, entityGroup = testEntityGroup))
           .set(PrevalidateEPCPage(testIndex1), beerExciseProductCode)
       ) {
 
@@ -125,7 +125,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
 
       "must return OK and the correct view when the correct addCodeCall when below the max codes allowed" in new Setup(
         emptyUserAnswers
-          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateModel(ern = ernToCheck, entityGroup = testEntityGroup))
+          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel(ern = ernToCheck, entityGroup = testEntityGroup))
           .set(PrevalidateEPCPage(0), wineExciseProductCode)
           .set(PrevalidateEPCPage(1), wineExciseProductCode)
           .set(PrevalidateEPCPage(2), wineExciseProductCode)
@@ -153,7 +153,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
 
       "must return OK and the correct view when the correct addCodeCall when on the max codes allowed" in new Setup(
         emptyUserAnswers
-          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateModel(ern = ernToCheck, entityGroup = testEntityGroup))
+          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel(ern = ernToCheck, entityGroup = testEntityGroup))
           .set(PrevalidateEPCPage(0), wineExciseProductCode)
           .set(PrevalidateEPCPage(1), wineExciseProductCode)
           .set(PrevalidateEPCPage(2), wineExciseProductCode)
@@ -182,7 +182,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
 
       "must return OK and the correct view when the correct addCodeCall when above the max codes allowed" in new Setup(
         emptyUserAnswers
-          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateModel(ern = ernToCheck, entityGroup = testEntityGroup))
+          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel(ern = ernToCheck, entityGroup = testEntityGroup))
           .set(PrevalidateEPCPage(0), wineExciseProductCode)
           .set(PrevalidateEPCPage(1), wineExciseProductCode)
           .set(PrevalidateEPCPage(2), wineExciseProductCode)
@@ -212,7 +212,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
 
       "must return OK and the correct view when all EPCs are eligible" in new Setup(
         emptyUserAnswers
-          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateModel(ern = ernToCheck, entityGroup = testEntityGroup))
+          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel(ern = ernToCheck, entityGroup = testEntityGroup))
           .set(PrevalidateEPCPage(0), wineExciseProductCode)
           .set(PrevalidateEPCPage(1), beerExciseProductCode)
           .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
@@ -234,7 +234,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
 
       "must return OK and the correct view when all EPCs are ineligible" in new Setup(
         emptyUserAnswers
-          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateModel(ern = ernToCheck, entityGroup = testEntityGroup))
+          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel(ern = ernToCheck, entityGroup = testEntityGroup))
           .set(PrevalidateEPCPage(0), wineExciseProductCode)
           .set(PrevalidateEPCPage(1), beerExciseProductCode)
           .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
@@ -270,7 +270,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
 
       "must return OK and the correct view when some EPCs are eligible and some are not" in new Setup(
         emptyUserAnswers
-          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateModel(ern = ernToCheck, entityGroup = testEntityGroup))
+          .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel(ern = ernToCheck, entityGroup = testEntityGroup))
           .set(PrevalidateEPCPage(0), wineExciseProductCode)
           .set(PrevalidateEPCPage(1), beerExciseProductCode)
           .set(PrevalidateEPCPage(2), tobaccoExciseProductCode)
@@ -304,7 +304,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
       }
 
       "must redirect to the first EPC entry page when no EPCs have been entered" in new Setup(emptyUserAnswers
-        .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateModel(ern = ernToCheck, entityGroup = testEntityGroup)), getEPCs = false) {
+        .set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel(ern = ernToCheck, entityGroup = testEntityGroup)), getEPCs = false) {
 
         val result = controller.onPageLoad(testErn)(request)
 

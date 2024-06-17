@@ -18,7 +18,7 @@ package forms.prevalidate
 
 import forms.mappings.Mappings
 import forms.{ALPHANUMERIC_REGEX, EXCISE_NUMBER_REGEX, XSS_REGEX}
-import models.prevalidate.{EntityGroup, PrevalidateModel}
+import models.prevalidate.{EntityGroup, PrevalidateTraderModel}
 import play.api.data.Form
 import play.api.data.Forms.mapping
 
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 class PrevalidateConsigneeTraderIdentificationFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[PrevalidateModel] =
+  def apply(): Form[PrevalidateTraderModel] =
     Form(
       mapping(
         "ern" -> text("prevalidateTrader.consigneeTraderIdentification.ern.error.required")
@@ -38,6 +38,6 @@ class PrevalidateConsigneeTraderIdentificationFormProvider @Inject() extends Map
             )
           ),
         "entityGroup" -> enumerable[EntityGroup]("prevalidateTrader.consigneeTraderIdentification.entityGroup.error.required")(EntityGroup.enumerable)
-      )(PrevalidateModel.apply)(PrevalidateModel.unapply)
+      )(PrevalidateTraderModel.apply)(PrevalidateTraderModel.unapply)
     )
 }

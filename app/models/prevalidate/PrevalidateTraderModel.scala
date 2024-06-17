@@ -18,9 +18,9 @@ package models.prevalidate
 
 import play.api.libs.json.{Json, OFormat}
 
-case class PrevalidateModel (ern: String, entityGroup: EntityGroup)
+case class PrevalidateTraderModel(ern: String, entityGroup: EntityGroup)
 
-object PrevalidateModel {
+object PrevalidateTraderModel {
 
-  implicit val format: OFormat[PrevalidateModel] = Json.format[PrevalidateModel]
+  implicit val format: OFormat[PrevalidateTraderModel] = Json.format[PrevalidateTraderModel]
 }
