@@ -80,13 +80,9 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
           msg.errorMessage match {
             case Some(errorMessageResponse) if errorMessageResponse.relatedMessageType.contains("IE815") =>
               deleteMessageService.deleteMessage(ern, uniqueMessageIdentifier).flatMap(response => {
-                if (response.recordsAffected == 1) {
-                  draftMovementService.putErrorMessagesAndMarkMovementAsDraft(ern, errorMessageResponse).map {
-                    case Some(draftId) => Redirect(appConfig.emcsTfeCreateMovementTaskListUrl(ern, draftId))
-                    case None => InternalServerError(errorHandler.internalServerErrorTemplate)
-                  }
-                } else {
-                  Future(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+                draftMovementService.putErrorMessagesAndMarkMovementAsDraft(ern, errorMessageResponse).map {
+                  case Some(draftId) => Redirect(appConfig.emcsTfeCreateMovementTaskListUrl(ern, draftId))
+                  case None => InternalServerError(errorHandler.internalServerErrorTemplate)
                 }
               })
             case _ =>

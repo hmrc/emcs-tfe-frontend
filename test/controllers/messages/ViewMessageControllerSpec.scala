@@ -205,7 +205,7 @@ class ViewMessageControllerSpec extends SpecBase
 
       "no records were deleted" should {
 
-        "return an Internal Server error response with the correct error handler template" in new Test {
+        "still call the draft movement errors setup as message may have already been removed from core" in new Test {
 
           MockGetMessagesService
             .getMessage(testErn, testMessageId)
@@ -215,10 +215,14 @@ class ViewMessageControllerSpec extends SpecBase
             .deleteMessage(testErn, testMessageId)
             .returns(Future.successful(DeleteMessageResponse(recordsAffected = 0)))
 
+          MockDraftMovementService
+            .putErrorMessagesAndMarkMovementAsDraft(testErn, GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel)
+            .returns(Future.successful(Some(testDraftId)))
+
           val result: Future[Result] = controller.removeMessageAndRedirectToDraftMovement(testErn, testMessageId)(fakeRequest)
 
-          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+          status(result) shouldBe Status.SEE_OTHER
+          redirectLocation(result).value shouldBe appConfig.emcsTfeCreateMovementTaskListUrl(testErn, testDraftId)
         }
       }
 
