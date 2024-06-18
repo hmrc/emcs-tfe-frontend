@@ -165,22 +165,55 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec
             }
           }
 
-          "render the view when form values are missing" in new Setup {
+          "render a BadReqest with errors" when {
 
-            MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+            "the ern is present and the entityGroup is missing" in new Setup {
 
-            val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-            val result = controller.onSubmit(testErn)(request)
+              MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
 
-            val form = formProvider()
-              .withError(FormError("ern", Seq("prevalidateTrader.consigneeTraderIdentification.ern.error.required")))
-              .withError(FormError("entityGroup", Seq("prevalidateTrader.consigneeTraderIdentification.entityGroup.error.required")))
+              val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("ern" -> "GBWK123456789"))
 
-            status(result) mustEqual BAD_REQUEST
-            contentAsString(result) mustEqual view(
-              form = form,
-              action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-            )(userAnswersRequest(request), messages(request)).toString
+              val form = formProvider().bind(Map("ern" -> "GBWK123456789"))
+
+              status(result) mustEqual BAD_REQUEST
+              contentAsString(result) mustEqual view(
+                form = form,
+                action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+              )(userAnswersRequest(request), messages(request)).toString
+            }
+
+            "the entityGroup is present and the ern is missing" in new Setup {
+
+              MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+
+              val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("entityGroup" -> EntityGroup.UKTrader.toString))
+
+              val form = formProvider().bind(Map("entityGroup" -> EntityGroup.UKTrader.toString))
+
+              status(result) mustEqual BAD_REQUEST
+              contentAsString(result) mustEqual view(
+                form = form,
+                action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+              )(userAnswersRequest(request), messages(request)).toString
+            }
+
+            "both the ern and entityGroup are missing" in new Setup {
+
+              MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+
+              val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("ern" -> "", "entityGroup" -> ""))
+
+              val form = formProvider().bind(Map("ern" -> "", "entityGroup" -> ""))
+
+              status(result) mustEqual BAD_REQUEST
+              contentAsString(result) mustEqual view(
+                form = form,
+                action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+              )(userAnswersRequest(request), messages(request)).toString
+            }
           }
         }
         "form validation passes" when {
