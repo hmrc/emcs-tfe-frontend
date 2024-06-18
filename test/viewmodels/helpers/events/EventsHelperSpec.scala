@@ -19,10 +19,14 @@ package viewmodels.helpers.events
 import base.SpecBase
 import fixtures.events.MovementEventMessages
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
+import models.EventTypes
+import models.common.DestinationType
 import models.requests.DataRequest
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
 import views.BaseSelectors
 
 class EventsHelperSpec extends SpecBase
@@ -47,11 +51,20 @@ class EventsHelperSpec extends SpecBase
 
       ".constructEventInformation" when {
 
+        "being called with an invalid event type" must {
+
+          "return empty HTML" in {
+            val invalidMovementHistoryEvent = MovementHistoryEvent(EventTypes.Invalid, "", 1, 1, None, true)
+            val result = helper.constructEventInformation(invalidMovementHistoryEvent, getMovementResponseModel, Seq.empty)
+            result mustBe Empty.asHtml
+          }
+        }
+
         "being called with event type IE802 and message role 1 (change destination reminder)" must {
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie802ChangeDestinationEvent, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie802ChangeDestinationEvent, getMovementResponseModel, Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802ChangeDestinationP1
@@ -63,7 +76,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie802EventReportOfReceipt, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie802EventReportOfReceipt, getMovementResponseModel, Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802ReportReceiptP1
@@ -75,7 +88,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie802MovementDestinationEvent, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie802MovementDestinationEvent, getMovementResponseModel, Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie802MovementDestinationP1
@@ -87,7 +100,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie803MovementDiversionEvent, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie803MovementDiversionEvent, getMovementResponseModel, Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie803MovementDivertedP1
@@ -100,7 +113,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie803MovementSplitEvent, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie803MovementSplitEvent, getMovementResponseModel, Seq.empty)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie803MovementSplitP1("5 June 2024")
@@ -108,6 +121,35 @@ class EventsHelperSpec extends SpecBase
             body.select(Selectors.bullet(1)).text() mustBe testArc
             body.select(Selectors.bullet(2)).text() mustBe (testArc.dropRight(1) + "1")
             body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
+          }
+        }
+
+        "being called with event type IE818 and destination type Export" must {
+
+          "render the correct HTML" in {
+
+            val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = DestinationType.Export), Seq.empty)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie818P1Export
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.ie818P2
+            body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
+          }
+        }
+
+        "being called with event type IE818 and destination type not Export" must {
+
+          "render the correct HTML" in {
+
+            DestinationType.values.filterNot(_ == DestinationType.Export).foreach {
+              destinationType =>
+                val result = helper.constructEventInformation(ie818Event, getMovementResponseModel.copy(destinationType = destinationType), Seq.empty)
+                val body = Jsoup.parse(result.toString())
+
+                body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie818P1
+                body.select(Selectors.p(2)).text() mustBe messagesForLanguage.ie818P2
+                body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
+            }
           }
         }
       }

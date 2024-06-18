@@ -17,6 +17,8 @@
 package viewmodels.helpers
 
 import models.EventTypes._
+import models.common.DestinationType
+import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.Messages
 import utils.Logging
@@ -40,8 +42,11 @@ class TimelineHelper @Inject()() extends Logging {
       )
     }.sortBy(_.dateTime)
 
-  def getEventTitleKey(event: MovementHistoryEvent): String =
-    s"${getEventBaseKey(event)}.label"
+  def getEventTitleKey(event: MovementHistoryEvent, movement: GetMovementResponse): String =
+    event.eventType match {
+      case IE818 if movement.destinationType == DestinationType.Export => s"${getEventBaseKey(event)}.label.export"
+      case _ => s"${getEventBaseKey(event)}.label"
+    }
 
   def getEventUrlDescription(event: MovementHistoryEvent): String =
     s"${getEventBaseKey(event)}.urlLabel"
@@ -65,10 +70,14 @@ class TimelineHelper @Inject()() extends Logging {
   }
 
   def parseDateTime(eventDate: String): LocalDateTime = {
-    Try {LocalDateTime.parse(eventDate, EisEventDateFormat)} match {
+    Try {
+      LocalDateTime.parse(eventDate, EisEventDateFormat)
+    } match {
       case Success(parsedDateTime) => parsedDateTime
       case Failure(_) =>
-        Try {LocalDateTime.parse(eventDate, ChrisEventDateFormat)} match {
+        Try {
+          LocalDateTime.parse(eventDate, ChrisEventDateFormat)
+        } match {
           case Success(parsedDateTime) => parsedDateTime
           case Failure(_) =>
             logger.error(s"[parseDateTime] - un-parseable date/time received [$eventDate], neither in EIS or ChRIS expected format")
@@ -84,5 +93,5 @@ class TimelineHelper @Inject()() extends Logging {
 
 object TimelineHelper {
   private val EisEventDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-  private val ChrisEventDateFormat =DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+  private val ChrisEventDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 }

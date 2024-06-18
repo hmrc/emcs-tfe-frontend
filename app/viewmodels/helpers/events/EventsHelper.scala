@@ -17,8 +17,11 @@
 package viewmodels.helpers.events
 
 import models.EventTypes._
+import models.common.DestinationType
+import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
+import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
@@ -35,11 +38,16 @@ class EventsHelper @Inject()(
                               p: p,
                               bullets: bullets) extends DateUtils {
 
-  def constructEventInformation(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+  def constructEventInformation(
+                                 event: MovementHistoryEvent,
+                                 movement: GetMovementResponse,
+                                 ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation]
+                               )(implicit request: DataRequest[_], messages: Messages): Html = {
     (event.eventType, event.messageRole) match {
       case (IE801, _) => ie801Html(event, movement)
       case (IE802, _) => ie802Html(event)
       case (IE803, _) => ie803Html(event, movement)
+      case (IE818, _) => ie818Html(event, movement, ie818ItemModelWithCnCodeInformation)
       case _ => Empty.asHtml
     }
   }
@@ -85,7 +93,7 @@ class EventsHelper @Inject()(
     HtmlFormat.fill(
       Seq(
         movement.notificationOfDivertedMovement.map { notificationOfDivertedMovement =>
-          if(event.messageRole == 2) {
+          if (event.messageRole == 2) {
             //Split movement
             HtmlFormat.fill(Seq(
               p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1", notificationOfDivertedMovement.notificationDateAndTime.toLocalDate.formatDateForUIOutput()))),
@@ -103,6 +111,33 @@ class EventsHelper @Inject()(
         Some(printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"))
       ).flatten
     )
+
+  private def ie818Html(
+                         event: MovementHistoryEvent,
+                         movement: GetMovementResponse,
+                         ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation]
+                       )(implicit request: DataRequest[_], messages: Messages): Html = {
+    implicit val _movement: GetMovementResponse = movement
+
+    val lede: String = if (movement.destinationType == DestinationType.Export) {
+      messages(s"${timelineHelper.getEventBaseKey(event)}.lede.export")
+    } else {
+      messages(s"${timelineHelper.getEventBaseKey(event)}.lede")
+    }
+
+    HtmlFormat.fill(
+      Seq(
+        p(classes = "govuk-body-l")(Html(lede)),
+        p()(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
+        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        eventHelper.rorDetailsCard(event),
+        eventHelper.consigneeInformationCard(),
+        eventHelper.placeOfDestinationInformationCard(),
+        eventHelper.exportInformationCard(),
+        eventHelper.rorItemsCard(event, ie818ItemModelWithCnCodeInformation),
+      )
+    )
+  }
 
   private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
     p(classes = "govuk-body js-visible govuk-!-display-none-print")(

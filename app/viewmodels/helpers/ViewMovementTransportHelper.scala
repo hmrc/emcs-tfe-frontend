@@ -83,10 +83,14 @@ class ViewMovementTransportHelper @Inject()(
     )
   }
 
-  private[viewmodels] def transportUnits(movement: GetMovementResponse)(implicit messages: Messages): Html = {
+  private[viewmodels] def transportUnits(movement: GetMovementResponse, firstHeadingLevelIsH2: Boolean = false)(implicit messages: Messages): Html = {
     val notProvidedMessage = messages("viewMovement.transport.transportUnit.notProvided")
     HtmlFormat.fill(Seq(
-      h3("viewMovement.transport.transportUnits", id = Some("transport-unit-information-heading")),
+      if(firstHeadingLevelIsH2) {
+        h2("viewMovement.transport.transportUnits", id = Some("transport-unit-information-heading"))
+      } else {
+        h3("viewMovement.transport.transportUnits", id = Some("transport-unit-information-heading"))
+      },
       HtmlFormat.fill(
         movement.transportDetails.zipWithIndex.map {
           case (transport, index) =>
@@ -94,7 +98,7 @@ class ViewMovementTransportHelper @Inject()(
               card = Some(Card(
                 Some(CardTitle(
                   Text(messages("viewMovement.transport.transportUnit.heading", index + 1)),
-                  headingLevel = Some(4)
+                  headingLevel = Some(if(firstHeadingLevelIsH2) 3 else 4)
                 ))
               )),
               summaryListRows = Seq(

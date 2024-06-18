@@ -91,7 +91,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     ))
   )
 
-  val getMovementResponseModel: GetMovementResponse = GetMovementResponse(
+  lazy val getMovementResponseModel: GetMovementResponse = GetMovementResponse(
     arc = testArc,
     sequenceNumber = testSequenceNumber,
     destinationType = DestinationType.TaxWarehouse,

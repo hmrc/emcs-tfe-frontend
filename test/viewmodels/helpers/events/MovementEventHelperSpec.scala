@@ -18,16 +18,22 @@ package viewmodels.helpers.events
 
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
-import models.common.DestinationType.{Export, TemporaryRegisteredConsignee}
 import models.common.GuarantorType.{Consignee, Consignor, GuarantorNotRequired, NoGuarantor, Owner, Transporter}
 import models.common.TransportArrangement.OwnerOfGoods
-import models.common.{AddressModel, TraderModel, TransportMode}
+import models.common.UnitOfMeasure.Kilograms
+import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Shortage}
+import models.common._
 import models.requests.DataRequest
+import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, ReceiptedItemsModel, UnsatisfactoryModel}
 import models.response.emcsTfe.{GetMovementResponse, HeaderEadEsadModel, TransportModeModel}
+import models.response.referenceData.CnCodeInformation
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
+import play.twirl.api.Html
+import viewmodels.helpers.SummaryListHelper.summaryListRowBuilder
 import views.BaseSelectors
+import views.ViewUtils.LocalDateExtensions
 
 // scalastyle:off magic.number
 class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures {
@@ -40,7 +46,13 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
 
   object Selectors extends BaseSelectors {
     override def h2(i: Int) = s"h2:nth-of-type($i)"
+
+    override def h3(i: Int) = s"h3:nth-of-type($i)"
+
+    override val link: Int => String = i => s"a:nth-of-type($i)"
+
     def summaryListRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
+
     def summaryListRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
   }
 
@@ -186,7 +198,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
     }
 
     "output the identifier number summary row when the destination type is a TemporaryRegisteredConsignee" in {
-      val result = helper.consigneeInformationCard()(_movement.copy(destinationType = TemporaryRegisteredConsignee), messages)
+      val result = helper.consigneeInformationCard()(_movement.copy(destinationType = DestinationType.TemporaryRegisteredConsignee), messages)
       val doc = Jsoup.parse(result.toString())
 
       doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Identification number for temporary registered consignee"
@@ -364,7 +376,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
             guarantorTypeCode = Consignee
           ),
-          destinationType = Export
+          destinationType = DestinationType.Export
         )
 
         val result = helper.guarantorInformationCard()
@@ -381,7 +393,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
             guarantorTypeCode = Consignee
           ),
-          destinationType = TemporaryRegisteredConsignee
+          destinationType = DestinationType.TemporaryRegisteredConsignee
         )
 
         val result = helper.guarantorInformationCard()
@@ -427,7 +439,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
   "journeyInformationCard" must {
     "output the correct rows when all data is present" in {
       implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-        transportMode =  TransportModeModel(
+        transportMode = TransportModeModel(
           transportModeCode = TransportMode.AirTransport,
           complementaryInformation = Some("transport complementary information"),
         )
@@ -454,7 +466,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         headerEadEsad = HeaderEadEsadModel(
           sequenceNumber = 1,
           dateAndTimeOfUpdateValidation = "2023-12-01T12:00:00Z",
-          destinationType = TemporaryRegisteredConsignee,
+          destinationType = DestinationType.TemporaryRegisteredConsignee,
           journeyTime = "20 days",
           transportArrangement = OwnerOfGoods
         ),
@@ -582,6 +594,394 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
       val doc = Jsoup.parse(result.toString())
 
       doc.body().text() mustBe ""
+    }
+  }
+
+  "rorDetailsCard" when {
+    "export" must {
+      "output the correct rows when all data is present" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(destinationType = DestinationType.Export)
+
+        val result = helper.rorDetailsCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).text() mustBe "Report of export details"
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(0).getElementsByTag("dt").text() mustBe "Date of arrival"
+        summaryListRows.get(0).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.dateOfArrival.formatDateForUIOutput()
+        summaryListRows.get(1).getElementsByTag("dt").text() mustBe "Export status"
+        summaryListRows.get(1).getElementsByTag("dd").text() mustBe "Accepted although unsatisfactory"
+        summaryListRows.get(2).getElementsByTag("dt").text() mustBe "More information"
+        summaryListRows.get(2).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.otherInformation.get
+      }
+    }
+    "not export" must {
+      "output the correct rows when all data is present" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.rorDetailsCard(ie818Event)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).text() mustBe "Report of receipt details"
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(0).getElementsByTag("dt").text() mustBe "Date of arrival"
+        summaryListRows.get(0).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.dateOfArrival.formatDateForUIOutput()
+        summaryListRows.get(1).getElementsByTag("dt").text() mustBe "Receipt status"
+        summaryListRows.get(1).getElementsByTag("dd").text() mustBe "Accepted although unsatisfactory"
+        summaryListRows.get(2).getElementsByTag("dt").text() mustBe "More information"
+        summaryListRows.get(2).getElementsByTag("dd").text() mustBe reportOfReceiptResponse.otherInformation.get
+      }
+    }
+    "no ror in movement history" must {
+      "return empty HTML" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(reportOfReceipt = None)
+
+        val result = helper.rorDetailsCard(ie818Event)
+        result mustBe Html("")
+      }
+    }
+  }
+
+  "rorItemsCard" when {
+    AcceptMovement.values.filterNot(_ == AcceptMovement.Satisfactory).foreach {
+      acceptMovement =>
+        s"acceptMovement == $acceptMovement" must {
+          "render a card with the correct header and the correct whatWasWrongRow" in {
+            implicit val _movement: GetMovementResponse =
+              getMovementResponseModel.copy(reportOfReceipt = Some(reportOfReceiptResponse.copy(acceptMovement = acceptMovement)))
+
+            val items: Seq[IE818ItemModelWithCnCodeInformation] =
+              reportOfReceiptResponse.individualItems.map(IE818ItemModelWithCnCodeInformation(_, CnCodeInformation(
+                cnCode = "",
+                cnCodeDescription = "test cn code description",
+                exciseProductCode = "",
+                exciseProductCodeDescription = "",
+                unitOfMeasure = Kilograms
+              )))
+            val result = helper.rorItemsCard(ie818Event, items)
+            val doc = Jsoup.parse(result.toString())
+
+            doc.select(Selectors.h2(1)).text() mustBe "Items"
+            items.zipWithIndex.foreach {
+              case (item, index) =>
+
+                // test card title
+                doc.select(Selectors.h3(index + 1)).text() mustBe s"Item ${index + 1}"
+
+                // test action link
+                val actionLink = doc.select(Selectors.link(index + 1))
+                actionLink.text() mustBe s"Item details for item ${index + 1} (${item.information.cnCodeDescription})"
+                actionLink.attr("href") mustBe controllers.routes.ItemDetailsController.onPageLoad(testErn, testArc, item.rorItem.eadBodyUniqueReference).url
+
+                // test what was wrong row
+                val summaryList = doc.getElementsByClass("govuk-summary-list").get(index)
+                val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+                summaryListRows.get(0).getElementsByTag("dt").text() mustBe "What was wrong"
+                summaryListRows.get(0).getElementsByTag("dd").text() mustBe
+                  item.rorItem.unsatisfactoryReasons
+                    .map(reason => messages.messages(s"movementHistoryEvent.IE818.rorItems.whatWasWrong.${reason.reason}"))
+                    .mkString(" ")
+            }
+          }
+        }
+    }
+    "acceptMovement == satisfactory" must {
+      "return empty HTML" in {
+        implicit val _movement: GetMovementResponse =
+          getMovementResponseModel.copy(reportOfReceipt = Some(reportOfReceiptResponse.copy(acceptMovement = AcceptMovement.Satisfactory)))
+
+        val result = helper.rorItemsCard(ie818Event, Seq())
+        result mustBe Html("")
+      }
+    }
+    "no ror in movement history" must {
+      "return empty HTML" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(reportOfReceipt = None)
+
+        val result = helper.rorItemsCard(ie818Event, Seq())
+        result mustBe Html("")
+      }
+    }
+  }
+
+  "generateShortageOrExcessRows" must {
+    "return Seq with both rows" when {
+      "both quantity and additional info are defined" in {
+        val quantity = 10
+        val additionalInfo = "additional info"
+
+        val item = reportOfReceiptResponse.individualItems.map(IE818ItemModelWithCnCodeInformation(_, CnCodeInformation(
+          cnCode = "",
+          cnCodeDescription = "test cn code description",
+          exciseProductCode = "",
+          exciseProductCodeDescription = "",
+          unitOfMeasure = Kilograms
+        ))).head
+
+        val result = helper.generateShortageOrExcessRows(true, Some(quantity), Some(additionalInfo))(ie818Event, item, messages)
+
+        result mustBe Seq(
+          Some(summaryListRowBuilder("Amount of shortage", "10 kg")),
+          Some(summaryListRowBuilder("Information about shortage", "additional info"))
+        )
+      }
+    }
+    "return Seq with only 1 row" when {
+      "only quantity is defined" in {
+        val quantity = 10
+
+        val item = reportOfReceiptResponse.individualItems.map(IE818ItemModelWithCnCodeInformation(_, CnCodeInformation(
+          cnCode = "",
+          cnCodeDescription = "test cn code description",
+          exciseProductCode = "",
+          exciseProductCodeDescription = "",
+          unitOfMeasure = Kilograms
+        ))).head
+
+        val result = helper.generateShortageOrExcessRows(true, Some(quantity), None)(ie818Event, item, messages)
+
+        result mustBe Seq(
+          Some(summaryListRowBuilder("Amount of shortage", "10 kg")),
+          None
+        )
+      }
+      "only additional info is defined" in {
+        val additionalInfo = "additional info"
+
+        val item = reportOfReceiptResponse.individualItems.map(IE818ItemModelWithCnCodeInformation(_, CnCodeInformation(
+          cnCode = "",
+          cnCodeDescription = "test cn code description",
+          exciseProductCode = "",
+          exciseProductCodeDescription = "",
+          unitOfMeasure = Kilograms
+        ))).head
+
+        val result = helper.generateShortageOrExcessRows(true, None, Some(additionalInfo))(ie818Event, item, messages)
+
+        result mustBe Seq(
+          None,
+          Some(summaryListRowBuilder("Information about shortage", "additional info"))
+        )
+      }
+    }
+    "return an empty Seq" when {
+      "both quantity and additionalInformation are None" in {
+        val item = reportOfReceiptResponse.individualItems.map(IE818ItemModelWithCnCodeInformation(_, CnCodeInformation(
+          cnCode = "",
+          cnCodeDescription = "test cn code description",
+          exciseProductCode = "",
+          exciseProductCodeDescription = "",
+          unitOfMeasure = Kilograms
+        ))).head
+
+        val result = helper.generateShortageOrExcessRows(true, None, None)(ie818Event, item, messages)
+
+        result mustBe Seq(None, None)
+      }
+    }
+    "handle both shortage and excess" in {
+      Seq(
+        (true, "shortage"),
+        (false, "excess")
+      ).foreach {
+        case (isShortage, shortageOrExcess) =>
+          val quantity = 10
+          val additionalInfo = "additional info"
+
+          val item = reportOfReceiptResponse.individualItems.map(IE818ItemModelWithCnCodeInformation(_, CnCodeInformation(
+            cnCode = "",
+            cnCodeDescription = "test cn code description",
+            exciseProductCode = "",
+            exciseProductCodeDescription = "",
+            unitOfMeasure = Kilograms
+          ))).head
+
+          val result = helper.generateShortageOrExcessRows(isShortage, Some(quantity), Some(additionalInfo))(ie818Event, item, messages)
+
+          result mustBe Seq(
+            Some(summaryListRowBuilder(s"Amount of $shortageOrExcess", "10 kg")),
+            Some(summaryListRowBuilder(s"Information about $shortageOrExcess", "additional info"))
+          )
+      }
+    }
+  }
+
+  "rorItemRows" must {
+    "render the correct row" when {
+      "Shortage" in {
+        val item = IE818ItemModelWithCnCodeInformation(
+          ReceiptedItemsModel(
+            eadBodyUniqueReference = 1,
+            excessAmount = None,
+            shortageAmount = Some(21),
+            productCode = testEpcWine,
+            refusedAmount = Some(1),
+            unsatisfactoryReasons = Seq(
+              UnsatisfactoryModel(Shortage, Some("some info")),
+            )
+          ), CnCodeInformation(
+            cnCode = "",
+            cnCodeDescription = "test cn code description",
+            exciseProductCode = "",
+            exciseProductCodeDescription = "",
+            unitOfMeasure = Kilograms
+          )
+        )
+
+        val result = helper.rorItemRows(ie818Event, item)(messages)
+
+        result mustBe Seq(
+          Some(summaryListRowBuilder("Amount of shortage", "21 kg")),
+          Some(summaryListRowBuilder("Information about shortage", "some info"))
+        )
+      }
+      "Excess" in {
+        val item = IE818ItemModelWithCnCodeInformation(
+          ReceiptedItemsModel(
+            eadBodyUniqueReference = 1,
+            excessAmount = Some(21),
+            shortageAmount = None,
+            productCode = testEpcWine,
+            refusedAmount = Some(1),
+            unsatisfactoryReasons = Seq(
+              UnsatisfactoryModel(Excess, Some("some info")),
+            )
+          ), CnCodeInformation(
+            cnCode = "",
+            cnCodeDescription = "test cn code description",
+            exciseProductCode = "",
+            exciseProductCodeDescription = "",
+            unitOfMeasure = Kilograms
+          )
+        )
+
+        val result = helper.rorItemRows(ie818Event, item)(messages)
+
+        result mustBe Seq(
+          Some(summaryListRowBuilder("Amount of excess", "21 kg")),
+          Some(summaryListRowBuilder("Information about excess", "some info"))
+        )
+      }
+      "Damaged" in {
+        val item = IE818ItemModelWithCnCodeInformation(
+          ReceiptedItemsModel(
+            eadBodyUniqueReference = 1,
+            excessAmount = None,
+            shortageAmount = None,
+            productCode = testEpcWine,
+            refusedAmount = Some(1),
+            unsatisfactoryReasons = Seq(
+              UnsatisfactoryModel(Damaged, Some("some info")),
+            )
+          ), CnCodeInformation(
+            cnCode = "",
+            cnCodeDescription = "test cn code description",
+            exciseProductCode = "",
+            exciseProductCodeDescription = "",
+            unitOfMeasure = Kilograms
+          )
+        )
+
+        val result = helper.rorItemRows(ie818Event, item)(messages)
+
+        result mustBe Seq(
+          Some(summaryListRowBuilder("Information about damaged item", "some info"))
+        )
+      }
+      "BrokenSeals" in {
+        val item = IE818ItemModelWithCnCodeInformation(
+          ReceiptedItemsModel(
+            eadBodyUniqueReference = 1,
+            excessAmount = None,
+            shortageAmount = None,
+            productCode = testEpcWine,
+            refusedAmount = Some(1),
+            unsatisfactoryReasons = Seq(
+              UnsatisfactoryModel(BrokenSeals, Some("some info")),
+            )
+          ), CnCodeInformation(
+            cnCode = "",
+            cnCodeDescription = "test cn code description",
+            exciseProductCode = "",
+            exciseProductCodeDescription = "",
+            unitOfMeasure = Kilograms
+          )
+        )
+
+        val result = helper.rorItemRows(ie818Event, item)(messages)
+
+        result mustBe Seq(
+          Some(summaryListRowBuilder("Information about broken seal(s)", "some info"))
+        )
+      }
+      "Other" in {
+        val item = IE818ItemModelWithCnCodeInformation(
+          ReceiptedItemsModel(
+            eadBodyUniqueReference = 1,
+            excessAmount = None,
+            shortageAmount = None,
+            productCode = testEpcWine,
+            refusedAmount = Some(1),
+            unsatisfactoryReasons = Seq(
+              UnsatisfactoryModel(Other, Some("some info")),
+            )
+          ), CnCodeInformation(
+            cnCode = "",
+            cnCodeDescription = "test cn code description",
+            exciseProductCode = "",
+            exciseProductCodeDescription = "",
+            unitOfMeasure = Kilograms
+          )
+        )
+
+        val result = helper.rorItemRows(ie818Event, item)(messages)
+
+        result mustBe Seq(
+          Some(summaryListRowBuilder("Other information", "some info"))
+        )
+      }
+    }
+    "order the rows correctly" in {
+      val item = IE818ItemModelWithCnCodeInformation(
+        ReceiptedItemsModel(
+          eadBodyUniqueReference = 1,
+          excessAmount = Some(22),
+          shortageAmount = Some(21),
+          productCode = testEpcWine,
+          refusedAmount = Some(1),
+          unsatisfactoryReasons = Seq(
+            UnsatisfactoryModel(Excess, Some("some info excess")),
+            UnsatisfactoryModel(Other, Some("some info other")),
+            UnsatisfactoryModel(Shortage, Some("some info shortage")),
+            UnsatisfactoryModel(BrokenSeals, Some("some info broken seals")),
+            UnsatisfactoryModel(Damaged, Some("some info damaged item")),
+          )
+        ), CnCodeInformation(
+          cnCode = "",
+          cnCodeDescription = "test cn code description",
+          exciseProductCode = "",
+          exciseProductCodeDescription = "",
+          unitOfMeasure = Kilograms
+        )
+      )
+
+      val result = helper.rorItemRows(ie818Event, item)(messages)
+
+      result mustBe Seq(
+        Some(summaryListRowBuilder("Amount of shortage", "21 kg")),
+        Some(summaryListRowBuilder("Information about shortage", "some info shortage")),
+        Some(summaryListRowBuilder("Amount of excess", "22 kg")),
+        Some(summaryListRowBuilder("Information about excess", "some info excess")),
+        Some(summaryListRowBuilder("Information about damaged item", "some info damaged item")),
+        Some(summaryListRowBuilder("Information about broken seal(s)", "some info broken seals")),
+        Some(summaryListRowBuilder("Other information", "some info other"))
+      )
     }
   }
 }

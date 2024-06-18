@@ -17,8 +17,11 @@
 package viewmodels.helpers
 
 import base.SpecBase
+import fixtures.GetMovementResponseFixtures
 import models.EventTypes
 import models.EventTypes._
+import models.common.DestinationType
+import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
@@ -26,7 +29,7 @@ import play.api.test.FakeRequest
 import java.time.{LocalDate, LocalDateTime}
 
 // scalastyle:off magic.number
-class TimelineHelperSpec extends SpecBase {
+class TimelineHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
   implicit lazy val msgs: Messages = messages(FakeRequest())
 
@@ -64,7 +67,13 @@ class TimelineHelperSpec extends SpecBase {
   ".getEventTitleKey" must {
     "return the correct message key" when {
 
-      def getKey(eventType: EventTypes, sequenceNumber: Int, messageRole: Int, firstEventTypeInTimeline: Boolean = false):String = {
+      def getKey(
+                  eventType: EventTypes,
+                  sequenceNumber: Int,
+                  messageRole: Int,
+                  firstEventTypeInTimeline: Boolean = false,
+                  movement: GetMovementResponse = getMovementResponseModel
+                ):String = {
         helper.getEventTitleKey(
           MovementHistoryEvent(
             eventType = eventType,
@@ -73,7 +82,8 @@ class TimelineHelperSpec extends SpecBase {
             messageRole = messageRole,
             None,
             isFirstEventTypeInHistory = firstEventTypeInTimeline
-          )
+          ),
+          movement
         )
       }
 
@@ -107,8 +117,14 @@ class TimelineHelperSpec extends SpecBase {
       "the event is for a change of destination submission" in {
         getKey(IE813, 0, 0) mustBe "movementHistoryEvent.IE813.label"
       }
-      "the event is for a report of receipt submission" in {
-        getKey(IE818, 0, 0) mustBe "movementHistoryEvent.IE818.label"
+      "the event is for a report of receipt submission and an export" in {
+        getKey(IE818, 0, 0, movement = getMovementResponseModel.copy(destinationType = DestinationType.Export)) mustBe "movementHistoryEvent.IE818.label.export"
+      }
+      "the event is for a report of receipt submission and not an export" in {
+        DestinationType.values.filterNot(_ == DestinationType.Export).foreach {
+          destinationType =>
+            getKey(IE818, 0, 0, movement = getMovementResponseModel.copy(destinationType = destinationType)) mustBe "movementHistoryEvent.IE818.label"
+        }
       }
       "the event is for a alert/rejection submission" in {
         getKey(IE819, 0, 0) mustBe "movementHistoryEvent.IE819.label"

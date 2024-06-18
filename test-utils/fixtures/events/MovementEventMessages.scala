@@ -57,6 +57,13 @@ object MovementEventMessages {
     val ie803MovementSplitTitle: String = titleHelper(ie803MovementSplitHeading)
     def ie803MovementSplitP1(dateOfSplit: String) = s"A request to split this movement was submitted on $dateOfSplit."
     val ie803MovementSplitP2 = "The new ARCs for the split movement are:"
+
+    //IE818 Report of Receipt
+    val ie818P1 = "A report of receipt has been submitted for this movement."
+    val ie818P1Export = "A report of export has been received for this movement."
+    val ie818P2 = "For refused or partially refused receipts, the consignor may now need to split, " +
+      "cancel or complete a change of destination for the movement. " +
+      "For receipts recording a shortage or excess, there may be duty or other liabilities."
   }
 
   object English extends EventMessages with EN
