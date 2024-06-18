@@ -128,4 +128,31 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
     upstreamArc = Some(testArc),
     isFirstEventTypeInHistory = true
   )
+
+  val ie819AlertEventMultipleReasons = MovementHistoryEvent(
+    eventType = IE819,
+    eventDate = "2023-12-18T09:00:00",
+    sequenceNumber = 1,
+    messageRole = 0,
+    upstreamArc = None,
+    isFirstEventTypeInHistory = false
+  )
+
+  val ie819AlertEvent = MovementHistoryEvent(
+    eventType = IE819,
+    eventDate = "2023-12-18T10:00:00",
+    sequenceNumber = 1,
+    messageRole = 0,
+    upstreamArc = None,
+    isFirstEventTypeInHistory = false
+  )
+
+  val ie819RejectionEvent = MovementHistoryEvent(
+    eventType = IE819,
+    eventDate = "2023-12-19T09:00:00",
+    sequenceNumber = 1,
+    messageRole = 0,
+    upstreamArc = None,
+    isFirstEventTypeInHistory = false
+  )
 }

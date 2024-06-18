@@ -17,12 +17,17 @@
 package fixtures.events
 
 import fixtures.messages.{BaseEnglish, EN, i18n}
+import utils.DateUtils
 
-object MovementEventMessages {
+import java.time.LocalDateTime
+
+object MovementEventMessages extends DateUtils {
 
   sealed trait EventMessages extends BaseEnglish { _ : i18n =>
 
-    val messageIssued = "Message issued 4 December 2024 at 5:00 pm"
+    def messageIssued(dateTime: LocalDateTime = LocalDateTime.of(2024, 12, 4, 17, 0, 0)) =
+      s"Message issued ${dateTime.formatDateTimeForUIOutput()}"
+
     def arc(arc: String) = s"ARC: $arc"
     val printScreenContent: String = "Print this screen to make a record of this message."
 
@@ -64,6 +69,30 @@ object MovementEventMessages {
     val ie818P2 = "For refused or partially refused receipts, the consignor may now need to split, " +
       "cancel or complete a change of destination for the movement. " +
       "For receipts recording a shortage or excess, there may be duty or other liabilities."
+
+    //IE819 Alert/Reject Notification (shared messages)
+    val ie819ConsigneeInformation = "Information about consignee details"
+    val ie819GoodsTypeInformation = "Information about goods types"
+    val ie819GoodsQuantityInformation = "Information about goods quantities"
+    val ie819OtherInformation = "Information about other reason(s)"
+
+    //IE819 Alert Notification
+    val ie819AlertHeading: String = "Alert submitted"
+    val ie819AlertTitle: String = titleHelper(ie819AlertHeading)
+    val ie819AlertP1 = "The consignee has alerted the consignor to an issue."
+    val ie819AlertH2 = "Alert details"
+    val ie819AlertDate = "Date of alert"
+    val ie819AlertSummaryReason = "Reason for alert"
+    val ie819AlertSummaryReasons = "Reasons for alert"
+
+    //IE819 Rejection Notification
+    val ie819RejectionHeading: String = "Rejection submitted"
+    val ie819RejectionTitle: String = titleHelper(ie819RejectionHeading)
+    val ie819RejectionP1 = "The consignee has rejected the movement."
+    val ie819RejectionH2 = "Rejection details"
+    val ie819RejectionDate = "Date of rejection"
+    val ie819RejectionSummaryReason = "Reason for rejection"
+    val ie819RejectionSummaryReasons = "Reasons for rejection"
   }
 
   object English extends EventMessages with EN

@@ -34,6 +34,8 @@ import play.api.test.FakeRequest
 import views.html.events.HistoryEventView
 import views.{BaseSelectors, ViewBehaviours}
 
+import java.time.LocalDateTime
+
 class HistoryEventViewSpec extends ViewSpecBase
   with ViewBehaviours
   with GetMovementResponseFixtures
@@ -70,7 +72,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie801Title,
                 Selectors.h1 -> messagesForLanguage.ie801Heading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie801P1,
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
@@ -278,7 +280,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie802ChangeDestinationTitle,
                 Selectors.h1 -> messagesForLanguage.ie802ChangeDestinationHeading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie802ChangeDestinationP1,
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
@@ -294,7 +296,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie802ReportReceiptTitle,
                 Selectors.h1 -> messagesForLanguage.ie802ReportReceiptHeading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie802ReportReceiptP1,
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
@@ -310,7 +312,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie802MovementDestinationTitle,
                 Selectors.h1 -> messagesForLanguage.ie802MovementDestinationHeading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie802MovementDestinationP1,
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
@@ -326,7 +328,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie803MovementDivertedTitle,
                 Selectors.h1 -> messagesForLanguage.ie803MovementDivertedHeading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie803MovementDivertedP1,
                 Selectors.p(2) -> messagesForLanguage.ie803MovementDivertedP2("5 June 2024"),
@@ -343,7 +345,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie803MovementSplitTitle,
                 Selectors.h1 -> messagesForLanguage.ie803MovementSplitHeading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie803MovementSplitP1("5 June 2024"),
                 Selectors.p(2) -> messagesForLanguage.ie803MovementSplitP2,
@@ -352,6 +354,35 @@ class HistoryEventViewSpec extends ViewSpecBase
                 Selectors.p(3) -> messagesForLanguage.printScreenContent
               )
             )(createDocument(ie803MovementSplitEvent, getMovementResponseModel))
+          }
+        }
+
+        "rendering an IE819 event (Alert/Rejection)" should {
+
+          "when the message is an Alert" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie819AlertTitle,
+                Selectors.h1 -> messagesForLanguage.ie819AlertHeading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie819AlertEvent.eventDate)),
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie819AlertP1,
+                Selectors.p(2) -> messagesForLanguage.printScreenContent
+              )
+            )(createDocument(ie819AlertEvent, getMovementResponseModel))
+          }
+
+          "when the message is a Rejection" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie819RejectionTitle,
+                Selectors.h1 -> messagesForLanguage.ie819RejectionHeading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie819RejectionEvent.eventDate)),
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie819RejectionP1,
+                Selectors.p(2) -> messagesForLanguage.printScreenContent
+              )
+            )(createDocument(ie819RejectionEvent, getMovementResponseModel))
           }
         }
       }

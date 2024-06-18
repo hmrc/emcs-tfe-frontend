@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package viewmodels
+package models.response.emcsTfe
 
-import models.EventTypes
+import play.api.libs.json.{Format, Json}
 
 import java.time.LocalDateTime
 
-case class TimelineEvent(eventType: EventTypes, title: String, dateTime: LocalDateTime, url: String) {
-  def id(idx: Int = 0): String = title.replace(" ", "-").toLowerCase + (if(idx > 0) s"-${idx + 1}" else "")
+case class NotificationOfAlertOrRejectionModel(notificationType: AlertOrRejectionType,
+                                               notificationDateAndTime: LocalDateTime,
+                                               alertRejectReason: Seq[AlertOrRejectionReasonModel])
+
+object NotificationOfAlertOrRejectionModel {
+
+  implicit val format: Format[NotificationOfAlertOrRejectionModel] = Json.format[NotificationOfAlertOrRejectionModel]
+
 }

@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package models
 
-@(content: Seq[Html], classes: String = "govuk-list govuk-list--bullet")
+import base.SpecBase
+import models.response.emcsTfe.AlertOrRejectionType._
 
-<ul class="@classes">
- @content.map { bullet =>
-  <li>@bullet</li>
- }
-</ul>
+class AlertOrRejectionTypeSpec extends SpecBase {
 
-@{
- //$COVERAGE-OFF$
+  "AlertOrRejectionType" must {
+
+    "have the correct underlying enum values" in {
+      Alert.toString mustBe "0"
+      Rejection.toString mustBe "1"
+    }
+  }
 }

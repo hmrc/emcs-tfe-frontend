@@ -22,9 +22,10 @@ import models.common.GuarantorType.Consignee
 import models.common.OriginType.TaxWarehouse
 import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Shortage}
 import models.common._
+import models.response.emcsTfe.AlertOrRejectionType.{Alert, Rejection}
 import models.response.emcsTfe.NotificationOfDivertedMovementType.ChangeOfDestination
+import models.response.emcsTfe._
 import models.response.emcsTfe.reportOfReceipt.{ReceiptedItemsModel, ReportOfReceiptModel, UnsatisfactoryModel}
-import models.response.emcsTfe.{EadEsadModel, GetMovementResponse, HeaderEadEsadModel, NotificationOfDivertedMovementModel, TransportModeModel}
 import play.api.libs.json.{JsValue, Json}
 
 import java.time.{LocalDate, LocalDateTime}
@@ -227,6 +228,50 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       notificationType = ChangeOfDestination,
       notificationDateAndTime = LocalDateTime.of(2024, 6, 5, 0, 0, 1),
       downstreamArcs = Seq(testArc, testArc.dropRight(1) + "1")
+    )),
+    notificationOfAlertOrRejection = Some(Seq(
+      NotificationOfAlertOrRejectionModel(
+        notificationType = Alert,
+        notificationDateAndTime = LocalDateTime.of(2023, 12, 18, 9, 0, 0),
+        alertRejectReason = Seq(
+          AlertOrRejectionReasonModel(
+            reason = AlertOrRejectionReasonType.ProductDoesNotMatchOrder,
+            additionalInformation = Some("Info")
+          ),
+          AlertOrRejectionReasonModel(
+            reason = AlertOrRejectionReasonType.Other,
+            additionalInformation = Some("Info")
+          ),
+          AlertOrRejectionReasonModel(
+            reason = AlertOrRejectionReasonType.EADNotConcernRecipient,
+            additionalInformation = Some("Info")
+          ),
+          AlertOrRejectionReasonModel(
+            reason = AlertOrRejectionReasonType.QuantityDoesNotMatchOrder,
+            additionalInformation = Some("Info")
+          )
+        )
+      ),
+      NotificationOfAlertOrRejectionModel(
+        notificationType = Alert,
+        notificationDateAndTime = LocalDateTime.of(2023, 12, 18, 10, 0, 0),
+        alertRejectReason = Seq(
+          AlertOrRejectionReasonModel(
+            reason = AlertOrRejectionReasonType.EADNotConcernRecipient,
+            additionalInformation = None
+          )
+        )
+      ),
+      NotificationOfAlertOrRejectionModel(
+        notificationType = Rejection,
+        notificationDateAndTime = LocalDateTime.of(2023, 12, 19, 9, 0, 0),
+        alertRejectReason = Seq(
+          AlertOrRejectionReasonModel(
+            reason = AlertOrRejectionReasonType.QuantityDoesNotMatchOrder,
+            additionalInformation = None
+          )
+        )
+      )
     ))
   )
 
@@ -415,12 +460,55 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "documentReference" -> "Document reference",
         "documentDescription" -> "Document description",
         "referenceOfDocument" -> "Reference of document"
-    ), Json.obj(
+      ),
+      Json.obj(
         "documentType" -> "2",
         "documentReference" -> "Document reference 2",
         "documentDescription" -> "Document description 2",
         "referenceOfDocument" -> "Reference of document 2"
-      ))
-
+      )
+    ),
+    "notificationOfAlertOrRejection" -> Json.arr(
+      Json.obj(
+        "notificationType" -> "0",
+        "notificationDateAndTime" -> "2023-12-18T09:00:00",
+        "alertRejectReason" -> Json.arr(
+          Json.obj(
+            "reason" -> "2",
+            "additionalInformation" -> "Info"
+          ),
+          Json.obj(
+            "reason" -> "0",
+            "additionalInformation" -> "Info"
+          ),
+          Json.obj(
+            "reason" -> "1",
+            "additionalInformation" -> "Info"
+          ),
+          Json.obj(
+            "reason" -> "3",
+            "additionalInformation" -> "Info"
+          )
+        )
+      ),
+      Json.obj(
+        "notificationType" -> "0",
+        "notificationDateAndTime" -> "2023-12-18T10:00:00",
+        "alertRejectReason" -> Json.arr(
+          Json.obj(
+            "reason" -> "1"
+          )
+        )
+      ),
+      Json.obj(
+        "notificationType" -> "1",
+        "notificationDateAndTime" -> "2023-12-19T09:00:00",
+        "alertRejectReason" -> Json.arr(
+          Json.obj(
+            "reason" -> "3"
+          )
+        )
+      )
+    )
   )
 }

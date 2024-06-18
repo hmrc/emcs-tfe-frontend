@@ -18,6 +18,7 @@ package viewmodels.helpers.events
 
 import base.SpecBase
 import fixtures.events.MovementEventMessages
+import fixtures.messages.AlertRejectionReasonMessages
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
 import models.EventTypes
 import models.common.DestinationType
@@ -27,11 +28,15 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
+import utils.DateUtils
 import views.BaseSelectors
+
+import java.time.LocalDateTime
 
 class EventsHelperSpec extends SpecBase
   with GetMovementHistoryEventsResponseFixtures
-  with GetMovementResponseFixtures {
+  with GetMovementResponseFixtures
+  with DateUtils {
 
   implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"))
 
@@ -41,11 +46,12 @@ class EventsHelperSpec extends SpecBase
 
   object Selectors extends BaseSelectors {
     override val p: Int => String = i => s"p:nth-of-type($i)"
-
     override def bullet(i: Int, ul: Int): String = s"ul.govuk-list:nth-of-type($ul) li:nth-of-type($i)"
+    override def h2(i: Int): String = s"h2:nth-of-type($i)"
   }
 
-  Seq(MovementEventMessages.English).foreach { messagesForLanguage =>
+  Seq(MovementEventMessages.English -> AlertRejectionReasonMessages.English).foreach {
+    case (messagesForLanguage, alertRejectionReasonMessages) =>
 
     s"when language code of '${messagesForLanguage.lang.code}'" should {
 
@@ -150,6 +156,121 @@ class EventsHelperSpec extends SpecBase
                 body.select(Selectors.p(2)).text() mustBe messagesForLanguage.ie818P2
                 body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
             }
+          }
+        }
+
+        "being called with event type IE819, where the event is an Alert" when {
+
+          "there are multiple reasons" must {
+
+            "render the correct HTML" in {
+
+              val result = helper.constructEventInformation(ie819AlertEventMultipleReasons, getMovementResponseModel, Seq.empty)
+              val eventDetails = getMovementResponseModel.notificationOfAlertOrRejection.get.head
+              val consigneeDetails = getMovementResponseModel.consigneeTrader.get
+              val body = Jsoup.parse(result.toString())
+
+              body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie819AlertP1
+              body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+              body.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie819AlertH2
+
+              //Alert Details summary
+              body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie819AlertDate
+              body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819AlertEventMultipleReasons.eventDate).toLocalDate.formatDateForUIOutput()
+
+              body.select(Selectors.nthSummaryRowKey(2)).text() mustBe messagesForLanguage.ie819AlertSummaryReasons
+              body.select(Selectors.nthSummaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.consigneeDetailsWrong
+              body.select(Selectors.nthSummaryRowValue(2)).select(Selectors.bullet(2)).text() mustBe alertRejectionReasonMessages.goodsTypeWrong
+              body.select(Selectors.nthSummaryRowValue(2)).select(Selectors.bullet(3)).text() mustBe alertRejectionReasonMessages.goodsQuantityWrong
+              body.select(Selectors.nthSummaryRowValue(2)).select(Selectors.bullet(4)).text() mustBe alertRejectionReasonMessages.other
+
+              body.select(Selectors.nthSummaryRowKey(3)).text() mustBe messagesForLanguage.ie819ConsigneeInformation
+              body.select(Selectors.nthSummaryRowValue(3)).text() mustBe eventDetails.alertRejectReason.head.additionalInformation.get
+
+              body.select(Selectors.nthSummaryRowKey(4)).text() mustBe messagesForLanguage.ie819GoodsTypeInformation
+              body.select(Selectors.nthSummaryRowValue(4)).text() mustBe eventDetails.alertRejectReason(1).additionalInformation.get
+
+              body.select(Selectors.nthSummaryRowKey(5)).text() mustBe messagesForLanguage.ie819GoodsQuantityInformation
+              body.select(Selectors.nthSummaryRowValue(5)).text() mustBe eventDetails.alertRejectReason(2).additionalInformation.get
+
+              body.select(Selectors.nthSummaryRowKey(6)).text() mustBe messagesForLanguage.ie819OtherInformation
+              body.select(Selectors.nthSummaryRowValue(6)).text() mustBe eventDetails.alertRejectReason(3).additionalInformation.get
+
+              //Consignee Detail
+              body.select(Selectors.h2(2)).text() mustBe "Consignee"
+              body.select(Selectors.nthSummaryRowKey(1, n = 2)).text() mustBe "Name"
+              body.select(Selectors.nthSummaryRowValue(1, n = 2)).text() mustBe consigneeDetails.traderName.get
+
+              body.select(Selectors.nthSummaryRowKey(2, n = 2)).text() mustBe "Excise Registration Number (ERN)"
+              body.select(Selectors.nthSummaryRowValue(2, n = 2)).text() mustBe consigneeDetails.traderExciseNumber.get
+
+              body.select(Selectors.nthSummaryRowKey(3, n = 2)).text() mustBe "Address"
+              body.select(Selectors.nthSummaryRowValue(3, n = 2)).text() must include(consigneeDetails.address.get.street.get)
+            }
+          }
+
+          "there is a single reason" must {
+
+            "render the correct HTML" in {
+
+              val result = helper.constructEventInformation(ie819AlertEvent, getMovementResponseModel, Seq.empty)
+              val consigneeDetails = getMovementResponseModel.consigneeTrader.get
+              val body = Jsoup.parse(result.toString())
+
+              body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie819AlertP1
+              body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+
+              //Alert Details summary
+              body.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie819AlertH2
+              body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie819AlertDate
+              body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819AlertEvent.eventDate).toLocalDate.formatDateForUIOutput()
+
+              body.select(Selectors.nthSummaryRowKey(2)).text() mustBe messagesForLanguage.ie819AlertSummaryReason
+              body.select(Selectors.nthSummaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.consigneeDetailsWrong
+
+              //Consignee Detail
+              body.select(Selectors.h2(2)).text() mustBe "Consignee"
+              body.select(Selectors.nthSummaryRowKey(1, n = 2)).text() mustBe "Name"
+              body.select(Selectors.nthSummaryRowValue(1, n = 2)).text() mustBe consigneeDetails.traderName.get
+
+              body.select(Selectors.nthSummaryRowKey(2, n = 2)).text() mustBe "Excise Registration Number (ERN)"
+              body.select(Selectors.nthSummaryRowValue(2, n = 2)).text() mustBe consigneeDetails.traderExciseNumber.get
+
+              body.select(Selectors.nthSummaryRowKey(3, n = 2)).text() mustBe "Address"
+              body.select(Selectors.nthSummaryRowValue(3, n = 2)).text() must include(consigneeDetails.address.get.street.get)
+            }
+          }
+        }
+
+        "being called with event type IE819, where the event is a Rejection" must {
+
+          "render the correct HTML" in {
+
+            val result = helper.constructEventInformation(ie819RejectionEvent, getMovementResponseModel, Seq.empty)
+            val consigneeDetails = getMovementResponseModel.consigneeTrader.get
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie819RejectionP1
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+
+            //Rejection Details summary
+            body.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie819RejectionH2
+            body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie819RejectionDate
+            body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819RejectionEvent.eventDate).toLocalDate.formatDateForUIOutput()
+
+            body.select(Selectors.nthSummaryRowKey(2)).text() mustBe messagesForLanguage.ie819RejectionSummaryReason
+            body.select(Selectors.nthSummaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.goodsQuantityWrong
+
+            //Consignee Detail
+            body.select(Selectors.h2(2)).text() mustBe "Consignee"
+            body.select(Selectors.nthSummaryRowKey(1, n = 2)).text() mustBe "Name"
+            body.select(Selectors.nthSummaryRowValue(1, n = 2)).text() mustBe consigneeDetails.traderName.get
+
+            body.select(Selectors.nthSummaryRowKey(2, n = 2)).text() mustBe "Excise Registration Number (ERN)"
+            body.select(Selectors.nthSummaryRowValue(2, n = 2)).text() mustBe consigneeDetails.traderExciseNumber.get
+
+            body.select(Selectors.nthSummaryRowKey(3, n = 2)).text() mustBe "Address"
+            body.select(Selectors.nthSummaryRowValue(3, n = 2)).text() must include(consigneeDetails.address.get.street.get)
           }
         }
       }

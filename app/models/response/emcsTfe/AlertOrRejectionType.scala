@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package viewmodels
+package models.response.emcsTfe
 
-import models.EventTypes
+import models.common.Enumerable
+import uk.gov.hmrc.emcstfefrontend.models.WithName
 
-import java.time.LocalDateTime
+sealed trait AlertOrRejectionType
 
-case class TimelineEvent(eventType: EventTypes, title: String, dateTime: LocalDateTime, url: String) {
-  def id(idx: Int = 0): String = title.replace(" ", "-").toLowerCase + (if(idx > 0) s"-${idx + 1}" else "")
+object AlertOrRejectionType extends Enumerable.Implicits {
+
+  case object Alert extends WithName("0") with AlertOrRejectionType
+  case object Rejection extends WithName("1") with AlertOrRejectionType
+
+  val values: Seq[AlertOrRejectionType] = Seq(Alert, Rejection)
+
+  implicit val enumerable: Enumerable[AlertOrRejectionType] = Enumerable(values.map(v => v.toString -> v): _*)
 }

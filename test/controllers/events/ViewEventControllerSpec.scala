@@ -32,7 +32,7 @@ import models.response.referenceData.CnCodeInformation
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.status
 import uk.gov.hmrc.http.HeaderCarrier
@@ -78,7 +78,7 @@ class ViewEventControllerSpec
   private def renderASuccessfulEventView(
                                           event: MovementHistoryEvent,
                                           movementResponseModel: GetMovementResponse,
-                                          controllerMethod: () => Future[Result],
+                                          controllerMethod: => Future[Result],
                                           optMock: () => Unit = () => ()
                                         ): Unit = {
     "render a view" in {
@@ -89,20 +89,20 @@ class ViewEventControllerSpec
       MockGetMovementService.getMovement(testErn, testArc, Some(event.sequenceNumber)).returns(Future.successful(testMovement))
       optMock()
 
-      val result: Future[Result] = controllerMethod()
+      val result: Future[Result] = controllerMethod
 
       status(result) shouldBe Status.OK
     }
   }
 
-  private def handle404s(event: MovementHistoryEvent, controllerMethod: () => Future[Result]): Unit = {
+  private def handle404s(event: MovementHistoryEvent, controllerMethod: => Future[Result]): Unit = {
     "return a 404 not found" when {
       "when the wrong event id is requested" in {
         val testHistoryEvents = getMovementHistoryEventsModel.filterNot(_.eventType == event.eventType) :+ event.copy(eventDate = "1999-12-31T23:59:59")
 
         MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
 
-        val result: Future[Result] = controllerMethod()
+        val result: Future[Result] = controllerMethod
 
         status(result) shouldBe Status.NOT_FOUND
       }
@@ -112,7 +112,7 @@ class ViewEventControllerSpec
 
         MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
 
-        val result: Future[Result] = controllerMethod()
+        val result: Future[Result] = controllerMethod
 
         status(result) shouldBe Status.NOT_FOUND
       }
@@ -121,48 +121,62 @@ class ViewEventControllerSpec
 
         MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
 
-        val result: Future[Result] = controllerMethod()
+        val result: Future[Result] = controllerMethod
 
         status(result) shouldBe Status.NOT_FOUND
       }
     }
   }
 
-  ".movementCreated" must {
-    renderASuccessfulEventView(ie801Event, getMovementResponseModel, () => controller.movementCreated(testErn, testArc, 853932155)(fakeRequest))
-    handle404s(ie801Event, () => controller.movementCreated(testErn, testArc, 853932155)(fakeRequest))
-  }
+  case class TestFixtureModel(methodName: String, event: MovementHistoryEvent, method: Int => Action[AnyContent])
 
-  ".movementUpdated" must {
-    val testEvent = ie801Event.copy(sequenceNumber = 2, isFirstEventTypeInHistory = false)
+  Seq[TestFixtureModel](
+    TestFixtureModel(
+      methodName = ".movementCreated",
+      event = ie801Event,
+      method = (id: Int) => controller.movementCreated(testErn, testArc, id)
+    ),
+    TestFixtureModel(
+      methodName = ".movementUpdated",
+      event = ie801Event.copy(sequenceNumber = 2, isFirstEventTypeInHistory = false),
+      method = (id: Int) => controller.movementUpdated(testErn, testArc, id)
+    ),
+    TestFixtureModel(
+      methodName = ".changeDestinationDue",
+      event = ie802ChangeDestinationEvent,
+      method = (id: Int) => controller.changeDestinationDue(testErn, testArc, id)
+    ),
+    TestFixtureModel(
+      methodName = ".reportReceiptDue",
+      event = ie802EventReportOfReceipt,
+      method = (id: Int) => controller.reportReceiptDue(testErn, testArc, id)
+    ),
+    TestFixtureModel(
+      methodName = ".movementDestinationDue",
+      event = ie802MovementDestinationEvent,
+      method = (id: Int) => controller.movementDestinationDue(testErn, testArc, id)
+    ),
+    TestFixtureModel(
+      methodName = ".movementSplit",
+      event = ie803MovementSplitEvent,
+      method = (id: Int) => controller.movementSplit(testErn, testArc, id)
+    ),
+    TestFixtureModel(
+      methodName = ".movementDiverted",
+      event = ie803MovementDiversionEvent,
+      method = (id: Int) => controller.movementDiverted(testErn, testArc, id)
+    ),
+    TestFixtureModel(
+      methodName = ".alertRejectionSubmitted",
+      event = ie819AlertEvent,
+      method = (id: Int) => controller.alertRejectionSubmitted(testErn, testArc, id)
+    ),
+  ).foreach { case TestFixtureModel(methodName, event, method) =>
 
-    renderASuccessfulEventView(testEvent, getMovementResponseModel, () => controller.movementUpdated(testErn, testArc, 853932155)(fakeRequest))
-    handle404s(testEvent, () => controller.movementUpdated(testErn, testArc, 853932155)(fakeRequest))
-  }
-
-  ".changeDestinationDue" must {
-    renderASuccessfulEventView(ie802ChangeDestinationEvent, getMovementResponseModel, () => controller.changeDestinationDue(testErn, testArc, 853932155)(fakeRequest))
-    handle404s(ie802ChangeDestinationEvent, () => controller.changeDestinationDue(testErn, testArc, 853932155)(fakeRequest))
-  }
-
-  ".reportReceiptDue" must {
-    renderASuccessfulEventView(ie802EventReportOfReceipt, getMovementResponseModel, () => controller.reportReceiptDue(testErn, testArc, 853932155)(fakeRequest))
-    handle404s(ie802EventReportOfReceipt, () => controller.reportReceiptDue(testErn, testArc, 853932155)(fakeRequest))
-  }
-
-  ".movementDestinationDue" must {
-    renderASuccessfulEventView(ie802MovementDestinationEvent, getMovementResponseModel, () => controller.movementDestinationDue(testErn, testArc, 853932155)(fakeRequest))
-    handle404s(ie802MovementDestinationEvent, () => controller.movementDestinationDue(testErn, testArc, 853932155)(fakeRequest))
-  }
-
-  ".movementSplit" must {
-    renderASuccessfulEventView(ie803MovementSplitEvent, getMovementResponseModel, () => controller.movementSplit(testErn, testArc, 853932155)(fakeRequest))
-    handle404s(ie803MovementSplitEvent, () => controller.movementSplit(testErn, testArc, 853932155)(fakeRequest))
-  }
-
-  ".movementDiverted" must {
-    renderASuccessfulEventView(ie803MovementDiversionEvent, getMovementResponseModel, () => controller.movementDiverted(testErn, testArc, 853932155)(fakeRequest))
-    handle404s(ie803MovementDiversionEvent, () => controller.movementDiverted(testErn, testArc, 853932155)(fakeRequest))
+    s"calling $methodName" must {
+      renderASuccessfulEventView(event, getMovementResponseModel, method(event.eventId)(fakeRequest))
+      handle404s(event, method(event.eventId)(fakeRequest))
+    }
   }
 
   ".reportReceiptSubmitted" when {
@@ -170,8 +184,8 @@ class ViewEventControllerSpec
       val model = getMovementResponseModel.copy(
         reportOfReceipt = Some(reportOfReceiptResponse.copy(acceptMovement = AcceptMovement.Satisfactory))
       )
-      renderASuccessfulEventView(ie818Event, model, () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
-      handle404s(ie818Event, () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
+      renderASuccessfulEventView(ie818Event, model, controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
+      handle404s(ie818Event, controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
     }
     AcceptMovement.values.filterNot(_ == AcceptMovement.Satisfactory).foreach { acceptMovement =>
       s"acceptMovement is $acceptMovement" must {
@@ -181,7 +195,7 @@ class ViewEventControllerSpec
         renderASuccessfulEventView(
           ie818Event,
           model,
-          () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest),
+          controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest),
           () => MockGetCnCodeInformationService.getCnCodeInformation(getMovementResponseModel.items).returns(Future.successful(Seq(
             item1WithWineAndPackaging -> CnCodeInformation(
               cnCode = "T400",
@@ -199,9 +213,8 @@ class ViewEventControllerSpec
             )
           )))
         )
-        handle404s(ie818Event, () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
+        handle404s(ie818Event, controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
       }
     }
   }
-
 }
