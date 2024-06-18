@@ -22,6 +22,7 @@ import fixtures.messages.AlertRejectionReasonMessages
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
 import models.EventTypes
 import models.common.DestinationType
+import models.common.DestinationType.Export
 import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import org.jsoup.Jsoup
@@ -276,7 +277,9 @@ class EventsHelperSpec extends SpecBase
 
         "being called with event type IE829 (movement accepted by customs)" must {
           "render the correct HTML" in {
-            val result = helper.constructEventInformation(ie829MovementAcceptedCustomsEvent, getMovementResponseModel)
+            val testMovement = getMovementResponseModel.copy(destinationType = Export)
+
+            val result = helper.constructEventInformation(ie829MovementAcceptedCustomsEvent, testMovement)
             val body = Jsoup.parse(result.toString())
 
             body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie829Paragraph1

@@ -273,8 +273,11 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         )
       )
     )),
-    notificationOfAcceptedExport = Some(
-      NotificationOfAcceptedExportModel(
+    notificationOfAcceptedExport = Some(notificationOfAcceptedExport)
+  )
+
+  lazy val notificationOfAcceptedExport: NotificationOfAcceptedExportModel =
+    NotificationOfAcceptedExportModel(
         customsOfficeNumber = "GB000383",
         dateOfAcceptance = LocalDate.of(2024, 2, 5),
         referenceNumberOfSenderCustomsOffice = "GB000101",
@@ -294,8 +297,6 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
           eoriNumber = Some("GB00000578901")
         )
       )
-    )
-  )
 
   val reportOfReceiptJson = Json.obj(
     "arc" -> testArc,

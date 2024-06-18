@@ -19,9 +19,9 @@ package viewmodels.helpers.events
 import models.EventTypes._
 import models.common.DestinationType
 import models.requests.DataRequest
-import models.response.emcsTfe.{GetMovementResponse, NotificationOfAlertOrRejectionModel}
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
+import models.response.emcsTfe.{GetMovementResponse, NotificationOfAlertOrRejectionModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
@@ -150,7 +150,6 @@ class EventsHelper @Inject()(
   }
 
   private def ie819Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
-
     implicit val _movement: GetMovementResponse = movement
     val eventDetails = getIE819EventDetail(event, movement)
 
@@ -166,18 +165,21 @@ class EventsHelper @Inject()(
     )
   }
 
-  private def ie829Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html =
+  private def ie829Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+    implicit val _movement: GetMovementResponse = movement
+
     HtmlFormat.fill(
       Seq(
         movement.notificationOfAcceptedExport.map { notificationOfAcceptedExport =>
           HtmlFormat.fill(Seq(
             p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1", notificationOfAcceptedExport.customsOfficeNumber))),
             printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
-            eventHelper.ie829AcceptedExportDetails(notificationOfAcceptedExport, messages)
+            eventHelper.ie829AcceptedExportDetails(notificationOfAcceptedExport)
           ))
         }
       ).flatten
     )
+  }
 
   private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
     p(classes = "govuk-body js-visible govuk-!-display-none-print")(
