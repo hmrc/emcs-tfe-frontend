@@ -6,7 +6,7 @@ GET        /trader/:ern/movement/:arc/event/:eventId/movement-destination-due   
 GET        /trader/:ern/movement/:arc/event/:eventId/movement-diverted                       controllers.events.ViewEventController.movementDiverted(ern: String, arc: String, eventId: Int)
 GET        /trader/:ern/movement/:arc/event/:eventId/movement-split                          controllers.events.ViewEventController.movementSplit(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/movement-intercepted                    controllers.events.ViewEventController.movementIntercepted(ern: String, arc: String, eventId: Int)
-#GET        /trader/:ern/movement/:arc/event/:eventId/movement-cancelled                      controllers.events.ViewEventController.movementCancelled(ern: String, arc: String, eventId: Int)
+GET        /trader/:ern/movement/:arc/event/:eventId/movement-cancelled                      controllers.events.ViewEventController.movementCancelled(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/change-destination-submitted            controllers.events.ViewEventController.changeDestinationSubmitted(ern: String, arc: String, eventId: Int)
 GET        /trader/:ern/movement/:arc/event/:eventId/report-receipt-submitted                controllers.events.ViewEventController.reportReceiptSubmitted(ern: String, arc: String, eventId: Int)
 GET        /trader/:ern/movement/:arc/event/:eventId/alert-rejection-submitted               controllers.events.ViewEventController.alertRejectionSubmitted(ern: String, arc: String, eventId: Int)

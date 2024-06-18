@@ -73,6 +73,9 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
   def movementDiverted(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE803)
 
+  def movementCancelled(ern: String, arc: String, eventId: Int): Action[AnyContent] =
+    onPageLoad(ern, arc, eventId, IE810)
+
   def reportReceiptSubmitted(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE818)
 

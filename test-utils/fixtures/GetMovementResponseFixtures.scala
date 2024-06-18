@@ -26,7 +26,9 @@ import models.response.emcsTfe.AlertOrRejectionType.{Alert, Rejection}
 import models.response.emcsTfe.NotificationOfDivertedMovementType.ChangeOfDestination
 import models.response.emcsTfe._
 import models.response.emcsTfe.reportOfReceipt.{ReceiptedItemsModel, ReportOfReceiptModel, UnsatisfactoryModel}
+import models.response.emcsTfe.{CancelMovementModel, EadEsadModel, GetMovementResponse, HeaderEadEsadModel, NotificationOfDivertedMovementModel, TransportModeModel}
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.emcstfe.models.cancellationOfMovement.CancellationReasonType
 
 import java.time.{LocalDate, LocalDateTime}
 
@@ -273,7 +275,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         )
       )
     )),
-    notificationOfAcceptedExport = Some(notificationOfAcceptedExport)
+    notificationOfAcceptedExport = Some(notificationOfAcceptedExport),
+    cancelMovement = Some(CancelMovementModel(CancellationReasonType.Other, Some("some info")))
   )
 
   lazy val notificationOfAcceptedExport: NotificationOfAcceptedExportModel =
@@ -468,6 +471,10 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         ),
         "eoriNumber" -> "GB00000578901"
       )
+    ),
+    "cancelMovement" -> Json.obj(
+      "reason" -> "0",
+      "complementaryInformation" -> "some info"
     ),
     "items" -> Json.arr(
       item1Json,
