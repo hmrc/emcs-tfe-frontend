@@ -22,6 +22,7 @@ import forms.prevalidate.PrevalidateConsigneeTraderIdentificationFormProvider
 import mocks.config.MockAppConfig
 import mocks.connectors.MockBetaAllowListConnector
 import mocks.services.MockPrevalidateUserAnswersService
+import models.prevalidate.{EntityGroup, PrevalidateTraderModel}
 import navigation.FakeNavigators.FakePrevalidateNavigator
 import pages.prevalidateTrader.PrevalidateConsigneeTraderIdentificationPage
 import play.api.data.FormError
@@ -68,7 +69,7 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec
   }
 
 
-  val testAnswer = "GB00123456789"
+  val testAnswer = PrevalidateTraderModel(ern = "GB00123456789", entityGroup = EntityGroup.UKTrader)
 
   "ConsigneeTraderIdentification Controller" when {
 
@@ -130,11 +131,11 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec
                 .returns(Future.successful(Some(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))))
 
               val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "<beans />"))
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("ern" -> "GBWK123", "entityGroup" -> testEntityGroup.toString))
 
               val form = formProvider()
-                .fill("<beans />")
-                .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters")))
+                .fill(PrevalidateTraderModel("GBWK123", testEntityGroup))
+                .withError(FormError("ern", Seq("prevalidateTrader.consigneeTraderIdentification.ern.error.invalidRegex")))
 
               status(result) mustEqual BAD_REQUEST
               contentAsString(result) mustEqual view(
@@ -150,11 +151,11 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec
                 .returns(Future.successful(Some(emptyUserAnswers)))
 
               val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> "<beans />"))
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("ern" -> "GBWK123", "entityGroup" -> testEntityGroup.toString))
 
               val form = formProvider()
-                .fill("<beans />")
-                .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters")))
+                .fill(PrevalidateTraderModel("GBWK123", testEntityGroup))
+                .withError(FormError("ern", Seq("prevalidateTrader.consigneeTraderIdentification.ern.error.invalidRegex")))
 
               status(result) mustEqual BAD_REQUEST
               contentAsString(result) mustEqual view(
@@ -164,21 +165,55 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec
             }
           }
 
-          "render the view when form value missing" in new Setup {
+          "render a BadReqest with errors" when {
 
-            MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+            "the ern is present and the entityGroup is missing" in new Setup {
 
-            val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-            val result = controller.onSubmit(testErn)(request)
+              MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
 
-            val form = formProvider()
-              .withError(FormError("value", Seq("prevalidateTrader.consigneeTraderIdentification.error.required")))
+              val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("ern" -> "GBWK123456789"))
 
-            status(result) mustEqual BAD_REQUEST
-            contentAsString(result) mustEqual view(
-              form = form,
-              action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
-            )(userAnswersRequest(request), messages(request)).toString
+              val form = formProvider().bind(Map("ern" -> "GBWK123456789"))
+
+              status(result) mustEqual BAD_REQUEST
+              contentAsString(result) mustEqual view(
+                form = form,
+                action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+              )(userAnswersRequest(request), messages(request)).toString
+            }
+
+            "the entityGroup is present and the ern is missing" in new Setup {
+
+              MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+
+              val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("entityGroup" -> EntityGroup.UKTrader.toString))
+
+              val form = formProvider().bind(Map("entityGroup" -> EntityGroup.UKTrader.toString))
+
+              status(result) mustEqual BAD_REQUEST
+              contentAsString(result) mustEqual view(
+                form = form,
+                action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+              )(userAnswersRequest(request), messages(request)).toString
+            }
+
+            "both the ern and entityGroup are missing" in new Setup {
+
+              MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+
+              val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("ern" -> "", "entityGroup" -> ""))
+
+              val form = formProvider().bind(Map("ern" -> "", "entityGroup" -> ""))
+
+              status(result) mustEqual BAD_REQUEST
+              contentAsString(result) mustEqual view(
+                form = form,
+                action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(testErn)
+              )(userAnswersRequest(request), messages(request)).toString
+            }
           }
         }
         "form validation passes" when {
@@ -190,11 +225,11 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec
                 .returns(Future.successful(Some(emptyUserAnswers)))
 
               MockUserAnswersService
-                .set(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, testAnswer))
+                .set(emptyUserAnswers.set(PrevalidateConsigneeTraderIdentificationPage, PrevalidateTraderModel("GBWK123456789", testEntityGroup)))
                 .returns(Future.successful(emptyUserAnswers))
 
               val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> testAnswer))
+              val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("ern" -> "GBWK123456789", "entityGroup" -> testEntityGroup.toString))
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual testOnwardRoute.url
@@ -205,7 +240,7 @@ class PrevalidateConsigneeTraderIdentificationControllerSpec
       "user is NOT on the private beta list" should {
         "redirect to legacy" in new Setup(preValidateEnabled = false) {
           val request = FakeRequest(POST, routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url)
-          val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> testAnswer))
+          val result = controller.onSubmit(testErn)(request.withFormUrlEncodedBody("value" -> PrevalidateTraderModel(testErn, EntityGroup.UKTrader).toString))
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual "http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate"

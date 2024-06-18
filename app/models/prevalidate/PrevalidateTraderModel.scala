@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package models.requests
+package models.prevalidate
 
-import models.prevalidate.EntityGroup
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Json, OFormat}
 
-case class PrevalidateTraderRequest(ern: String, entityGroup: EntityGroup, productCodes: Seq[String])
+case class PrevalidateTraderModel(ern: String, entityGroup: EntityGroup)
 
-object PrevalidateTraderRequest {
+object PrevalidateTraderModel {
 
-  implicit val format: Format[PrevalidateTraderRequest] = Json.format[PrevalidateTraderRequest]
+  implicit val format: OFormat[PrevalidateTraderModel] = Json.format[PrevalidateTraderModel]
 }

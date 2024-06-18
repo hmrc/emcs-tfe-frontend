@@ -16,10 +16,11 @@
 
 package pages.prevalidateTrader
 
+import models.prevalidate.PrevalidateTraderModel
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-case object PrevalidateConsigneeTraderIdentificationPage extends QuestionPage[String] {
+case object PrevalidateConsigneeTraderIdentificationPage extends QuestionPage[PrevalidateTraderModel] {
   override val toString: String = "consigneeTraderIdentification"
   override val path: JsPath = PrevalidateTraderSection.path \ toString
 }

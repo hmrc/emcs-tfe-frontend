@@ -18,21 +18,26 @@ package forms.prevalidate
 
 import forms.mappings.Mappings
 import forms.{ALPHANUMERIC_REGEX, EXCISE_NUMBER_REGEX, XSS_REGEX}
+import models.prevalidate.{EntityGroup, PrevalidateTraderModel}
 import play.api.data.Form
+import play.api.data.Forms.mapping
 
 import javax.inject.Inject
 
 class PrevalidateConsigneeTraderIdentificationFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[String] =
+  def apply(): Form[PrevalidateTraderModel] =
     Form(
-      "value" -> text("prevalidateTrader.consigneeTraderIdentification.error.required")
-        .verifying(
-          firstError(
-            regexpUnlessEmpty(XSS_REGEX, "prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters"),
-            regexpUnlessEmpty(ALPHANUMERIC_REGEX, "prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters"),
-            regexpUnlessEmpty(EXCISE_NUMBER_REGEX, "prevalidateTrader.consigneeTraderIdentification.error.invalidRegex")
-          )
-        )
+      mapping(
+        "ern" -> text("prevalidateTrader.consigneeTraderIdentification.ern.error.required")
+          .verifying(
+            firstError(
+              regexpUnlessEmpty(XSS_REGEX, "prevalidateTrader.consigneeTraderIdentification.ern.error.invalidCharacters"),
+              regexpUnlessEmpty(ALPHANUMERIC_REGEX, "prevalidateTrader.consigneeTraderIdentification.ern.error.invalidCharacters"),
+              regexpUnlessEmpty(EXCISE_NUMBER_REGEX, "prevalidateTrader.consigneeTraderIdentification.ern.error.invalidRegex")
+            )
+          ),
+        "entityGroup" -> enumerable[EntityGroup]("prevalidateTrader.consigneeTraderIdentification.entityGroup.error.required")
+      )(PrevalidateTraderModel.apply)(PrevalidateTraderModel.unapply)
     )
 }

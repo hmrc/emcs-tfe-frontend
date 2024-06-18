@@ -17,19 +17,21 @@
 package forms.prevalidate
 
 import forms.behaviours.FieldBehaviours
+import forms.mappings.Mappings
 import forms.{EXCISE_NUMBER_REGEX, XSS_REGEX}
-import play.api.data.FormError
+import models.prevalidate.EntityGroup
+import play.api.data.{Form, FormError}
 
-class PrevalidateConsigneeTraderIdentificationFormProviderSpec extends FieldBehaviours {
-  val requiredKey = "prevalidateTrader.consigneeTraderIdentification.error.required"
-  val invalidRegexKey = "prevalidateTrader.consigneeTraderIdentification.error.invalidRegex"
-  val invalidCharactersKey = "prevalidateTrader.consigneeTraderIdentification.error.invalidCharacters"
+class PrevalidateConsigneeTraderIdentificationFormProviderSpec extends FieldBehaviours with Mappings {
+  val requiredKey = "prevalidateTrader.consigneeTraderIdentification.ern.error.required"
+  val invalidRegexKey = "prevalidateTrader.consigneeTraderIdentification.ern.error.invalidRegex"
+  val invalidCharactersKey = "prevalidateTrader.consigneeTraderIdentification.ern.error.invalidCharacters"
 
   val form  = new PrevalidateConsigneeTraderIdentificationFormProvider()()
 
-  ".value" - {
+  ".ern" - {
 
-    val fieldName = "value"
+    val fieldName = "ern"
 
     behave like fieldThatBindsValidData(
       form,
@@ -55,5 +57,26 @@ class PrevalidateConsigneeTraderIdentificationFormProviderSpec extends FieldBeha
       formatError = FormError(fieldName, invalidCharactersKey, Seq(XSS_REGEX))
     )
   }
+
+    ".entityGroup" - {
+      val testForm = Form(
+        "value" -> enumerable[EntityGroup]()
+      )
+
+      "must bind a valid option" in {
+        val result = testForm.bind(Map("value" -> "UK Record"))
+        result.get mustEqual EntityGroup.UKTrader
+      }
+
+      "must not bind an invalid option" in {
+        val result = testForm.bind(Map("value" -> "Asia Record"))
+        result.errors must contain(FormError("value", "error.invalid"))
+      }
+
+      "must not bind an empty map" in {
+        val result = testForm.bind(Map.empty[String, String])
+        result.errors must contain(FormError("value", "error.required"))
+      }
+    }
 
 }

@@ -16,8 +16,9 @@
 
 package mocks.services
 
+import models.prevalidate.EntityGroup
 import models.response.emcsTfe.prevalidateTrader.PreValidateTraderApiResponse
-import org.scalamock.handlers.CallHandler4
+import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
 import services.PrevalidateTraderService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,8 +31,8 @@ trait MockPrevalidateTraderService extends MockFactory {
   lazy val mockPrevalidateTraderService: PrevalidateTraderService = mock[PrevalidateTraderService]
 
   object MockPrevalidateTraderService {
-    def prevalidate(ern: String, ernToCheck: String, productCodesToCheck: Seq[String]): CallHandler4[String, String, Seq[String], HeaderCarrier, Future[PreValidateTraderApiResponse]] =
-      (mockPrevalidateTraderService.prevalidateTrader(_: String, _: String, _: Seq[String])(_: HeaderCarrier))
-        .expects(ern, ernToCheck, productCodesToCheck, *)
+    def prevalidate(ern: String, ernToCheck: String, entityGroupToCheck: EntityGroup, productCodesToCheck: Seq[String]): CallHandler5[String, String, EntityGroup, Seq[String], HeaderCarrier, Future[PreValidateTraderApiResponse]] =
+      (mockPrevalidateTraderService.prevalidateTrader(_: String, _: String, _: EntityGroup, _: Seq[String])(_: HeaderCarrier))
+        .expects(ern, ernToCheck, entityGroupToCheck, productCodesToCheck, *)
   }
 }

@@ -53,8 +53,13 @@ class PrevalidateConsigneeTraderIdentificationViewSpec extends ViewSpecBase with
           Selectors.h1 -> messagesForLanguage.h1,
           Selectors.p(1) -> messagesForLanguage.p,
           Selectors.button -> messagesForLanguage.saveAndContinue,
-          Selectors.label("value") -> messagesForLanguage.label,
+          Selectors.label("ern") -> messagesForLanguage.label,
           Selectors.hint -> messagesForLanguage.hint,
+          Selectors.fieldSetLegend -> messagesForLanguage.entityGroupLabel,
+          Selectors.radioButton(1) -> messagesForLanguage.radio1,
+          Selectors.radioButton(2) -> messagesForLanguage.radio2,
+          Selectors.radioButton(3) -> messagesForLanguage.radio3,
+          Selectors.radioButton(4) -> messagesForLanguage.radio4
         ))
       }
     }

@@ -22,6 +22,7 @@ import controllers.helpers.BetaChecks
 import controllers.predicates._
 import forms.prevalidate.PrevalidateConsigneeTraderIdentificationFormProvider
 import models.NormalMode
+import models.prevalidate.PrevalidateTraderModel
 import models.requests.UserAnswersRequest
 import navigation.PrevalidateTraderNavigator
 import pages.prevalidateTrader.PrevalidateConsigneeTraderIdentificationPage
@@ -62,7 +63,7 @@ class PrevalidateConsigneeTraderIdentificationController @Inject()(override val 
       )
     }
 
-  private def renderView(form: Form[String])(implicit request: UserAnswersRequest[_]) = {
+  private def renderView(form: Form[PrevalidateTraderModel])(implicit request: UserAnswersRequest[_]) = {
     view(
       form = form,
       action = controllers.prevalidateTrader.routes.PrevalidateConsigneeTraderIdentificationController.onSubmit(request.ern)

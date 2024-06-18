@@ -16,9 +16,10 @@
 
 package fixtures
 
-import models.{Index, UserAnswers}
 import models.common.TraderKnownFacts
+import models.prevalidate.EntityGroup
 import models.response.emcsTfe.GetMessageStatisticsResponse
+import models.{Index, UserAnswers}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Call
 
@@ -42,6 +43,8 @@ trait BaseFixtures {
   val testIndex2: Index = Index(1)
 
   val testDutyPaidErn = "XIPATestErn"
+
+  val testEntityGroup = EntityGroup.UKTrader
 
   val testMinTraderKnownFacts: TraderKnownFacts = TraderKnownFacts(
     traderName = testTraderName,
