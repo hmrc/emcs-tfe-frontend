@@ -502,95 +502,6 @@ class MovementEventHelper @Inject()(
     }
   }
 
-  def rorConsigneeCard(event: MovementHistoryEvent)(implicit movement: GetMovementResponse, messages: Messages): Html = {
-    val optContent: Option[Html] = for {
-      reportOfReceipt <- movement.reportOfReceipt
-      consigneeTrader <- reportOfReceipt.consigneeTrader
-    } yield {
-
-      val ernRow: Option[SummaryListRow] =
-        if (Seq(DestinationType.TaxWarehouse, DestinationType.DirectDelivery, DestinationType.RegisteredConsignee).contains(movement.destinationType)) {
-          consigneeTrader.traderExciseNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.ern", _))
-        } else {
-          None
-        }
-
-      val temporaryAuthorisationReferenceRow: Option[SummaryListRow] =
-        if (movement.destinationType == DestinationType.TemporaryRegisteredConsignee) {
-          consigneeTrader.traderExciseNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.temporaryReference", _))
-        } else {
-          None
-        }
-
-      buildOverviewPartial(
-        headingId = None,
-        headingTitle = Some(s"movementHistoryEvent.${event.eventType}.rorConsignee.h2"),
-        cardTitleMessageKey = None,
-        cardFooterHtml = None,
-        summaryListRows = Seq(
-          consigneeTrader.traderName.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.name", _)),
-          ernRow,
-          temporaryAuthorisationReferenceRow,
-          consigneeTrader.vatNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.vatNumber", _)),
-          consigneeTrader.address.map(address => summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.address", renderAddress(address))),
-          consigneeTrader.eoriNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorConsignee.eoriNumber", _))
-        )
-      )
-    }
-
-    optContent.getOrElse(Html(""))
-  }
-
-  def rorDestinationCard(event: MovementHistoryEvent)(implicit movement: GetMovementResponse, messages: Messages): Html = {
-    val optContent: Option[Html] = for {
-      reportOfReceipt <- movement.reportOfReceipt
-      deliveryPlaceTrader <- reportOfReceipt.deliveryPlaceTrader
-      if movement.destinationType != DestinationType.Export
-    } yield {
-      val ernRow: Option[SummaryListRow] =
-        if (movement.destinationType == DestinationType.TaxWarehouse) {
-          deliveryPlaceTrader.traderExciseNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.ern", _))
-        } else {
-          None
-        }
-
-      buildOverviewPartial(
-        headingId = None,
-        headingTitle = Some(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.h2"),
-        cardTitleMessageKey = None,
-        cardFooterHtml = None,
-        summaryListRows = Seq(
-          deliveryPlaceTrader.traderName.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.name", _)),
-          ernRow,
-          deliveryPlaceTrader.vatNumber.map(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.vatNumber", _)),
-          deliveryPlaceTrader.address.map(address => summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDeliveryPlaceTrader.address", renderAddress(address))),
-        )
-      )
-    }
-
-    optContent.getOrElse(Html(""))
-  }
-
-  def rorExportCard(event: MovementHistoryEvent)(implicit movement: GetMovementResponse, messages: Messages): Html = {
-    val optContent: Option[Html] = for {
-      reportOfReceipt <- movement.reportOfReceipt
-      if movement.destinationType == DestinationType.Export
-    } yield {
-      buildOverviewPartial(
-        headingId = None,
-        headingTitle = Some(s"movementHistoryEvent.${event.eventType}.rorExport.h2"),
-        cardTitleMessageKey = None,
-        cardFooterHtml = None,
-        summaryListRows = Seq(
-          // TODO: check if destinationOffice is correct
-          Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorExport.customsOfficeCode", reportOfReceipt.destinationOffice))
-        )
-      )
-    }
-
-    optContent.getOrElse(Html(""))
-  }
-
   def rorItemsCard(event: MovementHistoryEvent, ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation])
                   (implicit request: DataRequest[_], movement: GetMovementResponse, messages: Messages): Html = {
     val optContent: Option[Html] = for {
@@ -641,7 +552,7 @@ class MovementEventHelper @Inject()(
     s"movementHistoryEvent.${event.eventType}.rorItems.additionalInformation.$row"
 
   private[events] def generateRoRItemAdditionalInfoRow(key: String, additionalInformation: Option[String])
-                                              (implicit messages: Messages): Option[SummaryListRow] = additionalInformation.map {
+                                                      (implicit messages: Messages): Option[SummaryListRow] = additionalInformation.map {
     summaryListRowBuilder(
       key,
       _
@@ -649,14 +560,14 @@ class MovementEventHelper @Inject()(
   }
 
   private[events] def generateShortageOrExcessRows(
-                                            isShortage: Boolean,
-                                            quantityOption: Option[BigDecimal],
-                                            additionalInformation: Option[String]
-                                          )(
-                                            implicit event: MovementHistoryEvent,
-                                            ie818ItemModelWithCnCodeInformation: IE818ItemModelWithCnCodeInformation,
-                                            messages: Messages
-                                          ): Seq[Option[SummaryListRow]] = {
+                                                    isShortage: Boolean,
+                                                    quantityOption: Option[BigDecimal],
+                                                    additionalInformation: Option[String]
+                                                  )(
+                                                    implicit event: MovementHistoryEvent,
+                                                    ie818ItemModelWithCnCodeInformation: IE818ItemModelWithCnCodeInformation,
+                                                    messages: Messages
+                                                  ): Seq[Option[SummaryListRow]] = {
     val quantityRow: Option[SummaryListRow] = quantityOption.map {
       quantity =>
         summaryListRowBuilder(
@@ -681,14 +592,13 @@ class MovementEventHelper @Inject()(
   }
 
   private[events] def rorItemRows(event: MovementHistoryEvent, ie818ItemModelWithCnCodeInformation: IE818ItemModelWithCnCodeInformation)
-                         (implicit messages: Messages): Seq[Option[SummaryListRow]] = {
+                                 (implicit messages: Messages): Seq[Option[SummaryListRow]] = {
     implicit val _event: MovementHistoryEvent = event
     implicit val _ie818ItemModelWithCnCodeInformation: IE818ItemModelWithCnCodeInformation = ie818ItemModelWithCnCodeInformation
 
     ie818ItemModelWithCnCodeInformation.rorItem.unsatisfactoryReasons
-      .sortBy {
-        case UnsatisfactoryModel(reason, _) => UnsatisfactoryModel.sortingOrder(reason)
-      }.flatMap {
+      .sorted
+      .flatMap {
         case UnsatisfactoryModel(WrongWithMovement.Shortage, additionalInformation) =>
           generateShortageOrExcessRows(isShortage = true, ie818ItemModelWithCnCodeInformation.rorItem.shortageAmount, additionalInformation)
         case UnsatisfactoryModel(WrongWithMovement.Excess, additionalInformation) =>

@@ -131,9 +131,9 @@ class EventsHelper @Inject()(
         p()(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
         printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         eventHelper.rorDetailsCard(event),
-        eventHelper.rorConsigneeCard(event),
-        eventHelper.rorDestinationCard(event),
-        eventHelper.rorExportCard(event),
+        eventHelper.consigneeInformationCard(),
+        eventHelper.placeOfDestinationInformationCard(),
+        eventHelper.exportInformationCard(),
         eventHelper.rorItemsCard(event, ie818ItemModelWithCnCodeInformation),
       )
     )

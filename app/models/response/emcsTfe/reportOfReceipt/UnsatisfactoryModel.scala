@@ -25,7 +25,10 @@ case class UnsatisfactoryModel(reason: WrongWithMovement,
 object UnsatisfactoryModel {
   implicit val format: OFormat[UnsatisfactoryModel] = Json.format
 
-  val sortingOrder: Map[WrongWithMovement, Int] = Map(
+  implicit val ordering: Ordering[UnsatisfactoryModel] =
+    (x: UnsatisfactoryModel, y: UnsatisfactoryModel) => Ordering.by(sortingOrder).compare(x.reason, y.reason)
+
+  private val sortingOrder: Map[WrongWithMovement, Int] = Map(
     WrongWithMovement.Shortage -> 0,
     WrongWithMovement.Excess -> 1,
     WrongWithMovement.Damaged -> 2,
