@@ -29,14 +29,12 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Details
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukDetails
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
-import viewmodels.govuk.all.{ActionItemViewModel, FluentActionItem}
 import utils.DateUtils
+import viewmodels.govuk.all.{ActionItemViewModel, FluentActionItem}
 import viewmodels.helpers.SummaryListHelper._
 import viewmodels.helpers.{ItemDetailsCardHelper, ItemPackagingCardHelper, ViewMovementTransportHelper}
-import views.ViewUtils.LocalDateExtensions
-import views.html.components.{h2, list}
 import views.ViewUtils
-import views.html.components.{bullets, h2}
+import views.html.components.{bullets, h2, list}
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}

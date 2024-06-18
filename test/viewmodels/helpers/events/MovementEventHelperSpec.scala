@@ -29,6 +29,8 @@ import models.requests.DataRequest
 import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, ReceiptedItemsModel, UnsatisfactoryModel}
 import models.response.emcsTfe.{GetMovementResponse, HeaderEadEsadModel, TransportModeModel}
 import models.response.referenceData.CnCodeInformation
+import models.response.emcsTfe.AlertOrRejectionType.Rejection
+import models.response.emcsTfe._
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
@@ -1047,7 +1049,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             }
           }
 
-          "Rejection event" must {
+          "Rejection event with single reason" must {
 
             "render the correct HTML" in {
 
@@ -1062,6 +1064,64 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
 
               doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie819RejectionSummaryReason
               doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.goodsQuantityWrong
+            }
+          }
+
+          "Rejection event with multiple reasons" must {
+
+            "render the correct HTML" in {
+
+              implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+                notificationOfAlertOrRejection = Some(Seq(
+                  NotificationOfAlertOrRejectionModel(
+                    notificationType = Rejection,
+                    notificationDateAndTime = LocalDateTime.of(2023, 12, 19, 9, 0, 0),
+                    alertRejectReason = Seq(
+                      AlertOrRejectionReasonModel(
+                        reason = AlertOrRejectionReasonType.ProductDoesNotMatchOrder,
+                        additionalInformation = Some("Info")
+                      ),
+                      AlertOrRejectionReasonModel(
+                        reason = AlertOrRejectionReasonType.Other,
+                        additionalInformation = Some("Info")
+                      ),
+                      AlertOrRejectionReasonModel(
+                        reason = AlertOrRejectionReasonType.EADNotConcernRecipient,
+                        additionalInformation = Some("Info")
+                      ),
+                      AlertOrRejectionReasonModel(
+                        reason = AlertOrRejectionReasonType.QuantityDoesNotMatchOrder,
+                        additionalInformation = Some("Info")
+                      )
+                    )
+                  )
+                ))
+              )
+              val eventDetails = _movement.notificationOfAlertOrRejection.get.head
+
+              val result = helper.alertRejectInformationCard(eventDetails)
+              val doc = Jsoup.parse(result.toString())
+
+              doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie819RejectionDate
+              doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819RejectionEvent.eventDate).toLocalDate.formatDateForUIOutput()
+
+              doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie819RejectionSummaryReasons
+              doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.consigneeDetailsWrong
+              doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(2)).text() mustBe alertRejectionReasonMessages.goodsTypeWrong
+              doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(3)).text() mustBe alertRejectionReasonMessages.goodsQuantityWrong
+              doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(4)).text() mustBe alertRejectionReasonMessages.other
+
+              doc.select(Selectors.summaryRowKey(3)).text() mustBe messagesForLanguage.ie819ConsigneeInformation
+              doc.select(Selectors.summaryRowValue(3)).text() mustBe eventDetails.alertRejectReason.head.additionalInformation.get
+
+              doc.select(Selectors.summaryRowKey(4)).text() mustBe messagesForLanguage.ie819GoodsTypeInformation
+              doc.select(Selectors.summaryRowValue(4)).text() mustBe eventDetails.alertRejectReason(1).additionalInformation.get
+
+              doc.select(Selectors.summaryRowKey(5)).text() mustBe messagesForLanguage.ie819GoodsQuantityInformation
+              doc.select(Selectors.summaryRowValue(5)).text() mustBe eventDetails.alertRejectReason(2).additionalInformation.get
+
+              doc.select(Selectors.summaryRowKey(6)).text() mustBe messagesForLanguage.ie819OtherInformation
+              doc.select(Selectors.summaryRowValue(6)).text() mustBe eventDetails.alertRejectReason(3).additionalInformation.get
             }
           }
         }

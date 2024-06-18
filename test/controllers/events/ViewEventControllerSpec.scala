@@ -38,7 +38,6 @@ import play.api.test.Helpers.status
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.events.HistoryEventView
 
-import scala.collection.Seq
 import scala.concurrent.Future
 
 // scalastyle:off magic.number
@@ -175,7 +174,7 @@ class ViewEventControllerSpec
   ).foreach { case TestFixtureModel(methodName, event, method) =>
 
     s"calling $methodName" must {
-      renderASuccessfulEventView(event, method(event.eventId)(fakeRequest))
+      renderASuccessfulEventView(event, getMovementResponseModel, method(event.eventId)(fakeRequest))
       handle404s(event, method(event.eventId)(fakeRequest))
     }
   }
@@ -185,8 +184,8 @@ class ViewEventControllerSpec
       val model = getMovementResponseModel.copy(
         reportOfReceipt = Some(reportOfReceiptResponse.copy(acceptMovement = AcceptMovement.Satisfactory))
       )
-      renderASuccessfulEventView(ie818Event, model, () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
-      handle404s(ie818Event, () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
+      renderASuccessfulEventView(ie818Event, model, controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
+      handle404s(ie818Event, controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
     }
     AcceptMovement.values.filterNot(_ == AcceptMovement.Satisfactory).foreach { acceptMovement =>
       s"acceptMovement is $acceptMovement" must {
@@ -196,7 +195,7 @@ class ViewEventControllerSpec
         renderASuccessfulEventView(
           ie818Event,
           model,
-          () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest),
+          controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest),
           () => MockGetCnCodeInformationService.getCnCodeInformation(getMovementResponseModel.items).returns(Future.successful(Seq(
             item1WithWineAndPackaging -> CnCodeInformation(
               cnCode = "T400",
@@ -214,7 +213,7 @@ class ViewEventControllerSpec
             )
           )))
         )
-        handle404s(ie818Event, () => controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
+        handle404s(ie818Event, controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
       }
     }
   }

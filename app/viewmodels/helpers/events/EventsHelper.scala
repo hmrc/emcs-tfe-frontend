@@ -43,7 +43,7 @@ class EventsHelper @Inject()(
   def getEventTitle(event: MovementHistoryEvent, movementResponse: GetMovementResponse)(implicit messages: Messages): String =
     (event.eventType, event.messageRole) match {
       case (IE819, _) => messages(s"${timelineHelper.getEventBaseKey(event)}.${getIE819EventDetail(event, movementResponse).notificationType}.label")
-      case _ => messages(timelineHelper.getEventTitleKey(event))
+      case _ => messages(timelineHelper.getEventTitleKey(event, movementResponse))
     }
 
   def constructEventInformation(

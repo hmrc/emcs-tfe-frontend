@@ -21,6 +21,7 @@ import fixtures.events.MovementEventMessages
 import fixtures.messages.AlertRejectionReasonMessages
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
 import models.EventTypes
+import models.common.DestinationType
 import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import org.jsoup.Jsoup
@@ -29,6 +30,8 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
 import utils.DateUtils
 import views.BaseSelectors
+
+import java.time.LocalDateTime
 
 class EventsHelperSpec extends SpecBase
   with GetMovementHistoryEventsResponseFixtures
@@ -162,7 +165,7 @@ class EventsHelperSpec extends SpecBase
 
             "render the correct HTML" in {
 
-              val result = helper.constructEventInformation(ie819AlertEventMultipleReasons, getMovementResponseModel)
+              val result = helper.constructEventInformation(ie819AlertEventMultipleReasons, getMovementResponseModel, Seq.empty)
               val eventDetails = getMovementResponseModel.notificationOfAlertOrRejection.get.head
               val consigneeDetails = getMovementResponseModel.consigneeTrader.get
               val body = Jsoup.parse(result.toString())
@@ -210,7 +213,7 @@ class EventsHelperSpec extends SpecBase
 
             "render the correct HTML" in {
 
-              val result = helper.constructEventInformation(ie819AlertEvent, getMovementResponseModel)
+              val result = helper.constructEventInformation(ie819AlertEvent, getMovementResponseModel, Seq.empty)
               val consigneeDetails = getMovementResponseModel.consigneeTrader.get
               val body = Jsoup.parse(result.toString())
 
@@ -218,6 +221,7 @@ class EventsHelperSpec extends SpecBase
               body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
 
               //Alert Details summary
+              body.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie819AlertH2
               body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie819AlertDate
               body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819AlertEvent.eventDate).toLocalDate.formatDateForUIOutput()
 
@@ -242,7 +246,7 @@ class EventsHelperSpec extends SpecBase
 
           "render the correct HTML" in {
 
-            val result = helper.constructEventInformation(ie819RejectionEvent, getMovementResponseModel)
+            val result = helper.constructEventInformation(ie819RejectionEvent, getMovementResponseModel, Seq.empty)
             val consigneeDetails = getMovementResponseModel.consigneeTrader.get
             val body = Jsoup.parse(result.toString())
 
@@ -250,6 +254,7 @@ class EventsHelperSpec extends SpecBase
             body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
 
             //Rejection Details summary
+            body.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie819RejectionH2
             body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie819RejectionDate
             body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819RejectionEvent.eventDate).toLocalDate.formatDateForUIOutput()
 

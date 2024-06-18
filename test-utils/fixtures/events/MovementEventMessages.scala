@@ -17,12 +17,17 @@
 package fixtures.events
 
 import fixtures.messages.{BaseEnglish, EN, i18n}
+import utils.DateUtils
 
-object MovementEventMessages {
+import java.time.LocalDateTime
+
+object MovementEventMessages extends DateUtils {
 
   sealed trait EventMessages extends BaseEnglish { _ : i18n =>
 
-    val messageIssued = "Message issued 4 December 2024 at 5:00 pm"
+    def messageIssued(dateTime: LocalDateTime = LocalDateTime.of(2024, 12, 4, 17, 0, 0)) =
+      s"Message issued ${dateTime.formatDateTimeForUIOutput()}"
+
     def arc(arc: String) = s"ARC: $arc"
     val printScreenContent: String = "Print this screen to make a record of this message."
 

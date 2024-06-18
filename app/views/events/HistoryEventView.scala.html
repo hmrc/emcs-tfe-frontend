@@ -39,7 +39,7 @@
 @(event: MovementHistoryEvent, movement: GetMovementResponse, ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation])(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
-    pageTitle = titleNoForm(messages(timelineHelper.getEventTitleKey(event, movement))),
+    pageTitle = titleNoForm(messages(eventsHelper.getEventTitle(event, movement))),
     maybeShowActiveTrader = None,
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), models.PageSection.Movements)),
     fullWidthContent = false
