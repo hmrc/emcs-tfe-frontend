@@ -20,7 +20,7 @@
 @this(
         layout: Layout,
         h1: h1,
-        p: p,
+        p: p
 )
 @(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
 @layout(pageTitle = titleNoForm(messages(pageTitle)), maybeShowActiveTrader = None, maybeShowNavigationBanner = None) {

@@ -53,7 +53,7 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
     val ie704AttributesJson: JsValue = Json.obj(
       "arc" -> "22XI00000000000366000",
       "sequenceNumber" -> 1,
-      "lrn" -> testLrn,
+      "lrn" -> testLrn
     )
   }
 
@@ -120,7 +120,7 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
       body = IE704BodyFixtures.ie704BodyModel.copy(
         functionalError = Seq(
           IE704FunctionalErrorFixtures.ie704FunctionalErrorModel,
-          IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4402", errorReason = "Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules.", originalAttributeValue = Some("lrnie8155639254")),
+          IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4402", errorReason = "Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules.", originalAttributeValue = Some("lrnie8155639254"))
         )
       )
     )
@@ -133,7 +133,7 @@ trait GetSubmissionFailureMessageFixtures extends BaseFixtures {
         body = IE704BodyFixtures.ie704BodyModel.copy(
           functionalError = Seq(
             IE704FunctionalErrorFixtures.ie704FunctionalErrorModel,
-            IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4402", errorReason = "Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules.", originalAttributeValue = Some("lrnie8155639254")),
+            IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4402", errorReason = "Duplicate LRN The LRN is already known and is therefore not unique according to the specified rules.", originalAttributeValue = Some("lrnie8155639254"))
           )
         )
       ),

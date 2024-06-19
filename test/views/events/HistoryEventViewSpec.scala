@@ -245,7 +245,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               getMovementResponseModel.copy(
                 eadEsad = eadEsadModel.copy(
                   importSadNumber = Some(Seq("123", "456"))
-                ),
+                )
               )
             )
 
@@ -263,7 +263,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               getMovementResponseModel.copy(
                 eadEsad = eadEsadModel.copy(
                   importSadNumber = Some(Seq("123", "456"))
-                ),
+                )
               )
             )
 
@@ -398,6 +398,22 @@ class HistoryEventViewSpec extends ViewSpecBase
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
               )
             )(createDocument(ie829MovementAcceptedCustomsEvent, getMovementResponseModel))
+          }
+        }
+
+        "rendering an IE905 event (manual closure of a movement)" should {
+
+          "render the main detail section of the view" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie905ManualClosureResponseTitle,
+                Selectors.h1 -> messagesForLanguage.ie905ManualClosureResponseHeading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(),
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie905ManualClosureResponseP1,
+                Selectors.p(2) -> messagesForLanguage.printScreenContent
+              )
+            )(createDocument(ie905ManualClosureResponseEvent, getMovementResponseModel))
           }
         }
       }

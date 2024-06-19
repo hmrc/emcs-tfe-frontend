@@ -511,7 +511,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
       implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
         transportMode = TransportModeModel(
           transportModeCode = TransportMode.AirTransport,
-          complementaryInformation = Some("transport complementary information"),
+          complementaryInformation = Some("transport complementary information")
         )
       )
 
@@ -604,7 +604,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
       implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
         eadEsad = eadEsadModel.copy(
           importSadNumber = Some(Seq("123", "456"))
-        ),
+        )
       )
 
       val result = helper.sadInformationCard()
@@ -893,7 +893,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             productCode = testEpcWine,
             refusedAmount = Some(1),
             unsatisfactoryReasons = Seq(
-              UnsatisfactoryModel(Shortage, Some("some info")),
+              UnsatisfactoryModel(Shortage, Some("some info"))
             )
           ), CnCodeInformation(
             cnCode = "",
@@ -920,7 +920,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             productCode = testEpcWine,
             refusedAmount = Some(1),
             unsatisfactoryReasons = Seq(
-              UnsatisfactoryModel(Excess, Some("some info")),
+              UnsatisfactoryModel(Excess, Some("some info"))
             )
           ), CnCodeInformation(
             cnCode = "",
@@ -947,7 +947,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             productCode = testEpcWine,
             refusedAmount = Some(1),
             unsatisfactoryReasons = Seq(
-              UnsatisfactoryModel(Damaged, Some("some info")),
+              UnsatisfactoryModel(Damaged, Some("some info"))
             )
           ), CnCodeInformation(
             cnCode = "",
@@ -973,7 +973,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             productCode = testEpcWine,
             refusedAmount = Some(1),
             unsatisfactoryReasons = Seq(
-              UnsatisfactoryModel(BrokenSeals, Some("some info")),
+              UnsatisfactoryModel(BrokenSeals, Some("some info"))
             )
           ), CnCodeInformation(
             cnCode = "",
@@ -999,7 +999,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             productCode = testEpcWine,
             refusedAmount = Some(1),
             unsatisfactoryReasons = Seq(
-              UnsatisfactoryModel(Other, Some("some info")),
+              UnsatisfactoryModel(Other, Some("some info"))
             )
           ), CnCodeInformation(
             cnCode = "",
@@ -1030,7 +1030,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             UnsatisfactoryModel(Other, Some("some info other")),
             UnsatisfactoryModel(Shortage, Some("some info shortage")),
             UnsatisfactoryModel(BrokenSeals, Some("some info broken seals")),
-            UnsatisfactoryModel(Damaged, Some("some info damaged item")),
+            UnsatisfactoryModel(Damaged, Some("some info damaged item"))
           )
         ), CnCodeInformation(
           cnCode = "",

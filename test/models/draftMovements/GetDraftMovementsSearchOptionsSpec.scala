@@ -281,7 +281,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
       "multiple destination type parameters are supplied" in {
 
         val expectedResult = Some(Right(GetDraftMovementsSearchOptions(
-          destinationTypes = Some(DestinationTypeSearchOption.values),
+          destinationTypes = Some(DestinationTypeSearchOption.values)
         )))
 
         val actualResult = GetDraftMovementsSearchOptions.queryStringBinder.bind("", Map(
@@ -329,7 +329,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
             DestinationTypeSearchOption.values.map(destinationType => s"destinationType=$destinationType").mkString("&")
 
         val actualResult = GetDraftMovementsSearchOptions.queryStringBinder.unbind("", GetDraftMovementsSearchOptions(
-          destinationTypes = Some(DestinationTypeSearchOption.values),
+          destinationTypes = Some(DestinationTypeSearchOption.values)
         ))
 
         actualResult mustBe expectedResult

@@ -115,7 +115,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val actualResult = MovementListSearchOptions.queryStringBinder.bind("search", Map(
           "traderRole" -> Seq("ADMIN"),
           "undischargedMovements" -> Seq("YES"),
-          "movementStatus" -> Seq("RunningLate"),
+          "movementStatus" -> Seq("RunningLate")
         ))
 
         actualResult mustBe expectedResult

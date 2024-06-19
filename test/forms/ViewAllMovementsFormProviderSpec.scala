@@ -47,7 +47,7 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
       val boundForm = form.bind(Map(
         searchKey -> "$$arc\\/&.?",
         searchValue -> "ARC1/injecting-viruses!!!!<script>\"alert</script>",
-        sortByKey -> "^^arcAsc!?",
+        sortByKey -> "^^arcAsc!?"
       ))
       boundForm.get mustBe MovementListSearchOptions(Some(ARC), Some("ARC1injectingvirusesscriptalertscript"), sortBy = ArcAscending)
     }

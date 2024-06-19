@@ -81,7 +81,7 @@ class DeleteMessageControllerSpec extends SpecBase
       view = view,
       deleteMessageHelper = new DeleteMessageHelper(messagesHelper),
       messagesHelper = messagesHelper,
-      errorHandler = errorHandler,
+      errorHandler = errorHandler
     )(ec, appConfig)
 
     MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)

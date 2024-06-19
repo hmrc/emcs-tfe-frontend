@@ -311,6 +311,18 @@ class EventsHelperSpec extends SpecBase
           }
         }
       }
+
+      "being called with event type IE905" must {
+
+        "render the correct HTML" in {
+
+          val result = helper.constructEventInformation(ie905ManualClosureResponseEvent, getMovementResponseModel, Seq.empty)
+          val body = Jsoup.parse(result.toString())
+
+          body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie905ManualClosureResponseP1
+          body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+        }
+      }
     }
   }
 }

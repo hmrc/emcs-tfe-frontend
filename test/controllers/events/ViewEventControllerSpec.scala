@@ -175,6 +175,11 @@ class ViewEventControllerSpec
       methodName = ".movementAcceptedCustoms",
       event = ie829MovementAcceptedCustomsEvent,
       method = (id: Int) => controller.movementAcceptedCustoms(testErn, testArc, id)
+    ),
+    TestFixtureModel(
+      methodName = ".manualClosureOfMovement",
+      event = ie905ManualClosureResponseEvent,
+      method = (id: Int) => controller.manualClosureOfMovement(testErn, testArc, id)
     )
   ).foreach { case TestFixtureModel(methodName, event, method) =>
 

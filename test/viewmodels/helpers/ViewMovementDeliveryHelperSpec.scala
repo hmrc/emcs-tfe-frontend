@@ -182,7 +182,7 @@ class ViewMovementDeliveryHelperSpec extends SpecBase with GetMovementResponseFi
 
       "consignee is present and destination type is Export (VAT provided and EORI not provided)" in {
         val result = helper.constructMovementDelivery(getMovementResponseModel.copy(consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(
-          eoriNumber = None,
+          eoriNumber = None
         )), destinationType = Export))
         val summaryList = Jsoup.parse(result.toString())
 

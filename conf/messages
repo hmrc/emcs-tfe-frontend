@@ -322,8 +322,9 @@ movementHistoryEvent.IE871.label = Explanation for a shortage or excess
 movementHistoryEvent.IE871.urlLabel = explanation-shortage-excess-submitted
 movementHistoryEvent.IE881.label = Manual closure response
 movementHistoryEvent.IE881.urlLabel = movement-closure-response
-movementHistoryEvent.IE905.label = Manual closure response of a movement
-movementHistoryEvent.IE905.urlLabel = movement-manually-closed
+movementHistoryEvent.IE905.label = Manual closure of a movement
+movementHistoryEvent.IE905.urlLabel = manual-closure-movement
+movementHistoryEvent.IE905.p1 = This movement has been manually closed.
 
 movementHistoryEvent.dateTimeIssued = Message issued {0} at {1}
 movementHistoryEvent.arc = ARC: {0}

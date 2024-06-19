@@ -51,7 +51,7 @@ class GetWineOperationsServiceSpec extends SpecBase with MockGetWineOperationsCo
         )))))
 
         testService.getWineOperations(movementItems)(hc).futureValue mustBe Seq(
-          item1.copy(wineProduct = Some(updatedWineProduct)),
+          item1.copy(wineProduct = Some(updatedWineProduct))
         )
       }
     }
