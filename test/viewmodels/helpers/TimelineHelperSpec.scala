@@ -129,7 +129,7 @@ class TimelineHelperSpec extends SpecBase with GetMovementResponseFixtures {
       "the event is for a alert/rejection submission" in {
         getKey(IE819, 0, 0) mustBe "movementHistoryEvent.IE819.label"
       }
-      "the event is for a customs acceptance of movement for export" in {
+      "the event is for a movement accepted by customs" in {
         getKey(IE829, 0, 0) mustBe "movementHistoryEvent.IE829.label"
       }
       "the event is for a explanation for delay submission" in {

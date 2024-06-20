@@ -93,6 +93,11 @@ object MovementEventMessages extends DateUtils {
     val ie819RejectionDate = "Date of rejection"
     val ie819RejectionSummaryReason = "Reason for rejection"
     val ie819RejectionSummaryReasons = "Reasons for rejection"
+
+    //IE829 Movement accepted by customs
+    val ie829Heading: String = "Movement accepted by customs"
+    val ie829Title: String = titleHelper(ie829Heading)
+    val ie829Paragraph1: String = "This movement has been accepted for export by customs office number GB000383."
   }
 
   object English extends EventMessages with EN

@@ -19,9 +19,9 @@ package viewmodels.helpers.events
 import models.EventTypes._
 import models.common.DestinationType
 import models.requests.DataRequest
-import models.response.emcsTfe.{GetMovementResponse, NotificationOfAlertOrRejectionModel}
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
+import models.response.emcsTfe.{GetMovementResponse, NotificationOfAlertOrRejectionModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
@@ -49,7 +49,7 @@ class EventsHelper @Inject()(
   def constructEventInformation(
                                  event: MovementHistoryEvent,
                                  movement: GetMovementResponse,
-                                 ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation]
+                                 ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation] = Seq.empty
                                )(implicit request: DataRequest[_], messages: Messages): Html = {
     (event.eventType, event.messageRole) match {
       case (IE801, _) => ie801Html(event, movement)
@@ -57,6 +57,7 @@ class EventsHelper @Inject()(
       case (IE803, _) => ie803Html(event, movement)
       case (IE818, _) => ie818Html(event, movement, ie818ItemModelWithCnCodeInformation)
       case (IE819, _) => ie819Html(event, movement)
+      case (IE829, _) => ie829Html(event, movement)
       case _ => Empty.asHtml
     }
   }
@@ -149,7 +150,6 @@ class EventsHelper @Inject()(
   }
 
   private def ie819Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
-
     implicit val _movement: GetMovementResponse = movement
     val eventDetails = getIE819EventDetail(event, movement)
 
@@ -162,6 +162,22 @@ class EventsHelper @Inject()(
         eventHelper.alertRejectInformationCard(eventDetails),
         eventHelper.consigneeInformationCard()
       )
+    )
+  }
+
+  private def ie829Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+    implicit val _movement: GetMovementResponse = movement
+
+    HtmlFormat.fill(
+      Seq(
+        movement.notificationOfAcceptedExport.map { notificationOfAcceptedExport =>
+          HtmlFormat.fill(Seq(
+            p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1", notificationOfAcceptedExport.customsOfficeNumber))),
+            printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+            eventHelper.ie829AcceptedExportDetails(notificationOfAcceptedExport)
+          ))
+        }
+      ).flatten
     )
   }
 

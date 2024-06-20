@@ -10,7 +10,7 @@ GET        /trader/:ern/movement/:arc/event/:eventId/movement-split             
 #GET        /trader/:ern/movement/:arc/event/:eventId/change-destination-submitted            controllers.events.ViewEventController.changeDestinationSubmitted(ern: String, arc: String, eventId: Int)
 GET        /trader/:ern/movement/:arc/event/:eventId/report-receipt-submitted                controllers.events.ViewEventController.reportReceiptSubmitted(ern: String, arc: String, eventId: Int)
 GET        /trader/:ern/movement/:arc/event/:eventId/alert-rejection-submitted               controllers.events.ViewEventController.alertRejectionSubmitted(ern: String, arc: String, eventId: Int)
-#GET        /trader/:ern/movement/:arc/event/:eventId/movement-accepted-customs               controllers.events.ViewEventController.movementAcceptedCustoms(ern: String, arc: String, eventId: Int)
+GET        /trader/:ern/movement/:arc/event/:eventId/movement-accepted-customs               controllers.events.ViewEventController.movementAcceptedCustoms(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/explantion-delay-submitted              controllers.events.ViewEventController.explanationDelaySubmitted(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/movement-rejected-customs               controllers.events.ViewEventController.movementRejectedCustoms(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/event-report-received                   controllers.events.ViewEventController.eventReportReceived(ern: String, arc: String, eventId: Int)
