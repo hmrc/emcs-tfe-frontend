@@ -17,6 +17,8 @@
 package fixtures.events
 
 import fixtures.messages.{BaseEnglish, EN, i18n}
+import models.common.SubmitterType
+import models.common.SubmitterType.{Consignee, Consignor}
 import utils.DateUtils
 
 import java.time.LocalDateTime
@@ -112,6 +114,22 @@ object MovementEventMessages extends DateUtils {
     val ie905ManualClosureResponseHeading: String = "Manual closure of a movement"
     val ie905ManualClosureResponseTitle: String = titleHelper(ie905ManualClosureResponseHeading)
     val ie905ManualClosureResponseP1 = "This movement has been manually closed."
+
+    //IE837 Delay notification
+    val ie837Heading: String = "Explanation for delay submitted"
+    val ie837Title: String = titleHelper(ie837Heading)
+    val ie837Paragraph1: String = "An explanation for delay has been submitted."
+    val ie837SubmittedBy: String = "Submitted by"
+    val ie837SubmittedByValue: SubmitterType => String = {
+      case Consignor => "Consignor"
+      case Consignee => "Consignee"
+    }
+    val ie837SubmitterId: SubmitterType => String = {
+      case Consignor => "Consignor’s identification number"
+      case Consignee => "Consignee’s identification number"
+    }
+    val ie837DelayType: String = "What’s been delayed"
+    val ie837DelayReason: String = "Reason for delay"
   }
 
   object English extends EventMessages with EN

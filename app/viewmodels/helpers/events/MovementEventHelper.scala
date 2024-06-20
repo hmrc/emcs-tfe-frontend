@@ -22,7 +22,7 @@ import models.common.{AcceptMovement, DestinationType, TraderModel, WrongWithMov
 import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, UnsatisfactoryModel}
-import models.response.emcsTfe.{GetMovementResponse, MovementItem, NotificationOfAcceptedExportModel, NotificationOfAlertOrRejectionModel}
+import models.response.emcsTfe.{GetMovementResponse, MovementItem, NotificationOfAcceptedExportModel, NotificationOfAlertOrRejectionModel, NotificationOfDelayModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Details
@@ -675,6 +675,40 @@ class MovementEventHelper @Inject()(
         acceptedExportSummary,
         consigneeInformationCard(Some(notificationOfAcceptedExport.consigneeTrader))
       )
+    )
+  }
+
+  def delayInformationCard(event: NotificationOfDelayModel, messageRole: Int)(implicit messages: Messages): Html = {
+
+    val submittedBy =
+      Some(summaryListRowBuilder(
+        messages("movementHistoryEvent.IE837.summary.submittedBy"),
+        messages(s"movementHistoryEvent.IE837.summary.submittedBy.${event.submitterType}")
+      ))
+
+    val submitterId =
+      Some(summaryListRowBuilder(messages(s"movementHistoryEvent.IE837.summary.submitterId.${event.submitterType}"), event.submitterIdentification))
+
+    val delayType =
+      Some(summaryListRowBuilder(
+        messages(s"movementHistoryEvent.IE837.summary.delayType"),
+        messages(s"movementHistoryEvent.IE837.summary.delayType.$messageRole")
+      ))
+
+    val reason =
+      Some(summaryListRowBuilder(
+        messages(s"movementHistoryEvent.IE837.summary.reason"),
+        messages(s"movementHistoryEvent.IE837.summary.reason.${event.explanationCode}")
+      ))
+
+    val info =
+      event.complementaryInformation.map(summaryListRowBuilder(messages(s"movementHistoryEvent.IE837.summary.info"), _))
+
+    buildOverviewPartial(
+      headingTitle = None,
+      headingId = None,
+      summaryListRows = Seq(submittedBy, submitterId, delayType, reason, info),
+      summaryListAttributes = Map("id" -> "delay-information-summary")
     )
   }
 }

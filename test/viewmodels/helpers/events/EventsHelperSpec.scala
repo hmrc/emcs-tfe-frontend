@@ -18,12 +18,13 @@ package viewmodels.helpers.events
 
 import base.SpecBase
 import fixtures.events.MovementEventMessages
-import fixtures.messages.AlertRejectionReasonMessages
+import fixtures.messages.{AlertRejectionReasonMessages, DelayReasonMessages}
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
 import models.EventTypes
-import models.common.DestinationType
+import models.common.{DestinationType, SubmitterType}
 import models.common.DestinationType.Export
 import models.requests.DataRequest
+import models.response.emcsTfe.{DelayReasonType, GetMovementResponse, NotificationOfDelayModel}
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -325,6 +326,61 @@ class EventsHelperSpec extends SpecBase
             consigneeDetailsSummaryListRows.get(2).getElementsByTag("dd").text() mustBe "Angels Business Park Bradford BD1 3NN"
             consigneeDetailsSummaryListRows.get(3).getElementsByTag("dt").text() mustBe "EORI number"
             consigneeDetailsSummaryListRows.get(3).getElementsByTag("dd").text() mustBe "GB00000578901"
+          }
+        }
+
+        "being called with event type IE837 (delay)" must {
+
+          Seq(1, 2).foreach { messageRole =>
+
+            SubmitterType.values.foreach { submitterType =>
+
+              DelayReasonType.values.foreach { delayReason =>
+
+                s"for messageRole of '$messageRole', submitterType of '$submitterType' and delayReason of '$delayReason'" must {
+
+                  Seq(MovementEventMessages.English -> DelayReasonMessages.English).foreach {
+                    case (messagesForLanguage, delayReasonMessages) =>
+
+                      s"when language code of '${messagesForLanguage.lang.code}'" when {
+
+                        "render the correct HTML" in {
+
+                          val testMovement: GetMovementResponse = getMovementResponseModel.copy(
+                            notificationOfDelay = Some(Seq(
+                              NotificationOfDelayModel(
+                                submitterIdentification = testErn,
+                                submitterType = submitterType,
+                                explanationCode = delayReason,
+                                complementaryInformation = Some("info"),
+                                dateTime = LocalDateTime.parse(ie837DelayEvent(messageRole).eventDate)
+                              )
+                            ))
+                          )
+
+                          val result = helper.constructEventInformation(ie837DelayEvent(messageRole), testMovement)
+                          val body = Jsoup.parse(result.toString())
+
+                          body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie837Paragraph1
+                          body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+
+                          body.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie837SubmittedBy
+                          body.select(Selectors.summaryRowValue(1)).text() mustBe messagesForLanguage.ie837SubmittedByValue(submitterType)
+
+                          body.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie837SubmitterId(submitterType)
+                          body.select(Selectors.summaryRowValue(2)).text() mustBe testErn
+
+                          body.select(Selectors.summaryRowKey(3)).text() mustBe messagesForLanguage.ie837DelayType
+                          body.select(Selectors.summaryRowValue(3)).text() mustBe delayReasonMessages.messageType(messageRole)
+
+                          body.select(Selectors.summaryRowKey(4)).text() mustBe messagesForLanguage.ie837DelayReason
+                          body.select(Selectors.summaryRowValue(4)).text() mustBe delayReasonMessages.reason(delayReason)
+                        }
+                      }
+                  }
+                }
+              }
+            }
           }
         }
       }

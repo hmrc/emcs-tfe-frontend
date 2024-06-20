@@ -21,11 +21,13 @@ import fixtures.events.MovementEventMessages.English
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
 import models.common.DestinationType.TemporaryRegisteredConsignee
 import models.common.GuarantorType.Owner
+import models.common.SubmitterType.Consignor
 import models.common.TransportArrangement.OwnerOfGoods
 import models.common.{TraderModel, TransportMode}
 import models.requests.DataRequest
+import models.response.emcsTfe.DelayReasonType.Accident
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
-import models.response.emcsTfe.{GetMovementResponse, HeaderEadEsadModel, TransportModeModel}
+import models.response.emcsTfe.{GetMovementResponse, HeaderEadEsadModel, NotificationOfDelayModel, TransportModeModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
@@ -219,7 +221,7 @@ class HistoryEventViewSpec extends ViewSpecBase
                   vatNumber = Some("VATarranger"),
                   eoriNumber = None
                 ))
-            )
+              )
             )
 
             doc.select(headingId).text() mustBe "Transport arranger"
@@ -435,6 +437,32 @@ class HistoryEventViewSpec extends ViewSpecBase
               )
             )(createDocument(ie905ManualClosureResponseEvent, getMovementResponseModel))
           }
+        }
+
+        "rendering an IE837 event (Delay)" should {
+
+          val event = ie837DelayEvent(messageRole = 1)
+
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.title -> messagesForLanguage.ie837Title,
+              Selectors.h1 -> messagesForLanguage.ie837Heading,
+              Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(event.eventDate)),
+              Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+              Selectors.p(1) -> messagesForLanguage.ie837Paragraph1,
+              Selectors.p(2) -> messagesForLanguage.printScreenContent
+            )
+          )(createDocument(event, getMovementResponseModel.copy(
+            notificationOfDelay = Some(Seq(
+              NotificationOfDelayModel(
+                submitterIdentification = testErn,
+                submitterType = Consignor,
+                explanationCode = Accident,
+                complementaryInformation = Some("info"),
+                dateTime = LocalDateTime.parse(event.eventDate)
+              )
+            ))
+          )))
         }
       }
     }
