@@ -357,6 +357,26 @@ class HistoryEventViewSpec extends ViewSpecBase
           }
         }
 
+        "rendering an IE810 event (Movement Cancelled Notification)" should {
+
+          "render the main detail section of the view" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie810MovementCancelledTitle,
+                Selectors.h1 -> messagesForLanguage.ie810MovementCancelledHeading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie810MovementCancelledEvent.eventDate)),
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie810MovementCancelledP1,
+                Selectors.p(2) -> messagesForLanguage.printScreenContent,
+                Selectors.summaryRowKey(1) -> messagesForLanguage.IE810MovementCancelledKey1,
+                Selectors.summaryRowValue(1) -> messagesForLanguage.IE810MovementCancelledValue1,
+                Selectors.summaryRowKey(2) -> messagesForLanguage.IE810MovementCancelledKey2,
+                Selectors.summaryRowValue(2) -> messagesForLanguage.IE810MovementCancelledValue2
+              )
+            )(createDocument(ie810MovementCancelledEvent, getMovementResponseModel))
+          }
+        }
+
         "rendering an IE819 event (Alert/Rejection)" should {
 
           "when the message is an Alert" should {

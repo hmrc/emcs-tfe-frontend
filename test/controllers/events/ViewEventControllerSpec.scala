@@ -180,7 +180,12 @@ class ViewEventControllerSpec
       methodName = ".manualClosureOfMovement",
       event = ie905ManualClosureResponseEvent,
       method = (id: Int) => controller.manualClosureOfMovement(testErn, testArc, id)
-    )
+    ),
+    TestFixtureModel(
+      methodName = ".movementCancelled",
+      event = ie810MovementCancelledEvent,
+      method = (id: Int) => controller.movementCancelled(testErn, testArc, id)
+    ),
   ).foreach { case TestFixtureModel(methodName, event, method) =>
 
     s"calling $methodName" must {

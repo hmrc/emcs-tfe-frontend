@@ -63,6 +63,15 @@ object MovementEventMessages extends DateUtils {
     def ie803MovementSplitP1(dateOfSplit: String) = s"A request to split this movement was submitted on $dateOfSplit."
     val ie803MovementSplitP2 = "The new ARCs for the split movement are:"
 
+    //IE810 Movement Cancelled Notification
+    val ie810MovementCancelledHeading: String = "Movement cancelled"
+    val ie810MovementCancelledTitle: String = titleHelper(ie810MovementCancelledHeading)
+    val ie810MovementCancelledP1 = "This movement has been cancelled."
+    val IE810MovementCancelledKey1 = "Reason for cancellation"
+    val IE810MovementCancelledKey2 = "Explanation provided by consignor"
+    val IE810MovementCancelledValue1 = "Other"
+    val IE810MovementCancelledValue2 = "some info"
+
     //IE818 Report of Receipt
     val ie818P1 = "A report of receipt has been submitted for this movement."
     val ie818P1Export = "A report of export has been received for this movement."

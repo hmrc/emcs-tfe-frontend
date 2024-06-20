@@ -24,11 +24,12 @@ import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformati
 import models.response.emcsTfe.{GetMovementResponse, NotificationOfAlertOrRejectionModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.emcstfe.models.cancellationOfMovement.CancellationReasonType.Other
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
 import uk.gov.hmrc.http.BadRequestException
 import utils.DateUtils
 import viewmodels.helpers.TimelineHelper
-import views.html.components.{bullets, link, p}
+import views.html.components.{bullets, link, p, summary_list}
 
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -38,6 +39,7 @@ class EventsHelper @Inject()(
                               eventHelper: MovementEventHelper,
                               link: link,
                               p: p,
+                              summary_list: summary_list,
                               bullets: bullets) extends DateUtils {
 
   def getEventTitle(event: MovementHistoryEvent, movementResponse: GetMovementResponse)(implicit messages: Messages): String =
@@ -55,6 +57,7 @@ class EventsHelper @Inject()(
       case (IE801, _) => ie801Html(event, movement)
       case (IE802, _) => ie802Html(event)
       case (IE803, _) => ie803Html(event, movement)
+      case (IE810, _) => ie810Html(event, movement)
       case (IE818, _) => ie818Html(event, movement, ie818ItemModelWithCnCodeInformation)
       case (IE819, _) => ie819Html(event, movement)
       case (IE829, _) => ie829Html(event, movement)
@@ -122,6 +125,23 @@ class EventsHelper @Inject()(
         Some(printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"))
       ).flatten
     )
+
+  private def ie810Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+    HtmlFormat.fill(
+      Seq(
+    movement.cancelMovement.map { cancelMovement =>
+      HtmlFormat.fill(Seq(
+        p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
+        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
+      ) ++ Seq(
+        Some(summary_list(Seq(
+          Some(messages(s"${timelineHelper.getEventBaseKey(event)}.cancellationReason") -> messages(s"${timelineHelper.getEventBaseKey(event)}.reason.${cancelMovement.reason.toString}")),
+          if (movement.cancelMovement.get.reason == Other) Some(messages(s"${timelineHelper.getEventBaseKey(event)}.cancellationExplanation") -> cancelMovement.complementaryInformation.getOrElse("")) else None,
+        ).flatten))
+      ).flatten)
+    }
+      ).flatten)
+  }
 
   private def ie818Html(
                          event: MovementHistoryEvent,
