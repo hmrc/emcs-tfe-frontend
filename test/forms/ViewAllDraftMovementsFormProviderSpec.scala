@@ -81,7 +81,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
-        searchValue -> "searchValue",
+        searchValue -> "searchValue"
       )).get
 
       actualResult mustBe expectedResult
@@ -222,7 +222,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
-        exciseProductCode -> "exciseProductCode",
+        exciseProductCode -> "exciseProductCode"
       )).get
 
       actualResult mustBe expectedResult
@@ -255,7 +255,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromDay -> "01",
         dateOfDispatchFromMonth -> "01",
-        dateOfDispatchFromYear -> "2020",
+        dateOfDispatchFromYear -> "2020"
       )).get
 
       actualResult mustBe expectedResult
@@ -273,7 +273,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromDay -> "29",
         dateOfDispatchFromMonth -> "02",
-        dateOfDispatchFromYear -> "2022",
+        dateOfDispatchFromYear -> "2022"
       )).errors
 
       actualResult mustBe expectedResult
@@ -290,7 +290,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromMonth -> "02",
-        dateOfDispatchFromYear -> "2022",
+        dateOfDispatchFromYear -> "2022"
       )).errors
 
       actualResult mustBe expectedResult
@@ -307,7 +307,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromDay -> "01",
-        dateOfDispatchFromYear -> "2022",
+        dateOfDispatchFromYear -> "2022"
       )).errors
 
       actualResult mustBe expectedResult
@@ -324,7 +324,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromDay -> "01",
-        dateOfDispatchFromMonth -> "02",
+        dateOfDispatchFromMonth -> "02"
       )).errors
 
       actualResult mustBe expectedResult
@@ -391,7 +391,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToDay -> "01",
         dateOfDispatchToMonth -> "01",
-        dateOfDispatchToYear -> "2020",
+        dateOfDispatchToYear -> "2020"
       )).get
 
       actualResult mustBe expectedResult
@@ -409,7 +409,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToDay -> "29",
         dateOfDispatchToMonth -> "02",
-        dateOfDispatchToYear -> "2022",
+        dateOfDispatchToYear -> "2022"
       )).errors
 
       actualResult mustBe expectedResult
@@ -426,7 +426,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToMonth -> "02",
-        dateOfDispatchToYear -> "2022",
+        dateOfDispatchToYear -> "2022"
       )).errors
 
       actualResult mustBe expectedResult
@@ -443,7 +443,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToDay -> "01",
-        dateOfDispatchToYear -> "2022",
+        dateOfDispatchToYear -> "2022"
       )).errors
 
       actualResult mustBe expectedResult
@@ -460,7 +460,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToDay -> "01",
-        dateOfDispatchToMonth -> "02",
+        dateOfDispatchToMonth -> "02"
       )).errors
 
       actualResult mustBe expectedResult

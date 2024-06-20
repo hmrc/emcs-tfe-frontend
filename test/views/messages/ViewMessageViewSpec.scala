@@ -107,7 +107,7 @@ class ViewMessageViewSpec extends ViewSpecBase
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.title -> s"${msg.messageTitle} - Excise Movement and Control System - GOV.UK",
-            Selectors.h1 -> msg.messageTitle,
+            Selectors.h1 -> msg.messageTitle
           )
         )
       }
@@ -194,7 +194,7 @@ class ViewMessageViewSpec extends ViewSpecBase
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
-            Selectors.h1 -> testMessage.messageTitle,
+            Selectors.h1 -> testMessage.messageTitle
           )
         )
       }
@@ -262,7 +262,7 @@ class ViewMessageViewSpec extends ViewSpecBase
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
-            Selectors.h1 -> testMessage.messageTitle,
+            Selectors.h1 -> testMessage.messageTitle
           )
         )
       }
@@ -339,7 +339,7 @@ class ViewMessageViewSpec extends ViewSpecBase
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
-            Selectors.h1 -> testMessage.messageTitle,
+            Selectors.h1 -> testMessage.messageTitle
           )
         )
       }
@@ -413,7 +413,7 @@ class ViewMessageViewSpec extends ViewSpecBase
         behave like pageWithExpectedElementsAndMessages(
           Seq(
             Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
-            Selectors.h1 -> testMessage.messageTitle,
+            Selectors.h1 -> testMessage.messageTitle
           )
         )
       }
@@ -960,7 +960,7 @@ class ViewMessageViewSpec extends ViewSpecBase
               functionalError = Seq(
                 IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry."),
                 IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4403", errorReason = "The consignor Excise Registration Number you have entered is not recognised by SEED. Please amend your entry."),
-                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry.")
               )
             )
           ),

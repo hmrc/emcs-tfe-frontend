@@ -680,7 +680,7 @@ class ViewMessageHelperSpec extends SpecBase
           relatedMessageType = Some("IE810"),
           ie704 = IE704ModelFixtures.ie704ModelModel.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
-              functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy("12345"))))),
+              functionalError = Seq(IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy("12345")))))
         ))
         val result = helper.constructErrors(message)
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
@@ -1237,7 +1237,7 @@ class ViewMessageHelperSpec extends SpecBase
           ie704 = IE704ModelFixtures.ie704ModelModel.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
               functionalError = Seq(
-                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry.")
               )
             )
           ),
@@ -1270,7 +1270,7 @@ class ViewMessageHelperSpec extends SpecBase
             body = IE704BodyFixtures.ie704BodyModel.copy(
               functionalError = Seq(
                 IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4403", errorReason = "The consignor Excise Registration Number you have entered is not recognised by SEED. Please amend your entry."),
-                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4411", errorReason = "You are not approved on SEED to dispatch energy products. Please check that the correct excise product code is selected and amend your entry.")
               )
             )
           ),
@@ -1303,7 +1303,7 @@ class ViewMessageHelperSpec extends SpecBase
           ie704 = IE704ModelFixtures.ie704ModelModel.copy(
             body = IE704BodyFixtures.ie704BodyModel.copy(
               functionalError = Seq(
-                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4410", errorReason = "The excise warehouse you have entered is not approved on SEED to receive this product. Please check that the correct excise product code is input and amend your entry."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4410", errorReason = "The excise warehouse you have entered is not approved on SEED to receive this product. Please check that the correct excise product code is input and amend your entry.")
               )
             )
           ),
@@ -1341,7 +1341,7 @@ class ViewMessageHelperSpec extends SpecBase
             body = IE704BodyFixtures.ie704BodyModel.copy(
               functionalError = Seq(
                 IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4406", errorReason = "The place of delivery you have entered is not recognised by SEED. Please amend your entry."),
-                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4407", errorReason = "The quantitiy entered exceeds the amount approved for this Temporary Consignment Authorisation (TCA). Please check and amend your entry."),
+                IE704FunctionalErrorFixtures.ie704FunctionalErrorModel.copy(errorType = "4407", errorReason = "The quantitiy entered exceeds the amount approved for this Temporary Consignment Authorisation (TCA). Please check and amend your entry.")
               )
             )
           ),

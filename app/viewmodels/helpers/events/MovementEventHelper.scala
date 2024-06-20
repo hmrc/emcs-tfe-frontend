@@ -503,7 +503,7 @@ class MovementEventHelper @Inject()(
           summaryListRows = Seq(
             Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDetails.dateOfArrival", reportOfReceipt.dateOfArrival.formatDateForUIOutput())),
             Some(summaryListRowBuilder(statusKey, messages(s"movementHistoryEvent.${event.eventType}.rorDetails.status.value.${reportOfReceipt.acceptMovement}"))),
-            Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDetails.moreInformation", reportOfReceipt.otherInformation.getOrElse(s"movementHistoryEvent.${event.eventType}.rorDetails.moreInformation.notProvided"))),
+            Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDetails.moreInformation", reportOfReceipt.otherInformation.getOrElse(s"movementHistoryEvent.${event.eventType}.rorDetails.moreInformation.notProvided")))
           )
         )
       case None => Html("")
@@ -539,7 +539,7 @@ class MovementEventHelper @Inject()(
                 cardTitleHeadingLevel = Some(3),
                 summaryListRows = Seq(
                   Seq(whatWasWrongRow),
-                  rorItemRows(event, model),
+                  rorItemRows(event, model)
                 ).flatten
               )
             )

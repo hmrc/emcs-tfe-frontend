@@ -58,6 +58,7 @@ class EventsHelper @Inject()(
       case (IE818, _) => ie818Html(event, movement, ie818ItemModelWithCnCodeInformation)
       case (IE819, _) => ie819Html(event, movement)
       case (IE829, _) => ie829Html(event, movement)
+      case (IE905, _) => ie905Html(event)
       case _ => Empty.asHtml
     }
   }
@@ -144,7 +145,7 @@ class EventsHelper @Inject()(
         eventHelper.consigneeInformationCard(),
         eventHelper.placeOfDestinationInformationCard(),
         eventHelper.exportInformationCard(),
-        eventHelper.rorItemsCard(event, ie818ItemModelWithCnCodeInformation),
+        eventHelper.rorItemsCard(event, ie818ItemModelWithCnCodeInformation)
       )
     )
   }
@@ -178,6 +179,15 @@ class EventsHelper @Inject()(
           ))
         }
       ).flatten
+    )
+  }
+
+  private def ie905Html(event: MovementHistoryEvent)(implicit messages: Messages): Html = {
+    HtmlFormat.fill(
+      Seq(
+        p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
+        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
+      )
     )
   }
 

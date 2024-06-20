@@ -98,6 +98,11 @@ object MovementEventMessages extends DateUtils {
     val ie829Heading: String = "Movement accepted by customs"
     val ie829Title: String = titleHelper(ie829Heading)
     val ie829Paragraph1: String = "This movement has been accepted for export by customs office number GB000383."
+
+    //IE905 Manual Closure of Movement Notification
+    val ie905ManualClosureResponseHeading: String = "Manual closure of a movement"
+    val ie905ManualClosureResponseTitle: String = titleHelper(ie905ManualClosureResponseHeading)
+    val ie905ManualClosureResponseP1 = "This movement has been manually closed."
   }
 
   object English extends EventMessages with EN

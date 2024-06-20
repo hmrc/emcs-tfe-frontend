@@ -17,4 +17,4 @@ GET        /trader/:ern/movement/:arc/event/:eventId/movement-accepted-customs  
 #GET        /trader/:ern/movement/:arc/event/:eventId/movement-closed                         controllers.events.ViewEventController.movementClosed(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/explanation-shortage-excess-submitted   controllers.events.ViewEventController.shortageExcessSubmitted(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/movement-closure-response               controllers.events.ViewEventController.movementClosureResponse(ern: String, arc: String, eventId: Int)
-#GET        /trader/:ern/movement/:arc/event/:eventId/movement-manually-closed                controllers.events.ViewEventController.movementManuallyClosed(ern: String, arc: String, eventId: Int)
+GET         /trader/:ern/movement/:arc/event/:eventId/manual-closure-movement                controllers.events.ViewEventController.manualClosureOfMovement(ern: String, arc: String, eventId: Int)

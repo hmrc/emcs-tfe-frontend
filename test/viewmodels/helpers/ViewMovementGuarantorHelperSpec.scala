@@ -55,7 +55,7 @@ class ViewMovementGuarantorHelperSpec extends SpecBase with GetMovementResponseF
       Consignor -> "Consignor",
       Transporter -> "Transporter",
       Owner -> "Owner of goods",
-      Consignee -> "Consignee",
+      Consignee -> "Consignee"
     ).foreach { guarantorType =>
       s"render 1 summary card when the guarantor type is ${guarantorType._1}" in {
         val result = helper.constructMovementGuarantor(getMovementResponseModel.copy(movementGuarantee = MovementGuaranteeModel(guarantorType._1, Some(Seq(

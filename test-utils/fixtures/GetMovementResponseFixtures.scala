@@ -183,7 +183,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         city = Some("Zeebrugge")
       )),
       vatNumber = Some("testVatNumber"),
-      eoriNumber = Some("testEoriNumber"),
+      eoriNumber = Some("testEoriNumber")
     )),
     headerEadEsad = HeaderEadEsadModel(
       sequenceNumber = 1,
@@ -482,7 +482,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "city" -> "Zeebrugge"
       ),
       "vatNumber" -> "testVatNumber",
-      "eoriNumber" -> "testEoriNumber",
+      "eoriNumber" -> "testEoriNumber"
     ),
     "headerEadEsad" -> Json.obj(
       "sequenceNumber" -> 1,
