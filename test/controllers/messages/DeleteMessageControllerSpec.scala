@@ -226,7 +226,7 @@ class DeleteMessageControllerSpec extends SpecBase
         redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url)
       }
 
-      "the user selects 'Yes, delete this message', and the message is not deleted" in new Test {
+      "the user selects 'Yes, delete this message', and the message is not deleted (still redirect as desired outcome is already achieved)" in new Test {
         MockGetMessagesService
           .getMessage(testErn, testMessageId)
           .returns(Future.successful(Some(testMessageFromCache)))
@@ -242,8 +242,24 @@ class DeleteMessageControllerSpec extends SpecBase
 
         val result: Future[Result] = controller.onSubmit(testErn, testMessageId)(fakeRequest)
 
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+        status(result) shouldBe Status.SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url)
+      }
+
+      "the user selects 'Yes, delete this message', and the message is not in the cache anymore. Then redirect back to where they came from." in new Test {
+        MockGetMessagesService
+          .getMessage(testErn, testMessageId)
+          .returns(Future.successful(None))
+
+        val fakeRequest =
+          FakeRequest("POST", "/")
+            .withFormUrlEncodedBody(data = "value" -> "true")
+            .withSession(SessionKeys.FROM_PAGE -> ViewMessagePage.toString)
+
+        val result: Future[Result] = controller.onSubmit(testErn, testMessageId)(fakeRequest)
+
+        status(result) shouldBe Status.SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.ViewMessageController.onPageLoad(testErn, 1234).url)
       }
 
     }
