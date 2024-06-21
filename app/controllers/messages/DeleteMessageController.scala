@@ -81,16 +81,13 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                             uniqueMessageIdentifier: Long)(implicit request: DataRequest[_]): Future[Result] =
     getMessagesService.getMessage(exciseRegistrationNumber, uniqueMessageIdentifier) flatMap {
       case Some(messageCache: MessageCache) =>
-        deleteMessageService.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier) map {
-          case deleteMessageResponse if deleteMessageResponse.recordsAffected == 1 =>
-            // redirect to all messages page to show success banner, add the deleted message title to session for the banner title
-            Redirect(routes.ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
-              .flashing(DELETED_MESSAGE_DESCRIPTION_KEY -> messagesHelper.messageDescriptionKey(messageCache.message))
-          case _ =>
-            InternalServerError(errorHandler.internalServerErrorTemplate(request))
+        deleteMessageService.deleteMessage(exciseRegistrationNumber, uniqueMessageIdentifier) map { _ =>
+          // redirect to all messages page to show success banner, add the deleted message title to session for the banner title
+          Redirect(routes.ViewAllMessagesController.onPageLoad(exciseRegistrationNumber, MessagesSearchOptions()).url)
+            .flashing(DELETED_MESSAGE_DESCRIPTION_KEY -> messagesHelper.messageDescriptionKey(messageCache.message))
         }
       case _ =>
-        Future(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+        returnToAllMessagesOrMessagePage(exciseRegistrationNumber, uniqueMessageIdentifier)
     }
 
   def renderView(exciseRegistrationNumber: String,
