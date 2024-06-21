@@ -18,7 +18,7 @@ package models.draftMovements
 
 import models.SelectOptionModel
 import play.api.i18n.Messages
-import uk.gov.hmrc.emcstfefrontend.models.WithName
+import models.common.WithName
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 import viewmodels.helpers.SelectItemHelper
 

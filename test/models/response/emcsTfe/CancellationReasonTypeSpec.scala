@@ -17,10 +17,9 @@
 package models.response.emcsTfe
 
 import base.SpecBase
-import uk.gov.hmrc.emcstfe.models.cancellationOfMovement.CancellationReasonType._
+import models.response.emcsTfe.CancellationReasonType._
 
 class CancellationReasonTypeSpec extends SpecBase {
-
 
   "CancellationReasonType" should {
 

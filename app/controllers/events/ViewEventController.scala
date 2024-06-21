@@ -85,6 +85,9 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
   def movementAcceptedCustoms(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE829)
 
+  def movementRejectedCustoms(ern: String, arc: String, eventId: Int): Action[AnyContent] =
+    onPageLoad(ern, arc, eventId, IE839)
+
   def manualClosureOfMovement(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE905)
 

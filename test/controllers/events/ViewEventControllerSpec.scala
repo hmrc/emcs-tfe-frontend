@@ -177,6 +177,11 @@ class ViewEventControllerSpec
       method = (id: Int) => controller.movementAcceptedCustoms(testErn, testArc, id)
     ),
     TestFixtureModel(
+      methodName = ".movementRejectedCustoms",
+      event = ie839MovementRejectedCustomsEvent,
+      method = (id: Int) => controller.movementRejectedCustoms(testErn, testArc, id)
+    ),
+    TestFixtureModel(
       methodName = ".manualClosureOfMovement",
       event = ie905ManualClosureResponseEvent,
       method = (id: Int) => controller.manualClosureOfMovement(testErn, testArc, id)
@@ -185,7 +190,7 @@ class ViewEventControllerSpec
       methodName = ".movementCancelled",
       event = ie810MovementCancelledEvent,
       method = (id: Int) => controller.movementCancelled(testErn, testArc, id)
-    ),
+    )
   ).foreach { case TestFixtureModel(methodName, event, method) =>
 
     s"calling $methodName" must {

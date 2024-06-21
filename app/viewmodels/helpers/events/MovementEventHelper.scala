@@ -20,6 +20,7 @@ import models.common.DestinationType._
 import models.common.GuarantorType._
 import models.common.{AcceptMovement, DestinationType, TraderModel, WrongWithMovement}
 import models.requests.DataRequest
+import models.response.emcsTfe.customsRejection.NotificationOfCustomsRejectionModel
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, UnsatisfactoryModel}
 import models.response.emcsTfe.{GetMovementResponse, MovementItem, NotificationOfAcceptedExportModel, NotificationOfAlertOrRejectionModel, NotificationOfDelayModel}
@@ -42,7 +43,8 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class MovementEventHelper @Inject()(
                                      h2: h2,
-                                     list: list,overview_partial: overview_partial,
+                                     list: list,
+                                     overview_partial: overview_partial,
                                      govukDetails : GovukDetails,
                                      transportCardHelper: ViewMovementTransportHelper,
                                      itemDetailsCardHelper: ItemDetailsCardHelper,
@@ -56,6 +58,7 @@ class MovementEventHelper @Inject()(
                                     headingTitle: Option[String] = None,
                                     headingMessageClass: String = "govuk-heading-m govuk-!-margin-top-9",
                                     cardTitleMessageKey: Option[String] = None,
+                                    cardTitleMessageArgs: Seq[String] = Seq.empty,
                                     cardAction: Option[ActionItem] = None,
                                     cardTitleHeadingLevel: Option[Int] = None,
                                     cardFooterHtml: Option[Html] = None,
@@ -67,6 +70,7 @@ class MovementEventHelper @Inject()(
       headingMessageKey = headingTitle,
       headingMessageClass = headingMessageClass,
       cardTitleMessageKey = cardTitleMessageKey,
+      cardTitleMessageArgs = cardTitleMessageArgs,
       cardAction = cardAction,
       cardTitleHeadingLevel = cardTitleHeadingLevel,
       cardFooterHtml = cardFooterHtml,
@@ -650,6 +654,85 @@ class MovementEventHelper @Inject()(
       summaryListRows = date ++ reasons ++ reasonInfo,
       summaryListAttributes = Map("id" -> "alert-rejection-information-summary")
     )
+  }
+
+  def customsRejectionInformationCard(event: NotificationOfCustomsRejectionModel)(implicit messages: Messages): Html = {
+    val rows = Seq(
+      Some(summaryListRowBuilder(
+        messages("movementHistoryEvent.IE839.summary.rejection.date"),
+        event.rejectionDateAndTime.toLocalDate.formatDateForUIOutput()
+      )),
+      Some(summaryListRowBuilder(
+        messages("movementHistoryEvent.IE839.summary.rejection.code"),
+        messages(s"movementHistoryEvent.IE839.summary.rejection.code.${event.rejectionReasonCode}")
+      )),
+      event.localReferenceNumber.fold[Option[SummaryListRow]](None)(
+        lrn => Some(summaryListRowBuilder(messages("movementHistoryEvent.IE839.summary.rejection.lrn"), lrn))
+      ),
+      event.documentReferenceNumber.fold[Option[SummaryListRow]](None)(
+        docRef => Some(summaryListRowBuilder(messages("movementHistoryEvent.IE839.summary.rejection.documentReferenceNumber"), docRef))
+      )
+    )
+
+    buildOverviewPartial(
+      headingTitle = None,
+      headingId = None,
+      summaryListRows = rows,
+      summaryListAttributes = Map("id" -> "customs-rejection-information-summary")
+    )
+  }
+
+  def customsRejectionDiagnosisCards(event: NotificationOfCustomsRejectionModel)(implicit messages: Messages): Html = {
+
+    if (event.hasMultipleDiagnosisCodes) {
+      val diagnosesSummaryCards = event.diagnoses.zipWithIndex.map { case (diagnosis, idx) =>
+        val rows = Seq(
+          Some(summaryListRowBuilder(
+            messages("movementHistoryEvent.IE839.summary.diagnosis.bodyRecordUniqueReference"),
+            diagnosis.bodyRecordUniqueReference
+          )),
+          Some(summaryListRowBuilder(
+            messages("movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode"),
+            messages(s"movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode.${diagnosis.diagnosisCode}")
+          ))
+        )
+
+        buildOverviewPartial(
+          cardTitleMessageKey = Some("movementHistoryEvent.IE839.summary.diagnosis.h3.item"),
+          cardTitleMessageArgs = Seq(s"${idx + 1}"),
+          cardTitleHeadingLevel = Some(3),
+          headingId = Some("customs-reject-diagnosis"),
+          summaryListRows = rows,
+          summaryListAttributes = Map("id" -> "customs-rejection-diagnosis-summary")
+        )
+      }
+
+
+      HtmlFormat.fill(
+        Seq(
+          h2(messages("movementHistoryEvent.IE839.summary.diagnosis.h2"))
+        ) ++ diagnosesSummaryCards
+      )
+    } else {
+      val diagnosis = event.diagnoses.head
+      val rows = Seq(
+        Some(summaryListRowBuilder(
+          messages("movementHistoryEvent.IE839.summary.diagnosis.bodyRecordUniqueReference"),
+          diagnosis.bodyRecordUniqueReference
+        )),
+        Some(summaryListRowBuilder(
+          messages("movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode"),
+          messages(s"movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode.${diagnosis.diagnosisCode}")
+        ))
+      )
+
+      buildOverviewPartial(
+        headingTitle = Some("movementHistoryEvent.IE839.summary.diagnosis.h2"),
+        headingId = Some("customs-reject-diagnosis"),
+        summaryListRows = rows,
+        summaryListAttributes = Map("id" -> "customs-rejection-diagnosis-summary")
+      )
+    }
   }
 
   def ie829AcceptedExportDetails(notificationOfAcceptedExport: NotificationOfAcceptedExportModel)(implicit movement: GetMovementResponse, messages: Messages): Html = {

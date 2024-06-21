@@ -174,6 +174,15 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
     isFirstEventTypeInHistory = false
   )
 
+  val ie839MovementRejectedCustomsEvent = MovementHistoryEvent(
+    eventType = IE839,
+    eventDate = "2024-01-15T17:00:00", // hash code then bit shifted right = 853932155
+    sequenceNumber = 1,
+    messageRole = 0,
+    upstreamArc = None,
+    isFirstEventTypeInHistory = false
+  )
+
   val ie905ManualClosureResponseEvent = MovementHistoryEvent(
     eventType = IE905,
     eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155

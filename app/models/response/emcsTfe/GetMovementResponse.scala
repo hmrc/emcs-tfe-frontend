@@ -18,6 +18,7 @@ package models.response.emcsTfe
 
 import models.MovementEadStatus
 import models.common._
+import models.response.emcsTfe.customsRejection.NotificationOfCustomsRejectionModel
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.ReportOfReceiptModel
 import play.api.libs.json._
@@ -52,10 +53,11 @@ case class GetMovementResponse(
                                 transportDetails: Seq[TransportDetailsModel],
                                 reportOfReceipt: Option[ReportOfReceiptModel],
                                 notificationOfDivertedMovement: Option[NotificationOfDivertedMovementModel],
-                                notificationOfAlertOrRejection: Option[Seq[NotificationOfAlertOrRejectionModel]],
+                                notificationOfAlertOrRejection: Seq[NotificationOfAlertOrRejectionModel],
                                 notificationOfAcceptedExport: Option[NotificationOfAcceptedExportModel],
                                 cancelMovement: Option[CancelMovementModel],
                                 notificationOfDelay: Option[Seq[NotificationOfDelayModel]],
+                                notificationOfCustomsRejection: Option[NotificationOfCustomsRejectionModel],
                                 items: Seq[MovementItem],
                                 movementGuarantee: MovementGuaranteeModel,
                                 eventHistorySummary: Option[Seq[MovementHistoryEvent]]
@@ -108,10 +110,11 @@ object GetMovementResponse {
     numberOfItems <- (__ \ "numberOfItems").read[Int]
     reportOfReceipt <- (__ \ "reportOfReceipt").readNullable[ReportOfReceiptModel]
     notificationOfDivertedMovement <- (__ \ "notificationOfDivertedMovement").readNullable[NotificationOfDivertedMovementModel]
-    notificationOfAlertOrRejection <- (__ \ "notificationOfAlertOrRejection").readNullable[Seq[NotificationOfAlertOrRejectionModel]]
+    notificationOfAlertOrRejection <- (__ \ "notificationOfAlertOrRejection").read[Seq[NotificationOfAlertOrRejectionModel]]
     notificationOfAcceptedExport <- (__ \ "notificationOfAcceptedExport").readNullable[NotificationOfAcceptedExportModel]
     cancelMovement <- (__ \ "cancelMovement").readNullable[CancelMovementModel]
     notificationOfDelay <- (__ \ "notificationOfDelay").readNullable[Seq[NotificationOfDelayModel]]
+    notificationOfCustomsRejection <- (__ \ "notificationOfCustomsRejection").readNullable[NotificationOfCustomsRejectionModel]
     items <- (__ \ "items").read[Seq[MovementItem]]
     eventHistorySummary <- (__ \ "eventHistorySummary").readNullable[Seq[MovementHistoryEvent]](MovementHistoryEvent.seqReads)
   } yield {
@@ -147,7 +150,8 @@ object GetMovementResponse {
       notificationOfAlertOrRejection = notificationOfAlertOrRejection,
       notificationOfAcceptedExport = notificationOfAcceptedExport,
       cancelMovement = cancelMovement,
-      notificationOfDelay = notificationOfDelay
+      notificationOfDelay = notificationOfDelay,
+      notificationOfCustomsRejection = notificationOfCustomsRejection
     )
   }
 }
