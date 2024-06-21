@@ -142,7 +142,7 @@ class TimelineHelperSpec extends SpecBase with GetMovementResponseFixtures {
         getKey(IE840, 0, 1) mustBe "movementHistoryEvent.IE840.first.label"
       }
       "the event is for a complementary notification of event" in {
-        getKey(IE840, 0, 2) mustBe "movementHistoryEvent.IE840.complementary.label"
+        getKey(IE840, 0, 3) mustBe "movementHistoryEvent.IE840.complementary.label"
       }
       "the event is for an explanation for a shortage or excess" in {
         getKey(IE871, 0, 0) mustBe "movementHistoryEvent.IE871.label"
