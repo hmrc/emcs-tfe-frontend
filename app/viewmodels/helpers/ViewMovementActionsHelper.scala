@@ -67,7 +67,7 @@ class ViewMovementActionsHelper @Inject()(
 
   def cancelMovementLink(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Option[Html] = {
     val splitMovement: Boolean = isASplitMovement(movement)
-    val movementStatusValid: Boolean = CancelMovementValidStatuses.contains(movement.eadStatus)
+    val movementStatusValid: Boolean = cancelMovementValidStatuses.contains(movement.eadStatus)
     val dispatchDateValid: Boolean = dateOfDispatchTodayOrInTheFuture(movement.dateOfDispatch)
 
     Option.when(!splitMovement && movementStatusValid && dispatchDateValid) {
@@ -76,19 +76,19 @@ class ViewMovementActionsHelper @Inject()(
   }
 
   def changeDestinationLink(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Option[Html] = {
-    Option.when(ChangeDestinationValidStatuses.contains(movement.eadStatus)) {
+    Option.when(changeDestinationValidStatuses.contains(movement.eadStatus)) {
       link(appConfig.emcsTfeChangeDestinationUrl(request.ern, movement.arc), "viewMovement.changeDestination", Some("submit-a-change-of-destination"), hintKey = Some("viewMovement.changeDestination.info"))
     }
   }
 
   def alertOrRejectionLink(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Option[Html] = {
-    Option.when(AlertOrRejectValidStatuses.contains(movement.eadStatus)) {
+    Option.when(alertOrRejectValidStatuses.contains(movement.eadStatus)) {
       link(appConfig.emcsTfeAlertOrRejectionUrl(request.ern, movement.arc), "viewMovement.alertOrRejection", Some("submit-alert-or-rejection"), hintKey = Some("viewMovement.alertOrRejection.info"))
     }
   }
 
   def reportOfReceiptLink(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Option[Html] = {
-    Option.when(ReportOfReceiptValidStatuses.contains(movement.eadStatus)) {
+    Option.when(reportOfReceiptValidStatuses.contains(movement.eadStatus)) {
       link(appConfig.emcsTfeReportAReceiptUrl(request.ern, movement.arc), "viewMovement.reportAReceipt", Some("submit-report-of-receipt"), hintKey = Some("viewMovement.reportAReceipt.info"))
     }
   }
@@ -101,8 +101,8 @@ class ViewMovementActionsHelper @Inject()(
 
   def shortageOrExcessLink(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Option[Html] = {
     val linkValid = movement.destinationType match {
-      case Export => ShortageOrExcessExportValidStatuses.contains(movement.eadStatus)
-      case _      => ShortageOrExcessValidStatuses.contains(movement.eadStatus)
+      case Export => shortageOrExcessExportValidStatuses.contains(movement.eadStatus)
+      case _      => shortageOrExcessValidStatuses.contains(movement.eadStatus)
     }
 
     Option.when(linkValid) {

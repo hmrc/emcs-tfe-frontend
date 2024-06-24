@@ -185,7 +185,7 @@ class ViewEventControllerSpec
       methodName = ".movementCancelled",
       event = ie810MovementCancelledEvent,
       method = (id: Int) => controller.movementCancelled(testErn, testArc, id)
-    ),
+    )
   ).foreach { case TestFixtureModel(methodName, event, method) =>
 
     s"calling $methodName" must {

@@ -32,12 +32,10 @@ class MarkMessageAsReadConnector @Inject()(val http: HttpClient, config: AppConf
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 
-  def markMessageAsRead(
-                         exciseRegistrationNumber: String,
-                         uniqueMessageIdentifier: Long)
-                       (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, MarkMessageAsReadResponse]] = {
+  def markMessageAsRead(ern: String, uniqueMessageIdentifier: Long)
+                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, MarkMessageAsReadResponse]] = {
 
-    def url: String = s"$baseUrl/message/$exciseRegistrationNumber/$uniqueMessageIdentifier"
+    def url: String = s"$baseUrl/message/$ern/$uniqueMessageIdentifier"
 
     putEmpty(url)
       .recover {
