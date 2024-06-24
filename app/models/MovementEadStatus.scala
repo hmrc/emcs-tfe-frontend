@@ -19,7 +19,10 @@ package models
 import models.common.Enumerable
 import uk.gov.hmrc.emcstfefrontend.models.WithName
 
-sealed trait MovementEadStatus
+sealed trait MovementEadStatus {
+
+  val schemaValues: Seq[String] = Seq(toString)
+}
 
 object MovementEadStatus extends Enumerable.Implicits {
 
@@ -35,7 +38,10 @@ object MovementEadStatus extends Enumerable.Implicits {
 
   case object Exporting extends WithName("Exporting") with MovementEadStatus
 
-  case object ManuallyClosed extends WithName("ManuallyClosed") with MovementEadStatus
+  case object ManuallyClosed extends WithName("ManuallyClosed") with MovementEadStatus {
+
+    override val schemaValues: Seq[String] = Seq("ManuallyClosed", "e-AD Manually Closed", "e-SAD Manually Closed")
+  }
 
   case object NoneStatus extends WithName("None") with MovementEadStatus
 
@@ -56,15 +62,15 @@ object MovementEadStatus extends Enumerable.Implicits {
     Stopped
   )
 
-  val CancelMovementValidStatuses = Seq(Accepted, Exporting, Rejected)
-  val ChangeDestinationValidStatuses = Seq(Accepted, Exporting, PartiallyRefused, Refused, DeemedExported, Rejected)
-  val AlertOrRejectValidStatuses = Seq(Accepted)
-  val ReportOfReceiptValidStatuses = Seq(Accepted)
-  val ShortageOrExcessValidStatuses = Seq(Delivered, Diverted, ManuallyClosed, Refused, PartiallyRefused, Exporting, Stopped, DeemedExported)
-  val ShortageOrExcessExportValidStatuses = Seq(Delivered, Diverted, ManuallyClosed, Refused, PartiallyRefused, Exporting, Stopped, Accepted, Rejected)
+  val cancelMovementValidStatuses: Seq[MovementEadStatus] = Seq(Accepted, Exporting, Rejected)
+  val changeDestinationValidStatuses: Seq[MovementEadStatus] = Seq(Accepted, Exporting, PartiallyRefused, Refused, DeemedExported, Rejected)
+  val alertOrRejectValidStatuses: Seq[MovementEadStatus] = Seq(Accepted)
+  val reportOfReceiptValidStatuses: Seq[MovementEadStatus] = Seq(Accepted)
+  val shortageOrExcessValidStatuses: Seq[MovementEadStatus] = Seq(Delivered, Diverted, ManuallyClosed, Refused, PartiallyRefused, Exporting, Stopped, DeemedExported)
+  val shortageOrExcessExportValidStatuses: Seq[MovementEadStatus] = Seq(Delivered, Diverted, ManuallyClosed, Refused, PartiallyRefused, Exporting, Stopped, Accepted, Rejected)
 
   implicit val enumerable: Enumerable[MovementEadStatus] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+    Enumerable(values.flatMap(v => v.schemaValues.map(_ -> v)): _*)
 
   def destinationType(code: String): MovementEadStatus = values.find(_.toString == code) match {
     case Some(value) => value

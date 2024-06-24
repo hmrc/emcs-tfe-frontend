@@ -51,7 +51,7 @@ class MarkMessageAsReadConnectorSpec extends SpecBase with Status with MimeTypes
           .putEmpty(s"$baseUrl/message/$testErn/$testMessageId")
           .returns(Future.successful(expectedResult))
 
-        val actualResult = connector.markMessageAsRead(exciseRegistrationNumber = testErn, testMessageId)
+        val actualResult = connector.markMessageAsRead(ern = testErn, testMessageId)
 
         await(actualResult) mustBe expectedResult
       }
@@ -67,7 +67,7 @@ class MarkMessageAsReadConnectorSpec extends SpecBase with Status with MimeTypes
           .putEmpty(s"$baseUrl/message/$testErn/$testMessageId")
           .returns(Future.successful(expectedResult))
 
-        val actualResult = connector.markMessageAsRead(exciseRegistrationNumber = testErn, testMessageId)
+        val actualResult = connector.markMessageAsRead(ern = testErn, testMessageId)
 
         await(actualResult) mustBe expectedResult
       }

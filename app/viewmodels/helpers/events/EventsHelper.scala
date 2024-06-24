@@ -137,7 +137,7 @@ class EventsHelper @Inject()(
       ) ++ Seq(
         Some(summary_list(Seq(
           Some(messages(s"${timelineHelper.getEventBaseKey(event)}.cancellationReason") -> messages(s"${timelineHelper.getEventBaseKey(event)}.reason.${cancelMovement.reason.toString}")),
-          if (movement.cancelMovement.get.reason == Other) Some(messages(s"${timelineHelper.getEventBaseKey(event)}.cancellationExplanation") -> cancelMovement.complementaryInformation.getOrElse("")) else None,
+          if (movement.cancelMovement.get.reason == Other) Some(messages(s"${timelineHelper.getEventBaseKey(event)}.cancellationExplanation") -> cancelMovement.complementaryInformation.getOrElse("")) else None
         ).flatten))
       ).flatten)
     }
