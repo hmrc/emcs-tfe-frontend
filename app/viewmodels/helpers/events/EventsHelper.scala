@@ -21,7 +21,7 @@ import models.common.DestinationType
 import models.requests.DataRequest
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
-import models.response.emcsTfe.{GetMovementResponse, NotificationOfAlertOrRejectionModel}
+import models.response.emcsTfe.{GetMovementResponse, NotificationOfAlertOrRejectionModel, NotificationOfDelayModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.emcstfe.models.cancellationOfMovement.CancellationReasonType.Other
@@ -62,6 +62,7 @@ class EventsHelper @Inject()(
       case (IE819, _) => ie819Html(event, movement)
       case (IE829, _) => ie829Html(event, movement)
       case (IE905, _) => ie905Html(event)
+      case (IE837, _) => ie837Html(event, movement)
       case _ => Empty.asHtml
     }
   }
@@ -211,6 +212,17 @@ class EventsHelper @Inject()(
     )
   }
 
+  private def ie837Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html =
+    HtmlFormat.fill(
+      Seq(
+        p(classes = "govuk-body-l")(Html(
+          messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
+        )),
+        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        eventHelper.delayInformationCard(getIE837EventDetail(event, movement), event.messageRole)
+      )
+    )
+
   private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
     p(classes = "govuk-body js-visible govuk-!-display-none-print")(
       HtmlFormat.fill(
@@ -225,6 +237,11 @@ class EventsHelper @Inject()(
   private def getIE819EventDetail(event: MovementHistoryEvent, movement: GetMovementResponse): NotificationOfAlertOrRejectionModel =
     movement.notificationOfAlertOrRejection.flatMap(_.find(_.notificationDateAndTime == LocalDateTime.parse(event.eventDate))).getOrElse {
       throw new BadRequestException(s"Unable to find the IE819 event details for the event for the date: ${event.eventDate}}")
+    }
+
+  private def getIE837EventDetail(event: MovementHistoryEvent, movement: GetMovementResponse): NotificationOfDelayModel =
+    movement.notificationOfDelay.flatMap(_.find(_.dateTime == LocalDateTime.parse(event.eventDate))).getOrElse {
+      throw new BadRequestException(s"Unable to find the IE837 event details for the event for the date: ${event.eventDate}}")
     }
 
 }

@@ -276,30 +276,46 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       )
     )),
     notificationOfAcceptedExport = Some(notificationOfAcceptedExport),
-    cancelMovement = Some(CancelMovementModel(CancellationReasonType.Other, Some("some info")))
+    cancelMovement = Some(CancelMovementModel(CancellationReasonType.Other, Some("some info"))),
+    notificationOfDelay = Some(Seq(
+      NotificationOfDelayModel(
+        submitterIdentification = "GBWK001234569",
+        submitterType = SubmitterType.Consignor,
+        explanationCode = DelayReasonType.Accident,
+        complementaryInformation = Some("Lorry crashed off cliff"),
+        dateTime = LocalDateTime.parse("2024-06-18T08:11:33")
+      ),
+      NotificationOfDelayModel(
+        submitterIdentification = "GBWK001234569",
+        submitterType = SubmitterType.Consignor,
+        explanationCode = DelayReasonType.Strikes,
+        complementaryInformation = None,
+        dateTime = LocalDateTime.parse("2024-06-18T08:18:56")
+      )
+    ))
   )
 
   lazy val notificationOfAcceptedExport: NotificationOfAcceptedExportModel =
     NotificationOfAcceptedExportModel(
-        customsOfficeNumber = "GB000383",
-        dateOfAcceptance = LocalDate.of(2024, 2, 5),
-        referenceNumberOfSenderCustomsOffice = "GB000101",
-        identificationOfSenderCustomsOfficer = "John Doe",
-        documentReferenceNumber = "645564546",
-        consigneeTrader = TraderModel(
-          traderExciseNumber = Some("BE345345345"),
-          traderName = Some("PEAR Supermarket"),
-          address = Some(
-            AddressModel(
-              streetNumber = None,
-              street = Some("Angels Business Park"),
-              postcode = Some("BD1 3NN"),
-              city = Some("Bradford")
-            )),
-          vatNumber = None,
-          eoriNumber = Some("GB00000578901")
-        )
+      customsOfficeNumber = "GB000383",
+      dateOfAcceptance = LocalDate.of(2024, 2, 5),
+      referenceNumberOfSenderCustomsOffice = "GB000101",
+      identificationOfSenderCustomsOfficer = "John Doe",
+      documentReferenceNumber = "645564546",
+      consigneeTrader = TraderModel(
+        traderExciseNumber = Some("BE345345345"),
+        traderName = Some("PEAR Supermarket"),
+        address = Some(
+          AddressModel(
+            streetNumber = None,
+            street = Some("Angels Business Park"),
+            postcode = Some("BD1 3NN"),
+            city = Some("Bradford")
+          )),
+        vatNumber = None,
+        eoriNumber = Some("GB00000578901")
       )
+    )
 
   val reportOfReceiptJson = Json.obj(
     "arc" -> testArc,
@@ -555,6 +571,21 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
             "reason" -> "3"
           )
         )
+      )
+    ),
+    "notificationOfDelay" -> Json.arr(
+      Json.obj(
+        "submitterIdentification" -> "GBWK001234569",
+        "submitterType" -> "1",
+        "explanationCode" -> "6",
+        "complementaryInformation" -> "Lorry crashed off cliff",
+        "dateTime" -> "2024-06-18T08:11:33"
+      ),
+      Json.obj(
+        "submitterIdentification" -> "GBWK001234569",
+        "submitterType" -> "1",
+        "explanationCode" -> "5",
+        "dateTime" -> "2024-06-18T08:18:56"
       )
     )
   )

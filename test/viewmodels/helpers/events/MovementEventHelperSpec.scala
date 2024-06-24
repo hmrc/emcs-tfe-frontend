@@ -19,7 +19,7 @@ package viewmodels.helpers.events
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.events.MovementEventMessages
-import fixtures.messages.AlertRejectionReasonMessages
+import fixtures.messages.{AlertRejectionReasonMessages, DelayReasonMessages}
 import models.common.DestinationType.{DirectDelivery, Export, RegisteredConsignee, TaxWarehouse, TemporaryRegisteredConsignee, UnknownDestination}
 import models.common.GuarantorType.{Consignee, Consignor, GuarantorNotRequired, NoGuarantor, Owner, Transporter}
 import models.common.TransportArrangement.OwnerOfGoods
@@ -1189,6 +1189,59 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             }
           }
         }
+    }
+  }
+
+  "delayInformationCard" must {
+
+    Seq(1, 2).foreach { messageRole =>
+
+      SubmitterType.values.foreach { submitterType =>
+
+        DelayReasonType.values.foreach { delayReason =>
+
+          s"for messageRole of '$messageRole', submitterType of '$submitterType' and delayReason of '$delayReason'" must {
+
+            Seq(MovementEventMessages.English -> DelayReasonMessages.English).foreach {
+              case (messagesForLanguage, delayReasonMessages) =>
+
+                s"when language code of '${messagesForLanguage.lang.code}'" when {
+
+                  "render the correct HTML" in {
+
+                    implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+                      notificationOfDelay = Some(Seq(
+                        NotificationOfDelayModel(
+                          submitterIdentification = testErn,
+                          submitterType = submitterType,
+                          explanationCode = delayReason,
+                          complementaryInformation = Some("info"),
+                          dateTime = LocalDateTime.of(2023, 12, 19, 9, 0, 0)
+                        )
+                      ))
+                    )
+                    val eventDetails = _movement.notificationOfDelay.get.head
+
+                    val result = helper.delayInformationCard(eventDetails, messageRole)
+                    val doc = Jsoup.parse(result.toString())
+
+                    doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie837SubmittedBy
+                    doc.select(Selectors.summaryRowValue(1)).text() mustBe messagesForLanguage.ie837SubmittedByValue(submitterType)
+
+                    doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie837SubmitterId(submitterType)
+                    doc.select(Selectors.summaryRowValue(2)).text() mustBe testErn
+
+                    doc.select(Selectors.summaryRowKey(3)).text() mustBe messagesForLanguage.ie837DelayType
+                    doc.select(Selectors.summaryRowValue(3)).text() mustBe delayReasonMessages.messageType(messageRole)
+
+                    doc.select(Selectors.summaryRowKey(4)).text() mustBe messagesForLanguage.ie837DelayReason
+                    doc.select(Selectors.summaryRowValue(4)).text() mustBe delayReasonMessages.reason(delayReason)
+                  }
+                }
+            }
+          }
+        }
+      }
     }
   }
 }
