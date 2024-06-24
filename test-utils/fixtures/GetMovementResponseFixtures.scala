@@ -232,7 +232,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       notificationDateAndTime = LocalDateTime.of(2024, 6, 5, 0, 0, 1),
       downstreamArcs = Seq(testArc, testArc.dropRight(1) + "1")
     )),
-    notificationOfAlertOrRejection = Seq(
+    notificationOfAlertOrRejection = Some(Seq(
       NotificationOfAlertOrRejectionModel(
         notificationType = Alert,
         notificationDateAndTime = LocalDateTime.of(2023, 12, 18, 9, 0, 0),
@@ -275,7 +275,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
           )
         )
       )
-    ),
+    )),
     notificationOfAcceptedExport = Some(notificationOfAcceptedExport),
     cancelMovement = Some(CancelMovementModel(CancellationReasonType.Other, Some("some info"))),
     notificationOfDelay = Some(Seq(

@@ -35,7 +35,6 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
-import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.messages.{DeleteMessageHelper, MessagesHelper}
 import views.html.messages.DeleteMessageView

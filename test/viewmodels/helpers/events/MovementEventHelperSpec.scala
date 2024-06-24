@@ -1072,7 +1072,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             "render the correct HTML" in {
 
               implicit val _movement: GetMovementResponse = getMovementResponseModel
-              val eventDetails = _movement.notificationOfAlertOrRejection.head
+              val eventDetails = _movement.notificationOfAlertOrRejection.get.head
 
               val result = helper.alertRejectInformationCard(eventDetails)
               val doc = Jsoup.parse(result.toString())
@@ -1105,7 +1105,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             "render the correct HTML" in {
 
               implicit val _movement: GetMovementResponse = getMovementResponseModel
-              val eventDetails = _movement.notificationOfAlertOrRejection(1)
+              val eventDetails = _movement.notificationOfAlertOrRejection.get(1)
 
               val result = helper.alertRejectInformationCard(eventDetails)
               val doc = Jsoup.parse(result.toString())
@@ -1123,7 +1123,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             "render the correct HTML" in {
 
               implicit val _movement: GetMovementResponse = getMovementResponseModel
-              val eventDetails = _movement.notificationOfAlertOrRejection(2)
+              val eventDetails = _movement.notificationOfAlertOrRejection.get(2)
 
               val result = helper.alertRejectInformationCard(eventDetails)
               val doc = Jsoup.parse(result.toString())
@@ -1141,7 +1141,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             "render the correct HTML" in {
 
               implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-                notificationOfAlertOrRejection = Seq(
+                notificationOfAlertOrRejection = Some(Seq(
                   NotificationOfAlertOrRejectionModel(
                     notificationType = Rejection,
                     notificationDateAndTime = LocalDateTime.of(2023, 12, 19, 9, 0, 0),
@@ -1165,8 +1165,8 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
                     )
                   )
                 )
-              )
-              val eventDetails = _movement.notificationOfAlertOrRejection.head
+              ))
+              val eventDetails = _movement.notificationOfAlertOrRejection.get.head
 
               val result = helper.alertRejectInformationCard(eventDetails)
               val doc = Jsoup.parse(result.toString())

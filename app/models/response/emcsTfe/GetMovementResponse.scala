@@ -53,7 +53,7 @@ case class GetMovementResponse(
                                 transportDetails: Seq[TransportDetailsModel],
                                 reportOfReceipt: Option[ReportOfReceiptModel],
                                 notificationOfDivertedMovement: Option[NotificationOfDivertedMovementModel],
-                                notificationOfAlertOrRejection: Seq[NotificationOfAlertOrRejectionModel],
+                                notificationOfAlertOrRejection: Option[Seq[NotificationOfAlertOrRejectionModel]],
                                 notificationOfAcceptedExport: Option[NotificationOfAcceptedExportModel],
                                 cancelMovement: Option[CancelMovementModel],
                                 notificationOfDelay: Option[Seq[NotificationOfDelayModel]],
@@ -110,7 +110,7 @@ object GetMovementResponse {
     numberOfItems <- (__ \ "numberOfItems").read[Int]
     reportOfReceipt <- (__ \ "reportOfReceipt").readNullable[ReportOfReceiptModel]
     notificationOfDivertedMovement <- (__ \ "notificationOfDivertedMovement").readNullable[NotificationOfDivertedMovementModel]
-    notificationOfAlertOrRejection <- (__ \ "notificationOfAlertOrRejection").read[Seq[NotificationOfAlertOrRejectionModel]]
+    notificationOfAlertOrRejection <- (__ \ "notificationOfAlertOrRejection").readNullable[Seq[NotificationOfAlertOrRejectionModel]]
     notificationOfAcceptedExport <- (__ \ "notificationOfAcceptedExport").readNullable[NotificationOfAcceptedExportModel]
     cancelMovement <- (__ \ "cancelMovement").readNullable[CancelMovementModel]
     notificationOfDelay <- (__ \ "notificationOfDelay").readNullable[Seq[NotificationOfDelayModel]]

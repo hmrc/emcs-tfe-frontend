@@ -257,7 +257,7 @@ class EventsHelper @Inject()(
   }
 
   private def getIE819EventDetail(event: MovementHistoryEvent, movement: GetMovementResponse): NotificationOfAlertOrRejectionModel =
-    movement.notificationOfAlertOrRejection.find(_.notificationDateAndTime == LocalDateTime.parse(event.eventDate)).getOrElse {
+    movement.notificationOfAlertOrRejection.flatMap(_.find(_.notificationDateAndTime == LocalDateTime.parse(event.eventDate))).getOrElse {
       throw new BadRequestException(s"Unable to find the IE819 event details for the event for the date: ${event.eventDate}}")
     }
 

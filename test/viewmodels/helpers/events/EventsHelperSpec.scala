@@ -186,7 +186,7 @@ class EventsHelperSpec extends SpecBase
             "render the correct HTML" in {
 
               val result = helper.constructEventInformation(ie819AlertEventMultipleReasons, getMovementResponseModel, Seq.empty)
-              val eventDetails = getMovementResponseModel.notificationOfAlertOrRejection.head
+              val eventDetails = getMovementResponseModel.notificationOfAlertOrRejection.get.head
               val consigneeDetails = getMovementResponseModel.consigneeTrader.get
               val body = Jsoup.parse(result.toString())
 
