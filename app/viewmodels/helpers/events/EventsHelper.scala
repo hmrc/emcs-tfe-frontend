@@ -241,7 +241,7 @@ class EventsHelper @Inject()(
           messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
         )),
         printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
-        eventHelper.delayInformationCard(getIE837EventDetail(event, movement), event.messageRole)
+        movementEventHelper.delayInformationCard(getIE837EventDetail(event, movement), event.messageRole)
       )
     )
 

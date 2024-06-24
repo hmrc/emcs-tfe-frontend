@@ -16,8 +16,6 @@
 
 package models.common
 
-import uk.gov.hmrc.emcstfefrontend.models.WithName
-
 sealed trait SubmitterType
 
 object SubmitterType extends Enumerable.Implicits {
