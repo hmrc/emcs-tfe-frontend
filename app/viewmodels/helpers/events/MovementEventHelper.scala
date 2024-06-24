@@ -691,18 +691,18 @@ class MovementEventHelper @Inject()(
 
     val delayType =
       Some(summaryListRowBuilder(
-        messages(s"movementHistoryEvent.IE837.summary.delayType"),
+        messages("movementHistoryEvent.IE837.summary.delayType"),
         messages(s"movementHistoryEvent.IE837.summary.delayType.$messageRole")
       ))
 
     val reason =
       Some(summaryListRowBuilder(
-        messages(s"movementHistoryEvent.IE837.summary.reason"),
+        messages("movementHistoryEvent.IE837.summary.reason"),
         messages(s"movementHistoryEvent.IE837.summary.reason.${event.explanationCode}")
       ))
 
     val info =
-      event.complementaryInformation.map(summaryListRowBuilder(messages(s"movementHistoryEvent.IE837.summary.info"), _))
+      event.complementaryInformation.map(summaryListRowBuilder(messages("movementHistoryEvent.IE837.summary.info"), _))
 
     buildOverviewPartial(
       headingTitle = None,

@@ -574,14 +574,14 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       )
     ),
     "notificationOfDelay" -> Json.arr(
-      Json.obj(fields =
+      Json.obj(
         "submitterIdentification" -> "GBWK001234569",
         "submitterType" -> "1",
         "explanationCode" -> "6",
         "complementaryInformation" -> "Lorry crashed off cliff",
         "dateTime" -> "2024-06-18T08:11:33"
       ),
-      Json.obj(fields =
+      Json.obj(
         "submitterIdentification" -> "GBWK001234569",
         "submitterType" -> "1",
         "explanationCode" -> "5",
