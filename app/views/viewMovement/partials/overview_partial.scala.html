@@ -28,6 +28,7 @@
 @(
         headingMessageKey: Option[String],
         cardTitleMessageKey: Option[String],
+        cardTitleMessageArgs: Seq[String] = Seq.empty,
         cardTitleHeadingLevel: Option[Int] = None,
         cardAction: Option[ActionItem] = None,
         summaryListRows: Seq[SummaryListRow],
@@ -53,7 +54,7 @@
 
 @summaryCard(
     cardTitleMessageKey.map(msgKey => Card(
-     Some(CardTitle(Text(messages(msgKey)), cardTitleHeadingLevel)),
+     Some(CardTitle(Text(messages(msgKey, cardTitleMessageArgs: _*)), cardTitleHeadingLevel)),
      actions = cardAction.map(act => Actions(items = Seq(act)))
     )),
     summaryListRows,

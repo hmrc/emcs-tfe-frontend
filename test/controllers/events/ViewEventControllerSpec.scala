@@ -177,6 +177,11 @@ class ViewEventControllerSpec
       method = (id: Int) => controller.movementAcceptedCustoms(testErn, testArc, id)
     ),
     TestFixtureModel(
+      methodName = ".movementRejectedCustoms",
+      event = ie839MovementRejectedCustomsEvent,
+      method = (id: Int) => controller.movementRejectedCustoms(testErn, testArc, id)
+    ),
+    TestFixtureModel(
       methodName = ".manualClosureOfMovement",
       event = ie905ManualClosureResponseEvent,
       method = (id: Int) => controller.manualClosureOfMovement(testErn, testArc, id)

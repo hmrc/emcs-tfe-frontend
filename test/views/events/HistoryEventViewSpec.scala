@@ -423,6 +423,21 @@ class HistoryEventViewSpec extends ViewSpecBase
           }
         }
 
+        "rendering an IE839 event (Movement rejected by customs)" should {
+          "render the main detail section of the view" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie839MovementRejectedByCustomsTitle,
+                Selectors.h1 -> messagesForLanguage.ie839MovementRejectedByCustomsHeading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie839MovementRejectedCustomsEvent.eventDate)),
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie839MovementRejectedByCustomsP1WithCustomsOffice("AT002000"),
+                Selectors.p(2) -> messagesForLanguage.printScreenContent
+              )
+            )(createDocument(ie839MovementRejectedCustomsEvent, getMovementResponseModel))
+          }
+        }
+
         "rendering an IE905 event (manual closure of a movement)" should {
 
           "render the main detail section of the view" should {

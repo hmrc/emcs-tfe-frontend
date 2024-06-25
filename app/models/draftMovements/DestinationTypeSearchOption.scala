@@ -20,7 +20,7 @@ import models.SelectOptionModel
 import models.common.{DestinationType, Enumerable}
 import play.api.i18n.Messages
 import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.emcstfefrontend.models.WithName
+import models.common.WithName
 import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import viewmodels.govuk.checkbox._

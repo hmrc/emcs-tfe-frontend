@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfefrontend.models
+package models.response.emcsTfe.customsRejection
 
-class WithName(string: String) {
-  override val toString: String = string
+import play.api.libs.json.{Format, Json}
+
+case class CustomsRejectionDiagnosis(bodyRecordUniqueReference: String, diagnosisCode: CustomsRejectionDiagnosisCodeType)
+
+object CustomsRejectionDiagnosis {
+  implicit val format: Format[CustomsRejectionDiagnosis] = Json.format[CustomsRejectionDiagnosis]
+
 }

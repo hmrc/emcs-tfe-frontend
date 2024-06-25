@@ -30,6 +30,7 @@ import models.requests.DataRequest
 import models.response.emcsTfe.AlertOrRejectionType.Rejection
 import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, ReceiptedItemsModel, UnsatisfactoryModel}
 import models.response.emcsTfe._
+import models.response.emcsTfe.customsRejection.{CustomsRejectionDiagnosis, CustomsRejectionDiagnosisCodeType, CustomsRejectionReasonCodeType}
 import models.response.referenceData.CnCodeInformation
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -60,6 +61,10 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
     def summaryListRowKey(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dt"
 
     def summaryListRowValue(i: Int) = s"div.govuk-summary-list__row:nth-of-type($i) > dd"
+
+    def cardSummaryList(i: Int) = s"div.govuk-summary-card:nth-of-type($i)"
+
+    override val cardHeader: Int => String = i => s".govuk-summary-card:nth-of-type($i) h3"
   }
 
 
@@ -1159,8 +1164,8 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
                       )
                     )
                   )
-                ))
-              )
+                )
+              ))
               val eventDetails = _movement.notificationOfAlertOrRejection.get.head
 
               val result = helper.alertRejectInformationCard(eventDetails)
@@ -1241,6 +1246,209 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             }
           }
         }
+      }
+    }
+  }
+
+  "customsRejectionInformationCard" should {
+
+    Seq(MovementEventMessages.English).foreach { messagesForLanguage =>
+
+      "render the correct HTML (LRN and document ref present)" in {
+
+        val eventDetails = getMovementResponseModel.notificationOfCustomsRejection.get
+
+        val result = helper.customsRejectionInformationCard(eventDetails)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).isEmpty mustBe true
+
+        doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionDate
+        doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie839MovementRejectedCustomsEvent.eventDate).toLocalDate.formatDateForUIOutput()
+
+        doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason
+        doc.select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason2
+
+        doc.select(Selectors.summaryRowKey(3)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsLRN
+        doc.select(Selectors.summaryRowValue(3)).text() mustBe eventDetails.localReferenceNumber.get
+
+        doc.select(Selectors.summaryRowKey(4)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDocumentRef
+        doc.select(Selectors.summaryRowValue(4)).text() mustBe eventDetails.documentReferenceNumber.get
+      }
+
+      "render the correct HTML (LRN and document ref NOT present)" in {
+
+        val notificationOfCustomsRejection = getMovementResponseModel.copy(
+          notificationOfCustomsRejection = Some(
+            getMovementResponseModel.notificationOfCustomsRejection.get.copy(
+              localReferenceNumber = None,
+              documentReferenceNumber = None
+            )
+          )
+        ).notificationOfCustomsRejection.get
+
+        val result = helper.customsRejectionInformationCard(notificationOfCustomsRejection)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).isEmpty mustBe true
+
+        doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionDate
+        doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie839MovementRejectedCustomsEvent.eventDate).toLocalDate.formatDateForUIOutput()
+
+        doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason
+        doc.select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason2
+
+        doc.select(Selectors.summaryRowKey(3)).isEmpty mustBe true
+        doc.select(Selectors.summaryRowValue(3)).isEmpty mustBe true
+
+        doc.select(Selectors.summaryRowKey(4)).isEmpty mustBe true
+        doc.select(Selectors.summaryRowValue(4)).isEmpty mustBe true
+      }
+
+      Seq(
+        CustomsRejectionReasonCodeType.ImportDataNotFound -> messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason1,
+        CustomsRejectionReasonCodeType.ImportDataMismatch -> messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason2,
+        CustomsRejectionReasonCodeType.ExportDataNotFound -> messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason3,
+        CustomsRejectionReasonCodeType.ExportDataMismatch -> messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason4,
+        CustomsRejectionReasonCodeType.RejectedAtExportProcedure -> messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason5
+      ).foreach { case (rejectionReasonCode, rejectionReasonMessage) =>
+        s"render the correct HTML for rejection reason code: $rejectionReasonCode" in {
+
+          val eventDetails = getMovementResponseModel.copy(
+            notificationOfCustomsRejection = Some(
+              getMovementResponseModel.notificationOfCustomsRejection.get.copy(
+                rejectionReasonCode = rejectionReasonCode
+              )
+            )
+          ).notificationOfCustomsRejection.get
+
+          val result = helper.customsRejectionInformationCard(eventDetails)
+          val doc = Jsoup.parse(result.toString())
+
+          doc.select(Selectors.h2(1)).isEmpty mustBe true
+
+          doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason
+          doc.select(Selectors.summaryRowValue(2)).text() mustBe rejectionReasonMessage
+        }
+      }
+    }
+  }
+
+  "customsRejectionDiagnosisCards" should {
+
+    Seq(MovementEventMessages.English).foreach { messagesForLanguage =>
+
+      "render the correct HTML for multiple diagnoses" in {
+
+        val eventDetails = getMovementResponseModel.copy(
+          notificationOfCustomsRejection = Some(
+            getMovementResponseModel.notificationOfCustomsRejection.get.copy(
+              diagnoses = Seq(
+                CustomsRejectionDiagnosis(
+                  bodyRecordUniqueReference = "1",
+                  diagnosisCode = CustomsRejectionDiagnosisCodeType.UnknownArc,
+                ),
+                CustomsRejectionDiagnosis(
+                  bodyRecordUniqueReference = "2",
+                  diagnosisCode = CustomsRejectionDiagnosisCodeType.BodyRecordUniqueReferenceDoesNotExist,
+                ),
+                CustomsRejectionDiagnosis(
+                  bodyRecordUniqueReference = "3",
+                  diagnosisCode = CustomsRejectionDiagnosisCodeType.NoGoodsItemInDeclaration,
+                ),
+                CustomsRejectionDiagnosis(
+                  bodyRecordUniqueReference = "4",
+                  diagnosisCode = CustomsRejectionDiagnosisCodeType.WeightMismatch,
+                ),
+                CustomsRejectionDiagnosis(
+                  bodyRecordUniqueReference = "5",
+                  diagnosisCode = CustomsRejectionDiagnosisCodeType.DestinationTypeIsNotExport,
+                ),
+                CustomsRejectionDiagnosis(
+                  bodyRecordUniqueReference = "6",
+                  diagnosisCode = CustomsRejectionDiagnosisCodeType.CommodityCodesDoNotMatch,
+                )
+              )
+            )
+          )
+        ).notificationOfCustomsRejection.get
+
+        val result = helper.customsRejectionDiagnosisCards(eventDetails)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisHeading
+
+        doc.select(Selectors.cardHeader(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisNumberedHeading(1)
+        doc.select(Selectors.cardSummaryList(1)).select(Selectors.summaryListRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsBodyRecordUniqueReference
+        doc.select(Selectors.cardSummaryList(1)).select(Selectors.summaryRowValue(1)).text() mustBe "1"
+
+        doc.select(Selectors.cardSummaryList(1)).select(Selectors.summaryListRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode
+        doc.select(Selectors.cardSummaryList(1)).select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode1
+
+        doc.select(Selectors.cardHeader(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisNumberedHeading(2)
+        doc.select(Selectors.cardSummaryList(2)).select(Selectors.summaryListRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsBodyRecordUniqueReference
+        doc.select(Selectors.cardSummaryList(2)).select(Selectors.summaryRowValue(1)).text() mustBe "2"
+
+        doc.select(Selectors.cardSummaryList(2)).select(Selectors.summaryListRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode
+        doc.select(Selectors.cardSummaryList(2)).select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode2
+
+        doc.select(Selectors.cardHeader(3)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisNumberedHeading(3)
+        doc.select(Selectors.cardSummaryList(3)).select(Selectors.summaryListRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsBodyRecordUniqueReference
+        doc.select(Selectors.cardSummaryList(3)).select(Selectors.summaryRowValue(1)).text() mustBe "3"
+
+        doc.select(Selectors.cardSummaryList(3)).select(Selectors.summaryListRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode
+        doc.select(Selectors.cardSummaryList(3)).select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode3
+
+        doc.select(Selectors.cardHeader(4)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisNumberedHeading(4)
+        doc.select(Selectors.cardSummaryList(4)).select(Selectors.summaryListRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsBodyRecordUniqueReference
+        doc.select(Selectors.cardSummaryList(4)).select(Selectors.summaryRowValue(1)).text() mustBe "4"
+
+        doc.select(Selectors.cardSummaryList(4)).select(Selectors.summaryListRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode
+        doc.select(Selectors.cardSummaryList(4)).select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode4
+
+        doc.select(Selectors.cardHeader(5)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisNumberedHeading(5)
+        doc.select(Selectors.cardSummaryList(5)).select(Selectors.summaryListRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsBodyRecordUniqueReference
+        doc.select(Selectors.cardSummaryList(5)).select(Selectors.summaryRowValue(1)).text() mustBe "5"
+
+        doc.select(Selectors.cardSummaryList(5)).select(Selectors.summaryListRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode
+        doc.select(Selectors.cardSummaryList(5)).select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode5
+
+        doc.select(Selectors.cardHeader(6)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisNumberedHeading(6)
+        doc.select(Selectors.cardSummaryList(6)).select(Selectors.summaryListRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsBodyRecordUniqueReference
+        doc.select(Selectors.cardSummaryList(6)).select(Selectors.summaryRowValue(1)).text() mustBe "6"
+
+        doc.select(Selectors.cardSummaryList(6)).select(Selectors.summaryListRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode
+        doc.select(Selectors.cardSummaryList(6)).select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode6
+
+      }
+
+      "render the correct HTML for a single diagnosis" in {
+
+        val eventDetails = getMovementResponseModel.copy(
+          notificationOfCustomsRejection = Some(
+            getMovementResponseModel.notificationOfCustomsRejection.get.copy(
+              diagnoses = Seq(
+                CustomsRejectionDiagnosis(
+                  bodyRecordUniqueReference = "1",
+                  diagnosisCode = CustomsRejectionDiagnosisCodeType.UnknownArc,
+                )
+              )
+            )
+          )
+        ).notificationOfCustomsRejection.get
+
+        val result = helper.customsRejectionDiagnosisCards(eventDetails)
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisHeading
+
+        doc.select(Selectors.cardHeader(1)).isEmpty mustBe true
+
+        doc.select(Selectors.summaryListRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsBodyRecordUniqueReference
+        doc.select(Selectors.summaryRowValue(1)).text() mustBe "1"
+
+        doc.select(Selectors.summaryListRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode
+        doc.select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode1
       }
     }
   }

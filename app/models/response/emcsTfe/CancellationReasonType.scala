@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.emcstfe.models.cancellationOfMovement
+package models.response.emcsTfe
 
-import models.common.Enumerable
-import uk.gov.hmrc.emcstfefrontend.models.WithName
-
-
+import models.common.{Enumerable, WithName}
 
 sealed trait CancellationReasonType
 

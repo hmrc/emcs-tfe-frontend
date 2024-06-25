@@ -110,6 +110,32 @@ object MovementEventMessages extends DateUtils {
     val ie829Title: String = titleHelper(ie829Heading)
     val ie829Paragraph1: String = "This movement has been accepted for export by customs office number GB000383."
 
+    //IE839 Movement rejected by customs
+    val ie839MovementRejectedByCustomsHeading: String = "Movement rejected by customs"
+    val ie839MovementRejectedByCustomsTitle: String = titleHelper(ie839MovementRejectedByCustomsHeading)
+    def ie839MovementRejectedByCustomsP1WithCustomsOffice(customsOfficeNumber: String) = s"This movement has been rejected for export by customs office number $customsOfficeNumber."
+    val ie839MovementRejectedByCustomsP1 = "This movement has been rejected for export by the customs office."
+    val ie839MovementRejectedByCustomsRejectionDate = "Rejection date"
+    val ie839MovementRejectedByCustomsRejectionReason = "Rejection reason code"
+    val ie839MovementRejectedByCustomsRejectionReason1 = "1 - Import data not found"
+    val ie839MovementRejectedByCustomsRejectionReason2 = "2 - The content of the e-AD does not match with import data"
+    val ie839MovementRejectedByCustomsRejectionReason3 = "3 - Export data not found"
+    val ie839MovementRejectedByCustomsRejectionReason4 = "4 - The content of the e-AD does not match with export data"
+    val ie839MovementRejectedByCustomsRejectionReason5 = "5 - Goods are rejected at export procedure"
+    val ie839MovementRejectedByCustomsLRN = "Local reference number (LRN)"
+    val ie839MovementRejectedByCustomsDocumentRef = "Document reference number"
+    val ie839MovementRejectedByCustomsDiagnosisHeading = "Diagnosis"
+    def ie839MovementRejectedByCustomsDiagnosisNumberedHeading(number: Int) = s"Diagnosis $number"
+    val ie839MovementRejectedByCustomsBodyRecordUniqueReference = "Body record unique reference"
+    val ie839MovementRejectedByCustomsDiagnosisCode = "Diagnosis Code"
+    val ie839MovementRejectedByCustomsDiagnosisCode1 = "1 - Unknown ARC"
+    val ie839MovementRejectedByCustomsDiagnosisCode2 = "2 - Body Record Unique Reference does not exist in the e-AD"
+    val ie839MovementRejectedByCustomsDiagnosisCode3 = "3 - No corresponding goods item in the export declaration"
+    val ie839MovementRejectedByCustomsDiagnosisCode4 = "4 - Weight/mass do not match"
+    val ie839MovementRejectedByCustomsDiagnosisCode5 = "5 - The destination type code of the e-AD is not export"
+    val ie839MovementRejectedByCustomsDiagnosisCode6 = "6 - Commodity (CN) codes do not match"
+    val ie839MovementRejectedByCustomsConsignee = "Consignee"
+
     //IE905 Manual Closure of Movement Notification
     val ie905ManualClosureResponseHeading: String = "Manual closure of a movement"
     val ie905ManualClosureResponseTitle: String = titleHelper(ie905ManualClosureResponseHeading)

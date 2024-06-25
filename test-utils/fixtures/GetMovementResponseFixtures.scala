@@ -24,11 +24,12 @@ import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Sho
 import models.common._
 import models.response.emcsTfe.AlertOrRejectionType.{Alert, Rejection}
 import models.response.emcsTfe.NotificationOfDivertedMovementType.ChangeOfDestination
-import models.response.emcsTfe._
+import models.response.emcsTfe.customsRejection.CustomsRejectionDiagnosisCodeType.UnknownArc
+import models.response.emcsTfe.customsRejection.CustomsRejectionReasonCodeType.ImportDataMismatch
+import models.response.emcsTfe.customsRejection.{CustomsRejectionDiagnosis, NotificationOfCustomsRejectionModel}
 import models.response.emcsTfe.reportOfReceipt.{ReceiptedItemsModel, ReportOfReceiptModel, UnsatisfactoryModel}
-import models.response.emcsTfe.{CancelMovementModel, EadEsadModel, GetMovementResponse, HeaderEadEsadModel, NotificationOfDivertedMovementModel, TransportModeModel}
+import models.response.emcsTfe._
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.emcstfe.models.cancellationOfMovement.CancellationReasonType
 
 import java.time.{LocalDate, LocalDateTime}
 
@@ -292,7 +293,35 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         complementaryInformation = None,
         dateTime = LocalDateTime.parse("2024-06-18T08:18:56")
       )
-    ))
+    )),
+    notificationOfCustomsRejection = Some(
+      NotificationOfCustomsRejectionModel(
+        customsOfficeReferenceNumber = Some("AT002000"),
+        rejectionDateAndTime = LocalDateTime.of(2024, 1, 15, 19, 14, 20),
+        rejectionReasonCode = ImportDataMismatch,
+        localReferenceNumber = Some("1111"),
+        documentReferenceNumber = Some("7885"),
+        diagnoses = Seq(CustomsRejectionDiagnosis(
+          bodyRecordUniqueReference = "125",
+          diagnosisCode = UnknownArc
+        )),
+        consignee = Some(
+          TraderModel(
+            traderExciseNumber = Some("XIWK000000206"),
+            traderName = Some("SEED TRADER NI"),
+            address = Some(
+              AddressModel(
+                streetNumber = Some("1"),
+                street = Some("Catherdral"),
+                postcode = Some("BT3 7BF"),
+                city = Some("Salford")
+              )),
+            vatNumber = None,
+            eoriNumber = None
+          )
+        )
+      )
+    )
   )
 
   lazy val notificationOfAcceptedExport: NotificationOfAcceptedExportModel =
@@ -317,7 +346,34 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       )
     )
 
-  val reportOfReceiptJson = Json.obj(
+  val notificationOfCustomsRejectionModel: NotificationOfCustomsRejectionModel = NotificationOfCustomsRejectionModel(
+    customsOfficeReferenceNumber = Some("AT002000"),
+    rejectionDateAndTime = LocalDateTime.of(2024, 1, 15, 19, 14, 20),
+    rejectionReasonCode = ImportDataMismatch,
+    localReferenceNumber = Some("1111"),
+    documentReferenceNumber = Some("7885"),
+    diagnoses = Seq(CustomsRejectionDiagnosis(
+      bodyRecordUniqueReference = "125",
+      diagnosisCode = UnknownArc
+    )),
+    consignee = Some(
+      TraderModel(
+        traderExciseNumber = Some("XIWK000000206"),
+        traderName = Some("SEED TRADER NI"),
+        address = Some(
+          AddressModel(
+            streetNumber = Some("1"),
+            street = Some("Catherdral"),
+            postcode = Some("BT3 7BF"),
+            city = Some("Salford")
+          )),
+        vatNumber = None,
+        eoriNumber = None
+      )
+    )
+  )
+
+  val reportOfReceiptJson: JsValue = Json.obj(
     "arc" -> testArc,
     "sequenceNumber" -> 2,
     "dateAndTimeOfValidationOfReportOfReceiptExport" -> "2021-09-10T11:11:12",
@@ -479,11 +535,11 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       "documentReferenceNumber" -> "645564546",
       "consigneeTrader" -> Json.obj(
         "traderExciseNumber" -> "BE345345345",
-        "traderName"         -> "PEAR Supermarket",
+        "traderName" -> "PEAR Supermarket",
         "address" -> Json.obj(
-          "street"   -> "Angels Business Park",
+          "street" -> "Angels Business Park",
           "postcode" -> "BD1 3NN",
-          "city"     -> "Bradford"
+          "city" -> "Bradford"
         ),
         "eoriNumber" -> "GB00000578901"
       )
@@ -586,6 +642,29 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         "submitterType" -> "1",
         "explanationCode" -> "5",
         "dateTime" -> "2024-06-18T08:18:56"
+      )
+    ),
+    "notificationOfCustomsRejection" -> Json.obj(
+      "customsOfficeReferenceNumber" -> "AT002000",
+      "rejectionDateAndTime" -> "2024-01-15T19:14:20",
+      "rejectionReasonCode" -> "2",
+      "localReferenceNumber" -> "1111",
+      "documentReferenceNumber" -> "7885",
+      "diagnoses" -> Json.arr(
+        Json.obj(
+          "bodyRecordUniqueReference" -> "125",
+          "diagnosisCode" -> "1"
+        )
+      ),
+      "consignee" -> Json.obj(
+        "traderExciseNumber" -> "XIWK000000206",
+        "traderName" -> "SEED TRADER NI",
+        "address" -> Json.obj(
+          "streetNumber" -> "1",
+          "street" -> "Catherdral",
+          "postcode" -> "BT3 7BF",
+          "city" -> "Salford"
+        )
       )
     )
   )

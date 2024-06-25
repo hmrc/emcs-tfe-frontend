@@ -18,7 +18,7 @@ package models.prevalidate
 
 import models.common.Enumerable
 import play.api.i18n.Messages
-import uk.gov.hmrc.emcstfefrontend.models.WithName
+import models.common.WithName
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 

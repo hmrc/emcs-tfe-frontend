@@ -17,9 +17,8 @@
 package viewmodels.draftMovements
 
 import models.SelectOptionModel
-import models.common.Enumerable
+import models.common.{Enumerable, WithName}
 import play.api.i18n.Messages
-import uk.gov.hmrc.emcstfefrontend.models.WithName
 import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import viewmodels.govuk.checkbox._

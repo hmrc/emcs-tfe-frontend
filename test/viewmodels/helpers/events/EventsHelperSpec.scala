@@ -25,6 +25,7 @@ import models.common.{DestinationType, SubmitterType}
 import models.common.DestinationType.Export
 import models.requests.DataRequest
 import models.response.emcsTfe.{DelayReasonType, GetMovementResponse, NotificationOfDelayModel}
+import models.response.emcsTfe.customsRejection.{CustomsRejectionDiagnosis, CustomsRejectionDiagnosisCodeType}
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -184,7 +185,7 @@ class EventsHelperSpec extends SpecBase
 
             "render the correct HTML" in {
 
-              val result = helper.constructEventInformation(ie819AlertEventMultipleReasons, getMovementResponseModel)
+              val result = helper.constructEventInformation(ie819AlertEventMultipleReasons, getMovementResponseModel, Seq.empty)
               val eventDetails = getMovementResponseModel.notificationOfAlertOrRejection.get.head
               val consigneeDetails = getMovementResponseModel.consigneeTrader.get
               val body = Jsoup.parse(result.toString())
@@ -394,6 +395,124 @@ class EventsHelperSpec extends SpecBase
 
           body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie905ManualClosureResponseP1
           body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+        }
+      }
+
+      "being called with event type IE839" must {
+
+        "render the correct HTML" when {
+
+          "the customs office code is present" in {
+
+            val movement = getMovementResponseModel.copy(
+              notificationOfCustomsRejection = Some(
+                getMovementResponseModel.notificationOfCustomsRejection.get.copy(
+                  diagnoses = Seq(
+                    CustomsRejectionDiagnosis(
+                      bodyRecordUniqueReference = "1",
+                      diagnosisCode = CustomsRejectionDiagnosisCodeType.UnknownArc,
+                    )
+                  )
+                )
+              )
+            )
+
+            val consigneeDetails = movement.notificationOfCustomsRejection.get.consignee.get
+
+            val result = helper.constructEventInformation(ie839MovementRejectedCustomsEvent, movement, Seq.empty)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsP1WithCustomsOffice("AT002000")
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+
+            body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionDate
+            body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie839MovementRejectedCustomsEvent.eventDate).toLocalDate.formatDateForUIOutput()
+
+            body.select(Selectors.nthSummaryRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason
+            body.select(Selectors.nthSummaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason2
+
+            body.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisHeading
+            body.select(Selectors.nthSummaryRowKey(1, n = 2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsBodyRecordUniqueReference
+            body.select(Selectors.nthSummaryRowValue(1, n = 2)).text() mustBe "1"
+
+            body.select(Selectors.nthSummaryRowKey(2, n = 2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode
+            body.select(Selectors.nthSummaryRowValue(2, n = 2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode1
+
+            body.select(Selectors.h2(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsConsignee
+            body.select(Selectors.nthSummaryRowKey(1, n = 3)).text() mustBe "Name"
+            body.select(Selectors.nthSummaryRowValue(1, n = 3)).text() mustBe consigneeDetails.traderName.get
+
+            body.select(Selectors.nthSummaryRowKey(2, n = 3)).text() mustBe "Excise Registration Number (ERN)"
+            body.select(Selectors.nthSummaryRowValue(2, n = 3)).text() mustBe consigneeDetails.traderExciseNumber.get
+
+            body.select(Selectors.nthSummaryRowKey(3, n = 3)).text() mustBe "Address"
+            body.select(Selectors.nthSummaryRowValue(3, n = 3)).text() must include(consigneeDetails.address.get.street.get)
+          }
+
+          "the customs office code is not present" in {
+
+            val movement = getMovementResponseModel.copy(
+              notificationOfCustomsRejection = Some(
+                getMovementResponseModel.notificationOfCustomsRejection.get.copy(
+                  customsOfficeReferenceNumber = None
+                )
+              )
+            )
+
+            val result = helper.constructEventInformation(ie839MovementRejectedCustomsEvent, movement, Seq.empty)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsP1
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+          }
+
+          "the consignee is not present" in {
+
+            val movement = getMovementResponseModel.copy(
+              consigneeTrader = None,
+              notificationOfCustomsRejection = Some(
+                getMovementResponseModel.notificationOfCustomsRejection.get.copy(
+                  consignee = None,
+                  diagnoses = Seq(
+                    CustomsRejectionDiagnosis(
+                      bodyRecordUniqueReference = "1",
+                      diagnosisCode = CustomsRejectionDiagnosisCodeType.UnknownArc,
+                    )
+                  )
+                )
+              )
+            )
+
+            val result = helper.constructEventInformation(ie839MovementRejectedCustomsEvent, movement, Seq.empty)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsP1WithCustomsOffice("AT002000")
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+
+            body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionDate
+            body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie839MovementRejectedCustomsEvent.eventDate).toLocalDate.formatDateForUIOutput()
+
+            body.select(Selectors.nthSummaryRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason
+            body.select(Selectors.nthSummaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason2
+
+            body.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisHeading
+            body.select(Selectors.nthSummaryRowKey(1, n = 2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsBodyRecordUniqueReference
+            body.select(Selectors.nthSummaryRowValue(1, n = 2)).text() mustBe "1"
+
+            body.select(Selectors.nthSummaryRowKey(2, n = 2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode
+            body.select(Selectors.nthSummaryRowValue(2, n = 2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode1
+
+            body.select(Selectors.h2(2)).isEmpty mustBe true
+
+            body.select(Selectors.nthSummaryRowKey(1, n = 3)).isEmpty mustBe true
+            body.select(Selectors.nthSummaryRowValue(1, n = 3)).isEmpty mustBe true
+
+            body.select(Selectors.nthSummaryRowKey(2, n = 3)).isEmpty mustBe true
+            body.select(Selectors.nthSummaryRowValue(2, n = 3)).isEmpty mustBe true
+
+            body.select(Selectors.nthSummaryRowKey(3, n = 3)).isEmpty mustBe true
+            body.select(Selectors.nthSummaryRowValue(3, n = 3)).isEmpty mustBe true
+          }
         }
       }
     }

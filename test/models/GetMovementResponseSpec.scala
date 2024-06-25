@@ -27,7 +27,6 @@ import models.response.emcsTfe.GetMovementResponse
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.libs.json.Json
 
-
 class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures {
 
   "GetMovementResponse" should {

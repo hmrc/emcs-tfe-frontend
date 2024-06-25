@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package models.response.emcsTfe
+package models.response.emcsTfe.customsRejection
 
-import play.api.libs.json.{Format, Json}
+import base.SpecBase
 
-case class CancelMovementModel(
-                                reason: CancellationReasonType,
-                                complementaryInformation: Option[String]
-                              )
+class CustomsRejectionReasonCodeTypeSpec extends SpecBase {
 
-object CancelMovementModel {
+  "CustomsRejectionReasonCodeType" should {
 
-  implicit val format: Format[CancelMovementModel] = Json.format[CancelMovementModel]
+    "have the correct codes" in {
+      CustomsRejectionReasonCodeType.ImportDataNotFound.toString mustBe "1"
+      CustomsRejectionReasonCodeType.ImportDataMismatch.toString mustBe "2"
+      CustomsRejectionReasonCodeType.ExportDataNotFound.toString mustBe "3"
+      CustomsRejectionReasonCodeType.ExportDataMismatch.toString mustBe "4"
+      CustomsRejectionReasonCodeType.RejectedAtExportProcedure.toString mustBe "5"
+    }
+  }
+
 }
