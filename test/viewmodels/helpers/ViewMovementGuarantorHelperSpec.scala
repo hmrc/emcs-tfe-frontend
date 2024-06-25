@@ -16,16 +16,6 @@
 
 package viewmodels.helpers
 
-import base.SpecBase
-import fixtures.GetMovementResponseFixtures
-import models.common.GuarantorType.{Consignee, Consignor, GuarantorNotRequired, NoGuarantor, Owner, Transporter}
-import models.common.{AddressModel, GuarantorType, MovementGuaranteeModel, TraderModel}
-import models.requests.DataRequest
-import org.jsoup.Jsoup
-import play.api.i18n.Messages
-import play.api.test.FakeRequest
-import views.BaseSelectors
-
 class ViewMovementGuarantorHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
   implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"))
@@ -87,37 +77,37 @@ class ViewMovementGuarantorHelperSpec extends SpecBase with GetMovementResponseF
       }
     }
 
-    GuarantorType.values.diff(Seq(GuarantorNotRequired, NoGuarantor, Consignor, Transporter, Owner, Consignee)).foreach { guarantorType =>
-      s"render 2 summary cards when the guarantor type is $guarantorType" ignore {
-        //TODO: add this test when the ticket to handle multiple guarantors is being played
-//        val result = helper.constructMovementGuarantor(getMovementResponseModel.copy(movementGuarantee = MovementGuaranteeModel(guarantorType, Some(Seq(
-//          TraderModel(
-//            traderExciseNumber = Some("GBRC345GTR145"),
-//            traderName = Some("Current 801 Consignor 1"),
-//            address = Some(AddressModel(
-//              streetNumber = None,
-//              street = Some("Main101"),
-//              postcode = Some("ZZ78"),
-//              city = Some("Zeebrugge")
-//            )),
-//            vatNumber = Some("GB123456789"),
-//            eoriNumber = None
-//          ),
-//          TraderModel(
-//            traderExciseNumber = Some("GBRC345GTR146"),
-//            traderName = Some("Current 801 Consignor 2"),
-//            address = Some(AddressModel(
-//              streetNumber = None,
-//              street = Some("Main102"),
-//              postcode = Some("ZZ79"),
-//              city = Some("Zeebrugge")
-//            )),
-//            vatNumber = Some("GB123456790"),
-//            eoriNumber = None
-//          )
-//        )))))
-      }
-    }
+//    GuarantorType.values.diff(Seq(GuarantorNotRequired, NoGuarantor, Consignor, Transporter, Owner, Consignee)).foreach { guarantorType =>
+//      s"render 2 summary cards when the guarantor type is $guarantorType" ignore {
+//        //TODO: add this test when the ticket to handle multiple guarantors is being played
+////        val result = helper.constructMovementGuarantor(getMovementResponseModel.copy(movementGuarantee = MovementGuaranteeModel(guarantorType, Some(Seq(
+////          TraderModel(
+////            traderExciseNumber = Some("GBRC345GTR145"),
+////            traderName = Some("Current 801 Consignor 1"),
+////            address = Some(AddressModel(
+////              streetNumber = None,
+////              street = Some("Main101"),
+////              postcode = Some("ZZ78"),
+////              city = Some("Zeebrugge")
+////            )),
+////            vatNumber = Some("GB123456789"),
+////            eoriNumber = None
+////          ),
+////          TraderModel(
+////            traderExciseNumber = Some("GBRC345GTR146"),
+////            traderName = Some("Current 801 Consignor 2"),
+////            address = Some(AddressModel(
+////              streetNumber = None,
+////              street = Some("Main102"),
+////              postcode = Some("ZZ79"),
+////              city = Some("Zeebrugge")
+////            )),
+////            vatNumber = Some("GB123456790"),
+////            eoriNumber = None
+////          )
+////        )))))
+//      }
+//    }
   }
 
 }

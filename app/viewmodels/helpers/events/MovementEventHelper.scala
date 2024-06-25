@@ -18,12 +18,12 @@ package viewmodels.helpers.events
 
 import models.common.DestinationType._
 import models.common.GuarantorType._
-import models.common.{AcceptMovement, DestinationType, TraderModel, WrongWithMovement}
+import models.common._
 import models.requests.DataRequest
+import models.response.emcsTfe._
 import models.response.emcsTfe.customsRejection.NotificationOfCustomsRejectionModel
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, UnsatisfactoryModel}
-import models.response.emcsTfe.{GetMovementResponse, MovementItem, NotificationOfAcceptedExportModel, NotificationOfAlertOrRejectionModel, NotificationOfDelayModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Details
@@ -212,6 +212,17 @@ class MovementEventHelper @Inject()(
 
   def guarantorInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
     val guarantor = movement.movementGuarantee
+
+    if (GuarantorType.jointGuarantorTypes.contains(guarantor.guarantorTypeCode)) {
+      jointGuarantorCard()
+    } else {
+      singleGuarantorCard()
+    }
+
+  }
+
+  private def singleGuarantorCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
+    val guarantor = movement.movementGuarantee
     lazy val optFirstGuarantor = guarantor.guarantorTrader.flatMap(_.headOption)
 
     val guarantorType = summaryListRowBuilder("movementCreatedView.section.guarantor.type", s"viewMovement.guarantor.summary.type.${guarantor.guarantorTypeCode}")
@@ -222,26 +233,8 @@ class MovementEventHelper @Inject()(
       case _ => None
     }
 
-    val guarantorErn = (guarantor.guarantorTypeCode, movement.destinationType) match {
-      case (Consignor, _) =>
-        movement.consignorTrader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.ern", _))
-      case (Consignee, TaxWarehouse | DirectDelivery | RegisteredConsignee) =>
-        movement.consigneeTrader.flatMap(trader => trader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.ern", _)))
-      case _ => None
-    }
-
-    val temporaryReference = (guarantor.guarantorTypeCode, movement.destinationType) match {
-      case (Consignee, TemporaryRegisteredConsignee) =>
-        movement.consigneeTrader.flatMap(trader => trader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.temporaryReference", _)))
-      case _ => None
-    }
-
-    val identificationNumber = (guarantor.guarantorTypeCode, movement.destinationType) match {
-      case (Consignee, Export) =>
-        movement.consigneeTrader.flatMap(_.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.identificationNumber", _)))
-      case _ => None
-    }
-
+    val guarantorErn = movement.consignorTrader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.ern", _))
+    
     val guarantorVatNumber = guarantor.guarantorTypeCode match {
       case Owner | Transporter =>
         optFirstGuarantor.flatMap(_.vatNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.vat", _)))
@@ -261,13 +254,44 @@ class MovementEventHelper @Inject()(
         Some(guarantorType),
         guarantorName,
         guarantorErn,
-        temporaryReference,
-        identificationNumber,
-        guarantorVatNumber,
-        guarantorAddress
+        guarantorAddress,
+        guarantorVatNumber
       ),
       summaryListAttributes = Map("id" -> "guarantor-information-summary")
     )
+  }
+
+  private def jointGuarantorCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
+    movement.movementGuarantee.guarantorTrader.map { guarantors =>
+
+      val guarantorType = Some(summaryListRowBuilder("movementCreatedView.section.guarantor.joint.type", s"viewMovement.guarantor.summary.type.${movement.movementGuarantee.guarantorTypeCode}"))
+
+      val summaryCard: Seq[Html] = Seq(
+        buildOverviewPartial(
+          headingTitle = Some("movementCreatedView.section.guarantor.joint.heading"),
+          headingLevel = 3,
+          cardTitleMessageKey = Some("movementCreatedView.section.guarantor.joint.summary"),
+          summaryListRows = Seq(guarantorType),
+          summaryListAttributes = Map("id" -> s"guarantor-summary")
+        )
+      )
+
+      val cards = guarantors.zipWithIndex.map {
+        case (guarantor, index) =>
+          val name = guarantor.traderName.map(summaryListRowBuilder("movementCreatedView.section.guarantor.joint.name", _))
+          val ern = guarantor.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.joint.ern", _))
+          val address = guarantor.address.map(address => summaryListRowBuilder("movementCreatedView.section.guarantor.joint.address", renderAddress(address)))
+          val vat = guarantor.vatNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.joint.vat", _))
+
+          buildOverviewPartial(
+            cardTitleMessageKey = Some(messages("movementCreatedView.section.guarantor.joint.subheading", index + 1)),
+            summaryListRows = Seq(name, ern, address, vat),
+            summaryListAttributes = Map("id" -> s"guarantor-joint-${index + 1}")
+          )
+      }
+
+      HtmlFormat.fill(summaryCard ++ cards)
+    }.getOrElse(Html(""))
   }
 
   def journeyInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
