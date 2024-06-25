@@ -764,8 +764,8 @@ messages.IE837.true.2.messageType = Explanation submitted for delayed change of 
 messages.IE839.false.0.description = Customs rejection of movement for export
 messages.IE839.false.0.paragraph = Your movement has been rejected for export.
 
-messages.IE840.false.2.description = Complimentary event report received
-messages.IE840.false.3.description = Event report received
+messages.IE840.false.1.description = Event report received
+messages.IE840.false.3.description = Complimentary event report received
 
 messages.IE871.true.0.description = Explanation for a shortage or excess submitted successfully
 messages.IE871.true.0.paragraph = This movement will need a report of receipt if you have not already submitted one.

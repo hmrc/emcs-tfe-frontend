@@ -61,8 +61,6 @@ class TimelineHelper @Inject()() extends Logging {
       case (IE802, 3) => "des"
       case (IE803, 1) => "diverted"
       case (IE803, 2) => "split"
-      case (IE840, 1) => "first"
-      case (IE840, 2) => "complementary"
       case _ => ""
     }
 
