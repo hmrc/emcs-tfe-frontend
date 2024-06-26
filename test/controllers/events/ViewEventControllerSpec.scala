@@ -32,7 +32,7 @@ import models.response.referenceData.CnCodeInformation
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, MessagesControllerComponents, Result}
+import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers.status
 import uk.gov.hmrc.http.HeaderCarrier
@@ -200,6 +200,11 @@ class ViewEventControllerSpec
       methodName = ".movementIntercepted (interrupted)",
       event = ie807MovementInterruptedEvent,
       method = (id: Int) => controller.movementIntercepted(testErn, testArc, id)
+    ),
+    TestFixtureModel(
+      methodName = ".shortageExcessSubmitted",
+      event = ie871ShortageOrEccessEvent,
+      method = (id: Int) => controller.shortageExcessSubmitted(testErn, testArc, id)
     )
   ).foreach { case TestFixtureModel(methodName, event, method) =>
 

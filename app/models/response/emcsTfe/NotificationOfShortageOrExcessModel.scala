@@ -19,7 +19,10 @@ package models.response.emcsTfe
 import models.common.SubmitterType
 import play.api.libs.json.{Format, Json}
 
+import java.time.LocalDate
+
 case class NotificationOfShortageOrExcessModel(submitterType: SubmitterType,
+                                               globalDateOfAnalysis: Option[LocalDate],
                                                globalExplanation: Option[String],
                                                individualItemReasons: Option[Seq[BodyAnalysisModel]])
 

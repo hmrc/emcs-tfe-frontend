@@ -326,6 +326,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     notificationOfShortageOrExcess = Some(
       NotificationOfShortageOrExcessModel(
         submitterType = SubmitterType.Consignee,
+        globalDateOfAnalysis = None,
         globalExplanation = None,
         individualItemReasons = Some(Seq(
           BodyAnalysisModel(
