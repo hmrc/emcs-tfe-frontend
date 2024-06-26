@@ -97,6 +97,9 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
   def changeDestinationSubmitted(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE813)
 
+  def movementIntercepted(ern: String, arc: String, eventId: Int): Action[AnyContent] =
+    onPageLoad(ern, arc, eventId, IE807)
+
   private def onPageLoad(ern: String, arc: String, eventId: Int, eventType: EventTypes): Action[AnyContent] = {
     authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
       withHistoryEvent(ern, arc, eventType, eventId) { event =>

@@ -58,6 +58,7 @@ case class GetMovementResponse(
                                 cancelMovement: Option[CancelMovementModel],
                                 notificationOfDelay: Option[Seq[NotificationOfDelayModel]],
                                 notificationOfCustomsRejection: Option[NotificationOfCustomsRejectionModel],
+                                interruptedMovement: Option[InterruptionReasonModel],
                                 items: Seq[MovementItem],
                                 movementGuarantee: MovementGuaranteeModel,
                                 eventHistorySummary: Option[Seq[MovementHistoryEvent]]
@@ -115,6 +116,7 @@ object GetMovementResponse {
     cancelMovement <- (__ \ "cancelMovement").readNullable[CancelMovementModel]
     notificationOfDelay <- (__ \ "notificationOfDelay").readNullable[Seq[NotificationOfDelayModel]]
     notificationOfCustomsRejection <- (__ \ "notificationOfCustomsRejection").readNullable[NotificationOfCustomsRejectionModel]
+    interruptedMovement <- (__ \ "interruptedMovement").readNullable[InterruptionReasonModel]
     items <- (__ \ "items").read[Seq[MovementItem]]
     eventHistorySummary <- (__ \ "eventHistorySummary").readNullable[Seq[MovementHistoryEvent]](MovementHistoryEvent.seqReads)
   } yield {
@@ -151,7 +153,8 @@ object GetMovementResponse {
       notificationOfAcceptedExport = notificationOfAcceptedExport,
       cancelMovement = cancelMovement,
       notificationOfDelay = notificationOfDelay,
-      notificationOfCustomsRejection = notificationOfCustomsRejection
+      notificationOfCustomsRejection = notificationOfCustomsRejection,
+      interruptedMovement = interruptedMovement
     )
   }
 }
