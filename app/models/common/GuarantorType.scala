@@ -38,9 +38,16 @@ object GuarantorType extends Enumerable.Implicits {
   case object Consignee extends WithName("4") with GuarantorType
   case object NoGuarantor extends WithName("5") with GuarantorType
 
-  val values: Seq[GuarantorType] = Seq(
+  val singleGuarantorTypes: Seq[GuarantorType] = Seq(
     GuarantorNotRequired,
     Consignor,
+    Consignee,
+    Transporter,
+    Owner,
+    NoGuarantor
+  )
+
+  val jointGuarantorTypes: Seq[GuarantorType] = Seq(
     ConsignorTransporter,
     ConsignorTransporterOwner,
     ConsignorTransporterOwnerConsignee,
@@ -48,15 +55,14 @@ object GuarantorType extends Enumerable.Implicits {
     ConsignorOwner,
     ConsignorOwnerConsignee,
     JointConsignorConsignee,
-    Transporter,
     TransporterOwner,
     TransporterOwnerConsignee,
     TransporterConsignee,
-    Owner,
-    OwnerConsignee,
-    Consignee,
-    NoGuarantor
+    OwnerConsignee
   )
+
+  val values: Seq[GuarantorType] =
+    singleGuarantorTypes ++ jointGuarantorTypes
 
   implicit val enumerable: Enumerable[GuarantorType] =
     Enumerable(values.map(v => v.toString -> v): _*)
