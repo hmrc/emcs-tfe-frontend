@@ -30,7 +30,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     ReturnToLegacy,
     DenyDutyPaidUsers,
     CheckBetaAllowList,
-    MessageStatisticsNotification
+    MessageStatisticsNotification,
+    EnableXIPCInCaM
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
