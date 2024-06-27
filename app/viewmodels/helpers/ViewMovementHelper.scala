@@ -84,7 +84,7 @@ class ViewMovementHelper @Inject()(
       )))
     val receiptStatus = optReceiptStatusMessage.map(statusMessage => summaryListRowBuilder("viewMovement.movement.summary.receiptStatus", statusMessage))
     val movementType = summaryListRowBuilder("viewMovement.movement.summary.type", movementTypeValue)
-    val movementDirection = summaryListRowBuilder("viewMovement.movement.summary.direction", if (userRole.canCreateNewMovement(appConfig)) "viewMovement.movement.summary.direction.out" else "viewMovement.movement.summary.direction.in")
+    val movementDirection = summaryListRowBuilder("viewMovement.movement.summary.direction", if (userRole.isConsignor(appConfig)) "viewMovement.movement.summary.direction.out" else "viewMovement.movement.summary.direction.in")
     //Summary section - end
 
     //Time and data section - start

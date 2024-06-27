@@ -48,6 +48,7 @@ object RoleType extends Logging {
     val isNorthernIreland: Boolean
     val isGreatBritain: Boolean
     def canCreateNewMovement(appConfig: AppConfig): Boolean
+    def isConsignor(appConfig: AppConfig): Boolean = canCreateNewMovement(appConfig)
     val isDutyPaid: Boolean
   }
 
@@ -138,6 +139,7 @@ object RoleType extends Logging {
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
     override def canCreateNewMovement(appConfig: AppConfig): Boolean = appConfig.enableXIPCInCaM
+    override def isConsignor(appConfig: AppConfig): Boolean = true
     override val isDutyPaid: Boolean = true
   }
 
