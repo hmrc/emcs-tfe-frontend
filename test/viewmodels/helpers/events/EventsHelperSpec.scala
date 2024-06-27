@@ -21,12 +21,12 @@ import fixtures.events.MovementEventMessages
 import fixtures.messages.{AlertRejectionReasonMessages, DelayReasonMessages}
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures}
 import models.EventTypes
-import models.common.{DestinationType, SubmitterType}
 import models.common.DestinationType.Export
+import models.common.{DestinationType, SubmitterType}
 import models.requests.DataRequest
-import models.response.emcsTfe.{DelayReasonType, GetMovementResponse, NotificationOfDelayModel}
 import models.response.emcsTfe.customsRejection.{CustomsRejectionDiagnosis, CustomsRejectionDiagnosisCodeType}
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
+import models.response.emcsTfe.{DelayReasonType, GetMovementResponse, NotificationOfDelayModel}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
@@ -147,6 +147,18 @@ class EventsHelperSpec extends SpecBase
             body.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.IE810MovementCancelledKey2
             body.select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.IE810MovementCancelledValue2
 
+          }
+        }
+
+        "being called with event type IE813 and message role 0 (change of destination submitted )" must {
+
+          "render the correct HTML" in {
+
+            val result = helper.constructEventInformation(ie813ChangeDestinationEvent, getMovementResponseModel, Seq.empty)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie813MovementDestinationP1
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
           }
         }
 
@@ -396,6 +408,7 @@ class EventsHelperSpec extends SpecBase
           body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie905ManualClosureResponseP1
           body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
         }
+
       }
 
       "being called with event type IE839" must {

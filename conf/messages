@@ -272,6 +272,7 @@ movementHistoryEvent.IE810.reason.3 = Duplicate movement
 movementHistoryEvent.IE810.reason.4 = Late movement
 movementHistoryEvent.IE813.label = Change of destination submitted
 movementHistoryEvent.IE813.urlLabel = change-destination-submitted
+movementHistoryEvent.IE813.p1 = A change of destination has been submitted for this movement. This message shows all information that may have been updated due to the change of destination.
 movementHistoryEvent.IE818.label = Report of receipt submitted
 movementHistoryEvent.IE818.label.export = Report of export received
 movementHistoryEvent.IE818.urlLabel = report-receipt-submitted

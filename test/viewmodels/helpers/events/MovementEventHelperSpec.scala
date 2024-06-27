@@ -21,16 +21,15 @@ import fixtures.GetMovementResponseFixtures
 import fixtures.events.MovementEventMessages
 import fixtures.messages.{AlertRejectionReasonMessages, DelayReasonMessages}
 import models.common.DestinationType.{DirectDelivery, Export, RegisteredConsignee, TaxWarehouse, TemporaryRegisteredConsignee, UnknownDestination}
-import models.common.GuarantorType.{Consignee, Consignor, GuarantorNotRequired, NoGuarantor, Owner, Transporter}
 import models.common.TransportArrangement.OwnerOfGoods
 import models.common.UnitOfMeasure.Kilograms
 import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Shortage}
 import models.common._
 import models.requests.DataRequest
 import models.response.emcsTfe.AlertOrRejectionType.Rejection
-import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, ReceiptedItemsModel, UnsatisfactoryModel}
 import models.response.emcsTfe._
 import models.response.emcsTfe.customsRejection.{CustomsRejectionDiagnosis, CustomsRejectionDiagnosisCodeType, CustomsRejectionReasonCodeType}
+import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, ReceiptedItemsModel, UnsatisfactoryModel}
 import models.response.referenceData.CnCodeInformation
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -65,8 +64,13 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
     def cardSummaryList(i: Int) = s"div.govuk-summary-card:nth-of-type($i)"
 
     override val cardHeader: Int => String = i => s".govuk-summary-card:nth-of-type($i) h3"
-  }
 
+    def guarantorInformationKey(rowIndex: Int) = s"#guarantor-information-summary > div:nth-child($rowIndex) > dt"
+    def guarantorInformationValue(rowIndex: Int) = s"#guarantor-information-summary > div:nth-child($rowIndex) > dd"
+    def guarantorInformationKey(rowIndex: Int, cardIndex: Int) = s"#guarantor-information-summary-$cardIndex > div:nth-child($rowIndex) > dt"
+    def guarantorInformationValue(rowIndex: Int, cardIndex: Int) = s"#guarantor-information-summary-$cardIndex > div:nth-child($rowIndex) > dd"
+    val cardTitle = s".govuk-summary-card__title"
+  }
 
   "movementInformationCard" must {
     implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
@@ -369,146 +373,6 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
 
       doc.body().text() mustBe ""
     }
-  }
-
-  "guarantorInformationCard" must {
-
-    "output the correct rows" when {
-      "the guarantor type is an Owner" in {
-        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-          movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
-            guarantorTypeCode = Owner
-          )
-        )
-
-        val result = helper.guarantorInformationCard()
-        val doc = Jsoup.parse(result.toString())
-
-        doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
-        doc.select(Selectors.summaryListRowValue(1)).text() mustBe "Owner of goods"
-        doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Guarantor name"
-        doc.select(Selectors.summaryListRowValue(2)).text() mustBe "Current 801 Guarantor"
-        doc.select(Selectors.summaryListRowKey(3)).text() mustBe "Guarantor VAT registration number"
-        doc.select(Selectors.summaryListRowValue(3)).text() mustBe "GB123456789"
-        doc.select(Selectors.summaryListRowKey(4)).text() mustBe "Guarantor address"
-        doc.select(Selectors.summaryListRowValue(4)).text() mustBe "Main101 Zeebrugge ZZ78"
-      }
-
-      "the guarantor type is a Transporter" in {
-        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-          movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
-            guarantorTypeCode = Transporter
-          )
-        )
-
-        val result = helper.guarantorInformationCard()
-        val doc = Jsoup.parse(result.toString())
-
-        doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
-        doc.select(Selectors.summaryListRowValue(1)).text() mustBe "Transporter"
-        doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Guarantor name"
-        doc.select(Selectors.summaryListRowValue(2)).text() mustBe "Current 801 Guarantor"
-        doc.select(Selectors.summaryListRowKey(3)).text() mustBe "Guarantor VAT registration number"
-        doc.select(Selectors.summaryListRowValue(3)).text() mustBe "GB123456789"
-        doc.select(Selectors.summaryListRowKey(4)).text() mustBe "Guarantor address"
-        doc.select(Selectors.summaryListRowValue(4)).text() mustBe "Main101 Zeebrugge ZZ78"
-      }
-
-      "the guarantor type is a Consignor" in {
-        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-          movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
-            guarantorTypeCode = Consignor
-          )
-        )
-
-        val result = helper.guarantorInformationCard()
-        val doc = Jsoup.parse(result.toString())
-
-        doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
-        doc.select(Selectors.summaryListRowValue(1)).text() mustBe "Consignor"
-        doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Excise Registration Number (ERN)"
-        doc.select(Selectors.summaryListRowValue(2)).text() mustBe "GBRC345GTR145"
-      }
-
-      "the guarantor type is a Consignee" in {
-        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-          movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
-            guarantorTypeCode = Consignee
-          )
-        )
-
-        val result = helper.guarantorInformationCard()
-        val doc = Jsoup.parse(result.toString())
-
-        doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
-        doc.select(Selectors.summaryListRowValue(1)).text() mustBe "Consignee"
-        doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Excise Registration Number (ERN)"
-        doc.select(Selectors.summaryListRowValue(2)).text() mustBe "GB12345GTR144"
-      }
-
-      "the guarantor type is a Consignee with a destination of Export" in {
-        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-          movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
-            guarantorTypeCode = Consignee
-          ),
-          destinationType = DestinationType.Export
-        )
-
-        val result = helper.guarantorInformationCard()
-        val doc = Jsoup.parse(result.toString())
-
-        doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
-        doc.select(Selectors.summaryListRowValue(1)).text() mustBe "Consignee"
-        doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Identification number"
-        doc.select(Selectors.summaryListRowValue(2)).text() mustBe "GB12345GTR144"
-      }
-
-      "the guarantor type is a Consignee with a destination of TemporaryRegisteredConsignee" in {
-        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-          movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
-            guarantorTypeCode = Consignee
-          ),
-          destinationType = DestinationType.TemporaryRegisteredConsignee
-        )
-
-        val result = helper.guarantorInformationCard()
-        val doc = Jsoup.parse(result.toString())
-
-        doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
-        doc.select(Selectors.summaryListRowValue(1)).text() mustBe "Consignee"
-        doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Identification number for temporary registered consignee"
-        doc.select(Selectors.summaryListRowValue(2)).text() mustBe "GB12345GTR144"
-      }
-
-      "the guarantor type is a GuarantorNotRequired" in {
-        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-          movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
-            guarantorTypeCode = GuarantorNotRequired
-          )
-        )
-
-        val result = helper.guarantorInformationCard()
-        val doc = Jsoup.parse(result.toString())
-
-        doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
-        doc.select(Selectors.summaryListRowValue(1)).text() mustBe "No guarantor required"
-      }
-    }
-
-    "the guarantor type is a NoGuarantor" in {
-      implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
-        movementGuarantee = getMovementResponseModel.movementGuarantee.copy(
-          guarantorTypeCode = NoGuarantor
-        )
-      )
-
-      val result = helper.guarantorInformationCard()
-      val doc = Jsoup.parse(result.toString())
-
-      doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Guarantor arranger"
-      doc.select(Selectors.summaryListRowValue(1)).text() mustBe "No guarantor required"
-    }
-
   }
 
   "journeyInformationCard" must {

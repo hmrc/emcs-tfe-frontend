@@ -181,7 +181,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               )
             ))
 
-            doc.select(headingId).text() mustBe "Guarantor"
+            doc.select(headingId).text() mustBe "Guarantor details"
             doc.select(summaryId).isEmpty mustBe false
           }
 

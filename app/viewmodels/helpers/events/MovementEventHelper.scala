@@ -17,13 +17,12 @@
 package viewmodels.helpers.events
 
 import models.common.DestinationType._
-import models.common.GuarantorType._
 import models.common.{AcceptMovement, DestinationType, TraderModel, WrongWithMovement}
 import models.requests.DataRequest
+import models.response.emcsTfe._
 import models.response.emcsTfe.customsRejection.NotificationOfCustomsRejectionModel
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, UnsatisfactoryModel}
-import models.response.emcsTfe.{GetMovementResponse, MovementItem, NotificationOfAcceptedExportModel, NotificationOfAlertOrRejectionModel, NotificationOfDelayModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Details
@@ -33,7 +32,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import utils.DateUtils
 import viewmodels.govuk.all.{ActionItemViewModel, FluentActionItem}
 import viewmodels.helpers.SummaryListHelper._
-import viewmodels.helpers.{ItemDetailsCardHelper, ItemPackagingCardHelper, ViewMovementTransportHelper}
+import viewmodels.helpers._
 import views.ViewUtils
 import views.html.components.{bullets, h2, list}
 import views.html.viewMovement.partials.overview_partial
@@ -47,6 +46,7 @@ class MovementEventHelper @Inject()(
                                      overview_partial: overview_partial,
                                      govukDetails : GovukDetails,
                                      transportCardHelper: ViewMovementTransportHelper,
+                                     guarantorCardHelper: ViewMovementGuarantorHelper,
                                      itemDetailsCardHelper: ItemDetailsCardHelper,
                                      packagingCardHelper: ItemPackagingCardHelper,
                                      bullets: bullets
@@ -211,62 +211,10 @@ class MovementEventHelper @Inject()(
   }
 
   def guarantorInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
-    val guarantor = movement.movementGuarantee
-    lazy val optFirstGuarantor = guarantor.guarantorTrader.flatMap(_.headOption)
-
-    val guarantorType = summaryListRowBuilder("movementCreatedView.section.guarantor.type", s"viewMovement.guarantor.summary.type.${guarantor.guarantorTypeCode}")
-
-    val guarantorName = guarantor.guarantorTypeCode match {
-      case Owner | Transporter =>
-        optFirstGuarantor.flatMap(firstGuarantor => firstGuarantor.traderName.map(summaryListRowBuilder("movementCreatedView.section.guarantor.name", _)))
-      case _ => None
-    }
-
-    val guarantorErn = (guarantor.guarantorTypeCode, movement.destinationType) match {
-      case (Consignor, _) =>
-        movement.consignorTrader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.ern", _))
-      case (Consignee, TaxWarehouse | DirectDelivery | RegisteredConsignee) =>
-        movement.consigneeTrader.flatMap(trader => trader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.ern", _)))
-      case _ => None
-    }
-
-    val temporaryReference = (guarantor.guarantorTypeCode, movement.destinationType) match {
-      case (Consignee, TemporaryRegisteredConsignee) =>
-        movement.consigneeTrader.flatMap(trader => trader.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.temporaryReference", _)))
-      case _ => None
-    }
-
-    val identificationNumber = (guarantor.guarantorTypeCode, movement.destinationType) match {
-      case (Consignee, Export) =>
-        movement.consigneeTrader.flatMap(_.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.identificationNumber", _)))
-      case _ => None
-    }
-
-    val guarantorVatNumber = guarantor.guarantorTypeCode match {
-      case Owner | Transporter =>
-        optFirstGuarantor.flatMap(_.vatNumber.map(summaryListRowBuilder("movementCreatedView.section.guarantor.vat", _)))
-      case _ => None
-    }
-
-    val guarantorAddress = guarantor.guarantorTypeCode match {
-      case Owner | Transporter =>
-        optFirstGuarantor.flatMap(firstGuarantor => firstGuarantor.address.map(address => summaryListRowBuilder("movementCreatedView.section.guarantor.address", renderAddress(address))))
-      case _ => None
-    }
-
-    buildOverviewPartial(
-      headingTitle = Some("movementCreatedView.section.guarantor"),
-      headingId = Some("guarantor-information-heading"),
-      summaryListRows = Seq(
-        Some(guarantorType),
-        guarantorName,
-        guarantorErn,
-        temporaryReference,
-        identificationNumber,
-        guarantorVatNumber,
-        guarantorAddress
-      ),
-      summaryListAttributes = Map("id" -> "guarantor-information-summary")
+    guarantorCardHelper.constructMovementGuarantor(
+      movement = movement,
+      showNoGuarantorContentIfApplicable = false,
+      headingMessageClass = Some("govuk-heading-m govuk-!-margin-top-9")
     )
   }
 
