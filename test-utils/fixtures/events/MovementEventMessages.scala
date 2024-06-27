@@ -66,6 +66,15 @@ object MovementEventMessages extends DateUtils {
     val ie803MovementSplitP2 = "The new ARCs for the split movement are:"
 
     //IE810 Movement Cancelled Notification
+    val ie807MovementInterceptedHeading: String = "Movement intercepted"
+    val ie807MovementInterceptedTitle: String = titleHelper(ie807MovementInterceptedHeading)
+    def ie807MovementInterceptedP1(exciseOffice: String) = s"This movement was intercepted by excise office $exciseOffice"
+    val IE807MovementInterceptedKey1 = "Reason for interruption"
+    val IE807MovementInterceptedKey2 = "More information"
+    val IE807MovementInterceptedValue1 = "Other"
+    val IE807MovementInterceptedValue2 = "some info"
+
+    //IE810 Movement Cancelled Notification
     val ie810MovementCancelledHeading: String = "Movement cancelled"
     val ie810MovementCancelledTitle: String = titleHelper(ie810MovementCancelledHeading)
     val ie810MovementCancelledP1 = "This movement has been cancelled."

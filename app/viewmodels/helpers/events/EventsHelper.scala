@@ -22,7 +22,7 @@ import models.requests.DataRequest
 import models.response.emcsTfe.CancellationReasonType.Other
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
-import models.response.emcsTfe.{GetMovementResponse, NotificationOfAlertOrRejectionModel, NotificationOfDelayModel}
+import models.response.emcsTfe.{GetMovementResponse, InterruptionReasonType, NotificationOfAlertOrRejectionModel, NotificationOfDelayModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
@@ -57,6 +57,7 @@ class EventsHelper @Inject()(
       case (IE801, _) => ie801Html(event, movement)
       case (IE802, _) => ie802Html(event)
       case (IE803, _) => ie803Html(event, movement)
+      case (IE807, _) => ie807Html(event, movement)
       case (IE810, _) => ie810Html(event, movement)
       case (IE813, _) => ie813Html(event, movement)
       case (IE818, _) => ie818Html(event, movement, ie818ItemModelWithCnCodeInformation)
@@ -127,6 +128,23 @@ class EventsHelper @Inject()(
         Some(printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"))
       ).flatten
     )
+
+  private def ie807Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+    HtmlFormat.fill(
+      Seq(
+        movement.interruptedMovement.map { interruptedMovement =>
+          HtmlFormat.fill(Seq(
+            p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1", movement.interruptedMovement.get.referenceNumberOfExciseOffice))),
+            printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
+          ) ++ Seq(
+            Some(summary_list(Seq(
+              Some(messages(s"${timelineHelper.getEventBaseKey(event)}.interruptionReason") -> messages(s"${timelineHelper.getEventBaseKey(event)}.reason.${interruptedMovement.reasonCode.toString}")),
+              if (movement.interruptedMovement.get.reasonCode == InterruptionReasonType.Other) Some(messages(s"${timelineHelper.getEventBaseKey(event)}.interruptionExplanation") -> interruptedMovement.complementaryInformation.getOrElse("")) else None
+            ).flatten))
+          ).flatten)
+        }
+      ).flatten)
+  }
 
   private def ie810Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
     HtmlFormat.fill(

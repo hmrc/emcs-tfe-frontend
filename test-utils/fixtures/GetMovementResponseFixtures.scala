@@ -278,6 +278,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     )),
     notificationOfAcceptedExport = Some(notificationOfAcceptedExport),
     cancelMovement = Some(CancelMovementModel(CancellationReasonType.Other, Some("some info"))),
+    interruptedMovement = Some(InterruptionReasonModel(InterruptionReasonType.Other, "FR1234", Some("some info"))),
     notificationOfDelay = Some(Seq(
       NotificationOfDelayModel(
         submitterIdentification = "GBWK001234569",
@@ -546,6 +547,11 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     ),
     "cancelMovement" -> Json.obj(
       "reason" -> "0",
+      "complementaryInformation" -> "some info"
+    ),
+    "interruptedMovement" -> Json.obj(
+      "reasonCode" -> "0",
+      "referenceNumberOfExciseOffice" -> "FR1234",
       "complementaryInformation" -> "some info"
     ),
     "items" -> Json.arr(

@@ -195,6 +195,11 @@ class ViewEventControllerSpec
       methodName = ".changeDestinationSubmitted",
       event = ie813ChangeDestinationEvent,
       method = (id: Int) => controller.changeDestinationSubmitted(testErn, testArc, id)
+    ),
+    TestFixtureModel(
+      methodName = ".movementIntercepted (interrupted)",
+      event = ie807MovementInterruptedEvent,
+      method = (id: Int) => controller.movementIntercepted(testErn, testArc, id)
     )
   ).foreach { case TestFixtureModel(methodName, event, method) =>
 

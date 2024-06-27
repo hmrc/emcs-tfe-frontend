@@ -359,6 +359,26 @@ class HistoryEventViewSpec extends ViewSpecBase
           }
         }
 
+        "rendering an IE807 event (Movement Intercepted/Interrupted Notification)" should {
+
+          "render the main detail section of the view" should {
+            behave like pageWithExpectedElementsAndMessages(
+              Seq(
+                Selectors.title -> messagesForLanguage.ie807MovementInterceptedTitle,
+                Selectors.h1 -> messagesForLanguage.ie807MovementInterceptedHeading,
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie810MovementCancelledEvent.eventDate)),
+                Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+                Selectors.p(1) -> messagesForLanguage.ie807MovementInterceptedP1("FR1234"),
+                Selectors.p(2) -> messagesForLanguage.printScreenContent,
+                Selectors.summaryRowKey(1) -> messagesForLanguage.IE807MovementInterceptedKey1,
+                Selectors.summaryRowValue(1) -> messagesForLanguage.IE807MovementInterceptedValue1,
+                Selectors.summaryRowKey(2) -> messagesForLanguage.IE807MovementInterceptedKey2,
+                Selectors.summaryRowValue(2) -> messagesForLanguage.IE807MovementInterceptedValue2
+              )
+            )(createDocument(ie807MovementInterruptedEvent, getMovementResponseModel))
+          }
+        }
+
         "rendering an IE810 event (Movement Cancelled Notification)" should {
 
           "render the main detail section of the view" should {

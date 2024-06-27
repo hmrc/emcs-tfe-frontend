@@ -133,6 +133,23 @@ class EventsHelperSpec extends SpecBase
           }
         }
 
+        "being called with event type IE807 (Movement Intercepted/Interrupted Notification)" must {
+
+          "render the correct HTML" in {
+
+            val result = helper.constructEventInformation(ie807MovementInterruptedEvent, getMovementResponseModel, Seq.empty)
+            val body = Jsoup.parse(result.toString())
+
+            body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie807MovementInterceptedP1("FR1234")
+            body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+            body.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.IE807MovementInterceptedKey1
+            body.select(Selectors.summaryRowValue(1)).text() mustBe messagesForLanguage.IE807MovementInterceptedValue1
+            body.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.IE807MovementInterceptedKey2
+            body.select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.IE807MovementInterceptedValue2
+
+          }
+        }
+
         "being called with event type IE810 (Movement Cancelled Notification)" must {
 
           "render the correct HTML" in {
