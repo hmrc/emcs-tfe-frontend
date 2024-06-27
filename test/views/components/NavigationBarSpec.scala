@@ -18,7 +18,7 @@ package views.components
 
 import base.SpecBase
 import config.AppConfig
-import featureswitch.core.config.{FeatureSwitching, MessageStatisticsNotification}
+import featureswitch.core.config.{EnableXIPCInCaM, FeatureSwitching, MessageStatisticsNotification}
 import fixtures.messages.NavigationBarMessages
 import models.PageSection.Movements
 import models.common.RoleType
@@ -29,11 +29,11 @@ import views.html.components.navigation_bar
 
 class NavigationBarSpec extends SpecBase with FeatureSwitching {
 
-  override lazy val config = app.injector.instanceOf[AppConfig]
-  lazy val navigationBar: navigation_bar = app.injector.instanceOf[navigation_bar]
+  override implicit lazy val config: AppConfig = app.injector.instanceOf[AppConfig]
+  def navigationBar: navigation_bar = app.injector.instanceOf[navigation_bar]
 
   class Test(messageStatisticsNotificationEnabled: Boolean) {
-    if(messageStatisticsNotificationEnabled) enable(MessageStatisticsNotification) else disable(MessageStatisticsNotification)
+    if (messageStatisticsNotificationEnabled) enable(MessageStatisticsNotification) else disable(MessageStatisticsNotification)
   }
 
   "navigation_bar" when {
@@ -48,7 +48,7 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
 
           implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
 
-          RoleType.values.foreach {
+          RoleType.values.filterNot(_ == RoleType.XIPC).foreach {
             roleType =>
               val ern = {
                 val prefix = roleType.descriptionKey.split('.').last // accountHome.roleType.GBWK -> GBWK etc
@@ -66,7 +66,7 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
                 "render the Messages link" in new Test(messageStatisticsNotificationEnabled) {
                   doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(newMessageCount)
                 }
-                if (roleType.isConsignor) {
+                if (roleType.canCreateNewMovement(appConfig)) {
                   "render the Drafts link" in new Test(messageStatisticsNotificationEnabled) {
                     doc.select("#navigation-drafts-link").text() mustBe messagesForLanguage.drafts
                   }
@@ -84,6 +84,40 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
                   doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
                 }
               }
+          }
+
+
+          s"Role Type is [${msgs(RoleType.XIPC.descriptionKey)}]" must {
+            val ern = "XIPC123"
+            def html = navigationBar(NavigationBannerInfo(ern, newMessageCount, Movements))
+            def doc = Jsoup.parse(html.toString())
+            "render the Home link" in new Test(messageStatisticsNotificationEnabled) {
+              doc.select("#navigation-home-link").text() mustBe messagesForLanguage.home
+            }
+            "render the Messages link" in new Test(messageStatisticsNotificationEnabled) {
+              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(newMessageCount)
+            }
+            "when enableXIPCInCaM is true" must {
+              "render the Drafts link" in new Test(messageStatisticsNotificationEnabled) {
+                enable(EnableXIPCInCaM)
+                doc.select("#navigation-drafts-link").text() mustBe messagesForLanguage.drafts
+              }
+            }
+
+            "when enableXIPCInCaM is false" must {
+              "not render the Drafts link" in new Test(messageStatisticsNotificationEnabled) {
+                disable(EnableXIPCInCaM)
+                doc.select("#navigation-drafts-link").size() mustBe 0
+              }
+            }
+
+            "render the Movements link" in new Test(messageStatisticsNotificationEnabled) {
+              doc.select("#navigation-movements-link").text() mustBe messagesForLanguage.movements
+            }
+
+            "show the user which page they are currently on" in new Test(messageStatisticsNotificationEnabled) {
+              doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
+            }
           }
 
           PageSection.values.foreach {

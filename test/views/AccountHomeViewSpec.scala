@@ -17,7 +17,9 @@
 package views
 
 import base.SpecBase
+import config.AppConfig
 import controllers.routes
+import featureswitch.core.config.{EnableXIPCInCaM, FeatureSwitching}
 import models.MovementFilterUndischargedOption.Undischarged
 import models.MovementListSearchOptions
 import models.common.RoleType._
@@ -30,7 +32,8 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import views.html.AccountHomeView
 
-class AccountHomeViewSpec extends SpecBase {
+class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
+  override lazy val config: AppConfig = app.injector.instanceOf[AppConfig]
   lazy val page: AccountHomeView = app.injector.instanceOf[AccountHomeView]
   implicit lazy val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
   implicit lazy val messages: Messages = messagesApi.preferred(request)
@@ -56,17 +59,37 @@ class AccountHomeViewSpec extends SpecBase {
           prefix + "123"
         }
 
-        lazy val doc = Jsoup.parse(page(ern, roleType).toString())
+        def doc = Jsoup.parse(page(ern, roleType).toString())
 
-        s"have the correct navigation links for $roleType" in {
-          val navigationLinks = doc.getElementsByTag("ul").get(0).children()
-          navigationLinks.get(0).text mustBe "Home"
-          navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
-          if (roleType.isConsignor) {
-            navigationLinks.get(2).text mustBe "Drafts"
-            navigationLinks.get(3).text mustBe "Movements"
-          } else {
-            navigationLinks.get(2).text mustBe "Movements"
+        if (roleType == XIPC) {
+          s"have the correct navigation links for $roleType" when {
+            "EnableXIPCInCaM is enabled" in {
+              enable(EnableXIPCInCaM)
+              val navigationLinks = doc.getElementsByTag("ul").get(0).children()
+              navigationLinks.get(0).text mustBe "Home"
+              navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
+              navigationLinks.get(2).text mustBe "Drafts"
+              navigationLinks.get(3).text mustBe "Movements"
+            }
+            "EnableXIPCInCaM is disabled" in {
+              disable(EnableXIPCInCaM)
+              val navigationLinks = doc.getElementsByTag("ul").get(0).children()
+              navigationLinks.get(0).text mustBe "Home"
+              navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
+              navigationLinks.get(2).text mustBe "Movements"
+            }
+          }
+        } else {
+          s"have the correct navigation links for $roleType" in {
+            val navigationLinks = doc.getElementsByTag("ul").get(0).children()
+            navigationLinks.get(0).text mustBe "Home"
+            navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
+            if (roleType.canCreateNewMovement(appConfig)) {
+              navigationLinks.get(2).text mustBe "Drafts"
+              navigationLinks.get(3).text mustBe "Movements"
+            } else {
+              navigationLinks.get(2).text mustBe "Movements"
+            }
           }
         }
         s"have the correct content for $roleType" in {
@@ -84,7 +107,7 @@ class AccountHomeViewSpec extends SpecBase {
 
           doc.getElementsByTag("h2").get(2).text mustBe "Your movements"
 
-          val movementsLinks = doc.getElementsByTag("ul").get(2).children
+          def movementsLinks = doc.getElementsByTag("ul").get(2).children
 
           movementsLinks.get(0).text mustBe "All movements"
 
@@ -92,16 +115,24 @@ class AccountHomeViewSpec extends SpecBase {
 
           movementsLinks.get(1).text mustBe "Undischarged movements"
           movementsLinks.get(1).getElementsByTag("a").attr("href") mustBe
-            routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions( undischargedMovements = Some(Undischarged) )).url
+            routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions(undischargedMovements = Some(Undischarged))).url
 
-          if (roleType.isConsignor) {
+          if (roleType == XIPC) {
+            enable(EnableXIPCInCaM)
             movementsLinks.get(2).text mustBe "Draft movements"
             movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
-          } else {
+            disable(EnableXIPCInCaM)
             movementsLinks.text mustNot contain("Draft movements")
+          } else {
+            if (roleType.canCreateNewMovement(appConfig)) {
+              movementsLinks.get(2).text mustBe "Draft movements"
+              movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
+            } else {
+              movementsLinks.text mustNot contain("Draft movements")
+            }
           }
 
-          if (roleType.isConsignor) {
+          if (roleType.canCreateNewMovement(appConfig)) {
             doc.getElementsByTag("p").get(3).text mustBe "Create a new movement"
             doc.getElementsByTag("p").get(3).getElementsByTag("a").get(0).attr("href") mustBe appConfig.emcsTfeCreateMovementUrl(ern)
           } else {
