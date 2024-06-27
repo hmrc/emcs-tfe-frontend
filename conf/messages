@@ -215,10 +215,24 @@ viewMovement.guarantor.summary.type.2 = Transporter
 viewMovement.guarantor.summary.type.3 = Owner of goods
 viewMovement.guarantor.summary.type.4 = Consignee
 viewMovement.guarantor.summary.type.5 = No guarantor required
-viewMovement.guarantor.summary.businessName = Business name
-viewMovement.guarantor.summary.ern = Excise registration number (ERN)
+viewMovement.guarantor.summary.type.12 = Joint guarantee of the consignor and of the transporter
+viewMovement.guarantor.summary.type.123 = Joint guarantee of the consignor, of the transporter and of the owner of the Excise products
+viewMovement.guarantor.summary.type.1234 = Joint guarantee of the consignor, of the transporter, of the owner of the Excise products and of the consignee
+viewMovement.guarantor.summary.type.124 = Joint guarantee of the consignor, of the transporter and of the consignee
+viewMovement.guarantor.summary.type.13 = Joint guarantee of the consignor and of the owner of the Excise products
+viewMovement.guarantor.summary.type.134 = Joint guarantee of the consignor, of the owner of the Excise products and of the consignee
+viewMovement.guarantor.summary.type.14 = Joint guarantee of the consignor and of the consignee
+viewMovement.guarantor.summary.type.23 = Joint guarantee of the transporter and of the owner of the Excise products
+viewMovement.guarantor.summary.type.234 = Joint guarantee of the transporter, of the owner of the Excise products and of the consignee
+viewMovement.guarantor.summary.type.24 = Joint guarantee of the transporter and of the consignee
+viewMovement.guarantor.summary.type.34 = Joint guarantee of the owner of the Excise products and of the consignee
+viewMovement.guarantor.summary.subheading = Guarantor summary
+viewMovement.guarantor.summary.type = Type
+viewMovement.guarantor.summary.name = Name
+viewMovement.guarantor.summary.ern = Excise ID
+viewMovement.guarantor.summary.vat = VAT registration number
 viewMovement.guarantor.summary.address = Address
-viewMovement.guarantor.summary.vatRegistrationNumber = VAT registration number
+viewMovement.guarantor.summary.joint.subheading = Joint guarantor {0}
 
 # MOV02 - History events
 movementHistoryEvent.IE801.first.label = Movement created
