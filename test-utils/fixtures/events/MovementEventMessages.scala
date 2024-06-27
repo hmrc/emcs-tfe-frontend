@@ -156,6 +156,11 @@ object MovementEventMessages extends DateUtils {
     }
     val ie837DelayType: String = "What’s been delayed"
     val ie837DelayReason: String = "Reason for delay"
+
+    //IE813 Movement Destination Reminder
+    val ie813MovementDestinationHeading: String = "Change of destination submitted"
+    val ie813MovementDestinationTitle: String = titleHelper(ie813MovementDestinationHeading)
+    val ie813MovementDestinationP1 = "A change of destination has been submitted for this movement. This message shows all information that may have been updated due to the change of destination."
   }
 
   object English extends EventMessages with EN

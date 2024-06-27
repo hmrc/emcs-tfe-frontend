@@ -21,6 +21,7 @@ import models.common.{GuarantorType, TraderModel}
 import models.response.emcsTfe.GetMovementResponse
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.helpers.SummaryListHelper._
 import views.html.components.{h2, p}
 import views.html.viewMovement.partials.overview_partial
@@ -34,72 +35,95 @@ class ViewMovementGuarantorHelper @Inject()(h2: h2,
 
   private[helpers] def constructMovementGuarantor(
                                                    movement: GetMovementResponse,
-                                                   showNoGuarantorContentIfApplicable: Boolean = true)(implicit messages: Messages): Html = {
+                                                   showNoGuarantorContentIfApplicable: Boolean = true,
+                                                   headingMessageClass: Option[String] = Some("govuk-heading-l"))(implicit messages: Messages): Html = {
 
     movement.movementGuarantee.guarantorTypeCode match {
       case GuarantorNotRequired | NoGuarantor =>
-        if (showNoGuarantorContentIfApplicable) {
-          HtmlFormat.fill(
-            Seq(
-              h2(messages("viewMovement.guarantor.title"), classes = "govuk-heading-l"),
-              p()(Html(messages("viewMovement.guarantor.summary.noGuarantor")))
-            )
-          )
-        } else {
-          Html("")
-        }
-      case Consignor | Transporter | Owner | Consignee =>
-        movement.movementGuarantee.guarantorTrader.flatMap(_.headOption).map { singleGuarantor =>
-          buildGuarantorCard(singleGuarantor, movement.movementGuarantee.guarantorTypeCode, Some(messages("viewMovement.guarantor.title")), Some(messages("viewMovement.guarantor.summary.subheading")))
-        }.getOrElse(Html(""))
+        buildNoGuarantorCard(showNoGuarantorContentIfApplicable)
+      case guarantorType if GuarantorType.singleGuarantorTypes.contains(guarantorType) =>
+        buildSingleGuarantorCard(movement, headingMessageClass)
       case guarantorType if GuarantorType.jointGuarantorTypes.contains(guarantorType) =>
-        movement.movementGuarantee.guarantorTrader.map { guarantors =>
-          buildJointGuarantorCards(guarantors, movement.movementGuarantee.guarantorTypeCode)
-        }.getOrElse(Html(""))
+        buildJointGuarantorCards(movement, headingMessageClass)
     }
   }
 
-  private def buildGuarantorCard(
-                                  guarantor: TraderModel,
-                                  guarantorTypeCode: GuarantorType,
-                                  headingMessageKey: Option[String] = None,
-                                  cardTitleMessageKey: Option[String] = None,
-                                  excludeGuarantorType: Boolean = false
-                                )(implicit messages: Messages): Html = {
+  private def buildNoGuarantorCard(showNoGuarantorContentIfApplicable: Boolean)(implicit messages: Messages): Html = {
+    if (showNoGuarantorContentIfApplicable) {
 
-    val guarantorType = if (excludeGuarantorType) None else Some(summaryListRowBuilder("viewMovement.guarantor.summary.type", s"viewMovement.guarantor.summary.type.${guarantorTypeCode}"))
+      HtmlFormat.fill(
+        Seq(
+          h2(messages("viewMovement.guarantor.title"), classes = "govuk-heading-l"),
+          p()(Html(messages("viewMovement.guarantor.summary.noGuarantor")))
+        )
+      )
+    } else {
+      Html("")
+    }
+
+  }
+
+  private def buildSingleGuarantorCard(movement: GetMovementResponse, headingMessageClass: Option[String])(implicit messages: Messages): Html = {
+    movement.movementGuarantee.guarantorTrader.flatMap(_.headOption).map { singleGuarantor =>
+
+      overviewPartial(
+        headingId = Some("guarantor-information-heading"),
+        headingMessageKey = Some(messages("viewMovement.guarantor.title")),
+        headingMessageClass = headingMessageClass.getOrElse(""),
+        cardTitleMessageKey = Some(messages("viewMovement.guarantor.summary.subheading")),
+        summaryListRows = Seq(
+          guarantorTypeSummaryListRows(movement),
+          guarantorSummaryListRows(singleGuarantor)
+        ).flatten,
+        summaryListAttributes = Map("id" -> "guarantor-information-summary")
+      )
+
+    }.getOrElse(Html(""))
+  }
+
+  private def buildJointGuarantorCards(movement: GetMovementResponse, headingMessageClass: Option[String])(implicit messages: Messages): Html = {
+    movement.movementGuarantee.guarantorTrader.map { guarantors =>
+
+      val summaryCard: Seq[Html] = Seq(
+        overviewPartial(
+          headingId = Some("guarantor-information-heading"),
+          headingMessageKey = Some("viewMovement.guarantor.title"),
+          headingMessageClass = headingMessageClass.getOrElse(""),
+          headingLevel = 2,
+          cardTitleMessageKey = Some("viewMovement.guarantor.summary.subheading"),
+          summaryListRows = Seq(guarantorTypeSummaryListRows(movement)).flatten,
+          summaryListAttributes = Map("id" -> s"guarantor-summary")
+        )
+      )
+
+      val guarantorCards = guarantors.zipWithIndex.map {
+        case (guarantor, index) =>
+          overviewPartial(
+            headingId = None,
+            headingMessageKey = None,
+            headingMessageClass = headingMessageClass.getOrElse(""),
+            cardTitleMessageKey = Some(messages("viewMovement.guarantor.summary.joint.subheading", index + 1)),
+            summaryListRows = Seq(guarantorSummaryListRows(guarantor)).flatten,
+            summaryListAttributes = Map("id" -> "guarantor-information-summary")
+          )
+      }
+
+      HtmlFormat.fill(summaryCard ++ guarantorCards)
+
+    }.getOrElse(Html(""))
+  }
+
+  private def guarantorSummaryListRows(guarantor: TraderModel)(implicit messages: Messages): Seq[SummaryListRow] = {
     val name = guarantor.traderName.map(summaryListRowBuilder("viewMovement.guarantor.summary.name", _))
     val ern = guarantor.traderExciseNumber.map(summaryListRowBuilder("viewMovement.guarantor.summary.ern", _))
     val address = guarantor.address.map(address => summaryListRowBuilder("viewMovement.guarantor.summary.address", renderAddress(address)))
     val vat = guarantor.vatNumber.map(summaryListRowBuilder("viewMovement.guarantor.summary.vat", _))
 
-    overviewPartial(
-      headingMessageKey = headingMessageKey,
-      cardTitleMessageKey = cardTitleMessageKey,
-      summaryListRows = Seq(guarantorType, name, ern, address, vat).flatten,
-      summaryListAttributes = Map("id" -> s"guarantor-1")
-    )
+    Seq(name, ern, address, vat).flatten
   }
 
-  private def buildJointGuarantorCards(guarantors: Seq[TraderModel], guarantorTypeCode: GuarantorType)(implicit messages: Messages): Html = {
-    val guarantorType = Some(summaryListRowBuilder("viewMovement.guarantor.summary.type", s"viewMovement.guarantor.summary.type.${guarantorTypeCode}"))
-
-    val summaryCard: Seq[Html] = Seq(
-      overviewPartial(
-        headingMessageKey = Some("viewMovement.guarantor.title"),
-        headingLevel = 2,
-        cardTitleMessageKey = Some("viewMovement.guarantor.summary.subheading"),
-        summaryListRows = Seq(guarantorType).flatten,
-        summaryListAttributes = Map("id" -> s"guarantor-summary")
-      )
-    )
-
-    val cards = guarantors.zipWithIndex.map {
-      case (guarantor, index) => buildGuarantorCard(guarantor, guarantorTypeCode, None, Some(messages("viewMovement.guarantor.summary.joint.subheading", index + 1)), excludeGuarantorType = true)
-    }
-
-    HtmlFormat.fill(summaryCard ++ cards)
+  private def guarantorTypeSummaryListRows(movement: GetMovementResponse)(implicit messages: Messages): Seq[SummaryListRow] = {
+    Seq(summaryListRowBuilder("viewMovement.guarantor.summary.type", s"viewMovement.guarantor.summary.type.${movement.movementGuarantee.guarantorTypeCode}"))
   }
-
 
 }

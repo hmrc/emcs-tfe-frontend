@@ -58,6 +58,7 @@ class EventsHelper @Inject()(
       case (IE802, _) => ie802Html(event)
       case (IE803, _) => ie803Html(event, movement)
       case (IE810, _) => ie810Html(event, movement)
+      case (IE813, _) => ie813Html(event, movement)
       case (IE818, _) => ie818Html(event, movement, ie818ItemModelWithCnCodeInformation)
       case (IE819, _) => ie819Html(event, movement)
       case (IE829, _) => ie829Html(event, movement)
@@ -96,7 +97,6 @@ class EventsHelper @Inject()(
       )
     )
   }
-
   private def ie802Html(event: MovementHistoryEvent)(implicit messages: Messages): Html =
     HtmlFormat.fill(
       Seq(
@@ -143,6 +143,28 @@ class EventsHelper @Inject()(
       ).flatten)
     }
       ).flatten)
+  }
+
+  private def ie813Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+    implicit val _movement: GetMovementResponse = movement
+
+    HtmlFormat.fill(
+      Seq(
+        p(classes = "govuk-body-l")(Html(
+          messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
+        )),
+        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        movementEventHelper.movementInformationCard(),
+        movementEventHelper.consigneeInformationCard(),
+        movementEventHelper.placeOfDestinationInformationCard(),
+        movementEventHelper.exportInformationCard(),
+        movementEventHelper.guarantorInformationCard(),
+        movementEventHelper.journeyInformationCard(),
+        movementEventHelper.transportArrangerInformationCard(),
+        movementEventHelper.firstTransporterInformationCard(),
+        movementEventHelper.transportUnitsInformationCard()
+      )
+    )
   }
 
   private def ie818Html(
@@ -245,7 +267,7 @@ class EventsHelper @Inject()(
       )
     )
 
-  private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
+    private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
     p(classes = "govuk-body js-visible govuk-!-display-none-print")(
       HtmlFormat.fill(
         Seq(
