@@ -151,5 +151,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def betaAllowListCheckingEnabled: Boolean = isEnabled(CheckBetaAllowList)
 
+  def enableXIPCInCaM: Boolean = isEnabled(EnableXIPCInCaM)
+
   def messageStatisticsNotificationEnabled: Boolean = isEnabled(MessageStatisticsNotification)
 }

@@ -16,6 +16,7 @@
 
 package viewmodels.helpers
 
+import config.AppConfig
 import models.common.RoleType
 import models.common.RoleType.{GBRC, GBWK, XIRC, XIWK}
 import models.movementScenario.MovementScenario
@@ -30,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.ExpectedDateOfArrival
 import viewmodels._
 import viewmodels.helpers.SummaryListHelper._
-import views.html.components.{list, p}
+import views.html.components.p
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
@@ -38,7 +39,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ViewMovementHelper @Inject()(
-                                    list: list,
                                     p: p,
                                     overviewPartial: overview_partial,
                                     viewMovementItemsHelper: ViewMovementItemsHelper,
@@ -46,8 +46,8 @@ class ViewMovementHelper @Inject()(
                                     viewMovementGuarantorHelper: ViewMovementGuarantorHelper,
                                     viewMovementOverviewHelper: ViewMovementOverviewHelper,
                                     viewMovementDeliveryHelper: ViewMovementDeliveryHelper,
-                                    viewMovementDocumentHelper: ViewMovementDocumentHelper
-                                  ) extends ExpectedDateOfArrival {
+                                    viewMovementDocumentHelper: ViewMovementDocumentHelper,
+                                    appConfig: AppConfig) extends ExpectedDateOfArrival {
 
   def movementCard(subNavigationTab: SubNavigationTab, movementResponse: GetMovementResponse)
                   (implicit request: DataRequest[_], messages: Messages, hc: HeaderCarrier, ec: ExecutionContext): Future[Html] =
@@ -84,7 +84,7 @@ class ViewMovementHelper @Inject()(
       )))
     val receiptStatus = optReceiptStatusMessage.map(statusMessage => summaryListRowBuilder("viewMovement.movement.summary.receiptStatus", statusMessage))
     val movementType = summaryListRowBuilder("viewMovement.movement.summary.type", movementTypeValue)
-    val movementDirection = summaryListRowBuilder("viewMovement.movement.summary.direction", if (userRole.isConsignor) "viewMovement.movement.summary.direction.out" else "viewMovement.movement.summary.direction.in")
+    val movementDirection = summaryListRowBuilder("viewMovement.movement.summary.direction", if (userRole.isConsignor(appConfig)) "viewMovement.movement.summary.direction.out" else "viewMovement.movement.summary.direction.in")
     //Summary section - end
 
     //Time and data section - start

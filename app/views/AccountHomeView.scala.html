@@ -72,12 +72,12 @@
     @list(Seq(
         link(appConfig.emcsTfeListMovementsUrl(ern), "accountHome.allMovementsLink", id = Some("all-movements-link")),
         link(appConfig.emcsTfeUndischargedMovementsUrl(ern), "accountHome.undischargedMovementsLink", id = Some("undischarged-movements-link")),
-        if(roleType.isConsignor) {
+        if(roleType.canCreateNewMovement(appConfig)) {
             link(appConfig.emcsTfeDraftMovementsUrl(ern), "accountHome.draftMovementsLink", id = Some("draft-movements-link"))
         } else Html("")
     ))
 
-    @if(roleType.isConsignor) {
+    @if(roleType.canCreateNewMovement(appConfig)) {
         @p() {
             @link(appConfig.emcsTfeCreateMovementUrl(ern), "accountHome.createMovementLink", id = Some("create-movement-link"))
         }

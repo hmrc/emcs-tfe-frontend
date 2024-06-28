@@ -57,7 +57,7 @@
                         </a>
                     </li>
 
-                    @if(roleType.isConsignor) {
+                    @if(roleType.canCreateNewMovement(appConfig)) {
                         <li class="moj-primary-navigation__item">
                             <a id="navigation-drafts-link"
                                class="moj-primary-navigation__link"

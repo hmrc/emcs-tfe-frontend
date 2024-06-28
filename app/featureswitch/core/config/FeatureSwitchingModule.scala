@@ -30,7 +30,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     ReturnToLegacy,
     DenyDutyPaidUsers,
     CheckBetaAllowList,
-    MessageStatisticsNotification
+    MessageStatisticsNotification,
+    EnableXIPCInCaM
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -63,4 +64,9 @@ case object CheckBetaAllowList extends FeatureSwitch {
 case object MessageStatisticsNotification extends FeatureSwitch {
   override val configName: String = "features.messageStatisticsNotification"
   override val displayName: String = "Show the message statistics red notification badge (new messages count)"
+}
+
+case object EnableXIPCInCaM extends FeatureSwitch {
+  override val configName: String = "features.enableXIPCInCaM"
+  override val displayName: String = "Enables XIPC users in CaM"
 }
