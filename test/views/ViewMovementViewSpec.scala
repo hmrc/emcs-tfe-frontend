@@ -130,8 +130,9 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               Selectors.actionLink(1) -> messagesForLanguage.actionLinkCancelMovement,
               Selectors.actionLink(2) -> messagesForLanguage.actionLinkChangeOfDestination,
               Selectors.actionLink(3) -> messagesForLanguage.actionLinkExplainDelay,
-              Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess,
-              Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
+              Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess
+              // ETFE-2556 will re-enable this link
+              // Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
             ))
           }
 
@@ -162,8 +163,9 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               Selectors.actionLink(1) -> messagesForLanguage.actionLinkAlertOrRejection,
               Selectors.actionLink(2) -> messagesForLanguage.actionLinkSubmitReportOfReceipt,
               Selectors.actionLink(3) -> messagesForLanguage.actionLinkExplainDelay,
-              Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess,
-              Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
+              Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess
+              // ETFE-2556 will re-enable this link
+              // Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
             ))
           }
 

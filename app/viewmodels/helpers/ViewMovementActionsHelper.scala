@@ -46,7 +46,8 @@ class ViewMovementActionsHelper @Inject()(
           changeDestinationLink(movement),
           explainADelayLink(movement),
           shortageOrExcessLink(movement),
-          printLink()
+          // ETFE-2556 will re-enable this link
+          // printLink()
         ).flatten,
         extraClasses = Some("govuk-list--spaced")
       )
@@ -58,7 +59,8 @@ class ViewMovementActionsHelper @Inject()(
           reportOfReceiptLink(movement),
           explainADelayLink(movement),
           shortageOrExcessLink(movement),
-          printLink()
+          // ETFE-2556 will re-enable this link
+          // printLink()
         ).flatten,
         extraClasses = Some("govuk-list--spaced")
       )
