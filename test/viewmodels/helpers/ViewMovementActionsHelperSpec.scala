@@ -243,17 +243,18 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
   }
 
-  ".printLink" should {
-    "always be present" in {
-      helper.printLink() mustBe
-        Some(
-          link(
-            link = "print",
-            messageKey = "viewMovement.printOrSaveEad",
-            id = Some("print-or-save-ead"),
-            hintKey = Some("viewMovement.printOrSaveEad.info")
-          )
-        )
-    }
-  }
+// ETFE-2556 will re-enable this link
+//  ".printLink" should {
+//    "always be present" in {
+//      helper.printLink() mustBe
+//        Some(
+//          link(
+//            link = "print",
+//            messageKey = "viewMovement.printOrSaveEad",
+//            id = Some("print-or-save-ead"),
+//            hintKey = Some("viewMovement.printOrSaveEad.info")
+//          )
+//        )
+//    }
+//  }
 }
