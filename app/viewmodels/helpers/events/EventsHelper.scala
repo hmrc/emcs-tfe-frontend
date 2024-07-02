@@ -45,6 +45,7 @@ class EventsHelper @Inject()(
   def getEventTitle(event: MovementHistoryEvent, movementResponse: GetMovementResponse)(implicit messages: Messages): String =
     (event.eventType, event.messageRole) match {
       case (IE819, _) => messages(s"${timelineHelper.getEventBaseKey(event)}.${getIE819EventDetail(event, movementResponse).notificationType}.label")
+      case (IE871, _) => messages(s"${timelineHelper.getEventBaseKey(event)}.title")
       case _ => messages(timelineHelper.getEventTitleKey(event, movementResponse))
     }
 
@@ -66,6 +67,7 @@ class EventsHelper @Inject()(
       case (IE839, _) => ie839Html(event, movement)
       case (IE905, _) => ie905Html(event)
       case (IE837, _) => ie837Html(event, movement)
+      case (IE871, _) => ie871Html(event, movement)
       case _ => Empty.asHtml
     }
   }
@@ -98,6 +100,7 @@ class EventsHelper @Inject()(
       )
     )
   }
+
   private def ie802Html(event: MovementHistoryEvent)(implicit messages: Messages): Html =
     HtmlFormat.fill(
       Seq(
@@ -149,17 +152,17 @@ class EventsHelper @Inject()(
   private def ie810Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
     HtmlFormat.fill(
       Seq(
-    movement.cancelMovement.map { cancelMovement =>
-      HtmlFormat.fill(Seq(
-        p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
-        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
-      ) ++ Seq(
-        Some(summary_list(Seq(
-          Some(messages(s"${timelineHelper.getEventBaseKey(event)}.cancellationReason") -> messages(s"${timelineHelper.getEventBaseKey(event)}.reason.${cancelMovement.reason.toString}")),
-          if (movement.cancelMovement.get.reason == Other) Some(messages(s"${timelineHelper.getEventBaseKey(event)}.cancellationExplanation") -> cancelMovement.complementaryInformation.getOrElse("")) else None
-        ).flatten))
-      ).flatten)
-    }
+        movement.cancelMovement.map { cancelMovement =>
+          HtmlFormat.fill(Seq(
+            p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
+            printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
+          ) ++ Seq(
+            Some(summary_list(Seq(
+              Some(messages(s"${timelineHelper.getEventBaseKey(event)}.cancellationReason") -> messages(s"${timelineHelper.getEventBaseKey(event)}.reason.${cancelMovement.reason.toString}")),
+              if (movement.cancelMovement.get.reason == Other) Some(messages(s"${timelineHelper.getEventBaseKey(event)}.cancellationExplanation") -> cancelMovement.complementaryInformation.getOrElse("")) else None
+            ).flatten))
+          ).flatten)
+        }
       ).flatten)
   }
 
@@ -285,7 +288,26 @@ class EventsHelper @Inject()(
       )
     )
 
-    private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
+  private def ie871Html(event: MovementHistoryEvent, movement: GetMovementResponse)
+                       (implicit messages: Messages, request: DataRequest[_]): Html = {
+    implicit val _movement = movement
+    movement.notificationOfShortageOrExcess.map { notificationOfShortageOrExcess =>
+      HtmlFormat.fill(
+        Seq(
+          p(classes = "govuk-body-l")(Html(
+            messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
+          )),
+          printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+          movementEventHelper.ie871GlobalDetails(notificationOfShortageOrExcess),
+          movementEventHelper.consignorInformationCard(),
+          movementEventHelper.consigneeInformationCard(),
+          movementEventHelper.ie871IndividualItemDetails(notificationOfShortageOrExcess, movement)
+        )
+      )
+    }.getOrElse(Empty.asHtml)
+  }
+
+  private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
     p(classes = "govuk-body js-visible govuk-!-display-none-print")(
       HtmlFormat.fill(
         Seq(

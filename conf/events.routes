@@ -15,6 +15,6 @@ GET        /trader/:ern/movement/:arc/event/:eventId/explanation-delay-submitted
 GET        /trader/:ern/movement/:arc/event/:eventId/movement-rejected-customs               controllers.events.ViewEventController.movementRejectedCustoms(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/event-report-received                   controllers.events.ViewEventController.eventReportReceived(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/movement-closed                         controllers.events.ViewEventController.movementClosed(ern: String, arc: String, eventId: Int)
-#GET        /trader/:ern/movement/:arc/event/:eventId/explanation-shortage-excess-submitted   controllers.events.ViewEventController.shortageExcessSubmitted(ern: String, arc: String, eventId: Int)
+GET        /trader/:ern/movement/:arc/event/:eventId/explanation-shortage-excess-submitted   controllers.events.ViewEventController.shortageExcessSubmitted(ern: String, arc: String, eventId: Int)
 #GET        /trader/:ern/movement/:arc/event/:eventId/movement-closure-response               controllers.events.ViewEventController.movementClosureResponse(ern: String, arc: String, eventId: Int)
 GET         /trader/:ern/movement/:arc/event/:eventId/manual-closure-movement                controllers.events.ViewEventController.manualClosureOfMovement(ern: String, arc: String, eventId: Int)
