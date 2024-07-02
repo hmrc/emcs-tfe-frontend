@@ -20,7 +20,7 @@ import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.events.MovementEventMessages
 import fixtures.messages.{AlertRejectionReasonMessages, DelayReasonMessages}
-import models.common.DestinationType.{DirectDelivery, Export, RegisteredConsignee, TaxWarehouse, TemporaryRegisteredConsignee, UnknownDestination}
+import models.common.DestinationType.{DirectDelivery, Export, RegisteredConsignee, TaxWarehouse, TemporaryCertifiedConsignee, TemporaryRegisteredConsignee, UnknownDestination}
 import models.common.TransportArrangement.OwnerOfGoods
 import models.common.UnitOfMeasure.Kilograms
 import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Shortage}
@@ -239,6 +239,36 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Name"
         doc.select(Selectors.summaryListRowValue(1)).text() mustBe "Current 801 Consignee"
         doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Identification number for temporary registered consignee"
+        doc.select(Selectors.summaryListRowValue(2)).text() mustBe "XI12345678900"
+        doc.select(Selectors.summaryListRowKey(3)).text() mustBe "Address"
+        doc.select(Selectors.summaryListRowValue(3)).text() mustBe "Main101 Zeebrugge BT4 3XX"
+      }
+
+      s"the destination type is a ${simpleName(TemporaryCertifiedConsignee)}" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+          destinationType = TemporaryCertifiedConsignee,
+          consigneeTrader = Some(TraderModel(
+            traderExciseNumber = Some("XI12345678900"), // aka Temporary Consignment Authorisation (TCA) number
+            traderName = Some("Current 801 Consignee"),
+            address = Some(AddressModel(
+              streetNumber = None,
+              street = Some("Main101"),
+              postcode = Some("BT4 3XX"),
+              city = Some("Zeebrugge")
+            )),
+            vatNumber = None,
+            eoriNumber = None
+          ))
+        )
+
+        val result = helper.consigneeInformationCard()
+        val doc = Jsoup.parse(result.toString())
+
+        doc.select(Selectors.h2(1)).text() mustBe "Consignee"
+
+        doc.select(Selectors.summaryListRowKey(1)).text() mustBe "Name"
+        doc.select(Selectors.summaryListRowValue(1)).text() mustBe "Current 801 Consignee"
+        doc.select(Selectors.summaryListRowKey(2)).text() mustBe "Identification number for temporary certified consignee"
         doc.select(Selectors.summaryListRowValue(2)).text() mustBe "XI12345678900"
         doc.select(Selectors.summaryListRowKey(3)).text() mustBe "Address"
         doc.select(Selectors.summaryListRowValue(3)).text() mustBe "Main101 Zeebrugge BT4 3XX"

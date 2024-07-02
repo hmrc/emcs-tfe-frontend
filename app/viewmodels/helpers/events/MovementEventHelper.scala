@@ -151,7 +151,9 @@ class MovementEventHelper @Inject()(
         case TaxWarehouse | DirectDelivery | RegisteredConsignee =>
           consignee.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignee.ern", _))
         case TemporaryRegisteredConsignee =>
-          consignee.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignee.identifier", _))
+          consignee.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignee.identifier.registered", _))
+        case TemporaryCertifiedConsignee =>
+          consignee.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignee.identifier.certified", _))
         case Export =>
           consignee.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignee.vatNumber", _))
         case _ => None
@@ -784,7 +786,7 @@ class MovementEventHelper @Inject()(
       )
     }.getOrElse(Empty.asHtml)
 
-  def ie871GlobalDetails(event: NotificationOfShortageOrExcessModel)(implicit messages: Messages, request: DataRequest[_]): Html = {
+  def ie871GlobalDetails(event: NotificationOfShortageOrExcessModel)(implicit messages: Messages): Html = {
 
     event.globalDateOfAnalysis.flatMap { date =>
       event.globalExplanation.map { explanation =>
