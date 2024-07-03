@@ -322,6 +322,21 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
           )
         )
       )
+    ),
+    notificationOfShortageOrExcess = Some(
+      NotificationOfShortageOrExcessModel(
+        submitterType = SubmitterType.Consignee,
+        globalDateOfAnalysis = None,
+        globalExplanation = None,
+        individualItemReasons = Some(Seq(
+          BodyAnalysisModel(
+            exciseProductCode = "B000",
+            bodyRecordUniqueReference = 1,
+            explanation = "4 more than I expected",
+            actualQuantity = Some(5)
+          )
+        ))
+      )
     )
   )
 
@@ -670,6 +685,17 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
           "street" -> "Catherdral",
           "postcode" -> "BT3 7BF",
           "city" -> "Salford"
+        )
+      )
+    ),
+    "notificationOfShortageOrExcess" -> Json.obj(
+      "submitterType" -> "2",
+      "individualItemReasons" -> Json.arr(
+        Json.obj(
+          "exciseProductCode" -> "B000",
+          "bodyRecordUniqueReference" -> 1,
+          "explanation" -> "4 more than I expected",
+          "actualQuantity" -> 5
         )
       )
     )

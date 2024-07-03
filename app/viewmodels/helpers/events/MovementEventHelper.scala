@@ -19,15 +19,15 @@ package viewmodels.helpers.events
 import models.common.DestinationType._
 import models.common.{AcceptMovement, DestinationType, TraderModel, WrongWithMovement}
 import models.requests.DataRequest
-import models.response.emcsTfe._
 import models.response.emcsTfe.customsRejection.NotificationOfCustomsRejectionModel
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, UnsatisfactoryModel}
+import models.response.emcsTfe._
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Details
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukDetails
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Empty, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import utils.DateUtils
 import viewmodels.govuk.all.{ActionItemViewModel, FluentActionItem}
@@ -39,12 +39,13 @@ import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
 
+//noinspection ScalaStyle TODO: Maybe consider splitting this out, although it's already split to be in this helper...
 @Singleton
 class MovementEventHelper @Inject()(
                                      h2: h2,
                                      list: list,
                                      overview_partial: overview_partial,
-                                     govukDetails : GovukDetails,
+                                     govukDetails: GovukDetails,
                                      transportCardHelper: ViewMovementTransportHelper,
                                      guarantorCardHelper: ViewMovementGuarantorHelper,
                                      itemDetailsCardHelper: ItemDetailsCardHelper,
@@ -150,7 +151,9 @@ class MovementEventHelper @Inject()(
         case TaxWarehouse | DirectDelivery | RegisteredConsignee =>
           consignee.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignee.ern", _))
         case TemporaryRegisteredConsignee =>
-          consignee.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignee.identifier", _))
+          consignee.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignee.identifier.registered", _))
+        case TemporaryCertifiedConsignee =>
+          consignee.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignee.identifier.certified", _))
         case Export =>
           consignee.traderExciseNumber.map(summaryListRowBuilder("movementCreatedView.section.consignee.vatNumber", _))
         case _ => None
@@ -432,7 +435,7 @@ class MovementEventHelper @Inject()(
     )
   }
 
-  def rorDetailsCard(event: MovementHistoryEvent)(implicit movement: GetMovementResponse, messages: Messages): Html = {
+  def rorDetailsCard(event: MovementHistoryEvent, onlyArrivalDate: Boolean = false)(implicit movement: GetMovementResponse, messages: Messages): Html = {
     movement.reportOfReceipt match {
       case Some(reportOfReceipt) =>
         val headingTitle: String = if (movement.destinationType == DestinationType.Export) {
@@ -447,16 +450,21 @@ class MovementEventHelper @Inject()(
           s"movementHistoryEvent.${event.eventType}.rorDetails.status"
         }
 
+        val dateOfArrival =
+          Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDetails.dateOfArrival", reportOfReceipt.dateOfArrival.formatDateForUIOutput()))
+
+        val status =
+          Some(summaryListRowBuilder(statusKey, messages(s"movementHistoryEvent.${event.eventType}.rorDetails.status.value.${reportOfReceipt.acceptMovement}")))
+
+        val moreInfo =
+          Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDetails.moreInformation", reportOfReceipt.otherInformation.getOrElse(s"movementHistoryEvent.${event.eventType}.rorDetails.moreInformation.notProvided")))
+
         buildOverviewPartial(
           headingId = None,
           headingTitle = Some(headingTitle),
           cardTitleMessageKey = None,
           cardFooterHtml = None,
-          summaryListRows = Seq(
-            Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDetails.dateOfArrival", reportOfReceipt.dateOfArrival.formatDateForUIOutput())),
-            Some(summaryListRowBuilder(statusKey, messages(s"movementHistoryEvent.${event.eventType}.rorDetails.status.value.${reportOfReceipt.acceptMovement}"))),
-            Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.rorDetails.moreInformation", reportOfReceipt.otherInformation.getOrElse(s"movementHistoryEvent.${event.eventType}.rorDetails.moreInformation.notProvided")))
-          )
+          summaryListRows = if (onlyArrivalDate) Seq(dateOfArrival) else Seq(dateOfArrival, status, moreInfo)
         )
       case None => Html("")
     }
@@ -585,7 +593,7 @@ class MovementEventHelper @Inject()(
         ViewUtils.pluralSingular(messages(s"movementHistoryEvent.IE819.summary.${event.notificationType}.reason"), event.alertRejectReason.size),
         bullets(event.alertRejectReason.sorted.map { reason =>
           Html(messages(s"movementHistoryEvent.IE819.reason.${reason.reason}"))
-        }, if(event.alertRejectReason.size > 1) "govuk-list govuk-list--bullet" else "govuk-list")
+        }, if (event.alertRejectReason.size > 1) "govuk-list govuk-list--bullet" else "govuk-list")
       ))
     )
 
@@ -736,10 +744,66 @@ class MovementEventHelper @Inject()(
       event.complementaryInformation.map(summaryListRowBuilder(messages("movementHistoryEvent.IE837.summary.info"), _))
 
     buildOverviewPartial(
-      headingTitle = None,
-      headingId = None,
       summaryListRows = Seq(submittedBy, submitterId, delayType, reason, info),
       summaryListAttributes = Map("id" -> "delay-information-summary")
     )
+  }
+
+  def ie871IndividualItemDetails(event: NotificationOfShortageOrExcessModel, movement: GetMovementResponse)
+                                (implicit messages: Messages, request: DataRequest[_]): Html =
+    event.individualItemReasons.map { items =>
+      HtmlFormat.fill(
+        Seq(h2(messages("movementHistoryEvent.IE871.summary.h2"), classes = "govuk-heading-m govuk-!-margin-top-9")) ++
+          items.map { item =>
+
+            val epc =
+              Some(summaryListRowBuilder(messages("movementHistoryEvent.IE871.summary.epc"), item.exciseProductCode))
+
+            val itemReference =
+              Some(summaryListRowBuilder(messages("movementHistoryEvent.IE871.summary.itemRef"), item.bodyRecordUniqueReference.toString))
+
+            val amount =
+              item.actualQuantity.map { actualQuantity =>
+                summaryListRowBuilder(messages("movementHistoryEvent.IE871.summary.amount"), actualQuantity.toString)
+              }
+
+            val explanation =
+              Some(summaryListRowBuilder(messages("movementHistoryEvent.IE871.summary.explanation"), item.explanation))
+
+            buildOverviewPartial(
+              cardTitleMessageKey = Some(messages("movementHistoryEvent.IE871.summary.cardTitle", item.bodyRecordUniqueReference)),
+              cardTitleHeadingLevel = Some(3),
+              cardAction = Some(ActionItemViewModel(
+                content = Text(messages("movementHistoryEvent.IE871.summary.viewItem")),
+                href = controllers.routes.ItemDetailsController.onPageLoad(request.ern, movement.arc, item.bodyRecordUniqueReference).url,
+                id = s"viewItem-${item.bodyRecordUniqueReference}"
+              )),
+              headingId = Some(s"item-information-${item.bodyRecordUniqueReference}"),
+              summaryListRows = Seq(epc, itemReference, amount, explanation),
+              summaryListAttributes = Map("id" -> s"item-information-summary-${item.bodyRecordUniqueReference}")
+            )
+          }
+      )
+    }.getOrElse(Empty.asHtml)
+
+  def ie871GlobalDetails(event: NotificationOfShortageOrExcessModel)(implicit messages: Messages): Html = {
+
+    event.globalDateOfAnalysis.flatMap { date =>
+      event.globalExplanation.map { explanation =>
+
+        val dateRow =
+          Some(summaryListRowBuilder(messages("movementHistoryEvent.IE871.summary.global.date"), date.formatDateForUIOutput()))
+
+        val globalExplanationRow =
+          Some(summaryListRowBuilder(messages("movementHistoryEvent.IE871.summary.global.explanation"), explanation))
+
+        buildOverviewPartial(
+          headingTitle = Some(messages("movementHistoryEvent.IE871.summary.global.h2")),
+          headingId = Some("shortage-or-excess-information-heading"),
+          summaryListRows = Seq(dateRow, globalExplanationRow),
+          summaryListAttributes = Map("id" -> "shortage-or-excess-information-summary")
+        )
+      }
+    }.getOrElse(Empty.asHtml)
   }
 }

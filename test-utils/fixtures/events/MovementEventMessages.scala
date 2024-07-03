@@ -25,12 +25,14 @@ import java.time.LocalDateTime
 
 object MovementEventMessages extends DateUtils {
 
-  sealed trait EventMessages extends BaseEnglish { _ : i18n =>
+  sealed trait EventMessages extends BaseEnglish {
+    _: i18n =>
 
     def messageIssued(dateTime: LocalDateTime = LocalDateTime.of(2024, 12, 4, 17, 0, 0)) =
       s"Message issued ${dateTime.formatDateTimeForUIOutput()}"
 
     def arc(arc: String) = s"ARC: $arc"
+
     val printScreenContent: String = "Print this screen to make a record of this message."
 
     //IE801 First Notification of Movement
@@ -57,18 +59,23 @@ object MovementEventMessages extends DateUtils {
     val ie803MovementDivertedHeading: String = "Diverted movement"
     val ie803MovementDivertedTitle: String = titleHelper(ie803MovementDivertedHeading)
     val ie803MovementDivertedP1 = "This movement has been diverted."
+
     def ie803MovementDivertedP2(dateOfSplit: String) = s"A change of destination for the movement was submitted on $dateOfSplit. You are receiving this message because you are no longer the intended consignee for the diverted movement. You can find more details in the change of destination message."
 
     //IE803 Movement Split Notification
     val ie803MovementSplitHeading: String = "Movement split"
     val ie803MovementSplitTitle: String = titleHelper(ie803MovementSplitHeading)
+
     def ie803MovementSplitP1(dateOfSplit: String) = s"A request to split this movement was submitted on $dateOfSplit."
+
     val ie803MovementSplitP2 = "The new ARCs for the split movement are:"
 
     //IE810 Movement Cancelled Notification
     val ie807MovementInterceptedHeading: String = "Movement intercepted"
     val ie807MovementInterceptedTitle: String = titleHelper(ie807MovementInterceptedHeading)
+
     def ie807MovementInterceptedP1(exciseOffice: String) = s"This movement was intercepted by excise office $exciseOffice"
+
     val IE807MovementInterceptedKey1 = "Reason for interruption"
     val IE807MovementInterceptedKey2 = "More information"
     val IE807MovementInterceptedValue1 = "Other"
@@ -122,7 +129,9 @@ object MovementEventMessages extends DateUtils {
     //IE839 Movement rejected by customs
     val ie839MovementRejectedByCustomsHeading: String = "Movement rejected by customs"
     val ie839MovementRejectedByCustomsTitle: String = titleHelper(ie839MovementRejectedByCustomsHeading)
+
     def ie839MovementRejectedByCustomsP1WithCustomsOffice(customsOfficeNumber: String) = s"This movement has been rejected for export by customs office number $customsOfficeNumber."
+
     val ie839MovementRejectedByCustomsP1 = "This movement has been rejected for export by the customs office."
     val ie839MovementRejectedByCustomsRejectionDate = "Rejection date"
     val ie839MovementRejectedByCustomsRejectionReason = "Rejection reason code"
@@ -134,7 +143,9 @@ object MovementEventMessages extends DateUtils {
     val ie839MovementRejectedByCustomsLRN = "Local reference number (LRN)"
     val ie839MovementRejectedByCustomsDocumentRef = "Document reference number"
     val ie839MovementRejectedByCustomsDiagnosisHeading = "Diagnosis"
+
     def ie839MovementRejectedByCustomsDiagnosisNumberedHeading(number: Int) = s"Diagnosis $number"
+
     val ie839MovementRejectedByCustomsBodyRecordUniqueReference = "Body record unique reference"
     val ie839MovementRejectedByCustomsDiagnosisCode = "Diagnosis Code"
     val ie839MovementRejectedByCustomsDiagnosisCode1 = "1 - Unknown ARC"
@@ -170,6 +181,22 @@ object MovementEventMessages extends DateUtils {
     val ie813MovementDestinationHeading: String = "Change of destination submitted"
     val ie813MovementDestinationTitle: String = titleHelper(ie813MovementDestinationHeading)
     val ie813MovementDestinationP1 = "A change of destination has been submitted for this movement. This message shows all information that may have been updated due to the change of destination."
+
+    //IE871 Shortage Or Excess Notification
+    val ie871Heading: String = "Explanation for a shortage or excess submitted"
+    val ie871Title: String = titleHelper(ie871Heading)
+    val ie871Paragraph1: String = "An explanation for a shortage or excess has been submitted."
+
+    val ie871ShortageOrExcessH2 = "Shortage or excess details"
+    val ie871GlobalDate = "Date shortage or excess observed"
+    val ie871ConsigneeH2 = "Consignee"
+    val ie871ConsignorH2 = "Consignor"
+    val ie871ItemsH2 = "Items"
+    val ie871ItemH3: Int => String = "Item " + _
+    val ie871epc = "Excise Product Code (EPC)"
+    val ie871reference = "Body record unique reference"
+    val ie871amount = "Amount received"
+    val ie871explanation = "Information about shortage or excess"
   }
 
   object English extends EventMessages with EN
