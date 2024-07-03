@@ -184,7 +184,7 @@ object MovementEventMessages extends DateUtils {
 
     //IE871 Shortage Or Excess Notification
     val ie871Heading: String = "Explanation for a shortage or excess submitted"
-    val ie871Title: String = titleHelper(ie837Heading)
+    val ie871Title: String = titleHelper(ie871Heading)
     val ie871Paragraph1: String = "An explanation for a shortage or excess has been submitted."
 
     val ie871ShortageOrExcessH2 = "Shortage or excess details"

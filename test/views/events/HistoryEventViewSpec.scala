@@ -499,6 +499,22 @@ class HistoryEventViewSpec extends ViewSpecBase
             ))
           )))
         }
+
+        "rendering an IE871 event (Shortage or Excess Notification)" should {
+
+          val event = ie871ShortageOrEccessEvent
+
+          behave like pageWithExpectedElementsAndMessages(
+            Seq(
+              Selectors.title -> messagesForLanguage.ie871Title,
+              Selectors.h1 -> messagesForLanguage.ie871Heading,
+              Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(event.eventDate)),
+              Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
+              Selectors.p(1) -> messagesForLanguage.ie871Paragraph1,
+              Selectors.p(2) -> messagesForLanguage.printScreenContent
+            )
+          )(createDocument(event, getMovementResponseModel))
+        }
       }
     }
   }
