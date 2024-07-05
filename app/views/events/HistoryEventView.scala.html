@@ -36,7 +36,7 @@
         appConfig: AppConfig
 )
 
-@(event: MovementHistoryEvent, movement: GetMovementResponse, ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation])(implicit request: DataRequest[_], messages: Messages)
+@(event: MovementHistoryEvent, movement: GetMovementResponse, ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation], docTypes: Seq[DocumentType])(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
     pageTitle = titleNoForm(messages(eventsHelper.getEventTitle(event, movement))),
@@ -65,7 +65,7 @@
         classes = "govuk-caption-m govuk-!-margin-bottom-7"
     )
 
-    @eventsHelper.constructEventInformation(event, movement, ie818ItemModelWithCnCodeInformation)
+    @eventsHelper.constructEventInformation(event, movement, ie818ItemModelWithCnCodeInformation, docTypes)
 }
 
 @{

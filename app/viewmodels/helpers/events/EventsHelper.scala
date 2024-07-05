@@ -16,6 +16,7 @@
 
 package viewmodels.helpers.events
 
+import models.DocumentType
 import models.EventTypes._
 import models.common.DestinationType
 import models.requests.DataRequest
@@ -51,7 +52,8 @@ class EventsHelper @Inject()(
   def constructEventInformation(
                                  event: MovementHistoryEvent,
                                  movement: GetMovementResponse,
-                                 ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation] = Seq.empty
+                                 ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation] = Seq.empty,
+                                 documentTypes: Seq[DocumentType] = Seq.empty
                                )(implicit request: DataRequest[_], messages: Messages): Html = {
     (event.eventType, event.messageRole) match {
       case (IE801, _) => ie801Html(event, movement)
@@ -67,6 +69,7 @@ class EventsHelper @Inject()(
       case (IE905, _) => ie905Html(event)
       case (IE837, _) => ie837Html(event, movement)
       case (IE871, _) => ie871Html(event, movement)
+      case (IE881, _) => ie881Html(event, movement, documentTypes)
       case _ => Empty.asHtml
     }
   }
@@ -304,6 +307,24 @@ class EventsHelper @Inject()(
         )
       )
     }.getOrElse(Empty.asHtml)
+  }
+
+  private def ie881Html(event: MovementHistoryEvent, movement: GetMovementResponse, documentTypes: Seq[DocumentType])
+                       (implicit request: DataRequest[_], messages: Messages): Html = {
+    implicit val _movement = movement
+    println("*"*20)
+    println(movement.manualClosureResponse)
+    HtmlFormat.fill(
+      Seq(
+        p(classes = "govuk-body-l")(Html(
+          messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
+        )),
+        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        movementEventHelper.responseInformation(),
+        movementEventHelper.closureDocumentsInformationCard(documentTypes),
+        movementEventHelper.closureItemsCard()
+      )
+    )
   }
 
   private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
