@@ -38,6 +38,8 @@ object ViewAllMessagesMessages {
     val tableMessageDate = "Date"
     val tableMessageAction = "Action"
 
+    val noMessages = "You have no messages."
+
     val next: String = "Next"
   }
 

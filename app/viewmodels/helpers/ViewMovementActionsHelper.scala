@@ -45,7 +45,7 @@ class ViewMovementActionsHelper @Inject()(
           cancelMovementLink(movement),
           changeDestinationLink(movement),
           explainADelayLink(movement),
-          shortageOrExcessLink(movement),
+          shortageOrExcessLink(movement)
           // ETFE-2556 will re-enable this link
           // printLink()
         ).flatten,
@@ -58,7 +58,7 @@ class ViewMovementActionsHelper @Inject()(
           alertOrRejectionLink(movement),
           reportOfReceiptLink(movement),
           explainADelayLink(movement),
-          shortageOrExcessLink(movement),
+          shortageOrExcessLink(movement)
           // ETFE-2556 will re-enable this link
           // printLink()
         ).flatten,

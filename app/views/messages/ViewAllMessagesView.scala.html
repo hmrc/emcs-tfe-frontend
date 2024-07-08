@@ -50,7 +50,7 @@
     fullWidthContent = true
 ) {
 
-    @if(maybeDeletedMessageDescriptionKey.isDefined && maybeDeletedMessageDescriptionKey.get != ""){
+    @if(maybeDeletedMessageDescriptionKey.exists(_ != "")) {
         <div class="govuk-grid-row govuk-!-padding-right-3 govuk-!-padding-left-3">
             <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
                 @{
@@ -71,39 +71,45 @@
              @messages("viewAllMessages.heading", request.messageStatistics.map(_.countOfAllMessages).getOrElse(0))
          }
 
-         <div class="inbox">
+        @if(request.messageStatistics.exists(_.countOfAllMessages == 0)) {
             @p(classes = "govuk-body-l") {
-                 @messages("viewAllMessages.totalNumberOfMessages", request.messageStatistics.map(_.countOfNewMessages).getOrElse(0))
-             }
+                @messages("viewAllMessages.noMessages")
+            }
+        } else {
+            <div class="inbox">
+                @p(classes = "govuk-body-l") {
+                    @messages("viewAllMessages.totalNumberOfMessages", request.messageStatistics.map(_.countOfNewMessages).getOrElse(0))
+                }
 
-            <form>
-                <div style="display: inline-flex; align-items: flex-end;">
-                    @govukSelect(Select(
-                        items = sortSelectItems,
-                        name = "sortBy",
-                        id = "sortBy",
-                        label = Label(
-                            content = Text(messages("viewAllMessages.sort.label")),
-                            classes = "govuk-!-display-inline govuk-!-padding-right-2"
-                        ),
-                        classes = "govuk-!-display-inline"
-                    ))
+                <form>
+                    <div style="display: inline-flex; align-items: flex-end;">
+                        @govukSelect(Select(
+                            items = sortSelectItems,
+                            name = "sortBy",
+                            id = "sortBy",
+                            label = Label(
+                                content = Text(messages("viewAllMessages.sort.label")),
+                                classes = "govuk-!-display-inline govuk-!-padding-right-2"
+                            ),
+                            classes = "govuk-!-display-inline"
+                        ))
 
-                    @govukButton(
-                        ButtonViewModel(Text(messages("viewAllMessages.sort.button")))
-                                .withCssClass("govuk-!-margin-left-2")
-                                .withId("sortBySubmit")
-                    )
+                        @govukButton(
+                            ButtonViewModel(Text(messages("viewAllMessages.sort.button")))
+                            .withCssClass("govuk-!-margin-left-2")
+                            .withId("sortBySubmit")
+                        )
 
-                    <input type="hidden" name="index" value="@{searchOptions.index}"/>
-                </div>
-            </form>
-        </div>
+                        <input type="hidden" name="index" value="@{searchOptions.index}"/>
+                    </div>
+                </form>
+            </div>
 
-        @tableHelper.constructTable(allMessages)
+            @tableHelper.constructTable(allMessages)
 
-        @paginationHelper.constructPagination(totalNumberOfPages, request.ern, searchOptions).map { paginationLinks =>
-            @govukPagination(paginationLinks)
+            @paginationHelper.constructPagination(totalNumberOfPages, request.ern, searchOptions).map { paginationLinks =>
+                @govukPagination(paginationLinks)
+            }
         }
 
     </div>

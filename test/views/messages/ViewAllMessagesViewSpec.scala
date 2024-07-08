@@ -31,7 +31,6 @@ import views.html.components.table
 import views.html.messages.ViewAllMessagesView
 import views.{BaseSelectors, ViewBehaviours}
 
-
 class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with MessagesFixtures {
 
   object Selectors extends BaseSelectors {
@@ -62,15 +61,46 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
 
   lazy val table: table = app.injector.instanceOf[table]
 
-  def asDocument(totalPages: Int, maybeDeletedMessageDescriptionKey: Option[String] = None)(implicit messages: Messages): Document =
+  def asDocument(totalPages: Int, maybeDeletedMessageDescriptionKey: Option[String] = None)
+                (implicit messages: Messages, dataRequest: DataRequest[_]): Document =
     Jsoup.parse(view(
       sortSelectItems = MessagesSortingSelectOption.constructSelectItems(),
       allMessages = getMessageResponse.messages,
       totalNumberOfPages = totalPages,
       searchOptions = MessagesSearchOptions(),
       maybeDeletedMessageDescriptionKey = maybeDeletedMessageDescriptionKey
-    ).toString())
+    )(dataRequest, implicitly).toString())
 
+
+  "when being rendered with no messages" should {
+
+    "show only the no messages text (count of all messages is 0)" when {
+
+      implicit val doc: Document = asDocument(1)(messages, dr.copy(messageStatistics = Some(testMessageStatistics.copy(countOfAllMessages = 0))))
+
+      val expectedElementsForNoMessages = Seq(
+        Selectors.title -> English.title,
+        Selectors.h1 -> English.heading,
+        Selectors.p(1) -> English.noMessages
+      )
+
+      behave like pageWithExpectedElementsAndMessages(expectedElementsForNoMessages)
+
+      behave like pageWithElementsNotPresent(Seq(
+        Selectors.label("sortBy"),
+        Selectors.sortBySelectOption(1),
+        Selectors.sortBySelectOption(2),
+        Selectors.sortBySelectOption(3),
+        Selectors.sortBySelectOption(4),
+        Selectors.sortBySelectOption(5),
+        Selectors.sortBySelectOption(6),
+        Selectors.sortBySelectOption(7),
+        Selectors.sortBySelectOption(8),
+        Selectors.sortButton,
+        Selectors.paginationLink(1)
+      ))
+    }
+  }
 
   "when being rendered with no pagination" should {
 
