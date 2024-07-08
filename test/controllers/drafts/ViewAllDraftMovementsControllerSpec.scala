@@ -115,10 +115,12 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
       totalMovements = numberOfMovements
     )
 
-  private def successView(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int)(implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, formProvider(), numberOfMovements)
+  private def successView(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int, form: Form[GetDraftMovementsSearchOptions] = formProvider())
+                         (implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, form, numberOfMovements)
 
-  private def viewWithErrors(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int, form: Form[GetDraftMovementsSearchOptions] = formProvider().withError(FormError("sortBy", Seq("error.required"))))(implicit request: DataRequest[_]): Html =
+  private def viewWithErrors(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int, form: Form[GetDraftMovementsSearchOptions] = formProvider().withError(FormError("sortBy", Seq("error.required"))))
+                            (implicit request: DataRequest[_]): Html =
     buildView(searchOptions, form, numberOfMovements)
 
   "GET /" when {
@@ -264,6 +266,26 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
 
           status(result) shouldBe Status.OK
           Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 39)
+        }
+
+        "show the correct view with the correct form values present based on the search options" in new Test {
+
+          val searchOptions = GetDraftMovementsSearchOptions(index = 3, draftHasErrors = Some(true))
+
+          MockEmcsTfeConnector
+            .getDraftMovements(testErn, Some(searchOptions))
+            .returns(Future.successful(Right(GetDraftMovementsResponse(39, movements))))
+
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockMovementPaginationHelper.constructPagination(searchOptions, pageCount = 4)(None)
+
+          val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 39, formProvider().fill(searchOptions))
         }
       }
 

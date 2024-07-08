@@ -81,13 +81,15 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
       exciseCodesWithDefault = GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE +: exciseCodes
     } yield {
 
+      val formToRender = if (form.hasErrors) form else form.fill(searchOptions)
+
       val pageCount: Int = calculatePageCount(draftMovements)
 
       if (searchOptions.index <= 0 || searchOptions.index > pageCount) {
         Redirect(routes.ViewAllDraftMovementsController.onPageLoad(ern, searchOptions.copy(index = 1)))
       } else {
         status(view(
-          form = form,
+          form = formToRender,
           action = routes.ViewAllDraftMovementsController.onSubmit(ern, searchOptions),
           ern = ern,
           movements = draftMovements.paginatedDrafts,

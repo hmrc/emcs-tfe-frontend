@@ -33,5 +33,11 @@ trait MockDraftMovementsPaginationHelper extends MockFactory {
       (mockDraftMovementsPaginationHelper.constructPagination(_: Int, _: String, _: GetDraftMovementsSearchOptions))
         .expects(pageCount, *, GetDraftMovementsSearchOptions(index = index))
         .returns(returns)
+
+    def constructPagination(searchOptions: GetDraftMovementsSearchOptions, pageCount: Int)
+                           (returns: Option[Pagination]): CallHandler3[Int, String, GetDraftMovementsSearchOptions, Option[Pagination]] =
+      (mockDraftMovementsPaginationHelper.constructPagination(_: Int, _: String, _: GetDraftMovementsSearchOptions))
+        .expects(pageCount, *, searchOptions)
+        .returns(returns)
   }
 }
