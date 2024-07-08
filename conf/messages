@@ -719,6 +719,7 @@ viewAllMovements.filters.dateOfReceiptTo.error.invalid = The Receipted to date m
 viewAllMessages.title = Messages ({0})
 viewAllMessages.heading = Messages ({0})
 viewAllMessages.totalNumberOfMessages = You have {0} unread messages.
+viewAllMessages.noMessages = You have no messages.
 viewAllMessages.sort.label = Sort by
 viewAllMessages.sort.button = Sort messages
 viewAllMessages.sort.messageTypeA = Message (A - Z)
