@@ -347,6 +347,7 @@ class MovementEventHelper @Inject()(
         case (document, index) =>
           buildOverviewPartial(
             cardTitleMessageKey = Some(messages("movementCreatedView.section.document.heading", index + 1)),
+            cardTitleHeadingLevel = Some(3),
             summaryListRows = Seq(
               Some(summaryListRowBuilder("movementCreatedView.section.document.type", document.documentType.getOrElse(""))),
               Some(summaryListRowBuilder("movementCreatedView.section.document.reference", document.documentReference.getOrElse("")))
