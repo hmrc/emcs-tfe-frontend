@@ -118,8 +118,8 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
   private def successView(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int)(implicit request: DataRequest[_]): Html =
     buildView(searchOptions, formProvider(), numberOfMovements)
 
-  private def viewWithErrors(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int)(implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, formProvider().withError(FormError("sortBy", Seq("error.required"))), numberOfMovements)
+  private def viewWithErrors(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int, form: Form[GetDraftMovementsSearchOptions] = formProvider().withError(FormError("sortBy", Seq("error.required"))))(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, form, numberOfMovements)
 
   "GET /" when {
 
@@ -448,6 +448,36 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
 
             status(result) shouldBe Status.BAD_REQUEST
             Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, numberOfMovements = 31)
+          }
+
+          "show the correct view when some form fields are invalid" in new Test {
+
+            val searchOptions = GetDraftMovementsSearchOptions(index = 3)
+
+            MockEmcsTfeConnector
+              .getDraftMovements(testErn, Some(searchOptions))
+              .returns(Future.successful(Right(GetDraftMovementsResponse(31, movements))))
+
+            MockGetExciseProductCodesConnector
+              .getExciseProductCodes()
+              .returns(Future.successful(Right(epcsListConnectorResult)))
+
+            MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
+
+            val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
+              fakeRequest.withFormUrlEncodedBody(Seq(
+                s"${ViewAllDraftMovementsFormProvider.dateOfDispatchFrom}.day" -> "invalid",
+                s"${ViewAllDraftMovementsFormProvider.dateOfDispatchFrom}.month" -> "2"
+              ): _*)
+            )
+
+            val boundForm = formProvider().bind(Map(
+              s"${ViewAllDraftMovementsFormProvider.dateOfDispatchFrom}.day" -> "invalid",
+              s"${ViewAllDraftMovementsFormProvider.dateOfDispatchFrom}.month" -> "2"
+            ))
+
+            status(result) shouldBe Status.BAD_REQUEST
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, numberOfMovements = 31, form = boundForm)
           }
 
           "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in new Test {

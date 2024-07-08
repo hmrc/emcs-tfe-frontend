@@ -51,8 +51,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
                                                 formProvider: ViewAllDraftMovementsFormProvider,
                                                 paginationHelper: DraftMovementsPaginationHelper
                                           )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc)
-    with AuthActionHelper with I18nSupport with BetaChecks {
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
 
   def onPageLoad(ern: String, searchOptions: GetDraftMovementsSearchOptions): Action[AnyContent] = {
     authorisedDataRequestAsync(ern, draftsBetaGuard(ern)) { implicit request =>
@@ -88,7 +87,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
         Redirect(routes.ViewAllDraftMovementsController.onPageLoad(ern, searchOptions.copy(index = 1)))
       } else {
         status(view(
-          form = form.fill(searchOptions),
+          form = form,
           action = routes.ViewAllDraftMovementsController.onSubmit(ern, searchOptions),
           ern = ern,
           movements = draftMovements.paginatedDrafts,
