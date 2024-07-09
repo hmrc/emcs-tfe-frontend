@@ -56,13 +56,13 @@ class PrevalidateExciseProductCodeSummarySpec extends SpecBase with Matchers wit
                   ActionItemViewModel(
                     href = routes.PrevalidateExciseProductCodeController.onPageLoad(request.ern, testIndex1, CheckMode).url,
                     content = Text(messagesForLanguage.change),
-                    id = s"change-epc-1"
-                  ).withVisuallyHiddenText(messagesForLanguage.changeHidden(testIndex1)),
+                    id = "change-epc-1"
+                  ).withVisuallyHiddenText(messagesForLanguage.changeHidden(wineExciseProductCode.code)),
                   ActionItemViewModel(
                     href = routes.PrevalidateRemoveExciseProductCodeController.onPageLoad(request.ern, testIndex1).url,
                     content = Text(messagesForLanguage.remove),
-                    id = s"remove-epc-1"
-                  ).withVisuallyHiddenText(messagesForLanguage.removeHidden(testIndex1))
+                    id = "remove-epc-1"
+                  ).withVisuallyHiddenText(messagesForLanguage.removeHidden(wineExciseProductCode.code))
                 )))
               )
           }

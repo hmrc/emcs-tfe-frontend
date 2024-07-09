@@ -35,12 +35,12 @@ object PrevalidateExciseProductCodeSummary {
           href = routes.PrevalidateExciseProductCodeController.onPageLoad(request.ern, idx, CheckMode).url,
           content = Text(messages("site.change")),
           id = s"change-epc-${idx.displayIndex}"
-        ).withVisuallyHiddenText(messages(s"prevalidateTrader.addToList.change.hidden", idx.displayIndex)),
+        ).withVisuallyHiddenText(messages("prevalidateTrader.addToList.change.hidden", exciseProductCode.code)),
         ActionItemViewModel(
           href = routes.PrevalidateRemoveExciseProductCodeController.onPageLoad(request.ern, idx).url,
           content = Text(messages("site.remove")),
           id = s"remove-epc-${idx.displayIndex}"
-        ).withVisuallyHiddenText(messages(s"prevalidateTrader.addToList.remove.hidden", idx.displayIndex))
+        ).withVisuallyHiddenText(messages("prevalidateTrader.addToList.remove.hidden", exciseProductCode.code))
       )
     )
 
