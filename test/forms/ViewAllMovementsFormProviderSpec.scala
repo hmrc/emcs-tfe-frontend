@@ -31,6 +31,7 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
   val searchValue = "searchValue"
   def traderRoleKey(i: Int) = s"traderRole[$i]"
 
+  // TODO: test the rest of the form fields - we got lazy here
   ".sortBy" should {
 
     "bind when the searchKey is present" in {
@@ -43,13 +44,13 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
       boundForm.get mustBe MovementListSearchOptions(None, Some("ARC1"))
     }
 
-    "remove any non-alphanumerics from the form values" in {
+    "remove any non-query-params from the form values" in {
       val boundForm = form.bind(Map(
         searchKey -> "$$arc\\/&.?",
-        searchValue -> "ARC1/injecting-viruses!!!!<script>\"alert</script>",
-        sortByKey -> "^^arcAsc!?"
+        searchValue -> "ARC1/injecting viruses?query=thing&beans",
+        sortByKey -> "^^arcAsc!"
       ))
-      boundForm.get mustBe MovementListSearchOptions(Some(ARC), Some("ARC1injectingvirusesscriptalertscript"), sortBy = ArcAscending)
+      boundForm.get mustBe MovementListSearchOptions(Some(ARC), Some("ARC1injecting virusesquerythingbeans"), sortBy = ArcAscending)
     }
 
     "not bind a value that contains XSS chars" in {

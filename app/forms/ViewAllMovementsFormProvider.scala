@@ -29,13 +29,15 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
     Form(
       mapping(
         ViewAllMovementsFormProvider.searchKey -> optional(playText()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
-        ViewAllMovementsFormProvider.searchValue -> optional(playText()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllMovementsFormProvider.searchValue ->
+          optional(playText().verifying(regexpUnlessEmpty(XSS_REGEX, "error.invalidCharacter")))
+            .transform[Option[String]](_.map(removeAnyQueryParamCharacters), identity),
         ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
         ViewAllMovementsFormProvider.traderRole -> set(enumerable[MovementFilterDirectionOption]()),
         ViewAllMovementsFormProvider.undischarged -> set(enumerable[MovementFilterUndischargedOption]()),
         ViewAllMovementsFormProvider.status -> optional(enumerable[MovementFilterStatusOption]()),
-        ViewAllMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
-        ViewAllMovementsFormProvider.countryOfOrigin -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyQueryParamCharacters), identity),
+        ViewAllMovementsFormProvider.countryOfOrigin -> optional(text()).transform[Option[String]](_.map(removeAnyQueryParamCharacters), identity),
         ViewAllMovementsFormProvider.dateOfDispatchFrom -> optionalLocalDate(
           invalidKey     = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid",
           twoRequiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required.two",
@@ -63,6 +65,9 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
    * As these form values will be used as query parameters, we will need to silently guard against users entering `&` or `/` for example,
    * this function will replace any non-alphanumeric with a blank value e.g. "value&unexpected/parameter" -> "valueunexpectedparameter
    */
+    // TODO: add to draft page too?
+  private def removeAnyQueryParamCharacters(rawString: String): String = rawString.replaceAll("[/&?=]", "")
+
   private def removeAnyNonAlphanumerics(rawString: String): String = rawString.replaceAll("[^A-Za-z0-9]", "")
 }
 
