@@ -17,7 +17,6 @@
 package fixtures.messages.prevalidateTrader
 
 import fixtures.messages.{BaseEnglish, BaseMessages, i18n}
-import models.Index
 
 object PrevalidateAddToListMessages {
 
@@ -31,12 +30,12 @@ object PrevalidateAddToListMessages {
 
     def title(count: Int): String = titleHelper(heading(count))
 
-    def removeHidden(idx: Index): String = s"excise product code ${idx.displayIndex}"
+    def removeHidden(code: String): String = s"excise product code $code"
 
-    def changeHidden(idx: Index): String = s"excise product code ${idx.displayIndex}"
+    def changeHidden(code: String): String = s"excise product code $code"
 
-    def removeEpc(idx: Index): String = s"$remove ${removeHidden(idx)}"
-    def changeEpc(idx: Index): String = s"$change ${changeHidden(idx)}"
+    def removeEpc(code: String): String = s"$remove ${removeHidden(code)}"
+    def changeEpc(code: String): String = s"$change ${changeHidden(code)}"
 
     val h2 = "Do you need to add another Excise Product Code (EPC)?"
 
