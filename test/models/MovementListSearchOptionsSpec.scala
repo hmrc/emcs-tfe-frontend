@@ -350,7 +350,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val actualResult = MovementListSearchOptions.apply(
           searchKey = Some(ARC.code),
           searchValue = Some("ARC123"),
-          sortBy = Oldest.code,
+          sortBy = Oldest,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
           undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
           movementStatusOption = Some(MovementFilterStatusOption.Active),
@@ -386,7 +386,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val actualResult = MovementListSearchOptions.apply(
           searchKey = Some(ARC.code),
           searchValue = Some("ARC123"),
-          sortBy = Oldest.code,
+          sortBy = Oldest,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
           undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
           movementStatusOption = Some(MovementFilterStatusOption.Active),
@@ -422,7 +422,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val actualResult = MovementListSearchOptions.apply(
           searchKey = Some(ARC.code),
           searchValue = Some("ARC123"),
-          sortBy = Oldest.code,
+          sortBy = Oldest,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
           undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
           movementStatusOption = Some(MovementFilterStatusOption.ChooseStatus),
@@ -458,7 +458,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val actualResult = MovementListSearchOptions.apply(
           searchKey = Some(ARC.code),
           searchValue = Some("ARC123"),
-          sortBy = Oldest.code,
+          sortBy = Oldest,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
           undischargedMovementsOptions = Set(MovementFilterUndischargedOption.Undischarged),
           movementStatusOption = Some(MovementFilterStatusOption.Active),
@@ -481,7 +481,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val expectedResult = Some((
           Some("otherTraderId"),
           Some("ERN123456"),
-          Oldest.code,
+          Oldest,
           Set(MovementFilterDirectionOption.GoodsOut),
           Set(MovementFilterUndischargedOption.Undischarged),
           Some(MovementFilterStatusOption.Active),
