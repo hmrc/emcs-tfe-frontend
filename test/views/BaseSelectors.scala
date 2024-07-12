@@ -28,7 +28,7 @@ trait BaseSelectors {
   def bullet(i: Int, ul: Int = 1) = s"ul.govuk-list:nth-of-type($ul) li:nth-of-type($i)"
   def numbered(i: Int, ol: Int = 1) = s"main ol.govuk-list--number:nth-of-type($ol) li:nth-of-type($i)"
   val hint: String = "main .govuk-hint"
-  val button = ".govuk-button"
+  val button = ".govuk-button:not(.govuk-button--secondary)"
   val secondaryButton = ".govuk-button--secondary"
   val saveAndExitLink = "#main-content > div > div > form > div.govuk-button-group > a"
   val label: String => String = forId => s"main label[for='$forId']"

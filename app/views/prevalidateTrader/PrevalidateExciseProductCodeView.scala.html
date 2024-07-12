@@ -20,25 +20,33 @@
 @import models.requests.UserAnswersRequest
 
 @this(
-    layout: templates.Layout,
-    formHelper: FormWithCSRF,
-    govukErrorSummary: GovukErrorSummary,
-    govukInput: GovukInput,
-    govukButton: GovukButton,
-    govukSelect: GovukSelect,
-    h1: components.h1,
-    h2: components.h2,
-    p: components.p,
-    saveAndContinue: components.saveAndContinue,
-    autocompleteCss: HmrcAccessibleAutocompleteCss,
-    autocompleteJavascript: HmrcAccessibleAutocompleteJavascript
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        govukErrorSummary: GovukErrorSummary,
+        govukInput: GovukInput,
+        govukButton: GovukButton,
+        govukSelect: GovukSelect,
+        h1: components.h1,
+        h2: components.h2,
+        p: components.p,
+        saveAndContinue: components.saveAndContinue,
+        clearAccessibleAutocompleteButton: components.clearAccessibleAutocompleteButton,
+        autocompleteCss: HmrcAccessibleAutocompleteCss,
+        autocompleteJavascript: HmrcAccessibleAutocompleteJavascript
 )
 
 @(form: Form[_], action: Call, selectOptions: Seq[SelectItem], indexOfDocument: Index)(implicit request: UserAnswersRequest[_], messages: Messages)
 
 @scripts = {
-  @autocompleteJavascript()
-  <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("javascripts/autocomplete.min.js")'></script>
+@autocompleteJavascript()
+    <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("javascripts/autocomplete.min.js")'></script>
+}
+
+@errorMessage = @{
+    form.errors("excise-product-code") match {
+        case Nil => None
+        case errors => Some(ErrorMessage(content = HtmlContent(errors.map(err => messages(err.message)).mkString("<br>"))))
+    }
 }
 
 @layout(
@@ -51,41 +59,42 @@
 
     @formHelper(action = action) {
 
-      @if(form.errors.nonEmpty) {
-          @govukErrorSummary(ErrorSummaryViewModel(form))
-      }
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
 
-      @h1(hiddenContent = Some(messages("subHeading.hidden")), captionMsg = Some("prevalidateTrader.caption"), classes = "govuk-heading-l")(
-          Html(messages("prevalidateTrader.exciseProductCode.heading"))
-      )
-
-      @p(){@messages("prevalidateTrader.exciseProductCode.paragraph")}
-
-      @govukSelect(
-        Select(
-          id = "excise-product-code",
-          name = "excise-product-code",
-          label = Label(
-            classes = "govuk-label--m",
-            isPageHeading = false,
-            content = Text(messages("prevalidateTrader.exciseProductCode.label", indexOfDocument.displayIndex))
-          ),
-          items = selectOptions,
-          errorMessage = form.errors("excise-product-code") match {
-            case Nil => None
-            case errors => Some(ErrorMessage(content = HtmlContent(errors.map(err => messages(err.message)).mkString("<br>"))))
-          }
-        ).asAccessibleAutocomplete(
-          Some(
-            AccessibleAutocomplete(
-              defaultValue = Some(""),
-              showAllValues = true
-            )
-          )
+        @h1(hiddenContent = Some(messages("subHeading.hidden")), captionMsg = Some("prevalidateTrader.caption"), classes = "govuk-heading-l")(
+            Html(messages("prevalidateTrader.exciseProductCode.heading"))
         )
-      )
 
-      @saveAndContinue()(messages)
+        @p() {
+            @messages("prevalidateTrader.exciseProductCode.paragraph")
+        }
+
+        @govukSelect(
+            Select(
+                id = "excise-product-code",
+                name = "excise-product-code",
+                label = Label(
+                    classes = "govuk-label--m",
+                    isPageHeading = false,
+                    content = Text(messages("prevalidateTrader.exciseProductCode.label", indexOfDocument.displayIndex))
+                ),
+                items = selectOptions,
+                errorMessage = errorMessage
+            ).asAccessibleAutocomplete(
+                Some(
+                    AccessibleAutocomplete(
+                        defaultValue = Some(""),
+                        showAllValues = true
+                    )
+                )
+            )
+        )
+
+        @clearAccessibleAutocompleteButton(idToClear = "excise-product-code")(request, messages)
+
+        @saveAndContinue()(messages)
     }
 }
 

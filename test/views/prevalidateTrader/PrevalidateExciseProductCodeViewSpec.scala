@@ -63,7 +63,8 @@ class PrevalidateExciseProductCodeViewSpec extends ViewSpecBase with ViewBehavio
           Selectors.label("excise-product-code") -> messagesForLanguage.label(testIndex1),
           Selectors.selectOption(1) -> messagesForLanguage.defaultSelectOption,
           Selectors.selectOption(2) -> messagesForLanguage.beerSelectOption,
-          Selectors.button -> messagesForLanguage.saveAndContinue
+          Selectors.button -> messagesForLanguage.saveAndContinue,
+          Selectors.secondaryButton -> messagesForLanguage.clearSelectedCode
         ))
 
         "render the nav links" in {
