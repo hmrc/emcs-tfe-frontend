@@ -17,7 +17,7 @@
 package models
 
 import play.api.i18n.Messages
-import models.common.WithName
+import models.common.{Enumerable, WithName}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 import viewmodels.helpers.SelectItemHelper
 
@@ -59,6 +59,9 @@ object MovementSortingSelectOption {
     Newest,
     Oldest
   )
+
+  implicit val enumerable: Enumerable[MovementSortingSelectOption] =
+    Enumerable(values.map(v => v.toString -> v): _*)
 
   def apply(code: String): MovementSortingSelectOption = code match {
     case ArcAscending.code => ArcAscending

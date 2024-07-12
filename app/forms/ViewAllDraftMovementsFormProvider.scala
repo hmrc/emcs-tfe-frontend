@@ -30,7 +30,9 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
     Form(
       mapping(
         ViewAllDraftMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
-        ViewAllDraftMovementsFormProvider.searchValue -> optional(playText()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
+        ViewAllDraftMovementsFormProvider.searchValue ->
+          optional(playText().verifying(regexpUnlessEmpty(XSS_REGEX, "error.invalidCharacter")))
+            .transform[Option[String]](_.map(removeAnyQueryParamCharacters), identity),
         ViewAllDraftMovementsFormProvider.draftHasErrors -> set(enumerable[DraftMovementsErrorsOption]()),
         ViewAllDraftMovementsFormProvider.destinationTypes -> set(enumerable[DestinationTypeSearchOption]()),
         ViewAllDraftMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
@@ -46,8 +48,6 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
         )
       )(GetDraftMovementsSearchOptions.apply)(GetDraftMovementsSearchOptions.unapply)
   )
-
-  private def removeAnyNonAlphanumerics(rawString: String): String = rawString.replaceAll("[^A-Za-z0-9]", "")
 }
 
 object ViewAllDraftMovementsFormProvider {

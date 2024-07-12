@@ -87,18 +87,20 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       actualResult mustBe expectedResult
     }
 
-    "remove any non-alphanumerics from the form values" in {
-
-      val expectedResult = GetDraftMovementsSearchOptions(
-        searchValue = Some("searchValue1injectingvirusesscriptalertscript")
-      )
-
-      val actualResult = form.bind(Map(
+    "remove any non-query-params from the form values" in {
+      val boundForm = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
-        searchValue -> "searchValue1/injecting-viruses!!!!<script>\"alert</script>"
-      )).get
+        searchValue -> "ARC1/injecting viruses?query=thing&beans",
+      ))
+      boundForm.get mustBe GetDraftMovementsSearchOptions(searchValue = Some("ARC1injecting virusesquerythingbeans"))
+    }
 
-      actualResult mustBe expectedResult
+    "return an error when the value is invalid" in {
+      val boundForm = form.bind(Map(
+        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
+        searchValue -> "<script>alert('hi')</script>",
+      ))
+      boundForm.errors mustBe List(FormError(searchValue, List("error.invalidCharacter"), List(XSS_REGEX)))
     }
   }
 

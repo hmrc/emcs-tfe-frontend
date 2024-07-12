@@ -18,44 +18,94 @@ package forms
 
 import base.SpecBase
 import models.MovementFilterDirectionOption._
-import models.MovementListSearchOptions
+import models.MovementFilterStatusOption.ChooseStatus
+import models.MovementFilterUndischargedOption.Undischarged
 import models.MovementSearchSelectOption.ARC
 import models.MovementSortingSelectOption.ArcAscending
+import models.{MovementFilterStatusOption, MovementListSearchOptions, MovementSortingSelectOption}
 import play.api.data.FormError
+
+import java.time.LocalDate
 
 class ViewAllMovementsFormProviderSpec extends SpecBase {
 
   val form = new ViewAllMovementsFormProvider()()
-  val sortByKey = "sortBy"
+  val sortBy = "sortBy"
   val searchKey = "searchKey"
   val searchValue = "searchValue"
-  def traderRoleKey(i: Int) = s"traderRole[$i]"
+
+  // filters
+  def traderRole(i: Int) = s"traderRole[$i]"
+
+  def undischarged(i: Int) = s"undischargedMovements[$i]"
+
+  val status = s"movementStatus"
+  val exciseProductCode = "exciseProductCode"
+  val countryOfOrigin = "countryOfOrigin"
+  val dateOfDispatchFrom = "dateOfDispatchFrom"
+  val dateOfDispatchTo = "dateOfDispatchTo"
+  val dateOfReceiptFrom = "dateOfReceiptFrom"
+  val dateOfReceiptTo = "dateOfReceiptTo"
 
   ".sortBy" should {
 
-    "bind when the searchKey is present" in {
-      val boundForm = form.bind(Map(searchKey -> ARC.code, sortByKey -> ArcAscending.code))
-      boundForm.get mustBe MovementListSearchOptions(Some(ARC), None)
+    MovementSortingSelectOption.values.foreach {
+      value =>
+        s"bind when $value is present" in {
+          val boundForm = form.bind(Map(
+            sortBy -> value.code
+          ))
+
+          boundForm.get mustBe MovementListSearchOptions(sortBy = value)
+        }
     }
 
-    "bind when the searchValue is present" in {
-      val boundForm = form.bind(Map(searchValue -> "ARC1", sortByKey -> ArcAscending.code))
-      boundForm.get mustBe MovementListSearchOptions(None, Some("ARC1"))
-    }
-
-    "remove any non-alphanumerics from the form values" in {
+    "not bind an invalid value" in {
       val boundForm = form.bind(Map(
-        searchKey -> "$$arc\\/&.?",
-        searchValue -> "ARC1/injecting-viruses!!!!<script>\"alert</script>",
-        sortByKey -> "^^arcAsc!?"
+        sortBy -> "BEANS",
       ))
-      boundForm.get mustBe MovementListSearchOptions(Some(ARC), Some("ARC1injectingvirusesscriptalertscript"), sortBy = ArcAscending)
+
+      boundForm.errors mustBe List(FormError(sortBy, List("error.invalid")))
+    }
+  }
+
+  ".searchKey" should {
+
+    "bind" in {
+      val boundForm = form.bind(Map(searchKey -> ARC.code, sortBy -> ArcAscending.code))
+      boundForm.get mustBe MovementListSearchOptions(Some(ARC))
     }
 
-    "not bind a value that contains XSS chars" in {
+    "remove any alphanumeric characters from the form values" in {
+      val boundForm = form.bind(Map(
+        searchKey -> "$$ ar ?c\\/&. ?",
+        sortBy -> ArcAscending.code
+      ))
+      boundForm.get mustBe MovementListSearchOptions(searchKey = Some(ARC))
+    }
+  }
 
-      val boundForm = form.bind(Map(sortByKey -> ArcAscending.code))
-      boundForm.errors mustBe Seq.empty
+  ".searchValue" should {
+
+    "bind" in {
+      val boundForm = form.bind(Map(searchValue -> "beans", sortBy -> ArcAscending.code))
+      boundForm.get mustBe MovementListSearchOptions(searchValue = Some("beans"))
+    }
+
+    "remove any non-query-params from the form values" in {
+      val boundForm = form.bind(Map(
+        searchValue -> "ARC1/injecting viruses?query=thing&beans",
+        sortBy -> ArcAscending.code
+      ))
+      boundForm.get mustBe MovementListSearchOptions(searchValue = Some("ARC1injecting virusesquerythingbeans"))
+    }
+
+    "return an error when the value is invalid" in {
+      val boundForm = form.bind(Map(
+        searchValue -> "<script>alert('hi')</script>",
+        sortBy -> ArcAscending.code
+      ))
+      boundForm.errors mustBe List(FormError(searchValue, List("error.invalidCharacter"), List(XSS_REGEX)))
     }
   }
 
@@ -63,8 +113,8 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "bind when Goods in is present" in {
       val boundForm = form.bind(Map(
-        sortByKey -> ArcAscending.code,
-        traderRoleKey(0) -> GoodsIn.code
+        sortBy -> ArcAscending.code,
+        traderRole(0) -> GoodsIn.code
       ))
 
       boundForm.get mustBe MovementListSearchOptions(traderRole = Some(GoodsIn))
@@ -72,8 +122,8 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "bind when Goods out is present" in {
       val boundForm = form.bind(Map(
-        sortByKey -> ArcAscending.code,
-        traderRoleKey(0) -> GoodsOut.code
+        sortBy -> ArcAscending.code,
+        traderRole(0) -> GoodsOut.code
       ))
 
       boundForm.get mustBe MovementListSearchOptions(traderRole = Some(GoodsOut))
@@ -81,9 +131,9 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "bind when both Goods in and Goods out are present" in {
       val boundForm = form.bind(Map(
-        sortByKey -> ArcAscending.code,
-        traderRoleKey(0) -> GoodsIn.code,
-        traderRoleKey(1) -> GoodsOut.code
+        sortBy -> ArcAscending.code,
+        traderRole(0) -> GoodsIn.code,
+        traderRole(1) -> GoodsOut.code
       ))
 
       boundForm.get mustBe MovementListSearchOptions(traderRole = Some(All))
@@ -91,11 +141,206 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "not bind an invalid value" in {
       val boundForm = form.bind(Map(
-        sortByKey -> ArcAscending.code,
-        traderRoleKey(0) -> "BEANS"
+        sortBy -> ArcAscending.code,
+        traderRole(0) -> "BEANS"
       ))
 
-      boundForm.errors mustBe List(FormError(traderRoleKey(0), List("error.invalid")))
+      boundForm.errors mustBe List(FormError(traderRole(0), List("error.invalid")))
+    }
+  }
+
+  ".undischarged" should {
+
+    "bind when Undischarged is present" in {
+      val boundForm = form.bind(Map(
+        sortBy -> ArcAscending.code,
+        undischarged(0) -> Undischarged.code
+      ))
+
+      boundForm.get mustBe MovementListSearchOptions(undischargedMovements = Some(Undischarged))
+    }
+
+    "bind an invalid value to None" in {
+      val boundForm = form.bind(Map(
+        sortBy -> ArcAscending.code,
+        undischarged(0) -> "BEANS"
+      ))
+
+      boundForm.value mustBe None
+    }
+  }
+
+  ".status" should {
+    MovementFilterStatusOption.values.filterNot(_ == ChooseStatus).foreach {
+      value =>
+        s"bind when $value is present" in {
+          val boundForm = form.bind(Map(
+            sortBy -> ArcAscending.code,
+            status -> value.code
+          ))
+
+          boundForm.get mustBe MovementListSearchOptions(movementStatus = Some(value))
+        }
+    }
+
+    "bind ChooseStatus to None" in {
+      val boundForm = form.bind(Map(
+        sortBy -> ArcAscending.code,
+        status -> ChooseStatus.code
+      ))
+
+      boundForm.get mustBe MovementListSearchOptions(movementStatus = None)
+    }
+
+    "not bind an invalid value" in {
+      val boundForm = form.bind(Map(
+        sortBy -> ArcAscending.code,
+        status -> "BEANS"
+      ))
+
+      boundForm.errors mustBe List(FormError(status, List("error.invalid")))
+    }
+  }
+
+  ".exciseProductCode" should {
+
+    "bind" in {
+      val boundForm = form.bind(Map(exciseProductCode -> "beans", sortBy -> ArcAscending.code))
+      boundForm.get mustBe MovementListSearchOptions(exciseProductCode = Some("beans"))
+    }
+
+    "remove any non-alphanumeric characters from the form values" in {
+      val boundForm = form.bind(Map(
+        exciseProductCode -> "$$ bea ?ns\\/&. ?",
+        sortBy -> ArcAscending.code
+      ))
+      boundForm.get mustBe MovementListSearchOptions(exciseProductCode = Some("beans"))
+    }
+  }
+
+  ".countryOfOrigin" should {
+
+    "bind" in {
+      val boundForm = form.bind(Map(countryOfOrigin -> "beans", sortBy -> ArcAscending.code))
+      boundForm.get mustBe MovementListSearchOptions(countryOfOrigin = Some("beans"))
+    }
+
+    "remove any non-alphanumeric characters from the form values" in {
+      val boundForm = form.bind(Map(
+        countryOfOrigin -> "$$ bea ?ns\\/&. ?",
+        sortBy -> ArcAscending.code
+      ))
+      boundForm.get mustBe MovementListSearchOptions(countryOfOrigin = Some("beans"))
+    }
+  }
+
+  testDate("dateOfDispatchFrom")
+  testDate("dateOfDispatchTo")
+  testDate("dateOfReceiptFrom")
+  testDate("dateOfReceiptTo")
+
+  //noinspection ScalaStyle
+  def testDate(dateKey: String): Unit = {
+    val date: LocalDate = LocalDate.now()
+
+    def formAnswersMap(
+                        day: String = date.getDayOfMonth.toString,
+                        month: String = date.getMonthValue.toString,
+                        year: String = date.getYear.toString
+                      ): Map[String, String] =
+      Map(
+        sortBy -> ArcAscending.code,
+        s"$dateKey.day" -> day,
+        s"$dateKey.month" -> month,
+        s"$dateKey.year" -> year
+      )
+
+    s".$dateKey" should {
+      "bind valid data" in {
+        val data = formAnswersMap(
+          day = date.getDayOfMonth.toString,
+          month = date.getMonthValue.toString,
+          year = date.getYear.toString
+        )
+
+        val result = form.bind(data)
+
+        result.value.value.toString must include(date.toString)
+        result.errors mustBe empty
+      }
+
+      "return an error" when {
+        "the date is invalid" in {
+
+          val data = formAnswersMap(day = "1000", month = "1000", year = "1000")
+
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.invalid"))
+
+          val actualResult = form.bind(data)
+
+          actualResult.errors mustBe expectedResult
+        }
+
+        "the date except the day field is not supplied" in {
+          val data = formAnswersMap(day = "")
+
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required", List("day")))
+
+          val actualResult = form.bind(data)
+
+          actualResult.errors mustBe expectedResult
+        }
+
+        "the date except the month field is not supplied" in {
+          val data = formAnswersMap(month = "")
+
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required", List("month")))
+
+          val actualResult = form.bind(data)
+
+          actualResult.errors mustBe expectedResult
+        }
+
+        "the date except the year field is not supplied" in {
+          val data = formAnswersMap(year = "")
+
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required", List("year")))
+
+          val actualResult = form.bind(data)
+
+          actualResult.errors mustBe expectedResult
+        }
+
+        "only the day is entered" in {
+          val data = formAnswersMap(month = "", year = "")
+
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required.two", List("month", "year")))
+
+          val actualResult = form.bind(data)
+
+          actualResult.errors mustBe expectedResult
+        }
+
+        "only the month is entered" in {
+          val data = formAnswersMap(day = "", year = "")
+
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required.two", List("day", "year")))
+
+          val actualResult = form.bind(data)
+
+          actualResult.errors mustBe expectedResult
+        }
+
+        "only the year is entered" in {
+          val data = formAnswersMap(day = "", month = "")
+
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required.two", List("day", "month")))
+
+          val actualResult = form.bind(data)
+
+          actualResult.errors mustBe expectedResult
+        }
+      }
     }
   }
 }

@@ -211,7 +211,7 @@ object MovementListSearchOptions extends Logging {
   def apply(
              searchKey: Option[String],
              searchValue: Option[String],
-             sortBy: String,
+             sortBy: MovementSortingSelectOption,
              traderRoleOptions: Set[MovementFilterDirectionOption],
              undischargedMovementsOptions: Set[MovementFilterUndischargedOption],
              movementStatusOption: Option[MovementFilterStatusOption],
@@ -241,7 +241,7 @@ object MovementListSearchOptions extends Logging {
     MovementListSearchOptions(
       searchKey = searchKey.map(MovementSearchSelectOption(_)),
       searchValue = searchValue,
-      sortBy = MovementSortingSelectOption(sortBy),
+      sortBy = sortBy,
       traderRole = MovementFilterDirectionOption.getOptionalValueFromCheckboxes(traderRoleOptions),
       undischargedMovements = undischargedMovements,
       movementStatus = MovementFilterStatusOption.filterNotChooseStatus(movementStatusOption),
@@ -257,7 +257,7 @@ object MovementListSearchOptions extends Logging {
   def unapply(options: MovementListSearchOptions): Option[(
     Option[String],
       Option[String],
-      String,
+      MovementSortingSelectOption,
       Set[MovementFilterDirectionOption],
       Set[MovementFilterUndischargedOption],
       Option[MovementFilterStatusOption],
@@ -271,7 +271,7 @@ object MovementListSearchOptions extends Logging {
     (
       options.searchKey.map(_.code),
       options.searchValue,
-      options.sortBy.code,
+      options.sortBy,
       options.traderRole.map(MovementFilterDirectionOption.toOptions).getOrElse(Set()),
       options.undischargedMovements.map(Set(_)).getOrElse(Set()),
       options.movementStatus,

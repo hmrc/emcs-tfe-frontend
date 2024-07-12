@@ -567,7 +567,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           val searchOptions = GetDraftMovementsSearchOptions(index = 1)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-            fakeRequest.withFormUrlEncodedBody(ViewAllMovementsFormProvider.sortByKey -> Newest.code)
+            fakeRequest.withFormUrlEncodedBody(ViewAllMovementsFormProvider.sortBy -> Newest.code)
           )
 
           status(result) shouldBe Status.SEE_OTHER

@@ -29,8 +29,10 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
     Form(
       mapping(
         ViewAllMovementsFormProvider.searchKey -> optional(playText()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
-        ViewAllMovementsFormProvider.searchValue -> optional(playText()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
-        ViewAllMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
+        ViewAllMovementsFormProvider.searchValue ->
+          optional(playText().verifying(regexpUnlessEmpty(XSS_REGEX, "error.invalidCharacter")))
+            .transform[Option[String]](_.map(removeAnyQueryParamCharacters), identity),
+        ViewAllMovementsFormProvider.sortBy -> enumerable[MovementSortingSelectOption](),
         ViewAllMovementsFormProvider.traderRole -> set(enumerable[MovementFilterDirectionOption]()),
         ViewAllMovementsFormProvider.undischarged -> set(enumerable[MovementFilterUndischargedOption]()),
         ViewAllMovementsFormProvider.status -> optional(enumerable[MovementFilterStatusOption]()),
@@ -58,18 +60,12 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
         )
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
     )
-
-  /**
-   * As these form values will be used as query parameters, we will need to silently guard against users entering `&` or `/` for example,
-   * this function will replace any non-alphanumeric with a blank value e.g. "value&unexpected/parameter" -> "valueunexpectedparameter
-   */
-  private def removeAnyNonAlphanumerics(rawString: String): String = rawString.replaceAll("[^A-Za-z0-9]", "")
 }
 
 object ViewAllMovementsFormProvider {
 
   // search input
-  val sortByKey = "sortBy"
+  val sortBy = "sortBy"
   val searchKey = "searchKey"
   val searchValue = "searchValue"
 
