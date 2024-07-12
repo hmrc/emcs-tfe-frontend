@@ -103,19 +103,20 @@ class MovementEventHelper @Inject()(
 
   def responseInformation()(implicit movement: GetMovementResponse, messages: Messages): Html = {
     movement.manualClosureResponse.map { response =>
-      val date = if (response.dateOfArrivalOfExciseProducts != None) Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.dateExciseProductsArrived", response.dateOfArrivalOfExciseProducts.get.toLocalDate.formatDateForUIOutput()))) else None
+      val date = Seq(response.dateOfArrivalOfExciseProducts.map(date => summaryListRowBuilder("movementHistoryEvent.IE881.dateExciseProductsArrived", date.toLocalDate.formatDateForUIOutput())))
       val sequenceNumber = Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.sequenceNumber", response.sequenceNumber.toString)))
       val globalConclusionOfReceipt = Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.conclusionOfReceipt", s"movementHistoryEvent.IE881.conclusionOfReceipt.${response.globalConclusionOfReceipt.toString}")))
-      val moreReceiptInformation = Seq(response.complementaryInformation.map(info => summaryListRowBuilder("movementHistoryEvent.IE881.complementaryInformation", info)))
-      val reasonCode = Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.reasonCode", s"movementHistoryEvent.IE881.reasonCode.${response.manualClosureRequestReason.toString}")))
-      val reasonCodeInformation = Seq(response.manualClosureRequestReasonComplement.map(info => summaryListRowBuilder("movementHistoryEvent.IE881.reasonCodeDescription", info)))
+      val moreReceiptInformation = Seq(response.complementaryInformation.map(info => summaryListRowBuilder("movementHistoryEvent.IE881.moreReceiptInformation", info)))
+      val reasonCode = Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.reasonCode", response.manualClosureRequestReason.toString)))
+      val reasonCodeDescription = Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.reasonCodeDescription", s"movementHistoryEvent.IE881.reasonCode.${response.manualClosureRequestReason.toString}")))
+      val reasonCodeInformation = Seq(response.manualClosureRequestReasonComplement.map(info => summaryListRowBuilder("movementHistoryEvent.IE881.moreReasonInformation", info)))
       val responseStatus = Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.responseStatus", s"movementHistoryEvent.IE881.responseStatus.${response.manualClosureRequestAccepted.toString}")))
-      val manualClosureRejectionReason = Seq(response.manualClosureRejectionReason.map(reason => summaryListRowBuilder("movementHistoryEvent.IE881.reasonCodeDescription", s"movementHistoryEvent.IE881.manualClosureRejectionReason.${reason.toString}")))
-      val manualClosureRejectionComplement = Seq(response.manualClosureRejectionComplement.map(complement => summaryListRowBuilder("movementHistoryEvent.IE881.reasonCodeDescription", complement)))
+      val manualClosureRejectionReason = Seq(response.manualClosureRejectionReason.map(reason => summaryListRowBuilder("movementHistoryEvent.IE881.rejectionReason", s"movementHistoryEvent.IE881.rejectionReason.${reason.toString}")))
+      val manualClosureRejectionComplement = Seq(response.manualClosureRejectionComplement.map(complement => summaryListRowBuilder("movementHistoryEvent.IE881.moreRejectionInformation", complement)))
 
 
       buildOverviewPartial(
-        summaryListRows = sequenceNumber ++ date ++ globalConclusionOfReceipt ++ moreReceiptInformation ++ reasonCode ++ reasonCodeInformation ++ responseStatus ++ manualClosureRejectionReason ++ manualClosureRejectionComplement,
+        summaryListRows = sequenceNumber ++ date ++ globalConclusionOfReceipt ++ moreReceiptInformation ++ reasonCode ++ reasonCodeDescription ++ reasonCodeInformation ++ responseStatus ++ manualClosureRejectionReason ++ manualClosureRejectionComplement,
         summaryListAttributes = Map("id" -> "manual-closure-response-information-summary")
       )
     }.getOrElse(Html(""))
@@ -153,42 +154,50 @@ class MovementEventHelper @Inject()(
     ))
   }
 
-    def closureItemsCard()(implicit request: DataRequest[_], movement: GetMovementResponse, messages: Messages): Html = {
-      movement.manualClosureResponse.get.bodyManualClosure.map { items =>
-        val itemCards = items.map {
-          case item =>
-            buildOverviewPartial(
-              cardTitleMessageKey = Some(messages(s"movementHistoryEvent.IE881.item.h3", item.bodyRecordUniqueReference)),
-              cardAction = Some(ActionItemViewModel(
-                content = Text(messages(s"movementHistoryEvent.IE881.item.link")),
-                href = controllers.routes.ItemDetailsController.onPageLoad(request.ern, movement.arc, item.bodyRecordUniqueReference).url,
-                id = s"viewItem-${item.bodyRecordUniqueReference}"
-              ).withVisuallyHiddenText(messages(
-                s"movementHistoryEvent.IE881.item.link.hidden",
-                item.bodyRecordUniqueReference
-              ))),
-              cardTitleHeadingLevel = Some(3),
-              summaryListRows = Seq(
-              ).flatten
-            )
-        }
+  def manualClosureItemsCard(event: MovementHistoryEvent, ie881ItemModelWithCnCodeInformation: Seq[IE881ItemModelWithCnCodeInformation])
+                            (implicit request: DataRequest[_], movement: GetMovementResponse, messages: Messages): Html = {
+    val items: Seq[Html] = ie881ItemModelWithCnCodeInformation.map {
+      case IE881ItemModelWithCnCodeInformation(manualClosureItem, information) =>
+        val exciseProductCode = Seq(manualClosureItem.productCode.map(epc => summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.item.epc", epc)))
+        val bodyUniqueReference = Seq(Some(summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.item.bodyRecordUniqueReference", manualClosureItem.bodyRecordUniqueReference.toString)))
+        val shortageOrExcess = Seq(manualClosureItem.indicatorOfShortageOrExcess.map(shortageOrExcess => summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.item.shortageOrExcess", s"movementHistoryEvent.${event.eventType}.item.shortageOrExcess.${shortageOrExcess.toLowerCase()}")))
+        val shortageOrExcessQuantity = Seq(manualClosureItem.observedShortageOrExcess.map(shortageOrExcessQuantity => summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.item.shortageOrExcessQuantity", s"$shortageOrExcessQuantity ${information.unitOfMeasure.toShortFormatMessage()}")))
+        val refusedQuantity = Seq(manualClosureItem.refusedQuantity.map(refusedQuantity => summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.item.refusedQuantity", s"$refusedQuantity ${information.unitOfMeasure.toShortFormatMessage()}")))
+        val moreInformation = Seq(manualClosureItem.complementaryInformation.map(complementaryInformation => summaryListRowBuilder(s"movementHistoryEvent.${event.eventType}.item.moreShortageOrExcessInformation", complementaryInformation)))
 
         HtmlFormat.fill(
           Seq(
-            h2(messages("movementCreatedView.section.documents.heading"), "govuk-heading-m govuk-!-margin-top-9", id = Some("documents-information-heading"))
-          ) ++ itemCards
-
+            buildOverviewPartial(
+              cardTitleMessageKey = Some(messages(s"movementHistoryEvent.${event.eventType}.item.h3", manualClosureItem.bodyRecordUniqueReference)),
+              cardAction = Some(ActionItemViewModel(
+                content = Text(messages(s"movementHistoryEvent.${event.eventType}.item.link")),
+                href = controllers.routes.ItemDetailsController.onPageLoad(request.ern, movement.arc, manualClosureItem.bodyRecordUniqueReference).url,
+                id = s"viewItem-${manualClosureItem.bodyRecordUniqueReference}"
+              ).withVisuallyHiddenText(messages(
+                s"movementHistoryEvent.${event.eventType}.item.link.hidden",
+                manualClosureItem.bodyRecordUniqueReference,
+                information.cnCodeDescription
+              ))),
+              cardTitleHeadingLevel = Some(3),
+              summaryListRows = exciseProductCode ++ bodyUniqueReference ++ shortageOrExcess ++ shortageOrExcessQuantity ++ refusedQuantity ++ moreInformation
+            )
+          )
         )
-
-      }.getOrElse(HtmlFormat.fill(
-        Seq(
-          h2(messages("movementHistoryEvent.IE881.document.heading"), "govuk-heading-m govuk-!-margin-top-9", id = Some("documents-information-heading")),
-          p(classes = "govuk-body-m")(Html(
-            messages("movementHistoryEvent.IE881.notProvided")
-          )),
-        )
-      ))
     }
+
+    HtmlFormat.fill(
+      if (items.isEmpty != true) {
+        Seq(
+          h2(messages(s"movementHistoryEvent.${event.eventType}.response.heading"), "govuk-heading-m govuk-!-margin-top-9")
+        ) ++ items
+      } else {
+        Seq(
+          h2(messages(s"movementHistoryEvent.${event.eventType}.response.heading"), "govuk-heading-m govuk-!-margin-top-9"),
+          p(classes = "govuk-body-m")(Html(messages("movementHistoryEvent.IE881.notProvided"))),
+        )
+      }
+    )
+  }
 
   def consignorInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
     val name = movement.consignorTrader.traderName.map(summaryListRowBuilder("movementCreatedView.section.consignor.name", _))

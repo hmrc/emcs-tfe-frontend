@@ -23,7 +23,7 @@ import models.requests.DataRequest
 import models.response.emcsTfe.CancellationReasonType.Other
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
-import models.response.emcsTfe.{GetMovementResponse, InterruptionReasonType, NotificationOfAlertOrRejectionModel, NotificationOfDelayModel}
+import models.response.emcsTfe.{GetMovementResponse, IE881ItemModelWithCnCodeInformation, InterruptionReasonType, NotificationOfAlertOrRejectionModel, NotificationOfDelayModel}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
@@ -53,7 +53,8 @@ class EventsHelper @Inject()(
                                  event: MovementHistoryEvent,
                                  movement: GetMovementResponse,
                                  ie818ItemModelWithCnCodeInformation: Seq[IE818ItemModelWithCnCodeInformation] = Seq.empty,
-                                 documentTypes: Seq[DocumentType] = Seq.empty
+                                 documentTypes: Seq[DocumentType] = Seq.empty,
+                                 ie881ItemModelWithCnCodeInformation: Seq[IE881ItemModelWithCnCodeInformation] = Seq.empty
                                )(implicit request: DataRequest[_], messages: Messages): Html = {
     (event.eventType, event.messageRole) match {
       case (IE801, _) => ie801Html(event, movement)
@@ -69,7 +70,7 @@ class EventsHelper @Inject()(
       case (IE905, _) => ie905Html(event)
       case (IE837, _) => ie837Html(event, movement)
       case (IE871, _) => ie871Html(event, movement)
-      case (IE881, _) => ie881Html(event, movement, documentTypes)
+      case (IE881, _) => ie881Html(event, movement, documentTypes, ie881ItemModelWithCnCodeInformation)
       case _ => Empty.asHtml
     }
   }
@@ -309,11 +310,9 @@ class EventsHelper @Inject()(
     }.getOrElse(Empty.asHtml)
   }
 
-  private def ie881Html(event: MovementHistoryEvent, movement: GetMovementResponse, documentTypes: Seq[DocumentType])
+  private def ie881Html(event: MovementHistoryEvent, movement: GetMovementResponse, documentTypes: Seq[DocumentType], ie881ItemModelWithCnCodeInformation: Seq[IE881ItemModelWithCnCodeInformation])
                        (implicit request: DataRequest[_], messages: Messages): Html = {
     implicit val _movement = movement
-    println("*"*20)
-    println(movement.manualClosureResponse)
     HtmlFormat.fill(
       Seq(
         p(classes = "govuk-body-l")(Html(
@@ -322,7 +321,7 @@ class EventsHelper @Inject()(
         printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         movementEventHelper.responseInformation(),
         movementEventHelper.closureDocumentsInformationCard(documentTypes),
-        movementEventHelper.closureItemsCard()
+        movementEventHelper.manualClosureItemsCard(event, ie881ItemModelWithCnCodeInformation)
       )
     )
   }

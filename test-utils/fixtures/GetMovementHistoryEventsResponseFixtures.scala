@@ -228,4 +228,13 @@ trait GetMovementHistoryEventsResponseFixtures extends DateUtils { _: BaseFixtur
     upstreamArc = None,
     isFirstEventTypeInHistory = false
   )
+
+  val ie881ManualClosureResponseEvent = MovementHistoryEvent(
+    eventType = IE881,
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
+    sequenceNumber = 1,
+    messageRole = 0,
+    upstreamArc = None,
+    isFirstEventTypeInHistory = true
+  )
 }

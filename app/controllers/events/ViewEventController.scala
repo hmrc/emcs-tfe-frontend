@@ -105,7 +105,7 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
   def shortageExcessSubmitted(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE871)
 
-  def movementClosureResponse(ern: String, arc: String, eventId: Int): Action[AnyContent] =
+  def manualClosureResponse(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE881)
 
   private def onPageLoad(ern: String, arc: String, eventId: Int, eventType: EventTypes): Action[AnyContent] = {
@@ -118,7 +118,7 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
                 ie818ItemModelWithCnCodeInformation =>
                   withIE881ItemModelWithCnCodeInformation(eventType, movement) {
                     ie881ItemModelWithCnCodeInformation =>
-                      Ok(view(event, movement, ie818ItemModelWithCnCodeInformation, documentType))
+                      Ok(view(event, movement, ie818ItemModelWithCnCodeInformation, documentType, ie881ItemModelWithCnCodeInformation))
                   }
               }
           }
@@ -127,7 +127,7 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
     }
   }
   private def withIE818ItemModelWithCnCodeInformation(eventType: EventTypes, movement: GetMovementResponse)
-                                                     (f: Seq[IE818ItemModelWithCnCodeInformation] => Result)
+                                                     (f: Seq[IE818ItemModelWithCnCodeInformation] => Future[Result])
                                                      (implicit request: DataRequest[_]): Future[Result] = {
     val ie818ItemModelWithCnCodeInformationFuture: Future[Seq[IE818ItemModelWithCnCodeInformation]] = if (eventType == IE818) {
       (for {
@@ -146,7 +146,7 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
     } else {
       Future.successful(Seq.empty)
     }
-    ie818ItemModelWithCnCodeInformationFuture.map(f)
+    ie818ItemModelWithCnCodeInformationFuture.flatMap(f)
   }
 
 
