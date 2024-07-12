@@ -146,6 +146,21 @@ class PrevalidateAddToListViewSpec extends ViewSpecBase
             Selectors.radioButton(2)
           ))
         }
+
+        "render the nav links" in {
+
+          val userAnswers = emptyUserAnswers.set(PrevalidateEPCPage(testIndex1), wineExciseProductCode)
+
+          implicit val request: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(FakeRequest(), userAnswers)
+
+          val document = Jsoup.parse(view(
+            formOpt = Some(form),
+            onSubmitCall = testOnwardRoute,
+            addedEpcs = PrevalidateAddToListHelper.addedEpcs()
+          ).toString())
+          val homeLink = document.select(".moj-primary-navigation").select("a").first()
+          homeLink.text mustBe "Home"
+        }
       }
     }
   }

@@ -65,6 +65,11 @@ class PrevalidateExciseProductCodeViewSpec extends ViewSpecBase with ViewBehavio
           Selectors.selectOption(2) -> messagesForLanguage.beerSelectOption,
           Selectors.button -> messagesForLanguage.saveAndContinue
         ))
+
+        "render the nav links" in {
+          val homeLink = doc.select(".moj-primary-navigation").select("a").first()
+          homeLink.text mustBe "Home"
+        }
       }
     }
   }

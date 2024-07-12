@@ -330,6 +330,11 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
           Selectors.numberOfResultsFound -> English.noResultsFound
         ))
       }
+
+      "render the nav links" in {
+        val homeLink = doc.select(".moj-primary-navigation").select("a").first()
+        homeLink.text mustBe "Home"
+      }
     }
   }
 }

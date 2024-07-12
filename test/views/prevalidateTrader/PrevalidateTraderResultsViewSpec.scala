@@ -220,6 +220,19 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
           }
         }
       }
+
+      "render the nav links" in {
+        implicit val request: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(FakeRequest(), emptyUserAnswers)
+
+        implicit val doc: Document = Jsoup.parse(view(
+          ernOpt = None,
+          addCodeCall = testOnwardRoute,
+          approved = Seq.empty,
+          notApproved = Seq.empty
+        ).toString())
+        val homeLink = doc.select(".moj-primary-navigation").select("a").first()
+        homeLink.text mustBe "Home"
+      }
     }
   }
 }

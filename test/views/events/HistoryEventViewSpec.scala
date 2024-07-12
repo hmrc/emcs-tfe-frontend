@@ -515,6 +515,12 @@ class HistoryEventViewSpec extends ViewSpecBase
             )
           )(createDocument(event, getMovementResponseModel))
         }
+
+        "render the nav links" in {
+          val document = createDocument(ie801Event, getMovementResponseModel)
+          val homeLink = document.select(".moj-primary-navigation").select("a").first()
+          homeLink.text mustBe "Home"
+        }
       }
     }
   }

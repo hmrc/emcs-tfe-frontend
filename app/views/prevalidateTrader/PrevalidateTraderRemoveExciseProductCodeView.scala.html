@@ -29,7 +29,11 @@
 
 @(form: Form[_], action: Call, exciseProductCode: String)(implicit userAnswersRequest: UserAnswersRequest[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("prevalidateTrader.removeExciseProductCode.title", exciseProductCode)), maybeShowActiveTrader = maybeShowActiveTrader(userAnswersRequest.request), maybeShowNavigationBanner = None) {
+@layout(
+    pageTitle = title(form, messages("prevalidateTrader.removeExciseProductCode.title", exciseProductCode)),
+    maybeShowActiveTrader = maybeShowActiveTrader(userAnswersRequest.request),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(userAnswersRequest.ern, userAnswersRequest.messageStatistics.map(_.countOfNewMessages), Movements))
+) {
 
     @formHelper(action = action) {
 

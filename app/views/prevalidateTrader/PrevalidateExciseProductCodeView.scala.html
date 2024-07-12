@@ -46,7 +46,7 @@
     maybeShowActiveTrader = maybeShowActiveTrader(request.request),
     additionalCss = autocompleteCss(),
     additionalScripts = scripts,
-    maybeShowNavigationBanner = None
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Movements))
 ) {
 
     @formHelper(action = action) {

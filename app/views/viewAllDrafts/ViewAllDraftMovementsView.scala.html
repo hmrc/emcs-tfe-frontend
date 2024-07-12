@@ -25,6 +25,7 @@
 @import viewmodels.draftMovements._
 @import views.html._
 @import views.html.components._
+@import views.html.viewAllDrafts.DraftMovementsList
 @import models.draftMovements.GetDraftMovementsSearchOptions
 @import config.AppConfig
 @import config.Constants.TFE_DELETED_DRAFT_LRN
@@ -91,7 +92,7 @@
 
 @layout(
     pageTitle = title(form, messages("viewAllDraftMovements.title")),
-    maybeShowActiveTrader = None,
+    maybeShowActiveTrader = maybeShowActiveTrader(request),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Drafts)),
     fullWidthContent = true
 ) {

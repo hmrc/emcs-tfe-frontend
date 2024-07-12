@@ -17,7 +17,6 @@
 package views.messages
 
 import base.ViewSpecBase
-import controllers.messages.routes.ViewAllMessagesController
 import fixtures.MessagesFixtures
 import fixtures.messages.ViewAllMessagesMessages.English
 import forms.DeleteMessageFormProvider
@@ -78,7 +77,7 @@ class DeleteMessageViewSpec extends ViewSpecBase with ViewBehaviours with Messag
       view(
         message = message1,
         form = formProvider(),
-        returnToMessagesUrl = ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url,
+        returnToMessagesUrl = controllers.messages.routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url,
         previousPage
       ).toString()
     )
@@ -123,6 +122,12 @@ class DeleteMessageViewSpec extends ViewSpecBase with ViewBehaviours with Messag
         expectedElementsAndMessages ++ Seq(Selectors.noRadio -> "No, return to message")
       )
 
+    }
+
+    "render the nav links" in {
+      val document = viewAsDocument(previousPage = ViewAllMessagesPage)
+      val homeLink = document.select(".moj-primary-navigation").select("a").first()
+      homeLink.text mustBe "Home"
     }
   }
 
