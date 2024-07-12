@@ -5,6 +5,7 @@ site.warning = Warning:
 site.yes = Yes
 site.no = No
 site.change = Change
+site.clearSelectedCode = Clear selected code
 site.signIn = Sign back in to EMCS
 site.remove = Remove
 site.results.found.plural = {0} results found

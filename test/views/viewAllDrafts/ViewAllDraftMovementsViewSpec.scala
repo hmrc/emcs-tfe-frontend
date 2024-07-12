@@ -276,5 +276,11 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
         Selectors.sortButton -> English.sortByButton
       ))
     }
+
+    "render the nav links" in {
+      val doc = asDocument(None)
+      val homeLink = doc.select(".moj-primary-navigation").select("a").first()
+      homeLink.text mustBe "Home"
+    }
   }
 }

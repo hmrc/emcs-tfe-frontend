@@ -28,7 +28,11 @@
 )
 @(action: Call)(implicit request: DataRequest[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("prevalidateTrader.start.title")), maybeShowActiveTrader = maybeShowActiveTrader(request), maybeShowNavigationBanner = None) {
+@layout(
+    pageTitle = titleNoForm(messages("prevalidateTrader.start.title")),
+    maybeShowActiveTrader = maybeShowActiveTrader(request),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Movements))
+) {
 
     @h2("prevalidateTrader.caption", classes = "govuk-caption-xl hmrc-caption-xl", hiddenContent = Some("base.captionHiddenText"))
     @h1(classes = "govuk-heading-l") {

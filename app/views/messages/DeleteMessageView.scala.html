@@ -14,20 +14,13 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
-@import models.messages.MessageCache
 @import models.requests.DataRequest
 @import models.response.emcsTfe.messages.Message
 @import viewmodels.helpers.messages._
 
-@import models.requests.DataRequest
-@import models.response.emcsTfe.GetMovementListItem
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
 @import views.html._
 @import views.html.components._
-@import views.html.viewAllMovements._
 @import pages.Page
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
@@ -47,7 +40,7 @@
 
 @layout(
     pageTitle = messages("deleteMessage.title"),
-    maybeShowActiveTrader = None,
+    maybeShowActiveTrader = maybeShowActiveTrader(request),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), models.PageSection.Messages)),
     fullWidthContent = false
 ) {

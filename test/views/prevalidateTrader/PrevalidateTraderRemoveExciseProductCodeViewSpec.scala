@@ -56,6 +56,11 @@ class PrevalidateTraderRemoveExciseProductCodeViewSpec extends ViewSpecBase with
           Selectors.radioButton(2) -> messagesForLanguage.no,
           Selectors.button -> messagesForLanguage.saveAndContinue
         ))
+
+        "render the nav links" in {
+          val homeLink = doc.select(".moj-primary-navigation").select("a").first()
+          homeLink.text mustBe "Home"
+        }
       }
     }
   }

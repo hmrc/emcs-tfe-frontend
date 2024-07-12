@@ -28,6 +28,7 @@ trait BaseMessages { _: i18n =>
 
   val continue = "Continue"
   val saveAndContinue = "Save and continue"
+  val clearSelectedCode = "Clear selected code"
   val change = "Change"
   val remove = "Remove"
   val yes = "Yes"

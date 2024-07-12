@@ -52,6 +52,11 @@ class PrevalidateTraderStartViewSpec extends ViewSpecBase with ViewBehaviours {
           Selectors.p(1) -> messagesForLanguage.p,
           Selectors.button -> messagesForLanguage.continue
         ))
+
+        "render the nav links" in {
+          val homeLink = doc.select(".moj-primary-navigation").select("a").first()
+          homeLink.text mustBe "Home"
+        }
       }
     }
   }

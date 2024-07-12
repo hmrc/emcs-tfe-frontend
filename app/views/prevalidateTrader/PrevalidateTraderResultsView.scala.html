@@ -38,7 +38,7 @@
 @layout(
     pageTitle = titleNoForm(ernOpt.fold(messages("prevalidateTrader.results.invalidErn.heading"))(_ => messages("prevalidateTrader.results.validErn.heading"))),
     maybeShowActiveTrader = maybeShowActiveTrader(request.request),
-    maybeShowNavigationBanner = None
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Movements))
 ) {
 
     @h2(messages("prevalidateTrader.caption"), "govuk-caption-xl")

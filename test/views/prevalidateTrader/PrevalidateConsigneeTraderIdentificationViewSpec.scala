@@ -61,6 +61,11 @@ class PrevalidateConsigneeTraderIdentificationViewSpec extends ViewSpecBase with
           Selectors.radioButton(3) -> messagesForLanguage.radio3,
           Selectors.radioButton(4) -> messagesForLanguage.radio4
         ))
+
+        "render the nav links" in {
+          val homeLink = doc.select(".moj-primary-navigation").select("a").first()
+          homeLink.text mustBe "Home"
+        }
       }
     }
   }
