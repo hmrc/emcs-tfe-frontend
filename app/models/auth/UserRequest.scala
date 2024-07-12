@@ -30,4 +30,5 @@ case class UserRequest[A](request: Request[A],
   lazy val userTypeFromErn: RoleType = RoleType.fromExciseRegistrationNumber(ern)
   lazy val isWarehouseKeeper: Boolean = (userTypeFromErn == GBWK) || (userTypeFromErn == XIWK)
   lazy val isRegisteredConsignor: Boolean = (userTypeFromErn == GBRC) || (userTypeFromErn == XIRC)
+  lazy val isCertifiedConsignor: Boolean = (userTypeFromErn == XIPA) || (userTypeFromErn == XIPC)
 }

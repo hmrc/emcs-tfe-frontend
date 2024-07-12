@@ -24,10 +24,7 @@ import utils.Logging
 
 sealed trait MovementScenario {
   def destinationType: DestinationType
-
   def movementType(implicit request: DataRequest[_]): MovementType
-
-  val stringValue: String
 }
 
 object MovementScenario extends Enumerable.Implicits with Logging {
@@ -57,10 +54,9 @@ object MovementScenario extends Enumerable.Implicits with Logging {
           MovementScenario.ExportWithCustomsDeclarationLodgedInTheEu
         }
       case DestinationType.UnknownDestination => MovementScenario.UnknownDestination
-      case answer@(DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor | DestinationType.CertifiedConsignee | DestinationType.TemporaryCertifiedConsignee) =>
-        // TODO: These are Duty Paid answers which we don't currently have a design for (as of 29/11/23).
-        // We need a solid design for this, whether or not that's handled here is undecided yet, but for now we can throw an error in this case.
-        throw InvalidDestinationTypeException(s"[MovementScenario][getMovementScenarioFromMovement] invalid DestinationType: $answer")
+      case DestinationType.CertifiedConsignee => MovementScenario.CertifiedConsignee
+      case DestinationType.TemporaryCertifiedConsignee => MovementScenario.TemporaryCertifiedConsignee
+      case DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor => MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor
     }
   }
 
@@ -78,8 +74,6 @@ object MovementScenario extends Enumerable.Implicits with Logging {
         logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
         throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
     }
-
-    override val stringValue: String = "export with customs declaration lodged in the United Kingdom"
   }
 
   /**
@@ -93,8 +87,8 @@ object MovementScenario extends Enumerable.Implicits with Logging {
       case (true, _) => MovementType.UkToUk
       case (_, true) => MovementType.ImportUk
       case _ =>
-        logger.error(s"[movementType] invalid UserType for CAM journey: ${request.userTypeFromErn}")
-        throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for CAM journey: ${request.userTypeFromErn}")
+        logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
+        throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
     }
 
 
@@ -104,7 +98,6 @@ object MovementScenario extends Enumerable.Implicits with Logging {
 
       def movementType(implicit request: DataRequest[_]): MovementType = _movementType
 
-      override val stringValue: String = "tax warehouse in Great Britain"
     }
 
     case object NI extends WithName("niTaxWarehouse") with MovementScenario {
@@ -113,7 +106,6 @@ object MovementScenario extends Enumerable.Implicits with Logging {
 
       def movementType(implicit request: DataRequest[_]): MovementType = _movementType
 
-      override val stringValue: String = "tax warehouse in Northern Ireland"
     }
 
     val values: Seq[MovementScenario] = Seq(GB, NI)
@@ -133,8 +125,6 @@ object MovementScenario extends Enumerable.Implicits with Logging {
         logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
         throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
     }
-
-    override val stringValue: String = "direct delivery"
   }
 
   /**
@@ -151,8 +141,6 @@ object MovementScenario extends Enumerable.Implicits with Logging {
         logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
         throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
     }
-
-    override val stringValue: String = "tax warehouse in the European Union"
   }
 
   /**
@@ -169,8 +157,6 @@ object MovementScenario extends Enumerable.Implicits with Logging {
         logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
         throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
     }
-
-    override val stringValue: String = "exempted organisation"
   }
 
   /**
@@ -187,8 +173,6 @@ object MovementScenario extends Enumerable.Implicits with Logging {
         logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
         throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
     }
-
-    override val stringValue: String = "export with customs declaration lodged in the European Union"
   }
 
   /**
@@ -205,8 +189,6 @@ object MovementScenario extends Enumerable.Implicits with Logging {
         logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
         throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
     }
-
-    override val stringValue: String = "registered consignee"
   }
 
   /**
@@ -223,9 +205,6 @@ object MovementScenario extends Enumerable.Implicits with Logging {
         logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
         throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
     }
-
-    override val stringValue: String = "temporary registered consignee"
-
   }
 
   /**
@@ -242,9 +221,46 @@ object MovementScenario extends Enumerable.Implicits with Logging {
         logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
         throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
     }
-
-    override val stringValue: String = "unknown destination"
   }
+
+
+  case object CertifiedConsignee extends WithName("certifiedConsignee") with MovementScenario {
+
+    def destinationType: DestinationType = DestinationType.CertifiedConsignee
+
+    def movementType(implicit request: DataRequest[_]): MovementType = if (request.isCertifiedConsignor) {
+      MovementType.UkToEu
+    } else {
+      logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
+      throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
+    }
+  }
+
+
+  case object TemporaryCertifiedConsignee extends WithName("temporaryCertifiedConsignee") with MovementScenario {
+
+    def destinationType: DestinationType = DestinationType.TemporaryCertifiedConsignee
+
+    def movementType(implicit request: DataRequest[_]): MovementType = if (request.isCertifiedConsignor) {
+      MovementType.UkToEu
+    } else {
+      logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
+      throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
+    }
+  }
+
+  case object ReturnToThePlaceOfDispatchOfTheConsignor extends WithName("returnToThePlaceOfDispatchOfTheConsignor") with MovementScenario {
+
+    def destinationType: DestinationType = DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor
+
+    def movementType(implicit request: DataRequest[_]): MovementType = if (request.isCertifiedConsignor) {
+      MovementType.UkToEu
+    } else {
+      logger.error(s"[movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
+      throw InvalidUserTypeException(s"[MovementScenario][movementType] invalid UserType for MOV journey: ${request.userTypeFromErn}")
+    }
+  }
+
 
   def valuesUk: Seq[MovementScenario] = Seq(
     ExportWithCustomsDeclarationLodgedInTheUk,
@@ -262,7 +278,10 @@ object MovementScenario extends Enumerable.Implicits with Logging {
     UkTaxWarehouse.GB,
     UkTaxWarehouse.NI,
     TemporaryRegisteredConsignee,
-    UnknownDestination
+    UnknownDestination,
+    CertifiedConsignee,
+    TemporaryCertifiedConsignee,
+    ReturnToThePlaceOfDispatchOfTheConsignor
   )
 
   val values: Seq[MovementScenario] = (valuesUk ++ valuesEu).distinct

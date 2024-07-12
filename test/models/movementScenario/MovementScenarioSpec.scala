@@ -22,7 +22,7 @@ import models.common.DestinationType._
 import models.common.{AddressModel, DestinationType, TraderModel}
 import models.movementScenario.MovementScenario.{EuTaxWarehouse, ExportWithCustomsDeclarationLodgedInTheEu, ExportWithCustomsDeclarationLodgedInTheUk, UkTaxWarehouse}
 import models.requests.DataRequest
-import models.response.{InvalidDestinationTypeException, InvalidUserTypeException}
+import models.response.InvalidUserTypeException
 import play.api.test.FakeRequest
 
 class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
@@ -176,34 +176,27 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
       }
     }
 
-    "DestinationType is a Duty Paid option" must {
-      "return an error" when {
-        "DestinationType is CertifiedConsignee" in {
-          val result = intercept[InvalidDestinationTypeException](
-            MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
-              destinationType = DestinationType.CertifiedConsignee
-            ))
-          )
-          result.message mustBe "[MovementScenario][getMovementScenarioFromMovement] invalid DestinationType: 9"
-        }
-        "DestinationType is TemporaryCertifiedConsignee" in {
-          val result = intercept[InvalidDestinationTypeException](
-            MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
-              destinationType = DestinationType.TemporaryCertifiedConsignee
-            ))
-          )
-          result.message mustBe "[MovementScenario][getMovementScenarioFromMovement] invalid DestinationType: 10"
-        }
+    "DestinationType is CertifiedConsignee" must {
+      "return MovementScenario.CertifiedConsignee" in {
+        MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
+          destinationType = DestinationType.CertifiedConsignee
+        )) mustBe MovementScenario.CertifiedConsignee
+      }
+    }
 
-        "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" in {
-          val result = intercept[InvalidDestinationTypeException](
-            MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
-              destinationType = DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor
-            ))
-          )
-          result.message mustBe "[MovementScenario][getMovementScenarioFromMovement] invalid DestinationType: 11"
-        }
+    "DestinationType is TemporaryCertifiedConsignee" must {
+      "return MovementScenario.TemporaryCertifiedConsignee" in {
+        MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
+          destinationType = DestinationType.TemporaryCertifiedConsignee
+        )) mustBe MovementScenario.TemporaryCertifiedConsignee
+      }
+    }
 
+    "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" must {
+      "return MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor" in {
+        MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
+          destinationType = DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor
+        )) mustBe MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor
       }
     }
   }
