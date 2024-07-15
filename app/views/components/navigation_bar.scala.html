@@ -38,7 +38,7 @@
                     <li class="moj-primary-navigation__item">
                         <a id="navigation-home-link"
                            class="moj-primary-navigation__link"
-                           @if(navInfo.currentSection == PageSection.Home) { aria-current="page" }
+                           @if(navInfo.currentSection.contains(PageSection.Home)) { aria-current="page" }
                            href="@appConfig.emcsTfeHomeUrl">
                             @messages("navigation.home")
                         </a>
@@ -47,7 +47,7 @@
                     <li class="moj-primary-navigation__item">
                         <a id="navigation-messages-link"
                            class="moj-primary-navigation__link"
-                           @if(navInfo.currentSection == PageSection.Messages) { aria-current="page" }
+                           @if(navInfo.currentSection.contains(PageSection.Messages)) { aria-current="page" }
                            href="@appConfig.emcsTfeMessagesUrl(navInfo.ern)">@messages("navigation.messages")
                             @if(appConfig.messageStatisticsNotificationEnabled) {
                                 @navInfo.countOfNewMessages.map { count =>
@@ -61,7 +61,7 @@
                         <li class="moj-primary-navigation__item">
                             <a id="navigation-drafts-link"
                                class="moj-primary-navigation__link"
-                               @if(navInfo.currentSection == PageSection.Drafts) { aria-current="page" }
+                               @if(navInfo.currentSection.contains(PageSection.Drafts)) { aria-current="page" }
                                href="@appConfig.emcsTfeDraftMovementsUrl(navInfo.ern)">@messages("navigation.drafts")
                             </a>
                         </li>
@@ -70,7 +70,7 @@
                     <li class="moj-primary-navigation__item">
                         <a id="navigation-movements-link"
                            class="moj-primary-navigation__link"
-                           @if(navInfo.currentSection == PageSection.Movements) { aria-current="page" }
+                           @if(navInfo.currentSection.contains(PageSection.Movements)) { aria-current="page" }
                            href="@appConfig.emcsTfeListMovementsUrl(navInfo.ern)">@messages("navigation.movements")</a>
                     </li>
                 </ul>

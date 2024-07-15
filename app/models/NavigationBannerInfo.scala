@@ -16,4 +16,4 @@
 
 package models
 
-case class NavigationBannerInfo(ern :String, countOfNewMessages: Option[Int], currentSection: PageSection)
+case class NavigationBannerInfo(ern :String, countOfNewMessages: Option[Int], currentSection: Option[PageSection])
