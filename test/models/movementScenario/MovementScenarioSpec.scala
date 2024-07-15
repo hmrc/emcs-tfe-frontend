@@ -28,6 +28,7 @@ import play.api.test.FakeRequest
 class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
 
   val warehouseKeeperDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "GBWK123")
+  val dutyPaidDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "XIPA123")
   val registeredConsignorDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "GBRC123")
   val nonWKRCDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "XI00123")
 
@@ -479,6 +480,72 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
       "user is not a warehouse keeper or a registered consignor" must {
         "return an error" in {
           intercept[InvalidUserTypeException](MovementScenario.UnknownDestination.movementType(nonWKRCDataRequest))
+        }
+      }
+    }
+  }
+
+  "CertifiedConsignee" should {
+
+    ".destinationType" must {
+      "return CertifiedConsignee" in {
+        MovementScenario.CertifiedConsignee.destinationType mustBe DestinationType.CertifiedConsignee
+      }
+    }
+    ".movementType" when {
+      "user is DutyPaid" must {
+        "return UkToEu" in {
+          MovementScenario.CertifiedConsignee.movementType(dutyPaidDataRequest) mustBe MovementType.UkToEu
+        }
+      }
+
+      "user is not DutyPaid" must {
+        "return an error" in {
+          intercept[InvalidUserTypeException](MovementScenario.CertifiedConsignee.movementType(warehouseKeeperDataRequest))
+        }
+      }
+    }
+  }
+
+  "TemporaryCertifiedConsignee" should {
+
+    ".destinationType" must {
+      "return CertifiedConsignee" in {
+        MovementScenario.TemporaryCertifiedConsignee.destinationType mustBe DestinationType.TemporaryCertifiedConsignee
+      }
+    }
+    ".movementType" when {
+      "user is DutyPaid" must {
+        "return UkToEu" in {
+          MovementScenario.TemporaryCertifiedConsignee.movementType(dutyPaidDataRequest) mustBe MovementType.UkToEu
+        }
+      }
+
+      "user is not DutyPaid" must {
+        "return an error" in {
+          intercept[InvalidUserTypeException](MovementScenario.TemporaryCertifiedConsignee.movementType(warehouseKeeperDataRequest))
+        }
+      }
+    }
+  }
+
+  "ReturnToThePlaceOfDispatchOfTheConsignor" should {
+
+    ".destinationType" must {
+      "return CertifiedConsignee" in {
+        MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor.destinationType mustBe DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor
+      }
+    }
+    ".movementType" when {
+      "user is DutyPaid" must {
+        "return UkToEu" in {
+          MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor.movementType(dutyPaidDataRequest) mustBe MovementType.UkToEu
+        }
+      }
+
+      "user is not DutyPaid" must {
+        "return an error" in {
+          intercept[InvalidUserTypeException](MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor.movementType(warehouseKeeperDataRequest))
         }
       }
     }
