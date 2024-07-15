@@ -22,12 +22,13 @@ import models.common.DestinationType._
 import models.common.{AddressModel, DestinationType, TraderModel}
 import models.movementScenario.MovementScenario.{EuTaxWarehouse, ExportWithCustomsDeclarationLodgedInTheEu, ExportWithCustomsDeclarationLodgedInTheUk, UkTaxWarehouse}
 import models.requests.DataRequest
-import models.response.{InvalidDestinationTypeException, InvalidUserTypeException}
+import models.response.InvalidUserTypeException
 import play.api.test.FakeRequest
 
 class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
 
   val warehouseKeeperDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "GBWK123")
+  val dutyPaidDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "XIPA123")
   val registeredConsignorDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "GBRC123")
   val nonWKRCDataRequest: DataRequest[_] = dataRequest(FakeRequest(), ern = "XI00123")
 
@@ -176,34 +177,27 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
       }
     }
 
-    "DestinationType is a Duty Paid option" must {
-      "return an error" when {
-        "DestinationType is CertifiedConsignee" in {
-          val result = intercept[InvalidDestinationTypeException](
-            MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
-              destinationType = DestinationType.CertifiedConsignee
-            ))
-          )
-          result.message mustBe "[MovementScenario][getMovementScenarioFromMovement] invalid DestinationType: 9"
-        }
-        "DestinationType is TemporaryCertifiedConsignee" in {
-          val result = intercept[InvalidDestinationTypeException](
-            MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
-              destinationType = DestinationType.TemporaryCertifiedConsignee
-            ))
-          )
-          result.message mustBe "[MovementScenario][getMovementScenarioFromMovement] invalid DestinationType: 10"
-        }
+    "DestinationType is CertifiedConsignee" must {
+      "return MovementScenario.CertifiedConsignee" in {
+        MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
+          destinationType = DestinationType.CertifiedConsignee
+        )) mustBe MovementScenario.CertifiedConsignee
+      }
+    }
 
-        "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" in {
-          val result = intercept[InvalidDestinationTypeException](
-            MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
-              destinationType = DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor
-            ))
-          )
-          result.message mustBe "[MovementScenario][getMovementScenarioFromMovement] invalid DestinationType: 11"
-        }
+    "DestinationType is TemporaryCertifiedConsignee" must {
+      "return MovementScenario.TemporaryCertifiedConsignee" in {
+        MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
+          destinationType = DestinationType.TemporaryCertifiedConsignee
+        )) mustBe MovementScenario.TemporaryCertifiedConsignee
+      }
+    }
 
+    "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" must {
+      "return MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor" in {
+        MovementScenario.getMovementScenarioFromMovement(getMovementResponseModel.copy(
+          destinationType = DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor
+        )) mustBe MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor
       }
     }
   }
@@ -486,6 +480,72 @@ class MovementScenarioSpec extends SpecBase with GetMovementResponseFixtures {
       "user is not a warehouse keeper or a registered consignor" must {
         "return an error" in {
           intercept[InvalidUserTypeException](MovementScenario.UnknownDestination.movementType(nonWKRCDataRequest))
+        }
+      }
+    }
+  }
+
+  "CertifiedConsignee" should {
+
+    ".destinationType" must {
+      "return CertifiedConsignee" in {
+        MovementScenario.CertifiedConsignee.destinationType mustBe DestinationType.CertifiedConsignee
+      }
+    }
+    ".movementType" when {
+      "user is DutyPaid" must {
+        "return UkToEu" in {
+          MovementScenario.CertifiedConsignee.movementType(dutyPaidDataRequest) mustBe MovementType.UkToEu
+        }
+      }
+
+      "user is not DutyPaid" must {
+        "return an error" in {
+          intercept[InvalidUserTypeException](MovementScenario.CertifiedConsignee.movementType(warehouseKeeperDataRequest))
+        }
+      }
+    }
+  }
+
+  "TemporaryCertifiedConsignee" should {
+
+    ".destinationType" must {
+      "return CertifiedConsignee" in {
+        MovementScenario.TemporaryCertifiedConsignee.destinationType mustBe DestinationType.TemporaryCertifiedConsignee
+      }
+    }
+    ".movementType" when {
+      "user is DutyPaid" must {
+        "return UkToEu" in {
+          MovementScenario.TemporaryCertifiedConsignee.movementType(dutyPaidDataRequest) mustBe MovementType.UkToEu
+        }
+      }
+
+      "user is not DutyPaid" must {
+        "return an error" in {
+          intercept[InvalidUserTypeException](MovementScenario.TemporaryCertifiedConsignee.movementType(warehouseKeeperDataRequest))
+        }
+      }
+    }
+  }
+
+  "ReturnToThePlaceOfDispatchOfTheConsignor" should {
+
+    ".destinationType" must {
+      "return CertifiedConsignee" in {
+        MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor.destinationType mustBe DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor
+      }
+    }
+    ".movementType" when {
+      "user is DutyPaid" must {
+        "return UkToEu" in {
+          MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor.movementType(dutyPaidDataRequest) mustBe MovementType.UkToEu
+        }
+      }
+
+      "user is not DutyPaid" must {
+        "return an error" in {
+          intercept[InvalidUserTypeException](MovementScenario.ReturnToThePlaceOfDispatchOfTheConsignor.movementType(warehouseKeeperDataRequest))
         }
       }
     }

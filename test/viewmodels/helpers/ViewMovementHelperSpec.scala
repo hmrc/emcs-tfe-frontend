@@ -302,7 +302,57 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
         result mustBe "Export with customs declaration lodged in the European Union"
       }
+    }
 
+    "cater for Duty Paid scenarios" when {
+
+      "user is XIPA" when {
+
+        "DestinationType is CertifiedConsignee" in {
+          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+            destinationType = CertifiedConsignee
+          ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
+          result mustBe "Northern Ireland tax warehouse to certified consignee"
+        }
+
+        "DestinationType is TemporaryRegisteredConsignee" in {
+          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+            destinationType = TemporaryCertifiedConsignee
+          ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
+          result mustBe "Northern Ireland tax warehouse to temporary certified consignee"
+        }
+
+        "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" in {
+          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+            destinationType = ReturnToThePlaceOfDispatchOfTheConsignor
+          ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
+          result mustBe "Return to place of dispatch"
+        }
+      }
+
+      "user is XIPC" when {
+
+        "DestinationType is CertifiedConsignee" in {
+          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+            destinationType = CertifiedConsignee
+          ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
+          result mustBe "Northern Ireland tax warehouse to certified consignee"
+        }
+
+        "DestinationType is TemporaryRegisteredConsignee" in {
+          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+            destinationType = TemporaryCertifiedConsignee
+          ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
+          result mustBe "Northern Ireland tax warehouse to temporary certified consignee"
+        }
+
+        "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" in {
+          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+            destinationType = ReturnToThePlaceOfDispatchOfTheConsignor
+          ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
+          result mustBe "Return to place of dispatch"
+        }
+      }
     }
 
     "throw an exception when the user type / destination type can't be matched" in {

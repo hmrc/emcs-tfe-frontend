@@ -29,5 +29,6 @@ case class DataRequest[A](request: UserRequest[A],
   val ern: String = request.ern
   val isWarehouseKeeper: Boolean = request.isWarehouseKeeper
   val isRegisteredConsignor: Boolean = request.isRegisteredConsignor
+  val isCertifiedConsignor: Boolean = request.isCertifiedConsignor
   val userTypeFromErn: RoleType = request.userTypeFromErn
 }

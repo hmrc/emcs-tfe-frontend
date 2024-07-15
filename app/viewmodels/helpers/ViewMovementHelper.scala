@@ -18,7 +18,7 @@ package viewmodels.helpers
 
 import config.AppConfig
 import models.common.RoleType
-import models.common.RoleType.{GBRC, GBWK, XIRC, XIWK}
+import models.common.RoleType.{GBRC, GBWK, XIPA, XIPC, XIRC, XIWK}
 import models.movementScenario.MovementScenario
 import models.movementScenario.MovementScenario._
 import models.requests.DataRequest
@@ -169,6 +169,9 @@ class ViewMovementHelper @Inject()(
 
       case (GBWK | XIWK, destinationType@(ExportWithCustomsDeclarationLodgedInTheUk | ExportWithCustomsDeclarationLodgedInTheEu)) =>
         messages(s"viewMovement.movement.summary.type.2.$destinationType")
+
+      case (XIPA | XIPC, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
+        messages(s"viewMovement.movement.summary.type.dutyPaid.$destinationType")
 
       case (userType, destinationType) =>
         logger.error(s"[constructMovementView] invalid UserType and movement scenario combination for MOV journey: $userType | $destinationType")
