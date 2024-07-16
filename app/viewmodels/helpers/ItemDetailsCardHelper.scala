@@ -250,7 +250,7 @@ class ItemDetailsCardHelper @Inject()(list: list, link: link, appConfig: AppConf
         messages("itemDetails.key.packaging"),
         list(
           item.packaging.map { packaging =>
-            Html(s"${packaging.quantity.get} x ${packaging.typeOfPackage}")
+            Html(s"${packaging.quantity.map(_ + " x ").getOrElse("")}${packaging.typeOfPackage}")
           }
         )
       )

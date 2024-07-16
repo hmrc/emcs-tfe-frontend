@@ -55,6 +55,7 @@ object ItemDetailsMessages {
     val packagingIdentityOfCommercialSealKey: String
     val packagingSealInformationKey: String
     val packagingShippingMarksKey: String
+    val packagingKey: String
   }
 
   object English extends ViewMessages with BaseEnglish {
@@ -89,6 +90,7 @@ object ItemDetailsMessages {
     override val wineOperationsKey = "Wine operations"
     override val wineOperationsValueNone = "The product has not undergone any operations"
     override val wineOtherInformationKey = "More information about the wine"
+    override val packagingKey = "Packaging"
     override val packagingTypeKey = "Type"
     override val packagingQuantityKey = "Quantity"
     override val packagingIdentityOfCommercialSealKey = "Identity of commercial seal"
