@@ -21,6 +21,7 @@ import fixtures.ItemFixtures
 import fixtures.messages.ItemDetailsMessages
 import models.common.UnitOfMeasure.Litres15
 import models.common.WineProduct
+import models.response.emcsTfe.Packaging
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, Text, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent}
@@ -210,6 +211,45 @@ class ItemDetailsCardHelperSpec extends SpecBase with ItemFixtures {
               Text(aerosolPackage.shippingMarks.get)
             )
           )
+        }
+
+        ".allPackagingQuantitiesAndTypesRow" when {
+
+          "type of packaging is bulk" should {
+
+            "output the correctly formatted row" in {
+
+              implicit val item = item1WithWineAndPackaging.copy(packaging = Seq(Packaging("Bulk, liquid", None, None, None, None)))
+
+              itemHelper.allPackagingQuantitiesAndTypesRow() mustBe Some(
+                summaryListRowBuilder(
+                  Text(langMessages.packagingKey),
+                  HtmlContent(list(Seq(Html("Bulk, liquid"))))
+                )
+              )
+            }
+          }
+
+          "type of packaging is anything else" should {
+
+            "output the correctly formatted row" in {
+
+              implicit val item = item1WithWineAndPackaging.copy(packaging = Seq(
+                Packaging("Box", Some(1), None, None, None),
+                Packaging("Box", Some(3), None, None, None)
+              ))
+
+              itemHelper.allPackagingQuantitiesAndTypesRow() mustBe Some(
+                summaryListRowBuilder(
+                  Text(langMessages.packagingKey),
+                  HtmlContent(list(Seq(
+                    Html("1 x Box"),
+                    Html("3 x Box")
+                  )))
+                )
+              )
+            }
+          }
         }
       }
     }
