@@ -36,8 +36,6 @@ import play.api.test.FakeRequest
 import views.html.events.HistoryEventView
 import views.{BaseSelectors, ViewBehaviours}
 
-import java.time.LocalDateTime
-
 class HistoryEventViewSpec extends ViewSpecBase
   with ViewBehaviours
   with GetMovementResponseFixtures
@@ -366,7 +364,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie807MovementInterceptedTitle,
                 Selectors.h1 -> messagesForLanguage.ie807MovementInterceptedHeading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie810MovementCancelledEvent.eventDate)),
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(ie810MovementCancelledEvent.eventDate),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie807MovementInterceptedP1("FR1234"),
                 Selectors.p(2) -> messagesForLanguage.printScreenContent,
@@ -386,7 +384,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie810MovementCancelledTitle,
                 Selectors.h1 -> messagesForLanguage.ie810MovementCancelledHeading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie810MovementCancelledEvent.eventDate)),
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(ie810MovementCancelledEvent.eventDate),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie810MovementCancelledP1,
                 Selectors.p(2) -> messagesForLanguage.printScreenContent,
@@ -406,7 +404,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie819AlertTitle,
                 Selectors.h1 -> messagesForLanguage.ie819AlertHeading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie819AlertEvent.eventDate)),
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(ie819AlertEvent.eventDate),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie819AlertP1,
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
@@ -419,7 +417,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie819RejectionTitle,
                 Selectors.h1 -> messagesForLanguage.ie819RejectionHeading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie819RejectionEvent.eventDate)),
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(ie819RejectionEvent.eventDate),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie819RejectionP1,
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
@@ -434,7 +432,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie829Title,
                 Selectors.h1 -> messagesForLanguage.ie829Heading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie829MovementAcceptedCustomsEvent.eventDate)),
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(ie829MovementAcceptedCustomsEvent.eventDate),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie829Paragraph1,
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
@@ -449,7 +447,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               Seq(
                 Selectors.title -> messagesForLanguage.ie839MovementRejectedByCustomsTitle,
                 Selectors.h1 -> messagesForLanguage.ie839MovementRejectedByCustomsHeading,
-                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(ie839MovementRejectedCustomsEvent.eventDate)),
+                Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(ie839MovementRejectedCustomsEvent.eventDate),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie839MovementRejectedByCustomsP1WithCustomsOffice("AT002000"),
                 Selectors.p(2) -> messagesForLanguage.printScreenContent
@@ -482,7 +480,7 @@ class HistoryEventViewSpec extends ViewSpecBase
             Seq(
               Selectors.title -> messagesForLanguage.ie837Title,
               Selectors.h1 -> messagesForLanguage.ie837Heading,
-              Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(event.eventDate)),
+              Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(event.eventDate),
               Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
               Selectors.p(1) -> messagesForLanguage.ie837Paragraph1,
               Selectors.p(2) -> messagesForLanguage.printScreenContent
@@ -494,7 +492,7 @@ class HistoryEventViewSpec extends ViewSpecBase
                 submitterType = Consignor,
                 explanationCode = Accident,
                 complementaryInformation = Some("info"),
-                dateTime = LocalDateTime.parse(event.eventDate)
+                dateTime = event.eventDate
               )
             ))
           )))
@@ -508,7 +506,7 @@ class HistoryEventViewSpec extends ViewSpecBase
             Seq(
               Selectors.title -> messagesForLanguage.ie871Title,
               Selectors.h1 -> messagesForLanguage.ie871Heading,
-              Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(LocalDateTime.parse(event.eventDate)),
+              Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(event.eventDate),
               Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
               Selectors.p(1) -> messagesForLanguage.ie871Paragraph1,
               Selectors.p(2) -> messagesForLanguage.printScreenContent

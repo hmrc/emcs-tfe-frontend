@@ -16,11 +16,36 @@
 
 package utils
 
+import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent.logger
+
 import java.time.format.DateTimeFormatter
 import java.time._
 import java.util.Locale
+import scala.util.{Failure, Success, Try}
 
 trait DateUtils {
+
+  def parseDateTime(eventDate: String): LocalDateTime = {
+
+    val EisEventDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    val ChrisEventDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+
+    Try {
+      LocalDateTime.parse(eventDate, EisEventDateFormat)
+    } match {
+      case Success(parsedDateTime) => parsedDateTime
+      case Failure(_) =>
+        Try {
+          LocalDateTime.parse(eventDate, ChrisEventDateFormat)
+        } match {
+          case Success(parsedDateTime) => parsedDateTime
+          case Failure(_) =>
+            logger.error(s"[parseDateTime] - un-parseable date/time received [$eventDate], neither in EIS or ChRIS expected format")
+            LocalDate.now.atStartOfDay
+        }
+    }
+  }
+
   implicit class LocalDateExtensions(date: LocalDate) {
     def formatDateForUIOutput(): String = {
       val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")

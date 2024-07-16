@@ -18,7 +18,7 @@ package utils
 
 import base.SpecBase
 
-import java.time.{LocalDate, LocalTime}
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 class DateUtilsSpec extends SpecBase {
 
@@ -36,6 +36,35 @@ class DateUtilsSpec extends SpecBase {
     "format the time in the correct format" in new Test {
       val time: LocalTime = LocalTime.of(20, 1, 3)
       time.formatTimeForUIOutput().toLowerCase mustBe "8:01 pm"
+    }
+  }
+
+  ".parseDateTime" must {
+
+    "return a parseable ChRIS EventDate" in new Test {
+      val input = "2023-12-02T14:35:07"
+      val expected = LocalDateTime.of(2023, 12, 2, 14, 35, 7)
+
+      val response = parseDateTime(input)
+
+      response mustBe expected
+    }
+
+    "return a parseable EIS EventDate" in new Test {
+      val input = "2023-12-02T14:35:07.000Z"
+      val expected = LocalDateTime.of(2023, 12, 2, 14, 35, 7, 0)
+
+      val response = parseDateTime(input)
+
+      response mustBe expected
+    }
+
+    "return today's date if unable to parse date/time" in new Test {
+      val input = "2023-twelve-02T14:35:07"
+
+      val response = parseDateTime(input)
+
+      response mustBe LocalDate.now.atStartOfDay
     }
   }
 }

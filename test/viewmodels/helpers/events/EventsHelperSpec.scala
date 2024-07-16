@@ -67,7 +67,7 @@ class EventsHelperSpec extends SpecBase
           "being called with an invalid event type" must {
 
             "return empty HTML" in {
-              val invalidMovementHistoryEvent = MovementHistoryEvent(EventTypes.Invalid, "", 1, 1, None, true)
+              val invalidMovementHistoryEvent = MovementHistoryEvent(EventTypes.Invalid, LocalDateTime.now(), 1, 1, None, true)
               val result = helper.constructEventInformation(invalidMovementHistoryEvent, getMovementResponseModel)
               result mustBe Empty.asHtml
             }
@@ -229,7 +229,7 @@ class EventsHelperSpec extends SpecBase
 
                 //Alert Details summary
                 body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie819AlertDate
-                body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819AlertEventMultipleReasons.eventDate).toLocalDate.formatDateForUIOutput()
+                body.select(Selectors.nthSummaryRowValue(1)).text() mustBe ie819AlertEventMultipleReasons.eventDate.toLocalDate.formatDateForUIOutput()
 
                 body.select(Selectors.nthSummaryRowKey(2)).text() mustBe messagesForLanguage.ie819AlertSummaryReasons
                 body.select(Selectors.nthSummaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.consigneeDetailsWrong
@@ -276,7 +276,7 @@ class EventsHelperSpec extends SpecBase
                 //Alert Details summary
                 body.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie819AlertH2
                 body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie819AlertDate
-                body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819AlertEvent.eventDate).toLocalDate.formatDateForUIOutput()
+                body.select(Selectors.nthSummaryRowValue(1)).text() mustBe ie819AlertEvent.eventDate.toLocalDate.formatDateForUIOutput()
 
                 body.select(Selectors.nthSummaryRowKey(2)).text() mustBe messagesForLanguage.ie819AlertSummaryReason
                 body.select(Selectors.nthSummaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.consigneeDetailsWrong
@@ -309,7 +309,7 @@ class EventsHelperSpec extends SpecBase
               //Rejection Details summary
               body.select(Selectors.h2(1)).text() mustBe messagesForLanguage.ie819RejectionH2
               body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie819RejectionDate
-              body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819RejectionEvent.eventDate).toLocalDate.formatDateForUIOutput()
+              body.select(Selectors.nthSummaryRowValue(1)).text() mustBe ie819RejectionEvent.eventDate.toLocalDate.formatDateForUIOutput()
 
               body.select(Selectors.nthSummaryRowKey(2)).text() mustBe messagesForLanguage.ie819RejectionSummaryReason
               body.select(Selectors.nthSummaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.goodsQuantityWrong
@@ -387,7 +387,7 @@ class EventsHelperSpec extends SpecBase
                                   submitterType = submitterType,
                                   explanationCode = delayReason,
                                   complementaryInformation = Some("info"),
-                                  dateTime = LocalDateTime.parse(ie837DelayEvent(messageRole).eventDate)
+                                  dateTime = ie837DelayEvent(messageRole).eventDate
                                 )
                               ))
                             )
@@ -458,7 +458,7 @@ class EventsHelperSpec extends SpecBase
                 body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
 
                 body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionDate
-                body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie839MovementRejectedCustomsEvent.eventDate).toLocalDate.formatDateForUIOutput()
+                body.select(Selectors.nthSummaryRowValue(1)).text() mustBe ie839MovementRejectedCustomsEvent.eventDate.toLocalDate.formatDateForUIOutput()
 
                 body.select(Selectors.nthSummaryRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason
                 body.select(Selectors.nthSummaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason2
@@ -522,7 +522,7 @@ class EventsHelperSpec extends SpecBase
                 body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
 
                 body.select(Selectors.nthSummaryRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionDate
-                body.select(Selectors.nthSummaryRowValue(1)).text() mustBe LocalDateTime.parse(ie839MovementRejectedCustomsEvent.eventDate).toLocalDate.formatDateForUIOutput()
+                body.select(Selectors.nthSummaryRowValue(1)).text() mustBe ie839MovementRejectedCustomsEvent.eventDate.toLocalDate.formatDateForUIOutput()
 
                 body.select(Selectors.nthSummaryRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason
                 body.select(Selectors.nthSummaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason2

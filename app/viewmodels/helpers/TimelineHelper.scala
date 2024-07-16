@@ -23,12 +23,8 @@ import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.Messages
 import utils.Logging
 import viewmodels.TimelineEvent
-import viewmodels.helpers.TimelineHelper._
 
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalDateTime}
 import javax.inject.Inject
-import scala.util.{Failure, Success, Try}
 
 class TimelineHelper @Inject()() extends Logging {
 
@@ -37,7 +33,7 @@ class TimelineHelper @Inject()() extends Logging {
       TimelineEvent(
         eventType = event.eventType,
         title = messages(s"${getEventBaseKey(event)}.label"),
-        dateTime = parseDateTime(event.eventDate),
+        dateTime = event.eventDate,
         url = getHistoryEventUrl(event)
       )
     }.sortBy(_.dateTime)
@@ -67,29 +63,7 @@ class TimelineHelper @Inject()() extends Logging {
     if (suffix.isEmpty) base else s"$base.$suffix"
   }
 
-  def parseDateTime(eventDate: String): LocalDateTime = {
-    Try {
-      LocalDateTime.parse(eventDate, EisEventDateFormat)
-    } match {
-      case Success(parsedDateTime) => parsedDateTime
-      case Failure(_) =>
-        Try {
-          LocalDateTime.parse(eventDate, ChrisEventDateFormat)
-        } match {
-          case Success(parsedDateTime) => parsedDateTime
-          case Failure(_) =>
-            logger.error(s"[parseDateTime] - un-parseable date/time received [$eventDate], neither in EIS or ChRIS expected format")
-            LocalDate.now.atStartOfDay
-        }
-    }
-  }
-
   def getHistoryEventUrl(event: MovementHistoryEvent)(implicit messages: Messages): String =
     s"event/${event.eventId}/${messages(getEventUrlDescription(event))}"
 
-}
-
-object TimelineHelper {
-  private val EisEventDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-  private val ChrisEventDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 }

@@ -25,44 +25,16 @@ import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
+import utils.DateUtils
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDateTime
 
 // scalastyle:off magic.number
-class TimelineHelperSpec extends SpecBase with GetMovementResponseFixtures {
+class TimelineHelperSpec extends DateUtils with SpecBase with GetMovementResponseFixtures {
 
   implicit lazy val msgs: Messages = messages(FakeRequest())
 
   val helper: TimelineHelper = app.injector.instanceOf[TimelineHelper]
-
-  ".parseDateTime" must {
-
-    "return a parseable ChRIS EventDate" in {
-      val input = "2023-12-02T14:35:07"
-      val expected = LocalDateTime.of(2023, 12, 2, 14, 35, 7)
-
-      val response = helper.parseDateTime(input)
-
-      response mustBe expected
-    }
-
-    "return a parseable EIS EventDate" in {
-      val input = "2023-12-02T14:35:07.000Z"
-      val expected = LocalDateTime.of(2023, 12, 2, 14, 35, 7, 0)
-
-      val response = helper.parseDateTime(input)
-
-      response mustBe expected
-    }
-
-    "return today's date if unable to parse date/time" in {
-      val input = "2023-twelve-02T14:35:07"
-
-      val response = helper.parseDateTime(input)
-
-      response mustBe LocalDate.now.atStartOfDay
-    }
-  }
 
   ".getEventTitleKey" must {
     "return the correct message key" when {
@@ -77,7 +49,7 @@ class TimelineHelperSpec extends SpecBase with GetMovementResponseFixtures {
         helper.getEventTitleKey(
           MovementHistoryEvent(
             eventType = eventType,
-            eventDate = "",
+            eventDate = LocalDateTime.now(),
             sequenceNumber = sequenceNumber,
             messageRole = messageRole,
             None,
@@ -157,7 +129,7 @@ class TimelineHelperSpec extends SpecBase with GetMovementResponseFixtures {
 
       val input = MovementHistoryEvent(
         eventType = IE818,
-        eventDate = eventDate,
+        eventDate = parseDateTime(eventDate),
         sequenceNumber = 1,
         messageRole = 0,
         upstreamArc = None,
