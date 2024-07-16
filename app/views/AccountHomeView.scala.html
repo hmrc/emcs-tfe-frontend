@@ -50,7 +50,7 @@
 @layout(
     pageTitle = titleNoForm(businessName, Some("accountHome.caption")),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, request.messageStatistics.map(_.countOfNewMessages), Home)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, request.messageStatistics.map(_.countOfNewMessages), Some(Home))),
     fullWidthContent = true,
     showBackLink = false
 ) {

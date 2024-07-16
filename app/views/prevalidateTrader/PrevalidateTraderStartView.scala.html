@@ -31,7 +31,7 @@
 @layout(
     pageTitle = titleNoForm(messages("prevalidateTrader.start.title")),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Movements))
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), None))
 ) {
 
     @h2("prevalidateTrader.caption", classes = "govuk-caption-xl hmrc-caption-xl", hiddenContent = Some("base.captionHiddenText"))

@@ -93,7 +93,7 @@
 @layout(
     pageTitle = title(form, messages("viewAllDraftMovements.title")),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Drafts)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Drafts))),
     fullWidthContent = true
 ) {
 

@@ -41,7 +41,7 @@
 @layout(
     pageTitle = messages("deleteMessage.title"),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), models.PageSection.Messages)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(models.PageSection.Messages))),
     fullWidthContent = false
 ) {
 

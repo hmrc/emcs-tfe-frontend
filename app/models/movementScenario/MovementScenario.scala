@@ -18,8 +18,8 @@ package models.movementScenario
 
 import models.common.{DestinationType, Enumerable, RoleType, WithName}
 import models.requests.DataRequest
+import models.response.InvalidUserTypeException
 import models.response.emcsTfe.GetMovementResponse
-import models.response.{InvalidDestinationTypeException, InvalidUserTypeException}
 import utils.Logging
 
 sealed trait MovementScenario {

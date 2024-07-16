@@ -56,7 +56,7 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
                 prefix + "123"
               }
 
-              val html = navigationBar(NavigationBannerInfo(ern, newMessageCount, Movements))
+              val html = navigationBar(NavigationBannerInfo(ern, newMessageCount, Some(Movements)))
               val doc = Jsoup.parse(html.toString())
 
               s"Role Type is [${msgs(roleType.descriptionKey)}]" must {
@@ -89,7 +89,7 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
 
           s"Role Type is [${msgs(RoleType.XIPC.descriptionKey)}]" must {
             val ern = "XIPC123"
-            def html = navigationBar(NavigationBannerInfo(ern, newMessageCount, Movements))
+            def html = navigationBar(NavigationBannerInfo(ern, newMessageCount, Some(Movements)))
             def doc = Jsoup.parse(html.toString())
             "render the Home link" in new Test(messageStatisticsNotificationEnabled) {
               doc.select("#navigation-home-link").text() mustBe messagesForLanguage.home
@@ -124,13 +124,22 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
             pageSection =>
               s"When page section is [$pageSection]" must {
                 "only have one link with an aria-current attribute, where the value is 'page'" in new Test(messageStatisticsNotificationEnabled) {
-                  val html = navigationBar(NavigationBannerInfo(testErn, Some(testMessageStatistics.countOfNewMessages), pageSection))
+                  val html = navigationBar(NavigationBannerInfo(testErn, Some(testMessageStatistics.countOfNewMessages), Some(pageSection)))
                   val doc = Jsoup.parse(html.toString())
 
                   doc.select("a[aria-current]").size() mustBe 1
                   doc.select("a[aria-current]").get(0).attr("aria-current") mustBe "page"
                 }
               }
+          }
+
+          "when on a page without an explicit page section" must {
+            "have no links with an aria-current attribute" in new Test(messageStatisticsNotificationEnabled) {
+              val html = navigationBar(NavigationBannerInfo(testErn, Some(testMessageStatistics.countOfNewMessages), None))
+              val doc = Jsoup.parse(html.toString())
+
+              doc.select("a[aria-current]").size() mustBe 0
+            }
           }
         }
       }

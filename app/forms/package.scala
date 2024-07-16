@@ -23,10 +23,10 @@ package object forms {
    * When form values will be used as query parameters, we will need to silently guard against users entering `&` or `/` for example,
    * this function will replace any non-alphanumeric with a blank value e.g. `value&unexpected/ parameter` -> `valueunexpected parameter`
    */
-  private[forms] def removeAnyQueryParamCharacters(rawString: String): String = rawString.replaceAll("[/&?=]", "")
+  private[forms] def removeAnyQueryParamCharacters(rawString: String): String = rawString.trim.replaceAll("[/&?=]", "")
 
   /**
    * A more strict variant of `removeAnyQueryParamCharacters` that will remove all non-alphanumeric characters
    */
-  private[forms] def removeAnyNonAlphanumerics(rawString: String): String = rawString.replaceAll("[^A-Za-z0-9]", "")
+  private[forms] def removeAnyNonAlphanumerics(rawString: String): String = rawString.trim.replaceAll("[^A-Za-z0-9]", "")
 }

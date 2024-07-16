@@ -41,7 +41,7 @@
 @layout(
     pageTitle = titleNoForm(messages(eventsHelper.getEventTitle(event, movement))),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), models.PageSection.Movements)),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(models.PageSection.Movements))),
     fullWidthContent = false
 ) {
 

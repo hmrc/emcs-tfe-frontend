@@ -32,7 +32,7 @@
 @layout(
     pageTitle = title(form, messages("prevalidateTrader.removeExciseProductCode.title", exciseProductCode)),
     maybeShowActiveTrader = maybeShowActiveTrader(userAnswersRequest.request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(userAnswersRequest.ern, userAnswersRequest.messageStatistics.map(_.countOfNewMessages), Movements))
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(userAnswersRequest.ern, userAnswersRequest.messageStatistics.map(_.countOfNewMessages), None))
 ) {
 
     @formHelper(action = action) {

@@ -38,7 +38,7 @@
 @layout(
     pageTitle = title(form, messages("prevalidateTrader.consigneeTraderIdentification.title")),
     maybeShowActiveTrader = maybeShowActiveTrader(request.request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Movements))
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), None))
 ) {
 
     @formHelper(action) {
