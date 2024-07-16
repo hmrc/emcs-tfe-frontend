@@ -972,7 +972,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
               val doc = Jsoup.parse(result.toString())
 
               doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie819AlertDate
-              doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819AlertEventMultipleReasons.eventDate).toLocalDate.formatDateForUIOutput()
+              doc.select(Selectors.summaryRowValue(1)).text() mustBe ie819AlertEventMultipleReasons.eventDate.toLocalDate.formatDateForUIOutput()
 
               doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie819AlertSummaryReasons
               doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.consigneeDetailsWrong
@@ -1005,7 +1005,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
               val doc = Jsoup.parse(result.toString())
 
               doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie819AlertDate
-              doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819AlertEvent.eventDate).toLocalDate.formatDateForUIOutput()
+              doc.select(Selectors.summaryRowValue(1)).text() mustBe ie819AlertEvent.eventDate.toLocalDate.formatDateForUIOutput()
 
               doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie819AlertSummaryReason
               doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.consigneeDetailsWrong
@@ -1023,7 +1023,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
               val doc = Jsoup.parse(result.toString())
 
               doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie819RejectionDate
-              doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819RejectionEvent.eventDate).toLocalDate.formatDateForUIOutput()
+              doc.select(Selectors.summaryRowValue(1)).text() mustBe ie819RejectionEvent.eventDate.toLocalDate.formatDateForUIOutput()
 
               doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie819RejectionSummaryReason
               doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.goodsQuantityWrong
@@ -1066,7 +1066,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
               val doc = Jsoup.parse(result.toString())
 
               doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie819RejectionDate
-              doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie819RejectionEvent.eventDate).toLocalDate.formatDateForUIOutput()
+              doc.select(Selectors.summaryRowValue(1)).text() mustBe ie819RejectionEvent.eventDate.toLocalDate.formatDateForUIOutput()
 
               doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie819RejectionSummaryReasons
               doc.select(Selectors.summaryRowValue(2)).select(Selectors.bullet(1)).text() mustBe alertRejectionReasonMessages.consigneeDetailsWrong
@@ -1158,7 +1158,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         doc.select(Selectors.h2(1)).isEmpty mustBe true
 
         doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionDate
-        doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie839MovementRejectedCustomsEvent.eventDate).toLocalDate.formatDateForUIOutput()
+        doc.select(Selectors.summaryRowValue(1)).text() mustBe ie839MovementRejectedCustomsEvent.eventDate.toLocalDate.formatDateForUIOutput()
 
         doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason
         doc.select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason2
@@ -1187,7 +1187,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         doc.select(Selectors.h2(1)).isEmpty mustBe true
 
         doc.select(Selectors.summaryRowKey(1)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionDate
-        doc.select(Selectors.summaryRowValue(1)).text() mustBe LocalDateTime.parse(ie839MovementRejectedCustomsEvent.eventDate).toLocalDate.formatDateForUIOutput()
+        doc.select(Selectors.summaryRowValue(1)).text() mustBe ie839MovementRejectedCustomsEvent.eventDate.toLocalDate.formatDateForUIOutput()
 
         doc.select(Selectors.summaryRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason
         doc.select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsRejectionReason2

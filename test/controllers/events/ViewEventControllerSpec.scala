@@ -36,6 +36,7 @@ import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers.status
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.DateUtils
 import views.html.events.HistoryEventView
 
 import scala.concurrent.Future
@@ -50,7 +51,8 @@ class ViewEventControllerSpec
     with MockGetCnCodeInformationService
     with MockGetMovementService
     with GetMovementResponseFixtures
-    with GetMovementHistoryEventsResponseFixtures {
+    with GetMovementHistoryEventsResponseFixtures
+    with DateUtils {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -98,7 +100,7 @@ class ViewEventControllerSpec
   private def handle404s(event: MovementHistoryEvent, controllerMethod: => Future[Result]): Unit = {
     "return a 404 not found" when {
       "when the wrong event id is requested" in {
-        val testHistoryEvents = getMovementHistoryEventsModel.filterNot(_.eventType == event.eventType) :+ event.copy(eventDate = "1999-12-31T23:59:59")
+        val testHistoryEvents = getMovementHistoryEventsModel.filterNot(_.eventType == event.eventType) :+ event.copy(eventDate = parseDateTime("1999-12-31T23:59:59"))
 
         MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
 

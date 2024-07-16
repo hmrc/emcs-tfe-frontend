@@ -53,8 +53,8 @@
         id = Some("message-issued"),
         content = messages(
             "movementHistoryEvent.dateTimeIssued",
-            LocalDateTime.parse(event.eventDate).toLocalDate.formatDateForUIOutput(),
-            LocalDateTime.parse(event.eventDate).toLocalTime.formatTimeForUIOutput()
+            event.eventDate.toLocalDate.formatDateForUIOutput(),
+            event.eventDate.toLocalTime.formatTimeForUIOutput()
         ),
         classes = "govuk-caption-m govuk-!-margin-bottom-2"
     )

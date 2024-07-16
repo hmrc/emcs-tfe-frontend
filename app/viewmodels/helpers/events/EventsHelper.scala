@@ -31,7 +31,6 @@ import utils.DateUtils
 import viewmodels.helpers.TimelineHelper
 import views.html.components.{bullets, link, p, summary_list}
 
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 class EventsHelper @Inject()(
@@ -319,12 +318,12 @@ class EventsHelper @Inject()(
   }
 
   private def getIE819EventDetail(event: MovementHistoryEvent, movement: GetMovementResponse): NotificationOfAlertOrRejectionModel =
-    movement.notificationOfAlertOrRejection.flatMap(_.find(_.notificationDateAndTime == LocalDateTime.parse(event.eventDate))).getOrElse {
+    movement.notificationOfAlertOrRejection.flatMap(_.find(_.notificationDateAndTime == event.eventDate)).getOrElse {
       throw new BadRequestException(s"Unable to find the IE819 event details for the event for the date: ${event.eventDate}}")
     }
 
   private def getIE837EventDetail(event: MovementHistoryEvent, movement: GetMovementResponse): NotificationOfDelayModel =
-    movement.notificationOfDelay.flatMap(_.find(_.dateTime == LocalDateTime.parse(event.eventDate))).getOrElse {
+    movement.notificationOfDelay.flatMap(_.find(_.dateTime == event.eventDate)).getOrElse {
       throw new BadRequestException(s"Unable to find the IE837 event details for the event for the date: ${event.eventDate}}")
     }
 

@@ -19,13 +19,14 @@ package fixtures
 import models.EventTypes._
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import play.api.libs.json.{JsValue, Json}
+import utils.DateUtils
 
-trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
+trait GetMovementHistoryEventsResponseFixtures extends DateUtils { _: BaseFixtures =>
 
   lazy val getMovementHistoryEventsModel: Seq[MovementHistoryEvent] = Seq(
     MovementHistoryEvent(
       eventType = IE813,
-      eventDate = "2023-12-01T15:00:00",
+      eventDate = parseDateTime("2023-12-01T15:00:00"),
       sequenceNumber = 1,
       messageRole = 1,
       upstreamArc = Some(testArc),
@@ -33,7 +34,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
     ),
     MovementHistoryEvent(
       eventType = IE813,
-      eventDate = "2023-12-02T13:00:00",
+      eventDate = parseDateTime("2023-12-02T13:00:00"),
       sequenceNumber = 2,
       messageRole = 1,
       upstreamArc = Some(testArc),
@@ -68,7 +69,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie801Event = MovementHistoryEvent(
     eventType = IE801,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 0,
     upstreamArc = None,
@@ -77,7 +78,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie802ChangeDestinationEvent = MovementHistoryEvent(
     eventType = IE802,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 1,
     upstreamArc = None,
@@ -86,7 +87,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie802EventReportOfReceipt = MovementHistoryEvent(
     eventType = IE802,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 2,
     upstreamArc = None,
@@ -95,7 +96,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie802MovementDestinationEvent = MovementHistoryEvent(
     eventType = IE802,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 3,
     upstreamArc = None,
@@ -104,7 +105,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie803MovementDiversionEvent = MovementHistoryEvent(
     eventType = IE803,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 1,
     upstreamArc = None,
@@ -113,7 +114,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie803MovementSplitEvent = MovementHistoryEvent(
     eventType = IE803,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 2,
     upstreamArc = None,
@@ -122,7 +123,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie807MovementInterruptedEvent = MovementHistoryEvent(
     eventType = IE807,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 1,
     upstreamArc = None,
@@ -131,7 +132,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie810MovementCancelledEvent = MovementHistoryEvent(
     eventType = IE810,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 1,
     upstreamArc = None,
@@ -140,7 +141,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie813ChangeDestinationEvent = MovementHistoryEvent(
     eventType = IE813,
-    eventDate = "2024-12-04T17:00:00",
+    eventDate = parseDateTime("2024-12-04T17:00:00"),
     sequenceNumber = 1,
     messageRole = 0,
     upstreamArc = None,
@@ -149,7 +150,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie818Event = MovementHistoryEvent(
     eventType = IE818,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 3,
     messageRole = 1,
     upstreamArc = Some(testArc),
@@ -158,7 +159,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie819AlertEventMultipleReasons = MovementHistoryEvent(
     eventType = IE819,
-    eventDate = "2023-12-18T09:00:00",
+    eventDate = parseDateTime("2023-12-18T09:00:00"),
     sequenceNumber = 1,
     messageRole = 0,
     upstreamArc = None,
@@ -167,7 +168,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie819AlertEvent = MovementHistoryEvent(
     eventType = IE819,
-    eventDate = "2023-12-18T10:00:00",
+    eventDate = parseDateTime("2023-12-18T10:00:00"),
     sequenceNumber = 1,
     messageRole = 0,
     upstreamArc = None,
@@ -176,7 +177,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie819RejectionEvent = MovementHistoryEvent(
     eventType = IE819,
-    eventDate = "2023-12-19T09:00:00",
+    eventDate = parseDateTime("2023-12-19T09:00:00"),
     sequenceNumber = 1,
     messageRole = 0,
     upstreamArc = None,
@@ -185,7 +186,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie829MovementAcceptedCustomsEvent = MovementHistoryEvent(
     eventType = IE829,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 0,
     upstreamArc = None,
@@ -194,7 +195,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie839MovementRejectedCustomsEvent = MovementHistoryEvent(
     eventType = IE839,
-    eventDate = "2024-01-15T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-01-15T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 0,
     upstreamArc = None,
@@ -203,7 +204,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie905ManualClosureResponseEvent = MovementHistoryEvent(
     eventType = IE905,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 0,
     upstreamArc = None,
@@ -212,7 +213,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   def ie837DelayEvent(messageRole: Int) = MovementHistoryEvent(
     eventType = IE837,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = messageRole,
     upstreamArc = None,
@@ -221,7 +222,7 @@ trait GetMovementHistoryEventsResponseFixtures { _: BaseFixtures =>
 
   val ie871ShortageOrEccessEvent = MovementHistoryEvent(
     eventType = IE871,
-    eventDate = "2024-12-04T17:00:00", // hash code then bit shifted right = 853932155
+    eventDate = parseDateTime("2024-12-04T17:00:00"), // hash code then bit shifted right = 853932155
     sequenceNumber = 1,
     messageRole = 0,
     upstreamArc = None,

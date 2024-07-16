@@ -19,23 +19,29 @@ package models.response.emcsTfe.getMovementHistoryEvents
 import models.EventTypes
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsValue, Reads, __}
+import utils.{DateUtils, Logging}
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 case class MovementHistoryEvent(
                                  eventType: EventTypes,
-                                 eventDate: String,
+                                 eventDate: LocalDateTime,
                                  sequenceNumber: Int,
                                  messageRole: Int,
                                  upstreamArc: Option[String],
                                  isFirstEventTypeInHistory: Boolean) {
 
-  val eventId: Int = eventDate.hashCode >>> 1
+  val eventId: Int =
+    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").format(eventDate).hashCode >>> 1
 }
 
-object MovementHistoryEvent {
+object MovementHistoryEvent extends DateUtils with Logging {
+
   implicit val reads: Reads[MovementHistoryEvent] =
     (
       (__ \ "eventType").read[EventTypes] and
-      (__ \ "eventDate").read[String] and
+      (__ \ "eventDate").read[String].map(parseDateTime) and
       (__ \ "sequenceNumber").read[Int] and
       (__ \ "messageRole").read[Int] and
       (__ \ "upstreamArc").readNullable[String] and
