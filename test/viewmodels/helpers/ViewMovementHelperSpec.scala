@@ -228,7 +228,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         UnknownDestination -> "Northern Ireland tax warehouse to Unknown destination"
       ).foreach { destinationTypeToMessage =>
 
-        s"when the destination type is ${destinationTypeToMessage._1}" in {
+        s"the destination type is ${destinationTypeToMessage._1}" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = destinationTypeToMessage._1,
             placeOfDispatchTrader = Some(TraderModel(
@@ -246,6 +246,85 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
           result mustBe destinationTypeToMessage._2
+        }
+
+      }
+    }
+
+    "show non-UK movement to Y for XIWK ERN (dispatch place is neither GB not XI)" when {
+      Seq(
+        TaxWarehouse -> "Movement from outside the United Kingdom to Tax warehouse in Great Britain",
+        DirectDelivery -> "Movement from outside the United Kingdom to Direct delivery",
+        RegisteredConsignee -> "Movement from outside the United Kingdom to Registered consignee",
+        TemporaryRegisteredConsignee -> "Movement from outside the United Kingdom to Temporary registered consignee",
+        ExemptedOrganisation -> "Movement from outside the United Kingdom to Exempted organisation",
+        UnknownDestination -> "Movement from outside the United Kingdom to Unknown destination"
+      ).foreach {
+        case (destinationType, message) =>
+
+        s"the destination type is $destinationType" in {
+          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+            destinationType = destinationType,
+            placeOfDispatchTrader = Some(TraderModel(
+              traderExciseNumber = Some("FR00345GTR145"),
+              traderName = Some("Current 801 Consignee"),
+              address = Some(AddressModel(
+                streetNumber = None,
+                street = Some("Main101"),
+                postcode = Some("ZZ78"),
+                city = Some("Zeebrugge")
+              )),
+              vatNumber = Some("GB123456789"),
+              eoriNumber = None
+            ))
+          ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
+
+          result mustBe message
+        }
+
+      }
+    }
+
+    "show movement to Y for XIWK ERN" when {
+      Seq(
+        TaxWarehouse -> "Movement to Tax warehouse in Great Britain",
+        DirectDelivery -> "Movement to Direct delivery",
+        RegisteredConsignee -> "Movement to Registered consignee",
+        TemporaryRegisteredConsignee -> "Movement to Temporary registered consignee",
+        ExemptedOrganisation -> "Movement to Exempted organisation",
+        UnknownDestination -> "Movement to Unknown destination"
+      ).foreach {
+        case (destinationType, message) =>
+
+        s"when the destination type is $destinationType" when {
+          "placeOfDispatchTrader.traderExciseNumber is missing" in {
+            val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+              destinationType = destinationType,
+              placeOfDispatchTrader = Some(TraderModel(
+                traderExciseNumber = None,
+                traderName = Some("Current 801 Consignee"),
+                address = Some(AddressModel(
+                  streetNumber = None,
+                  street = Some("Main101"),
+                  postcode = Some("ZZ78"),
+                  city = Some("Zeebrugge")
+                )),
+                vatNumber = Some("GB123456789"),
+                eoriNumber = None
+              ))
+            ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
+
+            result mustBe message
+          }
+
+          "placeOfDispatchTrader is missing" in {
+            val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+              destinationType = destinationType,
+              placeOfDispatchTrader = None
+            ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
+
+            result mustBe message
+          }
         }
 
       }

@@ -48,8 +48,6 @@ case class InvalidDestinationTypeException(message: String) extends Exception(me
 
 case class InvalidUserTypeException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
-case class MissingDispatchPlaceTraderException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
-
 case class CnCodeInformationException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class PackagingTypesException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
