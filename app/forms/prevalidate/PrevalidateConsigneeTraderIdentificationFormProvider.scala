@@ -30,9 +30,10 @@ class PrevalidateConsigneeTraderIdentificationFormProvider @Inject() extends Map
     Form(
       mapping(
         "ern" -> text("prevalidateTrader.consigneeTraderIdentification.ern.error.required")
+          .verifying(regexpUnlessEmpty(XSS_REGEX, "prevalidateTrader.consigneeTraderIdentification.ern.error.invalidCharacters"))
+          .transform[String](_.toUpperCase.replace(" ", ""), identity)
           .verifying(
             firstError(
-              regexpUnlessEmpty(XSS_REGEX, "prevalidateTrader.consigneeTraderIdentification.ern.error.invalidCharacters"),
               regexpUnlessEmpty(ALPHANUMERIC_REGEX, "prevalidateTrader.consigneeTraderIdentification.ern.error.invalidCharacters"),
               regexpUnlessEmpty(EXCISE_NUMBER_REGEX, "prevalidateTrader.consigneeTraderIdentification.ern.error.invalidRegex")
             )
