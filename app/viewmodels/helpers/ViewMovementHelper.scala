@@ -18,12 +18,12 @@ package viewmodels.helpers
 
 import config.AppConfig
 import models.common.RoleType
-import models.common.RoleType.{GBRC, GBWK, XIPA, XIPC, XIRC, XIWK}
+import models.common.RoleType._
 import models.movementScenario.MovementScenario
 import models.movementScenario.MovementScenario._
 import models.requests.DataRequest
+import models.response.InvalidUserTypeException
 import models.response.emcsTfe.GetMovementResponse
-import models.response.{InvalidUserTypeException, MissingDispatchPlaceTraderException}
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
@@ -63,6 +63,7 @@ class ViewMovementHelper @Inject()(
       case _ => Future(Html(""))
     }
 
+  //scalastyle:off method.length
   private[helpers] def constructMovementView(movementResponse: GetMovementResponse)
                                             (implicit request: DataRequest[_], messages: Messages): Html = {
 
@@ -76,15 +77,24 @@ class ViewMovementHelper @Inject()(
 
     //Summary section - start
     val localReferenceNumber = summaryListRowBuilder("viewMovement.movement.summary.lrn", movementResponse.localReferenceNumber)
-    val eadStatus = if (movementResponse.eadStatus.toString.equalsIgnoreCase("None")) None else Some(summaryListRowBuilder("viewMovement.movement.summary.eADStatus",
-      HtmlFormat.fill(Seq(
-        p()(Text(movementResponse.eadStatus.toString).asHtml),
-        p(classes = "govuk-hint govuk-!-margin-top-0")(Text(eadStatusExplanation).asHtml)
-      )
-      )))
+    val eadStatus = {
+      if (movementResponse.eadStatus.toString.equalsIgnoreCase("None")) {
+        None
+      } else {
+        Some(summaryListRowBuilder("viewMovement.movement.summary.eADStatus",
+          HtmlFormat.fill(Seq(
+            p()(Text(movementResponse.eadStatus.toString).asHtml),
+            p(classes = "govuk-hint govuk-!-margin-top-0")(Text(eadStatusExplanation).asHtml)
+          )
+          )))
+      }
+    }
     val receiptStatus = optReceiptStatusMessage.map(statusMessage => summaryListRowBuilder("viewMovement.movement.summary.receiptStatus", statusMessage))
     val movementType = summaryListRowBuilder("viewMovement.movement.summary.type", movementTypeValue)
-    val movementDirection = summaryListRowBuilder("viewMovement.movement.summary.direction", if (userRole.isConsignor(appConfig)) "viewMovement.movement.summary.direction.out" else "viewMovement.movement.summary.direction.in")
+    val movementDirection = summaryListRowBuilder(
+      "viewMovement.movement.summary.direction",
+      s"viewMovement.movement.summary.direction.${if (userRole.isConsignor(appConfig)) "out" else "in"}"
+    )
     //Summary section - end
 
     //Time and data section - start
@@ -136,6 +146,7 @@ class ViewMovementHelper @Inject()(
       )
     )
   }
+  //scalastyle:on
 
   private[helpers] def getDateOfArrivalRow(movementResponse: GetMovementResponse)(implicit messages: Messages) = {
     movementResponse.formattedDateOfArrival.map {
@@ -143,7 +154,7 @@ class ViewMovementHelper @Inject()(
     }.getOrElse(summaryListRowBuilder("viewMovement.movement.timeAndDate.predictedArrival", movementResponse.formattedExpectedDateOfArrival))
   }
 
-  //scalastyle:off
+  //scalastyle:off cyclomatic.complexity line.size.limit
   private[helpers] def getMovementTypeForMovementView(movementResponse: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): String = {
     (request.userTypeFromErn, MovementScenario.getMovementScenarioFromMovement(movementResponse)) match {
       case (GBWK, taxWarehouse@(UkTaxWarehouse.GB | UkTaxWarehouse.NI)) =>
@@ -153,15 +164,20 @@ class ViewMovementHelper @Inject()(
         movementResponse.placeOfDispatchTrader match {
           case Some(placeOfDispatch) => placeOfDispatch.traderExciseNumber match {
             case Some(dispatchErn) =>
-              val countryCodePrefix = RoleType.fromExciseRegistrationNumber(dispatchErn).countryCode
-              messages("viewMovement.movement.summary.type.dispatchPlaceTo", messages(s"viewMovement.movement.summary.type.dispatchPlace.$countryCodePrefix"), messages(s"viewMovement.movement.summary.type.2.$destinationType"))
+              if(isGB(dispatchErn)) {
+                messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
+              } else if(isXI(dispatchErn)) {
+                messages("viewMovement.movement.summary.type.niTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
+              } else {
+                messages("viewMovement.movement.summary.type.nonUkMovementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
+              }
             case None =>
-              logger.error(s"[constructMovementView] Missing place of dispatch ERN for $XIWK")
-              throw MissingDispatchPlaceTraderException(s"[constructMovementView][getMovementTypeForMovementView] Missing place of dispatch ERN for $XIWK")
+              logger.info(s"[constructMovementView] Missing place of dispatch ERN for $XIWK")
+              messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
           }
           case None =>
-            logger.error(s"[constructMovementView] Missing place of dispatch trader for $XIWK")
-            throw MissingDispatchPlaceTraderException(s"[constructMovementView][getMovementTypeForMovementView] Missing place of dispatch trader for $XIWK")
+            logger.info(s"[constructMovementView] Missing place of dispatch trader for $XIWK")
+            messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
         }
 
       case (GBRC | XIRC, destinationType) =>
