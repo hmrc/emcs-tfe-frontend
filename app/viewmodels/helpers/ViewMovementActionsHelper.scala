@@ -44,6 +44,7 @@ class ViewMovementActionsHelper @Inject()(
         content = Seq(
           cancelMovementLink(movement),
           changeDestinationLink(movement),
+          reportOfReceiptLink(movement),
           explainADelayLink(movement),
           shortageOrExcessLink(movement)
           // ETFE-2556 will re-enable this link
@@ -90,7 +91,10 @@ class ViewMovementActionsHelper @Inject()(
   }
 
   def reportOfReceiptLink(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Option[Html] = {
-    Option.when(reportOfReceiptValidStatuses.contains(movement.eadStatus)) {
+    val validStatus = reportOfReceiptValidStatuses.contains(movement.eadStatus)
+    val isConsigneeOfMovement = movement.consigneeTrader.flatMap(_.traderExciseNumber).contains(request.ern)
+
+    Option.when(validStatus && isConsigneeOfMovement) {
       link(appConfig.emcsTfeReportAReceiptUrl(request.ern, movement.arc), "viewMovement.reportAReceipt", Some("submit-report-of-receipt"), hintKey = Some("viewMovement.reportAReceipt.info"))
     }
   }
