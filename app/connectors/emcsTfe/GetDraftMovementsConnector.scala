@@ -41,10 +41,10 @@ class GetDraftMovementsConnector @Inject()(val http: HttpClient,
     get(url, search.map(_.queryParams).getOrElse(Seq.empty))
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[getDraftMovements] Bad JSON response from emcs-tfe: " + errors)
+          logger.warn(s"[getDraftMovements][$ern] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[getDraftMovements] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[getDraftMovements][$ern] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }

@@ -32,7 +32,7 @@ class BetaAllowListConnector @Inject()(http: HttpClient, config: AppConfig) exte
     http.GET(url = config.emcsTfeBaseUrl + s"/beta/eligibility/$ern/$service")
   }.recover {
     error =>
-      logger.warn(s"[check] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
+      logger.warn(s"[check][$ern][$service] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
       Left(UnexpectedDownstreamResponseError)
   }
 

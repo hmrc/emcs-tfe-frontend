@@ -39,10 +39,10 @@ class DraftMovementConnector @Inject()(val http: HttpClient,
     putEmpty(url)
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[markMovementAsDraft] Bad JSON response from emcs-tfe: " + errors)
+          logger.warn(s"[markMovementAsDraft][$ern][$draftId] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[markMovementAsDraft] Unexpected error: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[markMovementAsDraft][$ern][$draftId] Unexpected error: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }
@@ -54,10 +54,10 @@ class DraftMovementConnector @Inject()(val http: HttpClient,
     put(url, errors)
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[putErrorMessagesAndReturnDraftId] Bad JSON response from emcs-tfe: " + errors)
+          logger.warn(s"[putErrorMessagesAndReturnDraftId][$ern][$correlationId] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[putErrorMessagesAndReturnDraftId] Unexpected error: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[putErrorMessagesAndReturnDraftId][$ern][$correlationId] Unexpected error: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }

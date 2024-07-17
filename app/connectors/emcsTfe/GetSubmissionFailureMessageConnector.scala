@@ -39,7 +39,7 @@ class GetSubmissionFailureMessageConnector @Inject()(val http: HttpClient, confi
     get(url)
       .recover {
         case error =>
-          logger.warn(s"[getMessages] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[getMessages][$exciseRegistrationNumber][$uniqueMessageIdentifier] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }

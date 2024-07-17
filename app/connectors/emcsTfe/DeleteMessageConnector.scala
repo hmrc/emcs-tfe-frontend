@@ -40,10 +40,10 @@ class DeleteMessageConnector @Inject()(val http: HttpClient, config: AppConfig) 
     delete(url)
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[deleteMessage] Bad JSON response from emcs-tfe: " + errors)
+          logger.warn(s"[deleteMessage][$exciseRegistrationNumber][$uniqueMessageIdentifier] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[deleteMessage] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[deleteMessage][$exciseRegistrationNumber][$uniqueMessageIdentifier] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }

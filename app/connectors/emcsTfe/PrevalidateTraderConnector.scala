@@ -39,10 +39,10 @@ class PrevalidateTraderConnector @Inject()(val http: HttpClient, config: AppConf
 
     post(url, requestModel).recover {
       case JsResultException(errors) =>
-        logger.warn(s"[prevalidateTrader] Bad JSON response from emcs-tfe: " + errors)
+        logger.warn(s"[prevalidateTrader][$ern] Bad JSON response from emcs-tfe: " + errors)
         Left(JsonValidationError)
       case error =>
-        logger.warn(s"[prevalidateTrader] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
+        logger.warn(s"[prevalidateTrader][$ern] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
         Left(UnexpectedDownstreamResponseError)
       }
   }

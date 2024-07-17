@@ -28,6 +28,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.GetMessagesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logging
 import views.html.messages.ViewAllMessagesView
 
 import javax.inject.Inject
@@ -41,7 +42,7 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
                                           val view: ViewAllMessagesView,
                                           errorHandler: ErrorHandler)
                                          (implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks with Logging {
 
   def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] = {
     authorisedDataRequestAsync(ern, messageInboxBetaGuard(ern)) { implicit request =>
@@ -84,7 +85,8 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
         ).withSession(session)
       }
     } recover {
-      case _ =>
+      case e =>
+        logger.warn(s"[onPageLoad][$ern] Unexpected exception thrown of type ${e.getClass.getSimpleName.stripSuffix("$")}. Message: ${e.getMessage}")
         InternalServerError(errorHandler.standardErrorTemplate())
     }
   }

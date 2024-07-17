@@ -38,10 +38,10 @@ class GetMovementHistoryEventsConnector @Inject()(val http: HttpClient,
     get(url)
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[getMovementHistoryEvents] Bad JSON response from emcs-tfe: " + errors)
+          logger.warn(s"[getMovementHistoryEvents][$exciseRegistrationNumber][$arc] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[getMovementHistoryEvents] Unexpected error emcs-tfe: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[getMovementHistoryEvents][$exciseRegistrationNumber][$arc] Unexpected error emcs-tfe: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }

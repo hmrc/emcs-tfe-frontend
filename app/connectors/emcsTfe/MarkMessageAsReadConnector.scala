@@ -40,10 +40,10 @@ class MarkMessageAsReadConnector @Inject()(val http: HttpClient, config: AppConf
     putEmpty(url)
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[markMessageAsRead] Bad JSON response from emcs-tfe: " + errors)
+          logger.warn(s"[markMessageAsRead][$ern][$uniqueMessageIdentifier] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[markMessageAsRead] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[markMessageAsRead][$ern][$uniqueMessageIdentifier] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }

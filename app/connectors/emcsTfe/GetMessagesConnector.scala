@@ -39,10 +39,10 @@ class GetMessagesConnector @Inject()(val http: HttpClient, config: AppConfig) ex
     get(url, search.map(_.queryParams).getOrElse(Seq.empty))
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[getMessages] Bad JSON response from emcs-tfe: " + errors)
+          logger.warn(s"[getMessages][$exciseRegistrationNumber] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[getMessages] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[getMessages][$exciseRegistrationNumber] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }
