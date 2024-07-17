@@ -41,8 +41,7 @@ class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
     }
 
   def getMovement(ern: String, arc: String, sequenceNumber: Option[Int] = None, historyEvents: Option[Seq[MovementHistoryEvent]] = None)
-                 (implicit hc: HeaderCarrier): Future[GetMovementResponse] =
-
+                 (implicit hc: HeaderCarrier): Future[GetMovementResponse] = {
     getRawMovement(ern, arc, sequenceNumber).flatMap { movement =>
       for {
         historyEvents <- historyEvents.fold(getMovementHistoryEventsService.getMovementHistoryEvents(ern, arc))(history => Future.successful(history))
@@ -55,11 +54,14 @@ class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
             productCodeDescription = Some(cnCodeInfo.exciseProductCodeDescription)
           )
         }
-      } yield movement.copy(
-        items = itemsWithWineAndPackagingAndCnCodeInfo,
-        eventHistorySummary = Some(historyEvents)
-      )
+      } yield {
+        movement.copy(
+          items = itemsWithWineAndPackagingAndCnCodeInfo,
+          eventHistorySummary = Some(historyEvents)
+        )
+      }
     }
+  }
 
   def getLatestMovementForLoggedInUser(ern: String, arc: String)(implicit hc: HeaderCarrier): Future[GetMovementResponse] =
     getMovementHistoryEventsService.getMovementHistoryEvents(ern, arc).flatMap {

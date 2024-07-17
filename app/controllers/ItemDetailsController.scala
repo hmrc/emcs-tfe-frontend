@@ -23,6 +23,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GetMovementService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logging
 import views.html.ItemDetailsView
 
 import javax.inject.Inject
@@ -38,7 +39,8 @@ class ItemDetailsController @Inject()(mcc: MessagesControllerComponents,
   extends FrontendController(mcc)
     with AuthActionHelper
     with I18nSupport
-    with BetaChecks {
+    with BetaChecks
+    with Logging {
 
   def onPageLoad(ern: String, arc: String, idx: Int): Action[AnyContent] =
     authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
@@ -46,7 +48,8 @@ class ItemDetailsController @Inject()(mcc: MessagesControllerComponents,
         val item = movement.items(idx - 1)
         Ok(view(item))
       }.recover {
-        case _ =>
+        case e =>
+          logger.warn(s"[onPageLoad][$ern][$arc] Unexpected exception thrown of type ${e.getClass.getSimpleName.stripSuffix("$")}, redirecting back to ViewMovementController.viewMovementItems")
           Redirect(routes.ViewMovementController.viewMovementItems(ern, arc))
       }
     }

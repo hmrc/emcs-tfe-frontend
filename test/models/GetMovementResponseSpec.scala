@@ -44,8 +44,22 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
 
     ".formattedExpectedDateOfArrival" when {
 
-      "a timeOfDispatch is present on the movement" in {
+      "a timeOfDispatch is present on the movement (format HH:mm:ss)" in {
         getMovementResponseModel.formattedExpectedDateOfArrival shouldBe "10 December 2008"
+      }
+
+      "a timeOfDispatch is present on the movement (format HH:mm:ss.SSS)" in {
+        val model = getMovementResponseModel.eadEsad.copy(timeOfDispatch = Some("00:00:00.00"))
+        getMovementResponseModel
+          .copy(eadEsad = model)
+          .formattedExpectedDateOfArrival shouldBe "10 December 2008"
+      }
+
+      "a timeOfDispatch is present on the movement (format HH:mm:ss.SSSSSS)" in {
+        val model = getMovementResponseModel.eadEsad.copy(timeOfDispatch = Some("00:00:00.000000"))
+        getMovementResponseModel
+          .copy(eadEsad = model)
+          .formattedExpectedDateOfArrival shouldBe "10 December 2008"
       }
 
       "a timeOfDispatch is absent from the movement" in {

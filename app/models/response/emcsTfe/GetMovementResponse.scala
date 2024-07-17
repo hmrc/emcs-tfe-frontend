@@ -71,11 +71,7 @@ case class GetMovementResponse(
   def formattedExpectedDateOfArrival: String = {
     calculateExpectedDate(
       dateOfDispatch,
-      eadEsad.timeOfDispatch.map {
-        _.split(":")
-      }.getOrElse(Array("0", "0", "0")) match {
-        case Array(h, m, s) => LocalTime.of(h.toInt, m.toInt, s.toInt)
-      },
+      eadEsad.timeOfDispatch.map(LocalTime.parse).getOrElse(LocalTime.of(0,0,0)),
       journeyTime
     ).toLocalDate.formatDateForUIOutput()
   }

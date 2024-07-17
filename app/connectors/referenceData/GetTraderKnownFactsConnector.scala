@@ -37,10 +37,10 @@ class GetTraderKnownFactsConnector @Inject()(val http: HttpClient,
     get(baseUrl + "/oracle/trader-known-facts", ern)
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[getTraderKnownFacts] Bad JSON response from emcs-tfe-reference-data: " + errors)
+          logger.warn(s"[getTraderKnownFacts][$ern] Bad JSON response from emcs-tfe-reference-data: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[getTraderKnownFacts] Unexpected error from reference-data: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[getTraderKnownFacts][$ern] Unexpected error from reference-data: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
 }

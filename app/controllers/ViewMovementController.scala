@@ -22,6 +22,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GetMovementService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Logging
 import viewmodels._
 import viewmodels.helpers.{TimelineHelper, ViewMovementHelper}
 import views.html.viewMovement.ViewMovementView
@@ -41,7 +42,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        timelineHelper: TimelineHelper
                                       )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc)
-    with I18nSupport with AuthActionHelper {
+    with I18nSupport with AuthActionHelper with Logging {
 
   def viewMovementOverview(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
     viewMovement(exciseRegistrationNumber, arc, Overview)
@@ -87,7 +88,8 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
           ))
         }
       } recover {
-        case _ =>
+        case e =>
+          logger.warn(s"[onPageLoad][$exciseRegistrationNumber][$arc][$currentSubNavigationTab] Unexpected exception thrown of type ${e.getClass.getSimpleName.stripSuffix("$")}. Message: ${e.getMessage}")
           InternalServerError(errorHandler.standardErrorTemplate())
       }
     }
