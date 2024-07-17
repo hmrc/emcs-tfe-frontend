@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import models.requests.DataRequest
 @import views.html.helper.CSPNonce
 
 @this(govukButton: GovukButton)
@@ -23,14 +22,16 @@
 
 @govukButton(
     ButtonViewModel(Text(messages("site.clearSelectedCode")))
-    .withCssClass("no-print")
+    .withCssClass("no-print js-visible")
     .withId("clear-selected-code")
     .withAttribute("type", "button")
     .asSecondaryButton()
 )
 
 <script @CSPNonce.attr>
-        document.getElementById('clear-selected-code').addEventListener('click', function () {
+        const clearSelectedCodeButton = document.getElementById('clear-selected-code');
+        clearSelectedCodeButton.classList.add("js-enabled");
+        clearSelectedCodeButton.addEventListener('click', function () {
             const element = document.getElementById('@idToClear');
             element.value = "";
             element.click();
