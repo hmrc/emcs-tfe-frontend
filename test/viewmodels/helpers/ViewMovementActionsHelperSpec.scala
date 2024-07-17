@@ -139,14 +139,11 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
   }
 
   ".reportOfReceiptLink" should {
-    val testMovement = getMovementResponseModel.copy(
-      eadStatus = MovementEadStatus.Accepted,
-      consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some(testErn)))
-    )
+    val testMovement = getMovementResponseModel.copy(eadStatus = MovementEadStatus.Accepted)
 
     "return a link" when {
 
-      "when the movement can be receipted and logged in user is the consignee of the movement" in {
+      "when the movement can be receipted" in {
         helper.reportOfReceiptLink(testMovement) mustBe
           Some(
             link(
@@ -163,15 +160,6 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
       "when the movement has an incorrect movement status to be receipted" in {
         helper.reportOfReceiptLink(testMovement.copy(eadStatus = MovementEadStatus.Delivered)) mustBe None
-      }
-
-      "has the correct status but the logged in user is not the consignee of the movement" in {
-        val testMovement = getMovementResponseModel.copy(
-          eadStatus = MovementEadStatus.Accepted,
-          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some("GBWKTest123")))
-        )
-
-        helper.reportOfReceiptLink(testMovement) mustBe None
       }
 
     }

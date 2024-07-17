@@ -37,35 +37,22 @@ class ViewMovementActionsHelper @Inject()(
                                          ) extends Logging {
 
   def movementActions(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Html = {
-    val isConsignor = movement.consignorTrader.traderExciseNumber.fold(false)(_ == request.ern)
+    val isConsignor = movement.consignorTrader.traderExciseNumber.contains(request.ern)
+    val isConsignee = movement.consigneeTrader.flatMap(_.traderExciseNumber).contains(request.ern)
 
-    if (isConsignor) {
-      list(
-        content = Seq(
-          cancelMovementLink(movement),
-          changeDestinationLink(movement),
-          reportOfReceiptLink(movement),
-          explainADelayLink(movement),
-          shortageOrExcessLink(movement)
-          // ETFE-2556 will re-enable this link
-          // printLink()
-        ).flatten,
-        extraClasses = Some("govuk-list--spaced")
-      )
+    def when(bool: Boolean)(f: => Option[Html]): Option[Html] = Option.when(bool)(f).flatten
 
-    } else {
-      list(
-        content = Seq(
-          alertOrRejectionLink(movement),
-          reportOfReceiptLink(movement),
-          explainADelayLink(movement),
-          shortageOrExcessLink(movement)
-          // ETFE-2556 will re-enable this link
-          // printLink()
-        ).flatten,
-        extraClasses = Some("govuk-list--spaced")
-      )
-    }
+    list(
+      content = Seq(
+        when(isConsignor)(cancelMovementLink(movement)),
+        when(isConsignor)(changeDestinationLink(movement)),
+        when(isConsignee)(alertOrRejectionLink(movement)),
+        when(isConsignee)(reportOfReceiptLink(movement)),
+        when(isConsignor || isConsignee)(explainADelayLink(movement)),
+        when(isConsignor || isConsignee)(shortageOrExcessLink(movement))
+      ).flatten,
+      extraClasses = Some("govuk-list--spaced")
+    )
   }
 
   def cancelMovementLink(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Option[Html] = {
@@ -91,10 +78,7 @@ class ViewMovementActionsHelper @Inject()(
   }
 
   def reportOfReceiptLink(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Option[Html] = {
-    val validStatus = reportOfReceiptValidStatuses.contains(movement.eadStatus)
-    val isConsigneeOfMovement = movement.consigneeTrader.flatMap(_.traderExciseNumber).contains(request.ern)
-
-    Option.when(validStatus && isConsigneeOfMovement) {
+    Option.when(reportOfReceiptValidStatuses.contains(movement.eadStatus)) {
       link(appConfig.emcsTfeReportAReceiptUrl(request.ern, movement.arc), "viewMovement.reportAReceipt", Some("submit-report-of-receipt"), hintKey = Some("viewMovement.reportAReceipt.info"))
     }
   }
