@@ -49,7 +49,8 @@ class ViewMovementActionsHelper @Inject()(
         when(isConsignee)(alertOrRejectionLink(movement)),
         when(isConsignee)(reportOfReceiptLink(movement)),
         when(isConsignor || isConsignee)(explainADelayLink(movement)),
-        when(isConsignor || isConsignee)(shortageOrExcessLink(movement))
+        when(isConsignor || isConsignee)(shortageOrExcessLink(movement)),
+        //printLink() // ETFE-2556 will re-enable this link
       ).flatten,
       extraClasses = Some("govuk-list--spaced")
     )
