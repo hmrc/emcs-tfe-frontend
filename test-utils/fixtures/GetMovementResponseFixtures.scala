@@ -23,6 +23,7 @@ import models.common.OriginType.TaxWarehouse
 import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Shortage}
 import models.common._
 import models.response.emcsTfe.AlertOrRejectionType.{Alert, Rejection}
+import models.response.emcsTfe.GlobalConclusionofReceiptReasonCodeType.ReceiptAcceptedAndSatisfactory
 import models.response.emcsTfe.NotificationOfDivertedMovementType.ChangeOfDestination
 import models.response.emcsTfe.customsRejection.CustomsRejectionDiagnosisCodeType.UnknownArc
 import models.response.emcsTfe.customsRejection.CustomsRejectionReasonCodeType.ImportDataMismatch
@@ -94,6 +95,9 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       )
     ))
   )
+
+  val manualClosureResponse = ManualClosureResponseModel(1, Some(LocalDateTime.parse("2024-01-14T19:14:20")), ReceiptAcceptedAndSatisfactory, Some("some information"), ManualClosureRequestReasonCodeType.Other, Some("some information"), false, Some(ManualClosureRejectionReasonCodeType.Other), Some("some information"), Some(Seq(SupportingDocumentModel(Some("some information"), Some("EX95489754"), Some("1")))), Some(Seq(ManualClosureItem(1,Some("B000"),Some("E"),Some(20), Some(20), Some("some information")))))
+
 
   lazy val getMovementResponseModel: GetMovementResponse = GetMovementResponse(
     arc = testArc,
@@ -337,7 +341,9 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
           )
         ))
       )
-    )
+    ),
+    manualClosureResponse = Some(ManualClosureResponseModel(1, Some(LocalDateTime.parse("2024-01-14T19:14:20")), ReceiptAcceptedAndSatisfactory, Some("some information"), ManualClosureRequestReasonCodeType.Other, Some("some information"), false, Some(ManualClosureRejectionReasonCodeType.Other), Some("some information"), Some(Seq(SupportingDocumentModel(Some("some information"), Some("EX95489754"), Some("1")))), Some(Seq(ManualClosureItem(1,Some("B000"),Some("E"),Some(20), Some(20), Some("some information"))))))
+
   )
 
   lazy val notificationOfAcceptedExport: NotificationOfAcceptedExportModel =
@@ -696,6 +702,34 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
           "bodyRecordUniqueReference" -> 1,
           "explanation" -> "4 more than I expected",
           "actualQuantity" -> 5
+        )
+      )
+    ),
+    "manualClosureResponse" -> Json.obj(
+      "sequenceNumber" -> 1,
+      "dateOfArrivalOfExciseProducts" -> "2024-01-14T19:14:20",
+      "globalConclusionOfReceipt" -> "1",
+      "complementaryInformation" -> "some information",
+      "manualClosureRequestReason" -> "0",
+      "manualClosureRequestReasonComplement" -> "some information",
+      "manualClosureRequestAccepted" -> false,
+      "manualClosureRejectionReason" -> "0",
+      "manualClosureRejectionComplement" -> "some information",
+      "supportingDocuments" -> Json.arr(
+        Json.obj(
+          "supportingDocumentDescription" -> "some information",
+          "referenceOfSupportingDocument" -> "EX95489754",
+          "supportingDocumentType" -> "1",
+        )
+      ),
+      "bodyManualClosure" -> Json.arr(
+        Json.obj(
+          "bodyRecordUniqueReference" -> 1,
+          "productCode" -> "B000",
+          "indicatorOfShortageOrExcess" -> "E",
+          "observedShortageOrExcess" -> 20,
+          "refusedQuantity" -> 20,
+          "complementaryInformation" -> "some information"
         )
       )
     )

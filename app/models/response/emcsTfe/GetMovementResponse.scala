@@ -60,6 +60,7 @@ case class GetMovementResponse(
                                 notificationOfCustomsRejection: Option[NotificationOfCustomsRejectionModel],
                                 interruptedMovement: Option[InterruptionReasonModel],
                                 notificationOfShortageOrExcess: Option[NotificationOfShortageOrExcessModel],
+                                manualClosureResponse: Option[ManualClosureResponseModel],
                                 items: Seq[MovementItem],
                                 movementGuarantee: MovementGuaranteeModel,
                                 eventHistorySummary: Option[Seq[MovementHistoryEvent]]
@@ -115,6 +116,7 @@ object GetMovementResponse {
     notificationOfCustomsRejection <- (__ \ "notificationOfCustomsRejection").readNullable[NotificationOfCustomsRejectionModel]
     interruptedMovement <- (__ \ "interruptedMovement").readNullable[InterruptionReasonModel]
     notificationOfShortageOrExcess <- (__ \ "notificationOfShortageOrExcess").readNullable[NotificationOfShortageOrExcessModel]
+    manualClosureResponse <- (__ \ "manualClosureResponse").readNullable[ManualClosureResponseModel]
     items <- (__ \ "items").read[Seq[MovementItem]]
     eventHistorySummary <- (__ \ "eventHistorySummary").readNullable[Seq[MovementHistoryEvent]](MovementHistoryEvent.seqReads)
   } yield {
@@ -153,7 +155,8 @@ object GetMovementResponse {
       notificationOfDelay = notificationOfDelay,
       notificationOfCustomsRejection = notificationOfCustomsRejection,
       interruptedMovement = interruptedMovement,
-      notificationOfShortageOrExcess = notificationOfShortageOrExcess
+      notificationOfShortageOrExcess = notificationOfShortageOrExcess,
+      manualClosureResponse = manualClosureResponse
     )
   }
 }

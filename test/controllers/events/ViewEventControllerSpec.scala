@@ -21,8 +21,8 @@ import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeData
 import fixtures.messages.EN
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures, MessagesFixtures}
 import mocks.config.MockAppConfig
-import mocks.services.{MockGetCnCodeInformationService, MockGetMovementHistoryEventsService, MockGetMovementService}
-import models.EventTypes
+import mocks.services.{MockGetCnCodeInformationService, MockGetDocumentTypesService, MockGetMovementHistoryEventsService, MockGetMovementService}
+import models.{DocumentType, EventTypes}
 import models.common.AcceptMovement
 import models.common.UnitOfMeasure.Kilograms
 import models.requests.DataRequest
@@ -52,7 +52,8 @@ class ViewEventControllerSpec
     with MockGetMovementService
     with GetMovementResponseFixtures
     with GetMovementHistoryEventsResponseFixtures
-    with DateUtils {
+    with DateUtils
+    with MockGetDocumentTypesService {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -73,7 +74,8 @@ class ViewEventControllerSpec
     getMovementService = mockGetMovementService,
     getCnCodeInformationService = mockGetCnCodeInformationService,
     view = view,
-    errorHandler = errorHandler
+    errorHandler = errorHandler,
+    getDocumentTypesService = mockGetDocumentTypesService
   )(ec, appConfig)
 
 
@@ -89,6 +91,7 @@ class ViewEventControllerSpec
 
       MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc).returns(Future.successful(testHistoryEvents))
       MockGetMovementService.getMovement(testErn, testArc, Some(event.sequenceNumber)).returns(Future.successful(testMovement))
+      MockGetDocumentTypesService.getDocumentTypes().returns(Future.successful(Seq(DocumentType("1","Document type description"), DocumentType("2", "Document type description 2"))))
       optMock()
 
       val result: Future[Result] = controllerMethod
@@ -207,7 +210,7 @@ class ViewEventControllerSpec
       methodName = ".shortageExcessSubmitted",
       event = ie871ShortageOrEccessEvent,
       method = (id: Int) => controller.shortageExcessSubmitted(testErn, testArc, id)
-    )
+    ),
   ).foreach { case TestFixtureModel(methodName, event, method) =>
 
     s"calling $methodName" must {
@@ -252,6 +255,23 @@ class ViewEventControllerSpec
         )
         handle404s(ie818Event, controller.reportReceiptSubmitted(testErn, testArc, 853932155)(fakeRequest))
       }
+    }
+  }
+
+  ".manualClosureResponse" when {
+    "acceptMovement is Satisfactory" must {
+      renderASuccessfulEventView(ie881ManualClosureResponseEvent, getMovementResponseModel, controller.manualClosureResponse(testErn, testArc, 853932155)(fakeRequest),
+        () => MockGetCnCodeInformationService.getCnCodeInformation(getMovementResponseModel.items).returns(Future.successful(Seq(
+          item1WithWineAndPackaging -> CnCodeInformation(
+            cnCode = "T400",
+            cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+            exciseProductCode = "24029000",
+            exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+            unitOfMeasure = Kilograms
+          )
+        )))
+      )
+      handle404s(ie881ManualClosureResponseEvent, controller.manualClosureResponse(testErn, testArc, 853932155)(fakeRequest))
     }
   }
 }

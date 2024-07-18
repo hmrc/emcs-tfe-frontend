@@ -20,6 +20,7 @@ import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import fixtures.events.MovementEventMessages
 import fixtures.messages.{AlertRejectionReasonMessages, DelayReasonMessages}
+import models.DocumentType
 import models.common.DestinationType.{DirectDelivery, Export, RegisteredConsignee, TaxWarehouse, TemporaryCertifiedConsignee, TemporaryRegisteredConsignee, UnknownDestination}
 import models.common.TransportArrangement.OwnerOfGoods
 import models.common.UnitOfMeasure.Kilograms
@@ -66,9 +67,13 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
     override val cardHeader: Int => String = i => s".govuk-summary-card:nth-of-type($i) h3"
 
     def guarantorInformationKey(rowIndex: Int) = s"#guarantor-information-summary > div:nth-child($rowIndex) > dt"
+
     def guarantorInformationValue(rowIndex: Int) = s"#guarantor-information-summary > div:nth-child($rowIndex) > dd"
+
     def guarantorInformationKey(rowIndex: Int, cardIndex: Int) = s"#guarantor-information-summary-$cardIndex > div:nth-child($rowIndex) > dt"
+
     def guarantorInformationValue(rowIndex: Int, cardIndex: Int) = s"#guarantor-information-summary-$cardIndex > div:nth-child($rowIndex) > dd"
+
     val cardTitle = s".govuk-summary-card__title"
   }
 
@@ -529,6 +534,110 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
       val doc = Jsoup.parse(result.toString())
 
       doc.body().text() mustBe ""
+    }
+  }
+
+  "manualClosureDocumentsCard" must {
+    "output the correct rows when all data is present" in {
+      implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+      val result = helper.closureDocumentsInformationCard(Seq(DocumentType("1", "Some info")))
+      val doc = Jsoup.parse(result.toString())
+
+      val summaryCards = doc.getElementsByClass("govuk-summary-card")
+
+      val document = summaryCards.get(0)
+      val documentSummaryListRows = document.getElementsByClass("govuk-summary-list__row")
+      documentSummaryListRows.get(0).getElementsByTag("dt").text() mustBe "Document type"
+      documentSummaryListRows.get(0).getElementsByTag("dd").text() mustBe "Some info"
+      documentSummaryListRows.get(1).getElementsByTag("dt").text() mustBe "Document reference"
+      documentSummaryListRows.get(1).getElementsByTag("dd").text() mustBe "EX95489754"
+      documentSummaryListRows.get(2).getElementsByTag("dt").text() mustBe "Document description"
+      documentSummaryListRows.get(2).getElementsByTag("dd").text() mustBe "some information"
+
+    }
+  }
+
+  "manualClosureResponseCard" when {
+    "export" must {
+      "output the correct rows when all data is present" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+        val result = helper.responseInformation()
+        val doc = Jsoup.parse(result.toString())
+
+        val summaryList = doc.getElementsByClass("govuk-summary-list").get(0)
+
+        val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+        summaryListRows.get(0).getElementsByTag("dt").text() mustBe "Sequence number"
+        summaryListRows.get(0).getElementsByTag("dd").text() mustBe "1"
+        summaryListRows.get(1).getElementsByTag("dt").text() mustBe "Date excise products arrived"
+        summaryListRows.get(1).getElementsByTag("dd").text() mustBe "14 January 2024"
+        summaryListRows.get(2).getElementsByTag("dt").text() mustBe "Conclusion of receipt"
+        summaryListRows.get(2).getElementsByTag("dd").text() mustBe "Receipt accepted and satisfactory"
+        summaryListRows.get(3).getElementsByTag("dt").text() mustBe "More receipt information"
+        summaryListRows.get(3).getElementsByTag("dd").text() mustBe "some information"
+        summaryListRows.get(4).getElementsByTag("dt").text() mustBe "Reason code"
+        summaryListRows.get(4).getElementsByTag("dd").text() mustBe "0"
+        summaryListRows.get(5).getElementsByTag("dt").text() mustBe "Reason code description"
+        summaryListRows.get(5).getElementsByTag("dd").text() mustBe "Other"
+        summaryListRows.get(6).getElementsByTag("dt").text() mustBe "More reason information"
+        summaryListRows.get(6).getElementsByTag("dd").text() mustBe "some information"
+        summaryListRows.get(7).getElementsByTag("dt").text() mustBe "Response status"
+        summaryListRows.get(7).getElementsByTag("dd").text() mustBe "Rejected"
+        summaryListRows.get(8).getElementsByTag("dt").text() mustBe "Rejection reason"
+        summaryListRows.get(8).getElementsByTag("dd").text() mustBe "Other"
+        summaryListRows.get(9).getElementsByTag("dt").text() mustBe "More rejection information"
+        summaryListRows.get(9).getElementsByTag("dd").text() mustBe "some information"
+      }
+    }
+  }
+
+  "manualClosureItemsCard" when {
+    "render a card with the correct header" in {
+      implicit val _movement: GetMovementResponse = getMovementResponseModel
+
+      val items: Seq[IE881ItemModelWithCnCodeInformation] =
+        Seq(IE881ItemModelWithCnCodeInformation(manualClosureResponse.bodyManualClosure.get.head, CnCodeInformation(
+          cnCode = "B000",
+          cnCodeDescription = "test cn code description",
+          exciseProductCode = "B000",
+          exciseProductCodeDescription = "Some info",
+          unitOfMeasure = Kilograms
+        )))
+      val result = helper.manualClosureItemsCard(ie881ManualClosureResponseEvent, items)
+      val doc = Jsoup.parse(result.toString())
+
+      doc.select(Selectors.h2(1)).text() mustBe "Response details"
+      items.zipWithIndex.foreach {
+        case (item, index) =>
+
+          // test card title
+          doc.select(Selectors.h3(index + 1)).text() mustBe s"Item ${index + 1}"
+
+          // test action link
+          val actionLink = doc.select(Selectors.link(index + 1))
+          actionLink.text() mustBe s"Item details for item ${index + 1}"
+          actionLink.attr("href") mustBe controllers.routes.ItemDetailsController.onPageLoad(testErn, testArc, item.manualClosureItem.bodyRecordUniqueReference).url
+
+          // test what was wrong row
+          val summaryList = doc.getElementsByClass("govuk-summary-list").get(index)
+          val summaryListRows = summaryList.getElementsByClass("govuk-summary-list__row")
+          summaryListRows.get(0).getElementsByTag("dt").text() mustBe "Excise Product Code (EPC)"
+          summaryListRows.get(0).getElementsByTag("dd").text() mustBe item.manualClosureItem.productCode.get
+          summaryListRows.get(1).getElementsByTag("dt").text() mustBe "Body record unique reference"
+          summaryListRows.get(1).getElementsByTag("dd").text() mustBe item.manualClosureItem.bodyRecordUniqueReference.toString()
+          summaryListRows.get(2).getElementsByTag("dt").text() mustBe "Shortage or excess"
+          summaryListRows.get(2).getElementsByTag("dd").text() mustBe "Excess"
+          summaryListRows.get(3).getElementsByTag("dt").text() mustBe "Shortage or excess quantity"
+          summaryListRows.get(3).getElementsByTag("dd").text() mustBe s"${item.manualClosureItem.observedShortageOrExcess.get.toString()} kg"
+          summaryListRows.get(4).getElementsByTag("dt").text() mustBe "Refused quantity"
+          summaryListRows.get(4).getElementsByTag("dd").text() mustBe s"${item.manualClosureItem.refusedQuantity.get.toString()} kg"
+          summaryListRows.get(5).getElementsByTag("dt").text() mustBe "More shortage or excess information"
+          summaryListRows.get(5).getElementsByTag("dd").text() mustBe item.manualClosureItem.complementaryInformation.get
+
+
+      }
     }
   }
 
@@ -1059,7 +1168,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
                     )
                   )
                 )
-              ))
+                ))
               val eventDetails = _movement.notificationOfAlertOrRejection.get.head
 
               val result = helper.alertRejectInformationCard(eventDetails)

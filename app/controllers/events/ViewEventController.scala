@@ -19,22 +19,23 @@ package controllers.events
 import config.{AppConfig, ErrorHandler}
 import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
-import models.EventTypes
+import models.{DocumentType, EventTypes}
 import models.EventTypes._
 import models.common.AcceptMovement
 import models.requests.DataRequest
-import models.response.emcsTfe.GetMovementResponse
+import models.response.emcsTfe.{GetMovementResponse, IE881ItemModelWithCnCodeInformation}
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{GetCnCodeInformationService, GetMovementHistoryEventsService, GetMovementService}
+import services.{GetCnCodeInformationService, GetDocumentTypesService, GetMovementHistoryEventsService, GetMovementService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logging
 import views.html.events.HistoryEventView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class ViewEventController @Inject()(mcc: MessagesControllerComponents,
                                     val auth: AuthAction,
@@ -43,6 +44,7 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
                                     getMovementHistoryEventsService: GetMovementHistoryEventsService,
                                     getMovementService: GetMovementService,
                                     getCnCodeInformationService: GetCnCodeInformationService,
+                                    getDocumentTypesService: GetDocumentTypesService,
                                     view: HistoryEventView,
                                     errorHandler: ErrorHandler
                                    )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
@@ -103,22 +105,29 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
   def shortageExcessSubmitted(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE871)
 
+  def manualClosureResponse(ern: String, arc: String, eventId: Int): Action[AnyContent] =
+    onPageLoad(ern, arc, eventId, IE881)
+
   private def onPageLoad(ern: String, arc: String, eventId: Int, eventType: EventTypes): Action[AnyContent] = {
     authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
       withHistoryEvent(ern, arc, eventType, eventId) { event =>
-        getMovementService.getMovement(ern = ern, arc = arc, sequenceNumber = Some(event.sequenceNumber)).flatMap {
-          movement =>
-            withIE818ItemModelWithCnCodeInformation(eventType, movement) {
-              ie818ItemModelWithCnCodeInformation =>
-                Ok(view(event, movement, ie818ItemModelWithCnCodeInformation))
-            }
+        getDocumentTypesService.getDocumentTypes().flatMap { documentType =>
+          getMovementService.getMovement(ern = ern, arc = arc, sequenceNumber = Some(event.sequenceNumber)).flatMap {
+            movement =>
+              withIE818ItemModelWithCnCodeInformation(eventType, movement) {
+                ie818ItemModelWithCnCodeInformation =>
+                  withIE881ItemModelWithCnCodeInformation(eventType, movement) {
+                    ie881ItemModelWithCnCodeInformation =>
+                      Ok(view(event, movement, ie818ItemModelWithCnCodeInformation, documentType, ie881ItemModelWithCnCodeInformation))
+                  }
+              }
+          }
         }
       }
     }
   }
-
   private def withIE818ItemModelWithCnCodeInformation(eventType: EventTypes, movement: GetMovementResponse)
-                                                     (f: Seq[IE818ItemModelWithCnCodeInformation] => Result)
+                                                     (f: Seq[IE818ItemModelWithCnCodeInformation] => Future[Result])
                                                      (implicit request: DataRequest[_]): Future[Result] = {
     val ie818ItemModelWithCnCodeInformationFuture: Future[Seq[IE818ItemModelWithCnCodeInformation]] = if (eventType == IE818) {
       (for {
@@ -137,7 +146,30 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
     } else {
       Future.successful(Seq.empty)
     }
-    ie818ItemModelWithCnCodeInformationFuture.map(f)
+    ie818ItemModelWithCnCodeInformationFuture.flatMap(f)
+  }
+
+
+  private def withIE881ItemModelWithCnCodeInformation(eventType: EventTypes, movement: GetMovementResponse)
+                                                     (f: Seq[IE881ItemModelWithCnCodeInformation] => Result)
+                                                     (implicit request: DataRequest[_]): Future[Result] = {
+    val ie881ItemModelWithCnCodeInformationFuture: Future[Seq[IE881ItemModelWithCnCodeInformation]] = if (eventType == IE881) {
+      (for {
+        manualClosure <- movement.manualClosureResponse.get.bodyManualClosure
+      } yield {
+        getCnCodeInformationService.getCnCodeInformation(movement.items).map {
+          _.flatMap {
+            case (item, information) => manualClosure.collect {
+              case closureItem if closureItem.bodyRecordUniqueReference == item.itemUniqueReference =>
+                IE881ItemModelWithCnCodeInformation(closureItem, information)
+            }
+          }
+        }
+      }).getOrElse(Future.successful(Seq.empty))
+    } else {
+      Future.successful(Seq.empty)
+    }
+    ie881ItemModelWithCnCodeInformationFuture.map(f)
   }
 
 

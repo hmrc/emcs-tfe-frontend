@@ -639,6 +639,18 @@ class EventsHelperSpec extends SpecBase
                 itemCardSummary.select("dd").get(3).text() mustBe item.explanation
               }
             }
+
+            "being called with event type IE881" must {
+
+              "render the correct HTML" in {
+
+                val result = helper.constructEventInformation(ie881ManualClosureResponseEvent, getMovementResponseModel)
+                val body = Jsoup.parse(result.toString())
+
+                body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie881ManualClosureResponseP1
+                body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+              }
+            }
           }
         }
       }
