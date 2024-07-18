@@ -739,58 +739,48 @@ class MovementEventHelper @Inject()(
     )
   }
 
-  def customsRejectionDiagnosisCards(event: NotificationOfCustomsRejectionModel)(implicit messages: Messages): Html = {
-
-    if (event.hasMultipleDiagnosisCodes) {
-      val diagnosesSummaryCards = event.diagnoses.zipWithIndex.map { case (diagnosis, idx) =>
-        val rows = Seq(
-          Some(summaryListRowBuilder(
-            messages("movementHistoryEvent.IE839.summary.diagnosis.bodyRecordUniqueReference"),
-            diagnosis.bodyRecordUniqueReference
-          )),
-          Some(summaryListRowBuilder(
-            messages("movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode"),
-            messages(s"movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode.${diagnosis.diagnosisCode}")
-          ))
-        )
-
+  def customsRejectionDiagnosisCards(event: NotificationOfCustomsRejectionModel)(implicit messages: Messages): Html =
+    event.diagnoses match {
+      case Nil => HtmlFormat.empty
+      case diagnosis :: Nil =>
         buildOverviewPartial(
-          cardTitleMessageKey = Some("movementHistoryEvent.IE839.summary.diagnosis.h3.item"),
-          cardTitleMessageArgs = Seq(s"${idx + 1}"),
-          cardTitleHeadingLevel = Some(3),
+          headingTitle = Some("movementHistoryEvent.IE839.summary.diagnosis.h2"),
           headingId = Some("customs-reject-diagnosis"),
-          summaryListRows = rows,
+          summaryListRows = Seq(
+            Some(summaryListRowBuilder(
+              messages("movementHistoryEvent.IE839.summary.diagnosis.bodyRecordUniqueReference"),
+              diagnosis.bodyRecordUniqueReference
+            )),
+            Some(summaryListRowBuilder(
+              messages("movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode"),
+              messages(s"movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode.${diagnosis.diagnosisCode}")
+            ))
+          ),
           summaryListAttributes = Map("id" -> "customs-rejection-diagnosis-summary")
         )
-      }
-
-
-      HtmlFormat.fill(
-        Seq(
-          h2(messages("movementHistoryEvent.IE839.summary.diagnosis.h2"))
-        ) ++ diagnosesSummaryCards
-      )
-    } else {
-      val diagnosis = event.diagnoses.head
-      val rows = Seq(
-        Some(summaryListRowBuilder(
-          messages("movementHistoryEvent.IE839.summary.diagnosis.bodyRecordUniqueReference"),
-          diagnosis.bodyRecordUniqueReference
-        )),
-        Some(summaryListRowBuilder(
-          messages("movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode"),
-          messages(s"movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode.${diagnosis.diagnosisCode}")
-        ))
-      )
-
-      buildOverviewPartial(
-        headingTitle = Some("movementHistoryEvent.IE839.summary.diagnosis.h2"),
-        headingId = Some("customs-reject-diagnosis"),
-        summaryListRows = rows,
-        summaryListAttributes = Map("id" -> "customs-rejection-diagnosis-summary")
-      )
+      case diagnoses =>
+        HtmlFormat.fill(Seq(h2(messages("movementHistoryEvent.IE839.summary.diagnosis.h2"))) ++
+          diagnoses.zipWithIndex.map { case (diagnosis, idx) =>
+            buildOverviewPartial(
+              cardTitleMessageKey = Some("movementHistoryEvent.IE839.summary.diagnosis.h3.item"),
+              cardTitleMessageArgs = Seq(s"${idx + 1}"),
+              cardTitleHeadingLevel = Some(3),
+              headingId = Some("customs-reject-diagnosis"),
+              summaryListRows = Seq(
+                Some(summaryListRowBuilder(
+                  messages("movementHistoryEvent.IE839.summary.diagnosis.bodyRecordUniqueReference"),
+                  diagnosis.bodyRecordUniqueReference
+                )),
+                Some(summaryListRowBuilder(
+                  messages("movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode"),
+                  messages(s"movementHistoryEvent.IE839.summary.diagnosis.diagnosisCode.${diagnosis.diagnosisCode}")
+                ))
+              ),
+              summaryListAttributes = Map("id" -> "customs-rejection-diagnosis-summary")
+            )
+          }
+        )
     }
-  }
 
   def ie829AcceptedExportDetails(notificationOfAcceptedExport: NotificationOfAcceptedExportModel)(implicit movement: GetMovementResponse, messages: Messages): Html = {
     def acceptedExportSummary: Html = {
