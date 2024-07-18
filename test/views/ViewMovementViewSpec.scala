@@ -103,37 +103,77 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
 
           }
 
-          "display the action links for a consignor" when {
-            val consignorRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"), ern = consignorErn)
+          "display the typical action links for a consignor" when {
+            "the consignor is not also the consignee of the movement" when {
 
-            val testMovement = getMovementResponseModel
-              .copy(
-                consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(consignorErn)),
-                consigneeTrader = Some(TraderModel(traderExciseNumber = Some(consigneeErn), None, None, None, None)),
-                dateOfDispatch = LocalDate.now.plusDays(1),
-                destinationType = DestinationType.Export
+              val consignorRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"), ern = consignorErn)
+
+              val testMovement = getMovementResponseModel
+                .copy(
+                  consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(consignorErn)),
+                  consigneeTrader = Some(TraderModel(traderExciseNumber = Some(consigneeErn), None, None, None, None)),
+                  dateOfDispatch = LocalDate.now.plusDays(1),
+                  destinationType = DestinationType.Export
+                )
+
+              implicit val doc: Document = Jsoup.parse(
+                view(
+                  consignorErn,
+                  testArc,
+                  testMovement,
+                  SubNavigationTab.values,
+                  Overview,
+                  helper.movementCard(Overview, testMovement)(consignorRequest, messages, hc, ec).futureValue,
+                  Seq.empty[TimelineEvent]
+                )(consignorRequest, messages).toString()
               )
 
-            implicit val doc: Document = Jsoup.parse(
-              view(
-                consignorErn,
-                testArc,
-                testMovement,
-                SubNavigationTab.values,
-                Overview,
-                helper.movementCard(Overview, testMovement)(consignorRequest, messages, hc, ec).futureValue,
-                Seq.empty[TimelineEvent]
-              )(consignorRequest, messages).toString()
-            )
+              behave like pageWithExpectedElementsAndMessages(Seq(
+                Selectors.actionLink(1) -> messagesForLanguage.actionLinkChangeOfDestination,
+                Selectors.actionLink(2) -> messagesForLanguage.actionLinkCancelMovement,
+                Selectors.actionLink(3) -> messagesForLanguage.actionLinkExplainDelay,
+                Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess
+                // ETFE-2556 will re-enable this link
+                // Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
+              ))
+            }
+          }
 
-            behave like pageWithExpectedElementsAndMessages(Seq(
-              Selectors.actionLink(1) -> messagesForLanguage.actionLinkCancelMovement,
-              Selectors.actionLink(2) -> messagesForLanguage.actionLinkChangeOfDestination,
-              Selectors.actionLink(3) -> messagesForLanguage.actionLinkExplainDelay,
-              Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess
-              // ETFE-2556 will re-enable this link
-              // Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
-            ))
+          "display additional action links for a consignor" when {
+            "the consignor is also the consignee of the movement" when {
+              val consignorRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"), ern = consignorErn)
+
+              val testMovement = getMovementResponseModel
+                .copy(
+                  consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(consignorErn)),
+                  consigneeTrader = Some(TraderModel(traderExciseNumber = Some(consignorErn), None, None, None, None)),
+                  dateOfDispatch = LocalDate.now.plusDays(1),
+                  destinationType = DestinationType.Export
+                )
+
+              implicit val doc: Document = Jsoup.parse(
+                view(
+                  consignorErn,
+                  testArc,
+                  testMovement,
+                  SubNavigationTab.values,
+                  Overview,
+                  helper.movementCard(Overview, testMovement)(consignorRequest, messages, hc, ec).futureValue,
+                  Seq.empty[TimelineEvent]
+                )(consignorRequest, messages).toString()
+              )
+
+              behave like pageWithExpectedElementsAndMessages(Seq(
+                Selectors.actionLink(1) -> messagesForLanguage.actionLinkChangeOfDestination,
+                Selectors.actionLink(2) -> messagesForLanguage.actionLinkCancelMovement,
+                Selectors.actionLink(3) -> messagesForLanguage.actionLinkSubmitReportOfReceipt,
+                Selectors.actionLink(4) -> messagesForLanguage.actionLinkAlertOrRejection,
+                Selectors.actionLink(5) -> messagesForLanguage.actionLinkExplainDelay,
+                Selectors.actionLink(6) -> messagesForLanguage.actionLinkExplainShortageOrExcess
+                // ETFE-2556 will re-enable this link
+                // Selectors.actionLink(5) -> messagesForLanguage.actionLinkPrint
+              ))
+            }
           }
 
           "display the action links for a consignee" when {
@@ -160,8 +200,8 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
             )
 
             behave like pageWithExpectedElementsAndMessages(Seq(
-              Selectors.actionLink(1) -> messagesForLanguage.actionLinkAlertOrRejection,
-              Selectors.actionLink(2) -> messagesForLanguage.actionLinkSubmitReportOfReceipt,
+              Selectors.actionLink(1) -> messagesForLanguage.actionLinkSubmitReportOfReceipt,
+              Selectors.actionLink(2) -> messagesForLanguage.actionLinkAlertOrRejection,
               Selectors.actionLink(3) -> messagesForLanguage.actionLinkExplainDelay,
               Selectors.actionLink(4) -> messagesForLanguage.actionLinkExplainShortageOrExcess
               // ETFE-2556 will re-enable this link

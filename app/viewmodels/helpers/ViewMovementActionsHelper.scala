@@ -18,7 +18,7 @@ package viewmodels.helpers
 
 import config.AppConfig
 import models.MovementEadStatus._
-import models.common.DestinationType.Export
+import models.common.DestinationType.{Export, ReturnToThePlaceOfDispatchOfTheConsignor}
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import play.api.i18n.Messages
@@ -44,13 +44,15 @@ class ViewMovementActionsHelper @Inject()(
 
     list(
       content = Seq(
-        when(isConsignor)(cancelMovementLink(movement)),
         when(isConsignor)(changeDestinationLink(movement)),
-        when(isConsignee)(alertOrRejectionLink(movement)),
+        when(isConsignor)(cancelMovementLink(movement)),
+
         when(isConsignee)(reportOfReceiptLink(movement)),
+        when(isConsignee)(alertOrRejectionLink(movement)),
+
         when(isConsignor || isConsignee)(explainADelayLink(movement)),
         when(isConsignor || isConsignee)(shortageOrExcessLink(movement)),
-        //printLink() // ETFE-2556 will re-enable this link
+        printLink()
       ).flatten,
       extraClasses = Some("govuk-list--spaced")
     )
@@ -60,14 +62,17 @@ class ViewMovementActionsHelper @Inject()(
     val splitMovement: Boolean = isASplitMovement(movement)
     val movementStatusValid: Boolean = cancelMovementValidStatuses.contains(movement.eadStatus)
     val dispatchDateValid: Boolean = dateOfDispatchTodayOrInTheFuture(movement.dateOfDispatch)
+    val certifiedConsignor: Boolean = request.isCertifiedConsignor
 
-    Option.when(!splitMovement && movementStatusValid && dispatchDateValid) {
+    Option.when(!splitMovement && movementStatusValid && dispatchDateValid && !certifiedConsignor) {
       link(appConfig.emcsTfeCancelMovementUrl(request.ern, movement.arc), "viewMovement.cancelMovement", Some("cancel-this-movement"), hintKey = Some("viewMovement.cancelMovement.info"))
     }
   }
 
   def changeDestinationLink(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Option[Html] = {
-    Option.when(changeDestinationValidStatuses.contains(movement.eadStatus)) {
+    val returnToConsignor: GetMovementResponse => Boolean = _.destinationType == ReturnToThePlaceOfDispatchOfTheConsignor
+
+    Option.when(changeDestinationValidStatuses.contains(movement.eadStatus) && !returnToConsignor(movement)) {
       link(appConfig.emcsTfeChangeDestinationUrl(request.ern, movement.arc), "viewMovement.changeDestination", Some("submit-a-change-of-destination"), hintKey = Some("viewMovement.changeDestination.info"))
     }
   }
@@ -102,13 +107,13 @@ class ViewMovementActionsHelper @Inject()(
   }
 
   def printLink()(implicit messages: Messages): Option[Html] =
-    Option.when(cond = true) {
+    // ETFE-2556 will re-enable this link
+    Option.when(cond = false) {
       link("print", "viewMovement.printOrSaveEad", Some("print-or-save-ead"), hintKey = Some("viewMovement.printOrSaveEad.info"))
     }
 }
 
 object ViewMovementActionsHelper {
-
 
   private def dateOfDispatchTodayOrInTheFuture(dateOfDispatch: LocalDate): Boolean =
     dateOfDispatch.isEqual(LocalDate.now()) || dateOfDispatch.isAfter(LocalDate.now())
