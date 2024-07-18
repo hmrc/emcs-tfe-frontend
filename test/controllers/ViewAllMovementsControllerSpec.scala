@@ -104,7 +104,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
 
   private def buildView(searchOptions: MovementListSearchOptions,
                         movementListResponse: GetMovementListResponse,
-                        form: Form[MovementListSearchOptions])(implicit request: DataRequest[_]): Html =
+                        form: Form[MovementListSearchOptions],
+                        showResultCount: Boolean = false,
+                        currentSearch: Option[String] = None
+                       )(implicit request: DataRequest[_]): Html =
     view(
       form = form,
       action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
@@ -116,11 +119,18 @@ class ViewAllMovementsControllerSpec extends SpecBase
       exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
       countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
       pagination = None,
-      directionFilterOption = All
+      directionFilterOption = All,
+      totalMovements = movementListResponse.count,
+      showResultCount = showResultCount,
+      currentSearch = currentSearch
     )
 
-  private def successView(searchOptions: MovementListSearchOptions, movementListResponse: GetMovementListResponse = threePageMovementListResponse)(implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, movementListResponse, formProvider())
+  private def successView(searchOptions: MovementListSearchOptions,
+                          movementListResponse: GetMovementListResponse = threePageMovementListResponse,
+                          showResultCount: Boolean = false,
+                          currentSearch: Option[String] = None,
+                         )(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, movementListResponse, formProvider().fill(searchOptions), showResultCount, currentSearch)
 
   private def viewWithErrors(searchOptions: MovementListSearchOptions, movementListResponse: GetMovementListResponse = threePageMovementListResponse)(implicit request: DataRequest[_]): Html =
     buildView(searchOptions, movementListResponse, formProvider().withError(FormError("sortBy", Seq("error.required"))))
@@ -298,6 +308,54 @@ class ViewAllMovementsControllerSpec extends SpecBase
 
           status(result) shouldBe Status.OK
           Html(contentAsString(result)) shouldBe successView(searchOptions, movementListResponse)
+        }
+
+        "show the correct view when filters have been applied" in new Test {
+
+          val searchOptions = MovementListSearchOptions(index = 1, countryOfOrigin = Some("GB"))
+
+          MockEmcsTfeConnector
+            .getMovementList(testErn, Some(searchOptions))
+            .returns(Future.successful(Right(threePageMovementListResponse)))
+
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
+          MockMovementPaginationHelper.constructPaginationWithSearch(searchOptions = searchOptions, pageCount = 3)(None)
+
+          val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          Html(contentAsString(result)) shouldBe successView(searchOptions, showResultCount = true)
+        }
+
+        "show the correct view when a search has been applied" in new Test {
+
+          val searchOptions = MovementListSearchOptions(index = 1, countryOfOrigin = Some("GB"), searchValue = Some("search term"))
+
+          MockEmcsTfeConnector
+            .getMovementList(testErn, Some(searchOptions))
+            .returns(Future.successful(Right(threePageMovementListResponse)))
+
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockGetMemberStatesConnector
+            .getMemberStates()
+            .returns(Future.successful(Right(countryListConnectorResult)))
+
+          MockMovementPaginationHelper.constructPaginationWithSearch(searchOptions = searchOptions, pageCount = 3)(None)
+
+          val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          Html(contentAsString(result)) shouldBe successView(searchOptions, showResultCount = true, currentSearch = Some("search term"))
         }
       }
 

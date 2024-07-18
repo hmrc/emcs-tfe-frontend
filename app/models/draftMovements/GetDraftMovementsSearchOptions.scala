@@ -38,6 +38,15 @@ case class GetDraftMovementsSearchOptions(
                                            exciseProductCode: Option[String] = None
                                          ) {
 
+  val hasFilterApplied = Seq(
+    searchValue,
+    draftHasErrors,
+    destinationTypes,
+    dateOfDispatchFrom,
+    dateOfDispatchTo,
+    exciseProductCode
+  ).exists(_.isDefined)
+
   val startingPosition: Int = (index - 1) * maxRows
 
   val queryParams: Seq[(String, String)] = Seq(

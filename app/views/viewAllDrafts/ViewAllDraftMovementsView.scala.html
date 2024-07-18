@@ -59,8 +59,22 @@
         sortSelectItems: Seq[SelectItem],
         exciseItems: Seq[SelectItem],
         pagination: Option[Pagination],
-        totalMovements: Int
+        totalMovements: Int,
+        showResultCount: Boolean,
+        currentSearch: Option[String]
 )(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
+
+@heading = @{
+    if(showResultCount) {
+        currentSearch.fold{
+            messages("viewAllDraftMovements.heading.withCount", totalMovements)
+        } { search =>
+            messages("viewAllDraftMovements.heading.withSearch", totalMovements, search)
+        }
+    } else {
+        messages("viewAllDraftMovements.heading")
+    }
+}
 
 @searchFields = {
 
@@ -91,7 +105,7 @@
 }
 
 @layout(
-    pageTitle = title(form, messages("viewAllDraftMovements.title")),
+    pageTitle = title(form, heading),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Drafts))),
     fullWidthContent = true
@@ -121,9 +135,7 @@
             </div>
         }
 
-        @h1() {
-            @messages("viewAllDraftMovements.heading")
-        }
+        @h1()(Html(heading))
 
         @link(
             link = appConfig.emcsTfeCreateMovementUrl(ern),

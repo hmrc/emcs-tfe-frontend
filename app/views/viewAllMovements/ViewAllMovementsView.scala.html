@@ -56,8 +56,23 @@
         exciseProductCodeSelectItems: Seq[SelectItem],
         countrySelectItems: Seq[SelectItem],
         pagination: Option[Pagination],
-        directionFilterOption: MovementFilterDirectionOption
+        directionFilterOption: MovementFilterDirectionOption,
+        totalMovements: Int,
+        showResultCount: Boolean,
+        currentSearch: Option[String]
 )(implicit request: DataRequest[_], messages: Messages)
+
+@heading = @{
+    if(showResultCount) {
+        currentSearch.fold{
+            messages("viewAllMovements.heading.withCount", totalMovements)
+        } { search =>
+            messages("viewAllMovements.heading.withSearch", totalMovements, search)
+        }
+    } else {
+        messages("viewAllMovements.heading")
+    }
+}
 
 @searchFields = {
 
@@ -97,7 +112,7 @@
 }
 
 @layout(
-    pageTitle = title(form, messages("viewAllMovements.title")),
+    pageTitle = title(form, heading),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Movements))),
     fullWidthContent = true
@@ -113,9 +128,7 @@
             }))
         }
 
-        @h1() {
-            @messages("viewAllMovements.heading")
-        }
+        @h1()(Html(heading))
 
         @govukFieldset(Fieldset(
             legend = Some(Legend(

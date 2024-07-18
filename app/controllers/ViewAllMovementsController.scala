@@ -81,10 +81,8 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
         case Left(NotFoundError) => Right(GetMovementListResponse(Seq(), 0))
         case value => value
       })
-
       epcs <- EitherT(getExciseProductCodesConnector.getExciseProductCodes())
       exciseProductCodeOptions = MovementListSearchOptions.CHOOSE_PRODUCT_CODE +: epcs
-
       countries <- EitherT(getMemberStatesConnector.getMemberStates())
       selectCountryOptions = MovementListSearchOptions.CHOOSE_COUNTRY +: countries.sortBy(_.displayName)
     } yield {
@@ -109,10 +107,12 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(exciseProductCodeOptions, None, searchOptions.exciseProductCode),
           countrySelectItems = SelectItemHelper.constructSelectItems(selectCountryOptions, None, searchOptions.countryOfOrigin),
           pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions),
-          directionFilterOption = searchOptions.traderRole.getOrElse(MovementFilterDirectionOption.All)
+          directionFilterOption = searchOptions.traderRole.getOrElse(MovementFilterDirectionOption.All),
+          totalMovements = movementList.count,
+          showResultCount = searchOptions.hasFilterApplied,
+          currentSearch = searchOptions.searchValue
         ))
       }
-
     }
 
     result.leftMap {

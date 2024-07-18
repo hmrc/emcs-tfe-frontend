@@ -118,8 +118,12 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
 
   lazy val table: table = app.injector.instanceOf[table]
 
-  def asDocument(pagination: Option[Pagination], direction: MovementFilterDirectionOption = All, movementListResponse: GetMovementListResponse = getMovementListResponse)
-                (implicit messages: Messages): Document = Jsoup.parse(view(
+  def asDocument(pagination: Option[Pagination],
+                 direction: MovementFilterDirectionOption = All,
+                 movementListResponse: GetMovementListResponse = getMovementListResponse,
+                 showResultCount: Boolean = false,
+                 currentSearch: Option[String] = None
+                )(implicit messages: Messages): Document = Jsoup.parse(view(
     form = formProvider(),
     action = routes.ViewAllMovementsController.onPageLoad("ern", MovementListSearchOptions()),
     ern = testErn,
@@ -130,7 +134,10 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_PRODUCT_CODE), None),
     countrySelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_COUNTRY), None),
     pagination = pagination,
-    directionFilterOption = direction
+    directionFilterOption = direction,
+    totalMovements = movementListResponse.count,
+    showResultCount = true,
+    currentSearch = currentSearch
   ).toString())
 
 
@@ -335,6 +342,40 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         val homeLink = doc.select(".moj-primary-navigation").select("a").first()
         homeLink.text mustBe "Home"
       }
+    }
+
+    s"being rendered with the result count should show the correct heading for one movement" when {
+
+      val response: GetMovementListResponse = GetMovementListResponse(Seq(movement1), 1)
+
+      implicit val doc: Document = asDocument(None, movementListResponse = response, showResultCount = true)
+
+      behave like pageWithExpectedElementsAndMessages(Seq(
+        Selectors.title -> English.titleWithCount(1),
+        Selectors.h1 -> English.headingWithCount(1)
+      ))
+    }
+
+    s"being rendered with the result count should show the correct heading for two movements" when {
+
+      val response: GetMovementListResponse = GetMovementListResponse(Seq(movement1, movement2), 2)
+
+      implicit val doc: Document = asDocument(None, movementListResponse = response, showResultCount = true)
+
+      behave like pageWithExpectedElementsAndMessages(Seq(
+        Selectors.title -> English.titleWithCount(2),
+        Selectors.h1 -> English.headingWithCount(2)
+      ))
+    }
+
+    s"being rendered with the search term should show the correct heading" when {
+
+      implicit val doc: Document = asDocument(None, showResultCount = true, currentSearch = Some("search term"))
+
+      behave like pageWithExpectedElementsAndMessages(Seq(
+        Selectors.title -> English.titleWithSearch(2, "search term"),
+        Selectors.h1 -> English.headingWithSearch(2, "search term")
+      ))
     }
   }
 }

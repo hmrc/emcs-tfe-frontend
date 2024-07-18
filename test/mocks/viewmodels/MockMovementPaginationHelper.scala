@@ -33,5 +33,11 @@ trait MockMovementPaginationHelper extends MockFactory {
       (mockMovementPaginationHelper.constructPagination(_: Int, _: String, _: MovementListSearchOptions))
         .expects(pageCount, *, MovementListSearchOptions(index = index))
         .returns(returns)
+
+    def constructPaginationWithSearch(searchOptions: MovementListSearchOptions, pageCount: Int)
+                           (returns: Option[Pagination] = None): CallHandler3[Int, String, MovementListSearchOptions, Option[Pagination]] =
+      (mockMovementPaginationHelper.constructPagination(_: Int, _: String, _: MovementListSearchOptions))
+        .expects(pageCount, *, searchOptions)
+        .returns(returns)
   }
 }
