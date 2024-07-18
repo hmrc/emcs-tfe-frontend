@@ -20,6 +20,7 @@ import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import models.MovementEadStatus
 import models.common.DestinationType
+import models.common.DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor
 import models.requests.DataRequest
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
@@ -59,6 +60,14 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
     }
 
     "not return a link" when {
+
+      Seq("XIPA000000000", "XIPC000000000").foreach { ern =>
+        s"when the movement can be cancelled but logged in as certified consignor ern = $ern" in {
+          val certifiedConsignorRequest: DataRequest[_] = dataRequest(FakeRequest("GET", "/"), ern = ern)
+
+          helper.cancelMovementLink(testMovement)(certifiedConsignorRequest, messages) mustBe None
+        }
+      }
 
       "when the movement has an incorrect movement status" in {
         helper.cancelMovementLink(
@@ -101,6 +110,10 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
     }
 
     "not return a link" when {
+
+      "when the destination type is return to consignor" in {
+        helper.changeDestinationLink(testMovement.copy(destinationType = ReturnToThePlaceOfDispatchOfTheConsignor)) mustBe None
+      }
 
       "when the movement has an incorrect movement status" in {
         helper.changeDestinationLink(testMovement.copy(eadStatus = MovementEadStatus.Delivered)) mustBe None
