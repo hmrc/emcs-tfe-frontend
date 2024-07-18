@@ -52,7 +52,7 @@ class ViewMovementActionsHelper @Inject()(
 
         when(isConsignor || isConsignee)(explainADelayLink(movement)),
         when(isConsignor || isConsignee)(shortageOrExcessLink(movement)),
-        printLink()
+        printLink(request.ern, movement.arc)
       ).flatten,
       extraClasses = Some("govuk-list--spaced")
     )
@@ -106,11 +106,8 @@ class ViewMovementActionsHelper @Inject()(
     }
   }
 
-  def printLink()(implicit messages: Messages): Option[Html] =
-    // ETFE-2556 will re-enable this link
-    Option.when(cond = false) {
-      link("print", "viewMovement.printOrSaveEad", Some("print-or-save-ead"), hintKey = Some("viewMovement.printOrSaveEad.info"))
-    }
+  def printLink(ern: String, arc: String)(implicit messages: Messages): Option[Html] =
+      Some(link(controllers.routes.ViewMovementController.printMovement(ern, arc).url, "viewMovement.printOrSaveEad", Some("print-or-save-ead"), hintKey = Some("viewMovement.printOrSaveEad.info")))
 }
 
 object ViewMovementActionsHelper {

@@ -19,13 +19,13 @@ package controllers.events
 import config.{AppConfig, ErrorHandler}
 import controllers.helpers.BetaChecks
 import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
-import models.{DocumentType, EventTypes}
+import models.EventTypes
 import models.EventTypes._
 import models.common.AcceptMovement
 import models.requests.DataRequest
-import models.response.emcsTfe.{GetMovementResponse, IE881ItemModelWithCnCodeInformation}
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
+import models.response.emcsTfe.{GetMovementResponse, IE881ItemModelWithCnCodeInformation}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{GetCnCodeInformationService, GetDocumentTypesService, GetMovementHistoryEventsService, GetMovementService}
@@ -35,7 +35,6 @@ import views.html.events.HistoryEventView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 class ViewEventController @Inject()(mcc: MessagesControllerComponents,
                                     val auth: AuthAction,

@@ -80,7 +80,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
                 getMovementResponseModel,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel).futureValue,
+                helper.movementCard(Some(Overview), getMovementResponseModel).futureValue,
                 Seq.empty[TimelineEvent]
               ).toString()
             )
@@ -123,7 +123,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
                   testMovement,
                   SubNavigationTab.values,
                   Overview,
-                  helper.movementCard(Overview, testMovement)(consignorRequest, messages, hc, ec).futureValue,
+                  helper.movementCard(Some(Overview), testMovement)(consignorRequest, messages, hc, ec).futureValue,
                   Seq.empty[TimelineEvent]
                 )(consignorRequest, messages).toString()
               )
@@ -158,7 +158,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
                   testMovement,
                   SubNavigationTab.values,
                   Overview,
-                  helper.movementCard(Overview, testMovement)(consignorRequest, messages, hc, ec).futureValue,
+                  helper.movementCard(Some(Overview), testMovement)(consignorRequest, messages, hc, ec).futureValue,
                   Seq.empty[TimelineEvent]
                 )(consignorRequest, messages).toString()
               )
@@ -194,7 +194,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
                 testMovement,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, testMovement)(consigneeRequest, messages, hc, ec).futureValue,
+                helper.movementCard(Some(Overview), testMovement)(consigneeRequest, messages, hc, ec).futureValue,
                 Seq.empty[TimelineEvent]
               )(consigneeRequest, messages).toString()
             )
@@ -219,7 +219,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
                 getMovementResponseModel,
                 SubNavigationTab.values,
                 Overview,
-                helper.movementCard(Overview, getMovementResponseModel).futureValue,
+                helper.movementCard(Some(Overview), getMovementResponseModel).futureValue,
                 Seq(
                   TimelineEvent(eventType = IE801, title = "Movement created", dateTime = eventDate, url = s"event/someEvent1/id/1"),
                   TimelineEvent(eventType = IE813, title = "Destination changed", dateTime = eventDate, url = s"event/someEvent2/id/2"),
@@ -245,7 +245,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
               getMovementResponseModel,
               SubNavigationTab.values,
               Movement,
-              helper.movementCard(Movement, getMovementResponseModel).futureValue,
+              helper.movementCard(Some(Movement), getMovementResponseModel).futureValue,
               Seq.empty[TimelineEvent]
             ).toString()
           )
@@ -285,7 +285,7 @@ class ViewMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMove
                 getMovementResponseModel,
                 SubNavigationTab.values,
                 Delivery,
-                helper.movementCard(Delivery, getMovementResponseModel).futureValue,
+                helper.movementCard(Some(Delivery), getMovementResponseModel).futureValue,
                 Seq.empty[TimelineEvent]
               ).toString()
             )

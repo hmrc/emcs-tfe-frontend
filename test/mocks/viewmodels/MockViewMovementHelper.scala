@@ -35,8 +35,8 @@ trait MockViewMovementHelper extends MockFactory {
 
   object MockViewMovementHelper {
 
-    def movementCard(returns: Html = Html("")): CallHandler6[SubNavigationTab, GetMovementResponse, DataRequest[_], Messages, HeaderCarrier, ExecutionContext, Future[Html]] =
-      (mockViewMovementHelper.movementCard(_ : SubNavigationTab, _ : GetMovementResponse)(_ :DataRequest[_], _: Messages, _: HeaderCarrier, _: ExecutionContext))
+    def movementCard(returns: Html = Html("")): CallHandler6[Option[SubNavigationTab], GetMovementResponse, DataRequest[_], Messages, HeaderCarrier, ExecutionContext, Future[Html]] =
+      (mockViewMovementHelper.movementCard(_ : Option[SubNavigationTab], _ : GetMovementResponse)(_ :DataRequest[_], _: Messages, _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *, *, *, *, *)
         .returns(Future(returns))
   }

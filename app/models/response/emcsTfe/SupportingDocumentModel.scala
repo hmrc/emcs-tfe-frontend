@@ -18,8 +18,6 @@ package models.response.emcsTfe
 
 import play.api.libs.json.{Json, OFormat}
 
-import scala.xml.Elem
-
 case class SupportingDocumentModel(
                                     supportingDocumentDescription: Option[String],
                                     referenceOfSupportingDocument: Option[String],

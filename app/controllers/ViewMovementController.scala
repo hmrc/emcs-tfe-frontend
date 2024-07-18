@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Logging
 import viewmodels._
 import viewmodels.helpers.{TimelineHelper, ViewMovementHelper}
-import views.html.viewMovement.ViewMovementView
+import views.html.viewMovement.{PrintMovementView, ViewMovementView}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -37,6 +37,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        val betaAllowList: BetaAllowListAction,
                                        getMovementService: GetMovementService,
                                        view: ViewMovementView,
+                                       printMovementView: PrintMovementView,
                                        errorHandler: ErrorHandler,
                                        helper: ViewMovementHelper,
                                        timelineHelper: TimelineHelper
@@ -73,7 +74,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
 
     authorisedDataRequestAsync(exciseRegistrationNumber, viewMovementBetaGuard(exciseRegistrationNumber, arc)) { implicit request =>
       getMovementService.getLatestMovementForLoggedInUser(exciseRegistrationNumber, arc).flatMap { movement =>
-        helper.movementCard(currentSubNavigationTab, movement).map { movementCard =>
+        helper.movementCard(Some(currentSubNavigationTab), movement).map { movementCard =>
 
           Ok(view(
             ern = exciseRegistrationNumber,
@@ -90,6 +91,24 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
       } recover {
         case e =>
           logger.warn(s"[onPageLoad][$exciseRegistrationNumber][$arc][$currentSubNavigationTab] Unexpected exception thrown of type ${e.getClass.getSimpleName.stripSuffix("$")}. Message: ${e.getMessage}")
+          InternalServerError(errorHandler.standardErrorTemplate())
+      }
+    }
+
+  def printMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
+    authorisedDataRequestAsync(exciseRegistrationNumber, viewMovementBetaGuard(exciseRegistrationNumber, arc)) { implicit request =>
+      getMovementService.getLatestMovementForLoggedInUser(exciseRegistrationNumber, arc).flatMap { movement =>
+        helper.movementCard(None, movement).map { movementCard =>
+          Ok(printMovementView(
+            ern = exciseRegistrationNumber,
+            arc = arc,
+            movement = movement,
+            movementBody = movementCard
+          ))
+        }
+      } recover {
+        case e =>
+          logger.warn(s"[onPageLoad][$exciseRegistrationNumber][$arc][Overview] Unexpected exception thrown of type ${e.getClass.getSimpleName.stripSuffix("$")}. Message: ${e.getMessage}")
           InternalServerError(errorHandler.standardErrorTemplate())
       }
     }

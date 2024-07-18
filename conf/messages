@@ -40,6 +40,12 @@ date.day = Day
 date.month = Month
 date.year = Year
 
+# Print movement
+printMovement.title = eAD for ARC: {0}
+printMovement.print = Print this movement
+printMovement.movementOverview.title = Movement
+printMovement.movementOverview.lrn = Local Reference Number (LRN)
+
 # MOV02 - Links
 viewMovement.title = Movement details
 viewMovement.reportAReceipt = Submit report of receipt
@@ -128,6 +134,11 @@ viewMovement.movement.timeAndDate.dateOfArrival = Date of arrival
 viewMovement.movement.invoice = Invoice
 viewMovement.movement.invoice.reference = Invoice reference
 viewMovement.movement.invoice.dateOfIssue = Invoice date of issue
+
+viewMovement.movement.items = Items
+viewMovement.movement.items.itemTitle = Item {0}
+viewMovement.movement.items.packagingTitleSingle = Packaging
+viewMovement.movement.items.packagingTitlePlural = Packaging {0}
 
 # MOV02 - Delivery
 viewMovement.delivery.title = Delivery details
@@ -233,7 +244,6 @@ viewMovement.guarantor.summary.type.234 = Joint guarantee of the transporter, of
 viewMovement.guarantor.summary.type.24 = Joint guarantee of the transporter and of the consignee
 viewMovement.guarantor.summary.type.34 = Joint guarantee of the owner of the Excise products and of the consignee
 viewMovement.guarantor.summary.subheading = Guarantor summary
-viewMovement.guarantor.summary.type = Type
 viewMovement.guarantor.summary.name = Name
 viewMovement.guarantor.summary.ern = Excise ID
 viewMovement.guarantor.summary.vat = VAT registration number
