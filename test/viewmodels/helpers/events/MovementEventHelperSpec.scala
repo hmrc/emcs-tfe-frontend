@@ -35,7 +35,7 @@ import models.response.referenceData.CnCodeInformation
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import utils.DateUtils
 import viewmodels.helpers.SummaryListHelper.summaryListRowBuilder
 import views.BaseSelectors
@@ -1452,6 +1452,19 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
 
         doc.select(Selectors.summaryListRowKey(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode
         doc.select(Selectors.summaryRowValue(2)).text() mustBe messagesForLanguage.ie839MovementRejectedByCustomsDiagnosisCode1
+      }
+
+      "render the correct HTML for no diagnosis" in {
+
+        val eventDetails = getMovementResponseModel.copy(
+          notificationOfCustomsRejection = Some(
+            getMovementResponseModel.notificationOfCustomsRejection.get.copy(
+              diagnoses = Seq()
+            )
+          )
+        ).notificationOfCustomsRejection.get
+
+        helper.customsRejectionDiagnosisCards(eventDetails) mustBe HtmlFormat.empty
       }
     }
   }
