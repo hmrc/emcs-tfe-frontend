@@ -35,6 +35,7 @@
         formHelper: FormWithCSRF,
         h1: h1,
         h2: h2,
+        hidden: hidden,
         p: p,
         link: link,
         govukPagination: GovukPagination,
@@ -64,12 +65,19 @@
         currentSearch: Option[String]
 )(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
 
-@heading = @{
+@heading(asPageTitle: Boolean = false) = @{
     if(showResultCount) {
+
+        val resultCount = if(asPageTitle) {
+            messages("viewAllDraftMovements.resultsFound", totalMovements)
+        } else {
+            hidden(messages("viewAllDraftMovements.resultsFound", totalMovements))
+        }
+
         currentSearch.fold{
-            messages("viewAllDraftMovements.heading.withCount", totalMovements)
+            s"$resultCount ${messages("viewAllDraftMovements.heading")}"
         } { search =>
-            messages("viewAllDraftMovements.heading.withSearch", totalMovements, search)
+            s"$resultCount ${messages("viewAllDraftMovements.heading.withSearch", search)}"
         }
     } else {
         messages("viewAllDraftMovements.heading")
@@ -105,7 +113,7 @@
 }
 
 @layout(
-    pageTitle = title(form, heading),
+    pageTitle = title(form, heading(asPageTitle = true)),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Drafts))),
     fullWidthContent = true
@@ -135,7 +143,8 @@
             </div>
         }
 
-        @h1()(Html(heading))
+        @h1()(Html(heading()))
+
 
         @link(
             link = appConfig.emcsTfeCreateMovementUrl(ern),

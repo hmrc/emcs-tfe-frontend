@@ -30,6 +30,7 @@
         formHelper: FormWithCSRF,
         h1: h1,
         h2: h2,
+        hidden: hidden,
         p: p,
         govukPagination: GovukPagination,
         govukSelect: GovukSelect,
@@ -62,17 +63,26 @@
         currentSearch: Option[String]
 )(implicit request: DataRequest[_], messages: Messages)
 
-@heading = @{
+@heading(asPageTitle: Boolean = false) = @{
+
     if(showResultCount) {
+
+        val resultCount = if(asPageTitle) {
+            messages("viewAllMovements.resultsFound", totalMovements)
+        } else {
+            hidden(messages("viewAllMovements.resultsFound", totalMovements))
+        }
+
         currentSearch.fold{
-            messages("viewAllMovements.heading.withCount", totalMovements)
+            s"$resultCount ${messages("viewAllMovements.heading")}"
         } { search =>
-            messages("viewAllMovements.heading.withSearch", totalMovements, search)
+            s"$resultCount ${messages("viewAllMovements.heading.withSearch", search)}"
         }
     } else {
         messages("viewAllMovements.heading")
     }
 }
+
 
 @searchFields = {
 
@@ -112,7 +122,7 @@
 }
 
 @layout(
-    pageTitle = title(form, heading),
+    pageTitle = title(form, heading(asPageTitle = true)),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Movements))),
     fullWidthContent = true
@@ -128,7 +138,7 @@
             }))
         }
 
-        @h1()(Html(heading))
+        @h1()(Html(heading()))
 
         @govukFieldset(Fieldset(
             legend = Some(Legend(
