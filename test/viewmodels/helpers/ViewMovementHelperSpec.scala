@@ -20,7 +20,6 @@ import base.SpecBase
 import config.AppConfig
 import fixtures.GetMovementResponseFixtures
 import mocks.services.MockGetDocumentTypesService
-import mocks.viewmodels.MockViewMovementDocumentHelper
 import models.DocumentType
 import models.MovementEadStatus._
 import models.common.DestinationType._
@@ -31,7 +30,6 @@ import models.requests.DataRequest
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Text, Value}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
@@ -50,20 +48,24 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
+  lazy val p: p = app.injector.instanceOf[p]
+  lazy val h2: h2 = app.injector.instanceOf[h2]
+  lazy val overview_partial: overview_partial = app.injector.instanceOf[overview_partial]
+
   val helper: ViewMovementHelper = new ViewMovementHelper(
-    app.injector.instanceOf[p],
-    app.injector.instanceOf[h2],
-    app.injector.instanceOf[overview_partial],
+    p,
+    h2,
+    overview_partial,
     app.injector.instanceOf[ViewMovementItemsHelper],
     app.injector.instanceOf[ViewMovementTransportHelper],
     app.injector.instanceOf[ViewMovementGuarantorHelper],
     app.injector.instanceOf[ViewMovementOverviewHelper],
     app.injector.instanceOf[ViewMovementDeliveryHelper],
     new ViewMovementDocumentHelper(
-      app.injector.instanceOf[h2],
+      h2,
       app.injector.instanceOf[summaryCard],
-      app.injector.instanceOf[overview_partial],
-      app.injector.instanceOf[p],
+      overview_partial,
+      p,
       mockGetDocumentTypesService
     ),
     app.injector.instanceOf[ItemDetailsCardHelper],
@@ -99,7 +101,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
       ).foreach {
         case (subNavigationTab, expectedTitle) =>
           s"the subNavigationTab is $subNavigationTab" in {
-            if(subNavigationTab == Documents) {
+            if (subNavigationTab == Documents) {
               MockGetDocumentTypesService.getDocumentTypes().returns(Future.successful(Seq(DocumentType("1", "Document type description"))))
             }
             val result = await(helper.movementCard(Some(subNavigationTab), getMovementResponseModel))

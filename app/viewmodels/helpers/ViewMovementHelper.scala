@@ -32,7 +32,7 @@ import utils.ExpectedDateOfArrival
 import viewmodels._
 import viewmodels.helpers.SummaryListHelper._
 import viewmodels.helpers.events.MovementEventHelper
-import views.html.components.{h2, p, summaryCard}
+import views.html.components.{h2, p}
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
