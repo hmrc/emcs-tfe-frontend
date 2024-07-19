@@ -31,9 +31,6 @@ object ViewAllDraftMovementsMessages {
     def headingWithCount(count: Int): String = s"$count results found - Drafts"
     def titleWithCount(count: Int): String = titleHelper(headingWithCount(count))
 
-    def headingWithSearch(count: Int, search: String): String = s"$count results found - Search results for $search"
-    def titleWithSearch(count: Int, search: String): String = titleHelper(headingWithSearch(count, search))
-
     def dateOfDispatch(string: String): String = s"Date of dispatch: $string"
     val sortByLabel = "Sort by"
     val sortByButton = "Sort movements"
