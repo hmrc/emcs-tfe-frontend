@@ -19,7 +19,7 @@ package forms.prevalidate
 import forms.behaviours.FieldBehaviours
 import forms.mappings.Mappings
 import forms.{EXCISE_NUMBER_REGEX, XSS_REGEX}
-import models.prevalidate.EntityGroup
+import models.prevalidate.{EntityGroup, PrevalidateTraderModel}
 import play.api.data.{Form, FormError}
 
 class PrevalidateConsigneeTraderIdentificationFormProviderSpec extends FieldBehaviours with Mappings {
@@ -56,6 +56,17 @@ class PrevalidateConsigneeTraderIdentificationFormProviderSpec extends FieldBeha
       fieldName,
       formatError = FormError(fieldName, invalidCharactersKey, Seq(XSS_REGEX))
     )
+
+    "must transform the inputted ERN to uppercase" in {
+      val result = form.bind(Map("ern" -> "gb00123456789", "entityGroup" -> "UK Record")).get
+      result mustBe PrevalidateTraderModel("GB00123456789", EntityGroup.UKTrader)
+    }
+
+    "must transform the inputted ERN removing any spaces" in {
+      val result = form.bind(Map("ern" -> "GB 0012 3456 789", "entityGroup" -> "UK Record")).get
+      result mustBe PrevalidateTraderModel("GB00123456789", EntityGroup.UKTrader)
+    }
+
   }
 
     ".entityGroup" - {
