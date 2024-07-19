@@ -24,6 +24,10 @@ trait Logging {
   private lazy val loggerName: String = this.getClass.getName.stripSuffix("$")
   private lazy val className: String = this.getClass.getSimpleName.stripSuffix("$")
 
+  object PagerDutyTrigger {
+    val invalidUserType = "INVALID_USER_TYPE"
+  }
+
   val logger: LoggerLike = new LoggerLike {
 
     private lazy val prefixLog: String => String = msg =>

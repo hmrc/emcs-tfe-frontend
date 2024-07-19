@@ -36,6 +36,7 @@ import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 @Singleton
 class ViewMovementHelper @Inject()(
@@ -90,7 +91,7 @@ class ViewMovementHelper @Inject()(
       }
     }
     val receiptStatus = optReceiptStatusMessage.map(statusMessage => summaryListRowBuilder("viewMovement.movement.summary.receiptStatus", statusMessage))
-    val movementType = summaryListRowBuilder("viewMovement.movement.summary.type", movementTypeValue)
+    val movementType = movementTypeValue.map(mov => summaryListRowBuilder("viewMovement.movement.summary.type", mov))
     val movementDirection = summaryListRowBuilder(
       "viewMovement.movement.summary.direction",
       s"viewMovement.movement.summary.direction.${if (userRole.isConsignor(appConfig)) "out" else "in"}"
@@ -118,7 +119,7 @@ class ViewMovementHelper @Inject()(
             Some(localReferenceNumber),
             eadStatus,
             receiptStatus,
-            Some(movementType),
+            movementType,
             Some(movementDirection)
           ).flatten
         ),
@@ -155,8 +156,8 @@ class ViewMovementHelper @Inject()(
   }
 
   //scalastyle:off cyclomatic.complexity line.size.limit
-  private[helpers] def getMovementTypeForMovementView(movementResponse: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): String = {
-    (request.userTypeFromErn, MovementScenario.getMovementScenarioFromMovement(movementResponse)) match {
+  private[helpers] def getMovementTypeForMovementView(movementResponse: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Option[String] = {
+    Try((request.userTypeFromErn, MovementScenario.getMovementScenarioFromMovement(movementResponse)) match {
       case (GBWK, taxWarehouse@(UkTaxWarehouse.GB | UkTaxWarehouse.NI)) =>
         messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.1.$taxWarehouse"))
 
@@ -190,9 +191,9 @@ class ViewMovementHelper @Inject()(
         messages(s"viewMovement.movement.summary.type.dutyPaid.$destinationType")
 
       case (userType, destinationType) =>
-        logger.error(s"[constructMovementView] invalid UserType and movement scenario combination for MOV journey: $userType | $destinationType")
+        logger.error(s"[constructMovementView][${PagerDutyTrigger.invalidUserType}] invalid UserType and movement scenario combination for MOV journey: $userType | $destinationType")
         throw InvalidUserTypeException(s"[ViewMovementHelper][constructMovementView][getMovementTypeForMovementView] invalid UserType and movement scenario combination for MOV journey: $userType | $destinationType")
-    }
+    }).toOption
   }
   //scalastyle:on
 

@@ -143,6 +143,48 @@ class GetMovementServiceSpec extends SpecBase
                 }
               }
 
+              "when no movement history returned (use None as sequence)" must {
+                "return successful movement with the packaging and unit of measure added to the response" in {
+
+                  MockEmcsTfeConnector.getMovement(testErn, testArc, None)
+                    .returns(Future.successful(Right(getMovementResponseModel.copy(items = movementItems))))
+
+                  MockGetMovementHistoryEventsService.getMovementHistoryEvents(testErn, testArc)
+                    .returns(Future.successful(Seq())).anyNumberOfTimes()
+
+                  MockGetWineOperationsService.getWineOperations(movementItems)
+                    .returns(Future.successful(movementItemsWithWineOperations))
+
+                  MockGetPackagingTypesService.getMovementItemsWithPackagingTypes(movementItemsWithWineOperations)
+                    .returns(Future.successful(movementItemsWithWineAndPackaging))
+
+                  MockGetCnCodeInformationService.getCnCodeInformation(movementItemsWithWineAndPackaging)
+                    .returns(Future.successful(Seq(
+                      item1WithWineAndPackaging -> CnCodeInformation(
+                        cnCode = "T400",
+                        cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+                        exciseProductCode = "24029000",
+                        exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+                        unitOfMeasure = Kilograms
+                      ),
+                      item2WithWineAndPackaging -> CnCodeInformation(
+                        cnCode = "T400",
+                        cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+                        exciseProductCode = "24029000",
+                        exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+                        unitOfMeasure = Kilograms
+                      )
+                    )))
+
+                  testService.getLatestMovementForLoggedInUser(testErn, testArc)(hc).futureValue mustBe getMovementResponseModel.copy(items = Seq(
+                    item1WithWineAndPackagingAndCnCodeInfo,
+                    item2WithWineAndPackagingAndCnCodeInfo
+                  ),
+                    eventHistorySummary = None
+                  )
+                }
+              }
+
             }
 
             "Reference Data returns failure for CnCodeInformation" must {

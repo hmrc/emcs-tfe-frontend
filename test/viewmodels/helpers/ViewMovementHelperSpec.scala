@@ -29,9 +29,11 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Text, Value}
+import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
+import utils.Logging
 import views.BaseSelectors
 
-class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
+class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures with LogCapturing with Logging {
 
   implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"))
 
@@ -160,7 +162,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           ))
         ))
 
-        result mustBe "Great Britain tax warehouse to Great Britain tax warehouse"
+        result mustBe Some("Great Britain tax warehouse to Great Britain tax warehouse")
       }
 
       "the users ERN starts with GBWK and the movement scenario is NI Tax Warehouse " +
@@ -181,7 +183,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           ))
         ))
 
-        result mustBe "Great Britain tax warehouse to Northern Ireland tax warehouse"
+        result mustBe Some("Great Britain tax warehouse to Northern Ireland tax warehouse")
       }
     }
 
@@ -212,7 +214,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
-          result mustBe destinationTypeToMessage._2
+          result mustBe Some(destinationTypeToMessage._2)
         }
 
       }
@@ -245,7 +247,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
-          result mustBe destinationTypeToMessage._2
+          result mustBe Some(destinationTypeToMessage._2)
         }
 
       }
@@ -279,7 +281,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
-          result mustBe message
+          result mustBe Some(message)
         }
 
       }
@@ -314,7 +316,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
               ))
             ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
-            result mustBe message
+            result mustBe Some(message)
           }
 
           "placeOfDispatchTrader is missing" in {
@@ -323,7 +325,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
               placeOfDispatchTrader = None
             ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
-            result mustBe message
+            result mustBe Some(message)
           }
         }
 
@@ -336,14 +338,14 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
         val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
           destinationType = RegisteredConsignee
         ))(dataRequest(FakeRequest("GET", "/"), ern = "GBRC123456789"), implicitly)
-        result mustBe "Import for Registered consignee"
+        result mustBe Some("Import for Registered consignee")
       }
 
       "the users ERN starts with XIRC" in {
         val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
           destinationType = RegisteredConsignee
         ))(dataRequest(FakeRequest("GET", "/"), ern = "XIRC123456789"), implicitly)
-        result mustBe "Import for Registered consignee"
+        result mustBe Some("Import for Registered consignee")
       }
 
     }
@@ -355,7 +357,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           deliveryPlaceCustomsOfficeReferenceNumber = Some("GBWK123456789"),
           destinationType = Export
         ))(dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789"), implicitly)
-        result mustBe "Export with customs declaration lodged in the United Kingdom"
+        result mustBe Some("Export with customs declaration lodged in the United Kingdom")
       }
 
       "the users ERN starts with GBWK and the movement type is an Export (Customs declaration in EU)" in {
@@ -363,7 +365,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           deliveryPlaceCustomsOfficeReferenceNumber = Some("FR123456789"),
           destinationType = Export
         ))(dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789"), implicitly)
-        result mustBe "Export with customs declaration lodged in the European Union"
+        result mustBe Some("Export with customs declaration lodged in the European Union")
       }
 
       "the users ERN starts with XIWK and the movement type is an Export (Customs declaration in UK)" in {
@@ -371,7 +373,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           deliveryPlaceCustomsOfficeReferenceNumber = Some("GBWK123456789"),
           destinationType = Export
         ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
-        result mustBe "Export with customs declaration lodged in the United Kingdom"
+        result mustBe Some("Export with customs declaration lodged in the United Kingdom")
       }
 
       "the users ERN starts with XIWK and the movement type is an Export (Customs declaration in EU)" in {
@@ -379,7 +381,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           deliveryPlaceCustomsOfficeReferenceNumber = Some("FR123456789"),
           destinationType = Export
         ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
-        result mustBe "Export with customs declaration lodged in the European Union"
+        result mustBe Some("Export with customs declaration lodged in the European Union")
       }
     }
 
@@ -391,21 +393,21 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = CertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe "Northern Ireland tax warehouse to certified consignee"
+          result mustBe Some("Northern Ireland tax warehouse to certified consignee")
         }
 
         "DestinationType is TemporaryRegisteredConsignee" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = TemporaryCertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe "Northern Ireland tax warehouse to temporary certified consignee"
+          result mustBe Some("Northern Ireland tax warehouse to temporary certified consignee")
         }
 
         "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = ReturnToThePlaceOfDispatchOfTheConsignor
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe "Return to place of dispatch"
+          result mustBe Some("Return to place of dispatch")
         }
       }
 
@@ -415,31 +417,35 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = CertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe "Northern Ireland tax warehouse to certified consignee"
+          result mustBe Some("Northern Ireland tax warehouse to certified consignee")
         }
 
         "DestinationType is TemporaryRegisteredConsignee" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = TemporaryCertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe "Northern Ireland tax warehouse to temporary certified consignee"
+          result mustBe Some("Northern Ireland tax warehouse to temporary certified consignee")
         }
 
         "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = ReturnToThePlaceOfDispatchOfTheConsignor
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe "Return to place of dispatch"
+          result mustBe Some("Return to place of dispatch")
         }
       }
     }
 
-    "throw an exception when the user type / destination type can't be matched" in {
-      lazy val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
-        deliveryPlaceTrader = None,
-        destinationType = TaxWarehouse
-      ))(dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789"), implicitly)
-      intercept[InvalidUserTypeException](result).message mustBe s"[ViewMovementHelper][constructMovementView][getMovementTypeForMovementView] invalid UserType and movement scenario combination for MOV journey: $GBWK | $EuTaxWarehouse"
+    "return None when the user type / destination type can't be matched and trigger PagerDuty" in {
+      withCaptureOfLoggingFrom(helper.logger) { logs =>
+        lazy val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+          deliveryPlaceTrader = None,
+          destinationType = TaxWarehouse
+        ))(dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789"), implicitly)
+
+        result mustBe None
+        logs.head.getMessage mustBe s"[ViewMovementHelper][constructMovementView][${PagerDutyTrigger.invalidUserType}] invalid UserType and movement scenario combination for MOV journey: $GBWK | $EuTaxWarehouse"
+      }
     }
   }
 
