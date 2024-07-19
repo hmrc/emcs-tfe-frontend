@@ -57,7 +57,7 @@ class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
       } yield {
         movement.copy(
           items = itemsWithWineAndPackagingAndCnCodeInfo,
-          eventHistorySummary = Some(historyEvents)
+          eventHistorySummary = Option.when(historyEvents.nonEmpty)(historyEvents)
         )
       }
     }
@@ -69,8 +69,8 @@ class GetMovementService @Inject()(getMovementConnector: GetMovementConnector,
         getMovement(
           ern = ern,
           arc = arc,
-          sequenceNumber = Some( historyEvents.map(_.sequenceNumber).max ),
-          historyEvents = Some(historyEvents)
+          sequenceNumber = Option.when(historyEvents.nonEmpty)(historyEvents.map(_.sequenceNumber).max),
+          historyEvents = Option.when(historyEvents.nonEmpty)(historyEvents)
         )
     }
 }
