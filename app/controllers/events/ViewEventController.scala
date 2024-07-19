@@ -154,7 +154,8 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
                                                      (implicit request: DataRequest[_]): Future[Result] = {
     val ie881ItemModelWithCnCodeInformationFuture: Future[Seq[IE881ItemModelWithCnCodeInformation]] = if (eventType == IE881) {
       (for {
-        manualClosure <- movement.manualClosureResponse.get.bodyManualClosure
+        manualClosureResponse <- movement.manualClosureResponse
+        manualClosure <- manualClosureResponse.bodyManualClosure
       } yield {
         getCnCodeInformationService.getCnCodeInformation(movement.items).map {
           _.flatMap {

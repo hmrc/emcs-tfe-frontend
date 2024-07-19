@@ -44,7 +44,6 @@ class ViewMovementHelper @Inject()(
                                     p: p,
                                     h2: h2,
                                     overviewPartial: overview_partial,
-                                    summaryCard: summaryCard,
                                     viewMovementItemsHelper: ViewMovementItemsHelper,
                                     viewMovementTransportHelper: ViewMovementTransportHelper,
                                     viewMovementGuarantorHelper: ViewMovementGuarantorHelper,

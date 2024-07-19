@@ -123,7 +123,7 @@ class MovementEventHelper @Inject()(
   }
 
   def closureDocumentsInformationCard(documentTypes: Seq[DocumentType])(implicit movement: GetMovementResponse, messages: Messages): Html = {
-    movement.manualClosureResponse.get.supportingDocuments.map { documents =>
+    movement.manualClosureResponse.map(_.supportingDocuments.map { documents =>
       val documentCards = documents.zipWithIndex.map {
         case (document, index) =>
           val documentTypeDescription = document.supportingDocumentType.flatMap(documentType => documentTypes.find(_.code == documentType).map(_.description)).getOrElse("Not provided")
@@ -151,7 +151,7 @@ class MovementEventHelper @Inject()(
           messages("movementHistoryEvent.IE881.notProvided")
         )),
       )
-    ))
+    ))).getOrElse(Html(""))
   }
 
   def manualClosureItemsCard(event: MovementHistoryEvent, ie881ItemModelWithCnCodeInformation: Seq[IE881ItemModelWithCnCodeInformation])

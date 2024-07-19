@@ -17,7 +17,11 @@
 package viewmodels.helpers
 
 import base.SpecBase
+import config.AppConfig
 import fixtures.GetMovementResponseFixtures
+import mocks.services.MockGetDocumentTypesService
+import mocks.viewmodels.MockViewMovementDocumentHelper
+import models.DocumentType
 import models.MovementEadStatus._
 import models.common.DestinationType._
 import models.common.RoleType.GBWK
@@ -27,22 +31,46 @@ import models.requests.DataRequest
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
+import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Text, Value}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
 import utils.Logging
 import viewmodels._
+import viewmodels.helpers.events.MovementEventHelper
 import views.BaseSelectors
+import views.html.components.{h2, p, summaryCard}
+import views.html.viewMovement.partials.overview_partial
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures with LogCapturing with Logging {
+class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures with LogCapturing with Logging with MockGetDocumentTypesService {
 
   implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"))
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
-  val helper: ViewMovementHelper = app.injector.instanceOf[ViewMovementHelper]
+  val helper: ViewMovementHelper = new ViewMovementHelper(
+    app.injector.instanceOf[p],
+    app.injector.instanceOf[h2],
+    app.injector.instanceOf[overview_partial],
+    app.injector.instanceOf[ViewMovementItemsHelper],
+    app.injector.instanceOf[ViewMovementTransportHelper],
+    app.injector.instanceOf[ViewMovementGuarantorHelper],
+    app.injector.instanceOf[ViewMovementOverviewHelper],
+    app.injector.instanceOf[ViewMovementDeliveryHelper],
+    new ViewMovementDocumentHelper(
+      app.injector.instanceOf[h2],
+      app.injector.instanceOf[summaryCard],
+      app.injector.instanceOf[overview_partial],
+      app.injector.instanceOf[p],
+      mockGetDocumentTypesService
+    ),
+    app.injector.instanceOf[ItemDetailsCardHelper],
+    app.injector.instanceOf[ItemPackagingCardHelper],
+    app.injector.instanceOf[MovementEventHelper],
+    appConfig: AppConfig
+  )
   implicit lazy val messages: Messages = messages(request)
 
   object Selectors extends BaseSelectors {
@@ -71,6 +99,9 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
       ).foreach {
         case (subNavigationTab, expectedTitle) =>
           s"the subNavigationTab is $subNavigationTab" in {
+            if(subNavigationTab == Documents) {
+              MockGetDocumentTypesService.getDocumentTypes().returns(Future.successful(Seq(DocumentType("1", "Document type description"))))
+            }
             val result = await(helper.movementCard(Some(subNavigationTab), getMovementResponseModel))
             val doc = Jsoup.parse(result.toString())
             doc.select(Selectors.h2(1)).text() mustBe expectedTitle
@@ -78,6 +109,8 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
       }
 
       "the subNavigationTab is None" in {
+        MockGetDocumentTypesService.getDocumentTypes().returns(Future.successful(Seq(DocumentType("1", "Document type description"))))
+
         val result = await(helper.movementCard(
           None,
           getMovementResponseModel.copy(
