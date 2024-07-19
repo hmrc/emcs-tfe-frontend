@@ -123,7 +123,7 @@ class MovementEventHelper @Inject()(
   }
 
   def closureDocumentsInformationCard(documentTypes: Seq[DocumentType])(implicit movement: GetMovementResponse, messages: Messages): Html = {
-    movement.manualClosureResponse.get.supportingDocuments.map { documents =>
+    movement.manualClosureResponse.map(_.supportingDocuments.map { documents =>
       val documentCards = documents.zipWithIndex.map {
         case (document, index) =>
           val documentTypeDescription = document.supportingDocumentType.flatMap(documentType => documentTypes.find(_.code == documentType).map(_.description)).getOrElse("Not provided")
@@ -151,7 +151,7 @@ class MovementEventHelper @Inject()(
           messages("movementHistoryEvent.IE881.notProvided")
         )),
       )
-    ))
+    ))).getOrElse(Html(""))
   }
 
   def manualClosureItemsCard(event: MovementHistoryEvent, ie881ItemModelWithCnCodeInformation: Seq[IE881ItemModelWithCnCodeInformation])
@@ -227,12 +227,13 @@ class MovementEventHelper @Inject()(
     }.getOrElse(Html(""))
   }
 
-  def importInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
+  def importInformationCard(isLargeHeading: Boolean = false)(implicit movement: GetMovementResponse, messages: Messages): Html = {
     movement.dispatchImportOfficeReferenceNumber.map { officeCode =>
 
       buildOverviewPartial(
         headingTitle = Some("movementCreatedView.section.import"),
         headingId = Some("import-information-heading"),
+        headingMessageClass = if(isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9",
         summaryListRows = Seq(
           Some(summaryListRowBuilder("movementCreatedView.section.import.customsOfficeCode", officeCode))
         ),
@@ -268,7 +269,7 @@ class MovementEventHelper @Inject()(
     }.getOrElse(Html(""))
   }
 
-  def exemptedOrganisationInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
+  def exemptedOrganisationInformationCard(isLargeHeading: Boolean = false)(implicit movement: GetMovementResponse, messages: Messages): Html = {
     val memberState = movement.memberStateCode.map(summaryListRowBuilder("movementCreatedView.section.exemptedConsignee.memberState", _))
     val serialNumber = movement.serialNumberOfCertificateOfExemption.map(summaryListRowBuilder("movementCreatedView.section.exemptedConsignee.serialNumber", _))
 
@@ -276,6 +277,7 @@ class MovementEventHelper @Inject()(
       buildOverviewPartial(
         headingTitle = Some("movementCreatedView.section.exemptedConsignee"),
         headingId = Some("exempted-organisation-information-heading"),
+        headingMessageClass = if(isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9",
         summaryListRows = Seq(memberState, serialNumber),
         summaryListAttributes = Map("id" -> "exempted-organisation-information-summary")
       )
@@ -300,11 +302,12 @@ class MovementEventHelper @Inject()(
     }.getOrElse(Html(""))
   }
 
-  def exportInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
+  def exportInformationCard(isLargeHeading: Boolean = false)(implicit movement: GetMovementResponse, messages: Messages): Html = {
     movement.deliveryPlaceCustomsOfficeReferenceNumber.map { officeCode =>
       buildOverviewPartial(
         headingTitle = Some("movementCreatedView.section.export"),
         headingId = Some("export-information-heading"),
+        headingMessageClass = if(isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9",
         summaryListRows = Seq(
           Some(summaryListRowBuilder("movementCreatedView.section.export.customsOfficeCode", officeCode))
         ),
@@ -417,11 +420,12 @@ class MovementEventHelper @Inject()(
 
   }
 
-  def sadInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
+  def sadInformationCard(isSummaryCard: Boolean = true, isLargeHeading: Boolean = false)(implicit movement: GetMovementResponse, messages: Messages): Html = {
     movement.eadEsad.importSadNumber.map { sadNumbers =>
 
       val sadCards = sadNumbers.zipWithIndex.map {
         case (sad, index) =>
+          if(isSummaryCard) {
           buildOverviewPartial(
             cardTitleMessageKey = Some(messages("movementCreatedView.section.sad.heading", index + 1)),
             summaryListRows = Seq(
@@ -429,11 +433,21 @@ class MovementEventHelper @Inject()(
             ),
             summaryListAttributes = Map("id" -> s"sad-information-summary-${index + 1}")
           )
+          } else {
+            buildOverviewPartial(
+              headingTitle = Some(messages("movementCreatedView.section.sad.heading", index + 1)),
+              headingLevel = 3,
+              summaryListRows = Seq(
+                Some(summaryListRowBuilder("movementCreatedView.section.sad.importNumber", sad))
+              ),
+              summaryListAttributes = Map("id" -> s"sad-information-summary-${index + 1}")
+            )
+          }
       }
 
       HtmlFormat.fill(
         Seq(
-          h2(messages("movementCreatedView.section.sads.heading"), classes = "govuk-heading-m govuk-!-margin-top-9", id = Some("sad-information-heading"))
+          h2(messages("movementCreatedView.section.sads.heading"), classes = if(isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9", id = Some("sad-information-heading"))
         ) ++ sadCards
       )
 

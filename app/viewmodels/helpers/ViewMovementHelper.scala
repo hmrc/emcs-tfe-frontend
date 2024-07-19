@@ -31,7 +31,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.ExpectedDateOfArrival
 import viewmodels._
 import viewmodels.helpers.SummaryListHelper._
-import views.html.components.p
+import viewmodels.helpers.events.MovementEventHelper
+import views.html.components.{h2, p}
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
@@ -41,6 +42,7 @@ import scala.util.Try
 @Singleton
 class ViewMovementHelper @Inject()(
                                     p: p,
+                                    h2: h2,
                                     overviewPartial: overview_partial,
                                     viewMovementItemsHelper: ViewMovementItemsHelper,
                                     viewMovementTransportHelper: ViewMovementTransportHelper,
@@ -48,20 +50,47 @@ class ViewMovementHelper @Inject()(
                                     viewMovementOverviewHelper: ViewMovementOverviewHelper,
                                     viewMovementDeliveryHelper: ViewMovementDeliveryHelper,
                                     viewMovementDocumentHelper: ViewMovementDocumentHelper,
+                                    itemDetailsCardHelper: ItemDetailsCardHelper,
+                                    itemPackagingCardHelper: ItemPackagingCardHelper,
+                                    movementEventHelper: MovementEventHelper,
                                     appConfig: AppConfig) extends ExpectedDateOfArrival {
 
-  def movementCard(subNavigationTab: SubNavigationTab, movementResponse: GetMovementResponse)
+  def movementCard(subNavigationTab: Option[SubNavigationTab], movementResponse: GetMovementResponse)
                   (implicit request: DataRequest[_], messages: Messages, hc: HeaderCarrier, ec: ExecutionContext): Future[Html] =
 
     subNavigationTab match {
-      case Overview => Future(viewMovementOverviewHelper.constructMovementOverview(movementResponse))
-      case Movement => Future(constructMovementView(movementResponse))
-      case Delivery => Future(viewMovementDeliveryHelper.constructMovementDelivery(movementResponse))
-      case Transport => Future(viewMovementTransportHelper.constructMovementTransport(movementResponse))
-      case Items => Future(viewMovementItemsHelper.constructMovementItems(movementResponse))
-      case Guarantor => Future(viewMovementGuarantorHelper.constructMovementGuarantor(movementResponse))
-      case Documents => viewMovementDocumentHelper.constructMovementDocument(movementResponse)
-      case _ => Future(Html(""))
+      case Some(Overview) => Future(viewMovementOverviewHelper.constructMovementOverview(movementResponse))
+      case Some(Movement) => Future(constructMovementView(movementResponse))
+      case Some(Delivery) => Future(viewMovementDeliveryHelper.constructMovementDelivery(movementResponse))
+      case Some(Transport) => Future(viewMovementTransportHelper.constructMovementTransport(movementResponse, transportUnitsAreSummaryCards = true))
+      case Some(Items) => Future(viewMovementItemsHelper.constructMovementItems(movementResponse))
+      case Some(Guarantor) => Future(viewMovementGuarantorHelper.constructMovementGuarantor(movementResponse))
+      case Some(Documents) => viewMovementDocumentHelper.constructMovementDocument(movementResponse, isSummaryCard = true)
+      case _ => for {
+        movement <- Future.successful(constructMovementView(movementResponse))
+        delivery <- Future.successful(viewMovementDeliveryHelper.constructMovementDelivery(movementResponse))
+        transport <- Future.successful(viewMovementTransportHelper.constructMovementTransport(movementResponse, transportUnitsAreSummaryCards = false))
+        guarantor <- Future.successful(viewMovementGuarantorHelper.constructMovementGuarantor(movementResponse, isSummaryCard = false, headingMessageClass = Some("govuk-heading-l")))
+        exemptedOrganisation <- Future.successful(movementEventHelper.exemptedOrganisationInformationCard(isLargeHeading = true)(movementResponse, messages))
+        export <- Future.successful(movementEventHelper.exportInformationCard(isLargeHeading = true)(movementResponse, messages))
+        importInfo <- Future.successful(movementEventHelper.importInformationCard(isLargeHeading = true)(movementResponse, messages))
+        sad <- Future.successful(movementEventHelper.sadInformationCard(isSummaryCard = false, isLargeHeading = true)(movementResponse, messages))
+        documents <- viewMovementDocumentHelper.constructMovementDocument(movementResponse, isSummaryCard = false)
+        items <- Future.successful(constructDetailedItems(movementResponse))
+      } yield {
+        HtmlFormat.fill(Seq(
+          movement,
+          delivery,
+          transport,
+          guarantor,
+          exemptedOrganisation,
+          export,
+          importInfo,
+          sad,
+          documents,
+          items
+        ))
+      }
     }
 
   //scalastyle:off method.length
@@ -165,9 +194,9 @@ class ViewMovementHelper @Inject()(
         movementResponse.placeOfDispatchTrader match {
           case Some(placeOfDispatch) => placeOfDispatch.traderExciseNumber match {
             case Some(dispatchErn) =>
-              if(isGB(dispatchErn)) {
+              if (isGB(dispatchErn)) {
                 messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-              } else if(isXI(dispatchErn)) {
+              } else if (isXI(dispatchErn)) {
                 messages("viewMovement.movement.summary.type.niTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
               } else {
                 messages("viewMovement.movement.summary.type.nonUkMovementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
@@ -196,5 +225,37 @@ class ViewMovementHelper @Inject()(
     }).toOption
   }
   //scalastyle:on
+
+  private[helpers] def constructDetailedItems(movement: GetMovementResponse)(implicit messages: Messages): Html = {
+    HtmlFormat.fill(Seq(
+      Seq(h2("viewMovement.movement.items", classes = "govuk-heading-l")),
+      movement.items.zipWithIndex.flatMap { case (item, i) =>
+        val packagingHtml: Seq[Html] = item.packaging.zipWithIndex.map { case (packaging, i) =>
+          HtmlFormat.fill(Seq(
+            overviewPartial(
+              headingMessageKey = if (i == 0) {
+                Some(messages("viewMovement.movement.items.packagingTitleSingle"))
+              }
+              else {
+                Some(messages("viewMovement.movement.items.packagingTitlePlural", i + 1))
+              },
+              headingLevel = 4,
+              headingMessageClass = "govuk-heading-s",
+              cardTitleMessageKey = None,
+              summaryListRows = itemPackagingCardHelper.constructPackagingTypeCard(packaging)
+            )
+          ))
+        }
+        Seq(overviewPartial(
+          headingMessageKey = Some(messages("viewMovement.movement.items.itemTitle", i + 1)),
+          headingLevel = 3,
+          headingMessageClass = "govuk-heading-m",
+          cardTitleMessageKey = None,
+          summaryListRows = itemDetailsCardHelper.constructItemDetailsCard(item, cnCodeHasLink = false),
+        )) ++ packagingHtml
+      },
+    ).flatten
+    )
+  }
 
 }

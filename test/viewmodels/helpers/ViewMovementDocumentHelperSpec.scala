@@ -26,7 +26,8 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.govuk.TagFluency
-import views.html.components.{h2, summaryCard}
+import views.html.components.{h2, p, summaryCard}
+import views.html.viewMovement.partials.overview_partial
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -34,7 +35,9 @@ import scala.concurrent.Future
 class ViewMovementDocumentHelperSpec extends SpecBase with GetMovementResponseFixtures with TagFluency with MockGetDocumentTypesService {
   lazy val h2: h2 = app.injector.instanceOf[h2]
   lazy val summaryCard: summaryCard = app.injector.instanceOf[summaryCard]
-  lazy val helper: ViewMovementDocumentHelper = new ViewMovementDocumentHelper(h2, summaryCard, mockGetDocumentTypesService)
+  lazy val p: p = app.injector.instanceOf[p]
+  lazy val overviewPartial: overview_partial = app.injector.instanceOf[overview_partial]
+  lazy val helper: ViewMovementDocumentHelper = new ViewMovementDocumentHelper(h2, summaryCard, overviewPartial, p, mockGetDocumentTypesService)
 
   val movementResponseWithReferenceData: GetMovementResponse = getMovementResponseModel
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -48,13 +51,13 @@ class ViewMovementDocumentHelperSpec extends SpecBase with GetMovementResponseFi
 
           "return a summary card from the movement formatted with the correct wording" in {
             MockGetDocumentTypesService.getDocumentTypes().returns(Future.successful(Seq(DocumentType("1","Document type description"), DocumentType("2", "Document type description 2"))))
-            val result = Jsoup.parse(await(helper.constructMovementDocument(movementResponseWithReferenceData)).toString())
+            val result = Jsoup.parse(await(helper.constructMovementDocument(movementResponseWithReferenceData, true)).toString())
 
             result.getElementsByTag("h2").get(0).text mustBe messagesForLang.documentDetailsHeading
             val summaryCards = result.getElementsByClass("govuk-summary-card")
 
             val documentSummaryCard = summaryCards.get(0)
-            documentSummaryCard.getElementsByTag("h2").text mustBe messagesForLang.documentSummaryHeading(1)
+            documentSummaryCard.getElementsByTag("h3").text mustBe messagesForLang.documentSummaryHeading(1)
             val documentSummaryCardRows = documentSummaryCard.getElementsByClass("govuk-summary-list__row")
             documentSummaryCardRows.get(0).getElementsByTag("dt").text() mustBe messagesForLang.documentType
             documentSummaryCardRows.get(0).getElementsByTag("dd").text() mustBe "Document type description"
@@ -64,7 +67,7 @@ class ViewMovementDocumentHelperSpec extends SpecBase with GetMovementResponseFi
             documentSummaryCardRows.get(2).getElementsByTag("dd").text() mustBe "Document description"
 
             val documentSummaryCard2 = summaryCards.get(1)
-            documentSummaryCard2.getElementsByTag("h2").text mustBe messagesForLang.documentSummaryHeading(2)
+            documentSummaryCard2.getElementsByTag("h3").text mustBe messagesForLang.documentSummaryHeading(2)
             val documentSummaryCardRows2 = documentSummaryCard2.getElementsByClass("govuk-summary-list__row")
             documentSummaryCardRows2.get(0).getElementsByTag("dt").text() mustBe messagesForLang.documentType
             documentSummaryCardRows2.get(0).getElementsByTag("dd").text() mustBe "Document type description 2"

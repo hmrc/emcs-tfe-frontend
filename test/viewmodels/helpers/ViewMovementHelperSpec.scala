@@ -17,27 +17,62 @@
 package viewmodels.helpers
 
 import base.SpecBase
+import config.AppConfig
 import fixtures.GetMovementResponseFixtures
+import mocks.services.MockGetDocumentTypesService
+import models.DocumentType
 import models.MovementEadStatus._
 import models.common.DestinationType._
 import models.common.RoleType.GBWK
 import models.common.{AddressModel, TraderModel}
 import models.movementScenario.MovementScenario.EuTaxWarehouse
 import models.requests.DataRequest
-import models.response.InvalidUserTypeException
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Key, SummaryListRow, Text, Value}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.LogCapturing
 import utils.Logging
+import viewmodels._
+import viewmodels.helpers.events.MovementEventHelper
 import views.BaseSelectors
+import views.html.components.{h2, p, summaryCard}
+import views.html.viewMovement.partials.overview_partial
 
-class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures with LogCapturing with Logging {
+import scala.concurrent.{ExecutionContext, Future}
+
+class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures with LogCapturing with Logging with MockGetDocumentTypesService {
 
   implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"))
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
-  val helper: ViewMovementHelper = app.injector.instanceOf[ViewMovementHelper]
+  lazy val p: p = app.injector.instanceOf[p]
+  lazy val h2: h2 = app.injector.instanceOf[h2]
+  lazy val overview_partial: overview_partial = app.injector.instanceOf[overview_partial]
+
+  val helper: ViewMovementHelper = new ViewMovementHelper(
+    p,
+    h2,
+    overview_partial,
+    app.injector.instanceOf[ViewMovementItemsHelper],
+    app.injector.instanceOf[ViewMovementTransportHelper],
+    app.injector.instanceOf[ViewMovementGuarantorHelper],
+    app.injector.instanceOf[ViewMovementOverviewHelper],
+    app.injector.instanceOf[ViewMovementDeliveryHelper],
+    new ViewMovementDocumentHelper(
+      h2,
+      app.injector.instanceOf[summaryCard],
+      overview_partial,
+      p,
+      mockGetDocumentTypesService
+    ),
+    app.injector.instanceOf[ItemDetailsCardHelper],
+    app.injector.instanceOf[ItemPackagingCardHelper],
+    app.injector.instanceOf[MovementEventHelper],
+    appConfig: AppConfig
+  )
   implicit lazy val messages: Messages = messages(request)
 
   object Selectors extends BaseSelectors {
@@ -46,9 +81,59 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
 
     override def h3(i: Int) = s"h3:nth-of-type($i)"
 
+    def h4(i: Int) = s"h4:nth-of-type($i)"
+
     def summaryListAtIndexRowKey(summaryListIndex: Int, rowIndex: Int) = s"dl:nth-of-type($summaryListIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dt"
 
     def summaryListAtIndexRowValue(summaryListIndex: Int, rowIndex: Int) = s"dl:nth-of-type($summaryListIndex) div.govuk-summary-list__row:nth-of-type($rowIndex) > dd"
+  }
+
+  "movementCard" should {
+    "output the correct section" when {
+      Map(
+        Overview -> "Overview",
+        Movement -> "Movement details",
+        Items -> "Item details",
+        Delivery -> "Delivery details",
+        Transport -> "Transport details",
+        Guarantor -> "Guarantor details",
+        Documents -> "Document details"
+      ).foreach {
+        case (subNavigationTab, expectedTitle) =>
+          s"the subNavigationTab is $subNavigationTab" in {
+            if (subNavigationTab == Documents) {
+              MockGetDocumentTypesService.getDocumentTypes().returns(Future.successful(Seq(DocumentType("1", "Document type description"))))
+            }
+            val result = await(helper.movementCard(Some(subNavigationTab), getMovementResponseModel))
+            val doc = Jsoup.parse(result.toString())
+            doc.select(Selectors.h2(1)).text() mustBe expectedTitle
+          }
+      }
+
+      "the subNavigationTab is None" in {
+        MockGetDocumentTypesService.getDocumentTypes().returns(Future.successful(Seq(DocumentType("1", "Document type description"))))
+
+        val result = await(helper.movementCard(
+          None,
+          getMovementResponseModel.copy(
+            memberStateCode = Some("GB"),
+            dispatchImportOfficeReferenceNumber = Some("imp123"),
+            eadEsad = getMovementResponseModel.eadEsad.copy(importSadNumber = Some(Seq("sad123"))),
+          )
+        ))
+        val doc = Jsoup.parse(result.toString())
+        doc.select(Selectors.h2(1)).text() mustBe "Movement details"
+        doc.select(Selectors.h2(2)).text() mustBe "Delivery details"
+        doc.select(Selectors.h2(3)).text() mustBe "Transport details"
+        doc.select(Selectors.h2(4)).text() mustBe "Guarantor details"
+        doc.select(Selectors.h2(5)).text() mustBe "Exempted organisation"
+        doc.select(Selectors.h2(6)).text() mustBe "Export"
+        doc.select(Selectors.h2(7)).text() mustBe "Import"
+        doc.select(Selectors.h2(8)).text() mustBe "Single Administrative Document(s) (SAD)"
+        doc.select(Selectors.h2(9)).text() mustBe "Document details"
+        doc.select(Selectors.h2(10)).text() mustBe "Items"
+      }
+    }
   }
 
 
@@ -264,46 +349,11 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
       ).foreach {
         case (destinationType, message) =>
 
-        s"the destination type is $destinationType" in {
-          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
-            destinationType = destinationType,
-            placeOfDispatchTrader = Some(TraderModel(
-              traderExciseNumber = Some("FR00345GTR145"),
-              traderName = Some("Current 801 Consignee"),
-              address = Some(AddressModel(
-                streetNumber = None,
-                street = Some("Main101"),
-                postcode = Some("ZZ78"),
-                city = Some("Zeebrugge")
-              )),
-              vatNumber = Some("GB123456789"),
-              eoriNumber = None
-            ))
-          ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
-
-          result mustBe Some(message)
-        }
-
-      }
-    }
-
-    "show movement to Y for XIWK ERN" when {
-      Seq(
-        TaxWarehouse -> "Movement to Tax warehouse in Great Britain",
-        DirectDelivery -> "Movement to Direct delivery",
-        RegisteredConsignee -> "Movement to Registered consignee",
-        TemporaryRegisteredConsignee -> "Movement to Temporary registered consignee",
-        ExemptedOrganisation -> "Movement to Exempted organisation",
-        UnknownDestination -> "Movement to Unknown destination"
-      ).foreach {
-        case (destinationType, message) =>
-
-        s"when the destination type is $destinationType" when {
-          "placeOfDispatchTrader.traderExciseNumber is missing" in {
+          s"the destination type is $destinationType" in {
             val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
               destinationType = destinationType,
               placeOfDispatchTrader = Some(TraderModel(
-                traderExciseNumber = None,
+                traderExciseNumber = Some("FR00345GTR145"),
                 traderName = Some("Current 801 Consignee"),
                 address = Some(AddressModel(
                   streetNumber = None,
@@ -319,15 +369,50 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
             result mustBe Some(message)
           }
 
-          "placeOfDispatchTrader is missing" in {
-            val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
-              destinationType = destinationType,
-              placeOfDispatchTrader = None
-            ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
+      }
+    }
 
-            result mustBe Some(message)
+    "show movement to Y for XIWK ERN" when {
+      Seq(
+        TaxWarehouse -> "Movement to Tax warehouse in Great Britain",
+        DirectDelivery -> "Movement to Direct delivery",
+        RegisteredConsignee -> "Movement to Registered consignee",
+        TemporaryRegisteredConsignee -> "Movement to Temporary registered consignee",
+        ExemptedOrganisation -> "Movement to Exempted organisation",
+        UnknownDestination -> "Movement to Unknown destination"
+      ).foreach {
+        case (destinationType, message) =>
+
+          s"when the destination type is $destinationType" when {
+            "placeOfDispatchTrader.traderExciseNumber is missing" in {
+              val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+                destinationType = destinationType,
+                placeOfDispatchTrader = Some(TraderModel(
+                  traderExciseNumber = None,
+                  traderName = Some("Current 801 Consignee"),
+                  address = Some(AddressModel(
+                    streetNumber = None,
+                    street = Some("Main101"),
+                    postcode = Some("ZZ78"),
+                    city = Some("Zeebrugge")
+                  )),
+                  vatNumber = Some("GB123456789"),
+                  eoriNumber = None
+                ))
+              ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
+
+              result mustBe Some(message)
+            }
+
+            "placeOfDispatchTrader is missing" in {
+              val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+                destinationType = destinationType,
+                placeOfDispatchTrader = None
+              ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
+
+              result mustBe Some(message)
+            }
           }
-        }
 
       }
     }
@@ -475,6 +560,22 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
         )
       }
 
+    }
+  }
+
+  "constructDetailedItems" should {
+    "output the correct HTML" when {
+      "the movement has items" in {
+        val result = helper.constructDetailedItems(getMovementResponseModel)
+        val doc = Jsoup.parse(result.toString())
+        doc.select(Selectors.h2(1)).text() mustBe "Items"
+        doc.select(Selectors.h3(1)).text() mustBe "Item 1"
+        doc.select(Selectors.h4(1)).text() mustBe "Packaging"
+        doc.select(Selectors.h3(2)).text() mustBe "Item 2"
+        doc.select(Selectors.h4(2)).text() mustBe "Packaging"
+        doc.select(Selectors.h4(3)).text() mustBe "Packaging 2"
+
+      }
     }
   }
 }

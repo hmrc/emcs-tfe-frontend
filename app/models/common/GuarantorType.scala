@@ -47,7 +47,7 @@ object GuarantorType extends Enumerable.Implicits {
     NoGuarantor
   )
 
-  val jointGuarantorTypes: Seq[GuarantorType] = Seq(
+  private val jointGuarantorTypes: Seq[GuarantorType] = Seq(
     ConsignorTransporter,
     ConsignorTransporterOwner,
     ConsignorTransporterOwnerConsignee,

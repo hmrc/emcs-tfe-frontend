@@ -24,7 +24,8 @@ import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.SummaryListHelper.summaryListRowBuilder
-import views.html.components.{h2, summaryCard}
+import views.html.components.{h2, p, summaryCard}
+import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,11 +33,15 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ViewMovementDocumentHelper @Inject()(h2: h2,
                                            summaryCard: summaryCard,
+                                           overviewPartial: overview_partial,
+                                           p: p,
                                            getDocumentTypesService: GetDocumentTypesService
                                           ) {
 
 
-  def constructMovementDocument(movement: GetMovementResponse)(implicit messages: Messages, hc: HeaderCarrier, ec: ExecutionContext): Future[Html] = {
+  def constructMovementDocument(movement: GetMovementResponse, isSummaryCard: Boolean)
+                               (implicit messages: Messages, hc: HeaderCarrier, ec: ExecutionContext): Future[Html] = {
+
     val notProvidedMessage = messages("viewMovement.document.notProvided")
     getDocumentTypesService.getDocumentTypes().map {
       sequenceOfDocuments =>
@@ -44,30 +49,47 @@ class ViewMovementDocumentHelper @Inject()(h2: h2,
           (movement.documentCertificate match {
             case Some(value) => value.zipWithIndex.map {
               case (document, index) =>
-                val documentTypeDescription = document.documentType.flatMap(documentType => sequenceOfDocuments.find(_.code == documentType).map(_.description)).getOrElse(notProvidedMessage)
-                summaryCard(
-                  card = Some(Card(
-                    Some(CardTitle(Text(messages("viewMovement.document.heading", index + 1))))
-                  )),
-                  summaryListRows = Seq(
-                    summaryListRowBuilder(
-                      "viewMovement.document.documentType",
-                      documentTypeDescription
-                    ),
-                    summaryListRowBuilder(
-                      "viewMovement.document.documentReference",
-                      document.documentReference.getOrElse(notProvidedMessage)
-                    ),
-                    summaryListRowBuilder(
-                      "viewMovement.document.documentDescription",
-                      document.documentDescription.getOrElse(notProvidedMessage)
-                    )
+                val documentTypeDescription =
+                  document.documentType
+                    .flatMap(documentType => sequenceOfDocuments.find(_.code == documentType).map(_.description))
+                    .getOrElse(notProvidedMessage)
+
+                val summaryRows = Seq(
+                  summaryListRowBuilder(
+                    "viewMovement.document.documentType",
+                    documentTypeDescription
+                  ),
+                  summaryListRowBuilder(
+                    "viewMovement.document.documentReference",
+                    document.documentReference.getOrElse(notProvidedMessage)
+                  ),
+                  summaryListRowBuilder(
+                    "viewMovement.document.documentDescription",
+                    document.documentDescription.getOrElse(notProvidedMessage)
                   )
                 )
+
+                if (isSummaryCard) {
+                  summaryCard(
+                    card = Some(Card(
+                      Some(CardTitle(Text(messages("viewMovement.document.heading", index + 1)), headingLevel = Some(3)))
+                    )),
+                    summaryListRows = summaryRows
+                  )
+                } else {
+                  overviewPartial(
+                    headingId = Some(s"document-information-heading-$index"),
+                    headingMessageKey = Some(messages("viewMovement.document.heading", index + 1)),
+                    headingLevel = 3,
+                    headingMessageClass = "govuk-heading-m",
+                    cardTitleMessageKey = None,
+                    summaryListRows = summaryRows
+                  )
+                }
             }
-            case _ => Seq.empty
+            case _ => Seq(p()(Html(notProvidedMessage)))
           }
-        ))
+            ))
     }
 
   }

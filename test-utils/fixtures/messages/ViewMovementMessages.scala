@@ -107,6 +107,10 @@ object ViewMovementMessages {
     val documentType = "Type"
     val documentReference = "Reference"
     val documentDescription = "Description"
+
+    def printHeading(arc: String): String = s"$arc"
+    def printTitle(arc: String): String = titleHelper(s"eAD for ARC: $arc")
+    val printButton = "Print this movement"
   }
 
   object English extends ViewMessages with EN

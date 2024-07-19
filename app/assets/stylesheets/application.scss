@@ -6,6 +6,7 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
 @import "primary-navigation";
 @import "sub-navigation";
 @import "accessible-autocomplete";
+@import "print";
 
 .hmrc-search-by-dropdown {
   min-width: auto;

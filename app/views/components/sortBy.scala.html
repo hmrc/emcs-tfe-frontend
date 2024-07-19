@@ -36,7 +36,7 @@
 
 @if(results.nonEmpty) {
     @* if there are movements in the response, show `sortBy` field, all results, pagination *@
-    <div class="sortBy-wrapper" style="display: inline-flex;
+    <div class="sortBy-wrapper no-print" style="display: inline-flex;
         align-items: flex-end;">
         @govukSelect(Select(
             items = selectItems,
@@ -57,7 +57,7 @@
         )
     </div>
 
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible no-print"/>
 
     @content
 } else {

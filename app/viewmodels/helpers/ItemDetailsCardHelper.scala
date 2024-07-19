@@ -29,12 +29,12 @@ import javax.inject.Inject
 
 class ItemDetailsCardHelper @Inject()(list: list, link: link, appConfig: AppConfig) {
 
-  def constructItemDetailsCard(item: MovementItem)(implicit messages: Messages): Seq[SummaryListRow] = {
+  def constructItemDetailsCard(item: MovementItem, cnCodeHasLink: Boolean = true)(implicit messages: Messages): Seq[SummaryListRow] = {
 
     implicit val _item: MovementItem = item
 
     Seq(
-      commodityCodeRow(),
+      commodityCodeRow(cnCodeHasLink),
       quantityRow(),
       grossWeightRow(),
       netWeightRow(),
@@ -228,10 +228,10 @@ class ItemDetailsCardHelper @Inject()(list: list, link: link, appConfig: AppConf
       )
     }
 
-  private[viewmodels] def commodityCodeRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
+  private[viewmodels] def commodityCodeRow(cnCodeHasLink: Boolean = true)(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
     Some(summaryListRowBuilder(
       messages("itemDetails.key.commodityCode"),
-      if (item.hasProductCodeWithValidCnCode) {
+      if (item.hasProductCodeWithValidCnCode && cnCodeHasLink) {
         link(link = appConfig.getUrlForCommodityCode(item.cnCode), messageKey = item.cnCode, isExternal = true, id = Some("commodity-code"))
       } else {
         Html(item.cnCode)

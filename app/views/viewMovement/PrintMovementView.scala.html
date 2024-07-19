@@ -1,0 +1,81 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import models.NavigationBannerInfo
+@import models.requests.DataRequest
+@import models.response.emcsTfe.GetMovementResponse
+@import views.html.components._
+@import views.html.templates.Layout
+@import views.html.helper.CSPNonce
+
+@this(
+        appConfig: AppConfig,
+        layout: Layout,
+        h1: h1,
+        h2: h2,
+        p: p,
+        button: GovukButton,
+        link: link,
+)
+
+@(
+        ern: String,
+        arc: String,
+        movement: GetMovementResponse,
+        movementBody: Html,
+)(implicit request: DataRequest[_], messages: Messages)
+
+@printButton(i: Int) = {
+    @button(
+        ButtonViewModel(messages("printMovement.print"))
+        .withCssClass("js-visible no-print print-button")
+        .withId(s"print-button-$i")
+    )
+}
+
+@layout(
+    titleNoForm(messages("printMovement.title", arc)),
+    maybeShowActiveTrader = maybeShowActiveTrader(request),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, request.messageStatistics.map(_.countOfNewMessages), Some(Movements))),
+    fullWidthContent = true
+) {
+
+    @h2(messages("common.arc"), "govuk-caption-xl")
+
+    @h1(classes = "govuk-heading-xl movement-heading")(Html(arc))
+
+    @printButton(1)
+
+    @movementBody
+
+    @printButton(2)
+
+    <script @CSPNonce.attr>
+            const printButtons = Array.from(document.getElementsByClassName('print-button'));
+            printButtons.forEach(printButton => {
+                printButton.classList.add("js-enabled");
+                printButton.onclick = function () {
+                    window.print();
+                };
+            })
+    </script>
+
+}
+
+@{
+    //$COVERAGE-OFF$
+}

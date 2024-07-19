@@ -37,7 +37,7 @@ class ViewMovementTransportHelperSpec extends SpecBase with GetMovementResponseF
           implicit lazy val msgs: Messages = messages(Seq(messagesForLang.lang))
 
           "return a table of transport information from the movement formatted with the correct wording" in {
-            val result = Jsoup.parse(helper.constructMovementTransport(movementResponseWithReferenceData).toString())
+            val result = Jsoup.parse(helper.constructMovementTransport(movementResponseWithReferenceData, true).toString())
 
             result.getElementsByTag("h2").get(0).text mustBe messagesForLang.transportDetailsHeading
             val summaryLists = result.getElementsByTag("dl")

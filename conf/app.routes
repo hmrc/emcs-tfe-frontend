@@ -1,37 +1,38 @@
 # microservice specific routes
 
-->         /hmrc-frontend                                                                 hmrcfrontend.Routes
+->          /hmrc-frontend                                                    hmrcfrontend.Routes
 
-->         /errors                                                                        error.Routes
+->          /errors                                                           error.Routes
 
-GET        /assets/*file                                                                  controllers.Assets.versioned(path = "/public", file: Asset)
+GET         /assets/*file                                                     controllers.Assets.versioned(path = "/public", file: Asset)
 
-GET        /refresh-session                                                               controllers.KeepAliveController.keepAlive()
+GET         /refresh-session                                                  controllers.KeepAliveController.keepAlive()
 
-GET        /timeout                                                                       controllers.auth.TimeoutController.onPageLoad()
+GET         /timeout                                                          controllers.auth.TimeoutController.onPageLoad()
 
-GET        /                                                                              controllers.IndexController.exciseNumber()
+GET         /                                                                 controllers.IndexController.exciseNumber()
 
-GET        /trader/:ern/movement/:arc/version/:ver/change-destination                     controllers.cod.ChangeOfDestinationController.onPageLoad(ern, arc, ver: Int)
+GET         /trader/:ern/movement/:arc/version/:ver/change-destination        controllers.cod.ChangeOfDestinationController.onPageLoad(ern, arc, ver: Int)
 
-GET        /trader/:ern/movement/:arc/overview                                            controllers.ViewMovementController.viewMovementOverview(ern, arc)
-GET        /trader/:ern/movement/:arc/movement                                            controllers.ViewMovementController.viewMovementMovement(ern, arc)
-GET        /trader/:ern/movement/:arc/delivery                                            controllers.ViewMovementController.viewMovementDelivery(ern, arc)
-GET        /trader/:ern/movement/:arc/guarantor                                           controllers.ViewMovementController.viewMovementGuarantor(ern, arc)
-GET        /trader/:ern/movement/:arc/transport                                           controllers.ViewMovementController.viewMovementTransport(ern, arc)
-GET        /trader/:ern/movement/:arc/items                                               controllers.ViewMovementController.viewMovementItems(ern, arc)
-GET        /trader/:ern/movement/:arc/documents                                           controllers.ViewMovementController.viewMovementDocuments(ern, arc)
+GET         /trader/:ern/movement/:arc/overview                               controllers.ViewMovementController.viewMovementOverview(ern, arc)
+GET         /trader/:ern/movement/:arc/movement                               controllers.ViewMovementController.viewMovementMovement(ern, arc)
+GET         /trader/:ern/movement/:arc/delivery                               controllers.ViewMovementController.viewMovementDelivery(ern, arc)
+GET         /trader/:ern/movement/:arc/guarantor                              controllers.ViewMovementController.viewMovementGuarantor(ern, arc)
+GET         /trader/:ern/movement/:arc/transport                              controllers.ViewMovementController.viewMovementTransport(ern, arc)
+GET         /trader/:ern/movement/:arc/items                                  controllers.ViewMovementController.viewMovementItems(ern, arc)
+GET         /trader/:ern/movement/:arc/documents                              controllers.ViewMovementController.viewMovementDocuments(ern, arc)
+GET         /trader/:ern/movement/:arc/print                                  controllers.ViewMovementController.printMovement(ern, arc)
 
-GET        /trader/:ern/movement/:arc/item/:idx/details                                   controllers.ItemDetailsController.onPageLoad(ern, arc, idx: Int)
+GET         /trader/:ern/movement/:arc/item/:idx/details                      controllers.ItemDetailsController.onPageLoad(ern, arc, idx: Int)
 
-GET        /trader/:ern/account                                                           controllers.AccountHomeController.viewAccountHome(ern)
+GET         /trader/:ern/account                                              controllers.AccountHomeController.viewAccountHome(ern)
 
-GET        /trader/:ern/draft-movements                                                  controllers.drafts.ViewAllDraftMovementsController.onPageLoad(ern, searchOptions: GetDraftMovementsSearchOptions)
-POST       /trader/:ern/draft-movements                                                  controllers.drafts.ViewAllDraftMovementsController.onSubmit(ern, searchOptions: GetDraftMovementsSearchOptions)
+GET         /trader/:ern/draft-movements                                      controllers.drafts.ViewAllDraftMovementsController.onPageLoad(ern, searchOptions: GetDraftMovementsSearchOptions)
+POST        /trader/:ern/draft-movements                                      controllers.drafts.ViewAllDraftMovementsController.onSubmit(ern, searchOptions: GetDraftMovementsSearchOptions)
 
-GET        /trader/:ern/movements                                                         controllers.ViewAllMovementsController.onPageLoad(ern: String, search: MovementListSearchOptions)
-POST       /trader/:ern/movements                                                         controllers.ViewAllMovementsController.onSubmit(ern: String, search: MovementListSearchOptions)
+GET         /trader/:ern/movements                                            controllers.ViewAllMovementsController.onPageLoad(ern: String, search: MovementListSearchOptions)
+POST        /trader/:ern/movements                                            controllers.ViewAllMovementsController.onSubmit(ern: String, search: MovementListSearchOptions)
 
-->         /   message.Routes
-->         /   prevalidateTrader.Routes
-->         /   events.Routes
+->          /                                                                 message.Routes
+->          /                                                                 prevalidateTrader.Routes
+->          /                                                                 events.Routes
