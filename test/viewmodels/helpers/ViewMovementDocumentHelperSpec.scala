@@ -26,7 +26,7 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.govuk.TagFluency
-import views.html.components.{h2, summaryCard}
+import views.html.components.{h2, p, summaryCard}
 import views.html.viewMovement.partials.overview_partial
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,8 +35,9 @@ import scala.concurrent.Future
 class ViewMovementDocumentHelperSpec extends SpecBase with GetMovementResponseFixtures with TagFluency with MockGetDocumentTypesService {
   lazy val h2: h2 = app.injector.instanceOf[h2]
   lazy val summaryCard: summaryCard = app.injector.instanceOf[summaryCard]
+  lazy val p: p = app.injector.instanceOf[p]
   lazy val overviewPartial: overview_partial = app.injector.instanceOf[overview_partial]
-  lazy val helper: ViewMovementDocumentHelper = new ViewMovementDocumentHelper(h2, summaryCard, overviewPartial, mockGetDocumentTypesService)
+  lazy val helper: ViewMovementDocumentHelper = new ViewMovementDocumentHelper(h2, summaryCard, overviewPartial, p, mockGetDocumentTypesService)
 
   val movementResponseWithReferenceData: GetMovementResponse = getMovementResponseModel
   implicit val hc: HeaderCarrier = HeaderCarrier()

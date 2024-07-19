@@ -24,7 +24,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.helpers.SummaryListHelper.summaryListRowBuilder
-import views.html.components.{h2, summaryCard}
+import views.html.components.{h2, p, summaryCard}
 import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
@@ -34,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ViewMovementDocumentHelper @Inject()(h2: h2,
                                            summaryCard: summaryCard,
                                            overviewPartial: overview_partial,
+                                           p: p,
                                            getDocumentTypesService: GetDocumentTypesService
                                           ) {
 
@@ -68,7 +69,7 @@ class ViewMovementDocumentHelper @Inject()(h2: h2,
                   )
                 )
 
-                if(isSummaryCard) {
+                if (isSummaryCard) {
                   summaryCard(
                     card = Some(Card(
                       Some(CardTitle(Text(messages("viewMovement.document.heading", index + 1)), headingLevel = Some(3)))
@@ -86,9 +87,9 @@ class ViewMovementDocumentHelper @Inject()(h2: h2,
                   )
                 }
             }
-            case _ => Seq.empty
+            case _ => Seq(p()(Html(notProvidedMessage)))
           }
-        ))
+            ))
     }
 
   }

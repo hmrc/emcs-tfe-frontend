@@ -31,6 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.ExpectedDateOfArrival
 import viewmodels._
 import viewmodels.helpers.SummaryListHelper._
+import viewmodels.helpers.events.MovementEventHelper
 import views.html.components.{h2, p, summaryCard}
 import views.html.viewMovement.partials.overview_partial
 
@@ -52,6 +53,7 @@ class ViewMovementHelper @Inject()(
                                     viewMovementDocumentHelper: ViewMovementDocumentHelper,
                                     itemDetailsCardHelper: ItemDetailsCardHelper,
                                     itemPackagingCardHelper: ItemPackagingCardHelper,
+                                    movementEventHelper: MovementEventHelper,
                                     appConfig: AppConfig) extends ExpectedDateOfArrival {
 
   def movementCard(subNavigationTab: Option[SubNavigationTab], movementResponse: GetMovementResponse)
@@ -69,15 +71,23 @@ class ViewMovementHelper @Inject()(
         movement <- Future.successful(constructMovementView(movementResponse))
         delivery <- Future.successful(viewMovementDeliveryHelper.constructMovementDelivery(movementResponse))
         transport <- Future.successful(viewMovementTransportHelper.constructMovementTransport(movementResponse, transportUnitsAreSummaryCards = false))
-        items <- Future.successful(constructDetailedItems(movementResponse))
-        guarantor <- Future.successful(viewMovementGuarantorHelper.constructMovementGuarantor(movementResponse))
+        guarantor <- Future.successful(viewMovementGuarantorHelper.constructMovementGuarantor(movementResponse, isSummaryCard = false, headingMessageClass = Some("govuk-heading-l")))
+        exemptedOrganisation <- Future.successful(movementEventHelper.exemptedOrganisationInformationCard(isLargeHeading = true)(movementResponse, messages))
+        export <- Future.successful(movementEventHelper.exportInformationCard(isLargeHeading = true)(movementResponse, messages))
+        importInfo <- Future.successful(movementEventHelper.importInformationCard(isLargeHeading = true)(movementResponse, messages))
+        sad <- Future.successful(movementEventHelper.sadInformationCard(isSummaryCard = false, isLargeHeading = true)(movementResponse, messages))
         documents <- viewMovementDocumentHelper.constructMovementDocument(movementResponse, isSummaryCard = false)
+        items <- Future.successful(constructDetailedItems(movementResponse))
       } yield {
         HtmlFormat.fill(Seq(
           movement,
           delivery,
           transport,
           guarantor,
+          exemptedOrganisation,
+          export,
+          importInfo,
+          sad,
           documents,
           items
         ))

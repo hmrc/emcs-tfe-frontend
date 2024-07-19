@@ -100,5 +100,42 @@ class ViewMovementControllerSpec extends SpecBase with FakeAuthAction with GetMo
     }
   }
 
+  ".printMovement" should {
+    "return 200" when {
+      "messagesConnector call is successful" in {
+        MockViewMovementHelper.movementCard().returns(Future(Html("")))
+        MockGetMovementService
+          .getLatestMovementForLoggedInUser(testErn, testArc)
+          .returns(Future.successful(getMovementResponseModel))
+
+        val result: Future[Result] = controller.printMovement(testErn, testArc)(fakeRequest)
+
+        status(result) shouldBe Status.OK
+      }
+    }
+    "return 500" when {
+      "movement messagesConnector call is unsuccessful" in {
+        MockGetMovementService
+          .getLatestMovementForLoggedInUser(testErn, testArc)
+          .returns(Future.failed(MovementException("bang")))
+
+        val result: Future[Result] = controller.printMovement(testErn, testArc)(fakeRequest)
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      }
+
+      "document messagesConnector call is unsuccessful" in {
+        MockViewMovementHelper.movementCard().returns(Future.failed(DocumentTypesException("No document types retrieved")))
+        MockGetMovementService
+          .getLatestMovementForLoggedInUser(testErn, testArc)
+          .returns(Future.successful(getMovementResponseModel))
+
+        val result: Future[Result] = controller.printMovement(testErn, testArc)(fakeRequest)
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
 
 }

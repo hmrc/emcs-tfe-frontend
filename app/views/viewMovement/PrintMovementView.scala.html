@@ -39,11 +39,11 @@
         movementBody: Html,
 )(implicit request: DataRequest[_], messages: Messages)
 
-@printButton = {
+@printButton(i: Int) = {
     @button(
         ButtonViewModel(messages("printMovement.print"))
         .withCssClass("js-visible no-print print-button")
-        .withId("print-button")
+        .withId(s"print-button-$i")
     )
 }
 
@@ -58,13 +58,11 @@
 
     @h1(classes = "govuk-heading-xl movement-heading")(Html(arc))
 
-    @printButton
+    @printButton(1)
 
     @movementBody
 
-@*//    @printMovementHelper.movementOverviewSection(movement)*@
-
-    @printButton
+    @printButton(2)
 
     <script @CSPNonce.attr>
             const printButtons = Array.from(document.getElementsByClassName('print-button'));
