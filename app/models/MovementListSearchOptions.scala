@@ -41,6 +41,19 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
 
   val startingPosition: Int = (index - 1) * maxRows
 
+  val hasFilterApplied = Seq(
+    searchValue,
+    traderRole,
+    undischargedMovements,
+    movementStatus,
+    exciseProductCode,
+    countryOfOrigin,
+    dateOfDispatchFrom,
+    dateOfDispatchTo,
+    dateOfReceiptFrom,
+    dateOfReceiptTo
+  ).exists(_.isDefined)
+
   private[models] def getSearchFields: Option[(String, String)] = {
     (searchKey, searchValue) match {
       case (Some(key), Some(value)) => Some(s"search.$key" -> value)

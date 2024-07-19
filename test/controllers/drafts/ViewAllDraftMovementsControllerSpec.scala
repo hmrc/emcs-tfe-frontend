@@ -103,7 +103,10 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
 
   private def buildView(searchOptions: GetDraftMovementsSearchOptions,
                         form: Form[GetDraftMovementsSearchOptions],
-                        numberOfMovements: Int)(implicit request: DataRequest[_]): Html =
+                        numberOfMovements: Int,
+                        showResultCount: Boolean = false,
+                        currentSearch: Option[String] = None
+                       )(implicit request: DataRequest[_]): Html =
     view(
       form = form,
       action = routes.ViewAllDraftMovementsController.onSubmit(testErn, searchOptions),
@@ -112,15 +115,29 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
       sortSelectItems = DraftMovementSortingSelectOption.constructSelectItems(Some(DraftMovementSortingSelectOption.Newest.toString)),
       exciseItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
       pagination = None,
-      totalMovements = numberOfMovements
+      totalMovements = numberOfMovements,
+      showResultCount = showResultCount,
+      currentSearch = currentSearch
     )
 
-  private def successView(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int, form: Form[GetDraftMovementsSearchOptions] = formProvider())
-                         (implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, form, numberOfMovements)
+  private def successView(searchOptions: GetDraftMovementsSearchOptions,
+                          numberOfMovements: Int,
+                          form: Form[GetDraftMovementsSearchOptions] = formProvider(),
+                          showResultCount: Boolean = false,
+                          currentSearch: Option[String] = None
+                         )(implicit request: DataRequest[_]): Html =
+    buildView(
+      searchOptions = searchOptions,
+      form = form,
+      numberOfMovements = numberOfMovements,
+      showResultCount = showResultCount,
+      currentSearch = currentSearch
+    )
 
-  private def viewWithErrors(searchOptions: GetDraftMovementsSearchOptions, numberOfMovements: Int, form: Form[GetDraftMovementsSearchOptions] = formProvider().withError(FormError("sortBy", Seq("error.required"))))
-                            (implicit request: DataRequest[_]): Html =
+  private def viewWithErrors(searchOptions: GetDraftMovementsSearchOptions,
+                             numberOfMovements: Int,
+                             form: Form[GetDraftMovementsSearchOptions] = formProvider().withError(FormError("sortBy", Seq("error.required")))
+                            )(implicit request: DataRequest[_]): Html =
     buildView(searchOptions, form, numberOfMovements)
 
   "GET /" when {
@@ -285,7 +302,34 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 39, formProvider().fill(searchOptions))
+          Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 39, formProvider().fill(searchOptions), showResultCount = true)
+        }
+      }
+
+        "show the correct view with the correct form values present when search value has been entered" in new Test {
+
+          val searchOptions = GetDraftMovementsSearchOptions(index = 3, draftHasErrors = Some(true), searchValue = Some("search term"))
+
+          MockEmcsTfeConnector
+            .getDraftMovements(testErn, Some(searchOptions))
+            .returns(Future.successful(Right(GetDraftMovementsResponse(39, movements))))
+
+          MockGetExciseProductCodesConnector
+            .getExciseProductCodes()
+            .returns(Future.successful(Right(epcsListConnectorResult)))
+
+          MockMovementPaginationHelper.constructPagination(searchOptions, pageCount = 4)(None)
+
+          val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
+
+          status(result) shouldBe Status.OK
+          Html(contentAsString(result)) shouldBe successView(
+            searchOptions = searchOptions,
+            numberOfMovements = 39,
+            form = formProvider().fill(searchOptions),
+            showResultCount = true,
+            currentSearch = Some("search term")
+          )
         }
       }
 
@@ -322,7 +366,6 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
         }
       }
-    }
 
     "user is NOT on the private beta list" in new Test(searchMovementsEnabled = false) {
 
@@ -587,5 +630,4 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
       redirectLocation(result) shouldBe Some("http://localhost:8080/emcs/trader/GBWKTestErn/movement/drafts")
     }
   }
-
 }

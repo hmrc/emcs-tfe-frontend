@@ -714,6 +714,9 @@ site.confirm = Confirm
 
 viewAllMovements.title = Movements
 viewAllMovements.heading = Movements
+viewAllMovements.heading.withSearch = Search results for {0}
+viewAllMovements.titel.withSearch = Search results for {0}
+viewAllMovements.resultsFound = {0} results found -
 viewAllMovements.search.heading = Search for a movement
 viewAllMovements.search.p1 = You can search by Administrative Reference Code (ARC), Local Reference Number (LRN), trader Excise Reference Number (ERN) or transporter name.
 viewAllMovements.search.by.hidden = Search by
@@ -1141,6 +1144,9 @@ destinationType.10 = Temporary certified consignee
 
 viewAllDraftMovements.heading = Drafts
 viewAllDraftMovements.title = Drafts
+viewAllDraftMovements.heading.withSearch = Search results for {0}
+viewAllDraftMovements.title.withSearch = Search results for {0}
+viewAllDraftMovements.resultsFound = {0} results found -
 viewAllDraftMovements.createMovement.button = Create a new movement
 viewAllDraftMovements.search.heading = Search for a draft
 viewAllDraftMovements.search.p1 = You can search by Local Reference Number (LRN), consignee name, Excise Reference Number (ERN) or tax warehouse ERN.

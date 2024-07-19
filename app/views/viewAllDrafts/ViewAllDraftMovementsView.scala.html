@@ -35,6 +35,7 @@
         formHelper: FormWithCSRF,
         h1: h1,
         h2: h2,
+        hidden: hidden,
         p: p,
         link: link,
         govukPagination: GovukPagination,
@@ -59,8 +60,29 @@
         sortSelectItems: Seq[SelectItem],
         exciseItems: Seq[SelectItem],
         pagination: Option[Pagination],
-        totalMovements: Int
+        totalMovements: Int,
+        showResultCount: Boolean,
+        currentSearch: Option[String]
 )(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
+
+@heading(asPageTitle: Boolean = false) = @{
+    if(showResultCount) {
+
+        val resultCount = if(asPageTitle) {
+            messages("viewAllDraftMovements.resultsFound", totalMovements)
+        } else {
+            hidden(messages("viewAllDraftMovements.resultsFound", totalMovements))
+        }
+
+        currentSearch.fold{
+            s"$resultCount ${messages("viewAllDraftMovements.heading")}"
+        } { search =>
+            s"$resultCount ${messages("viewAllDraftMovements.heading.withSearch", search)}"
+        }
+    } else {
+        messages("viewAllDraftMovements.heading")
+    }
+}
 
 @searchFields = {
 
@@ -91,7 +113,7 @@
 }
 
 @layout(
-    pageTitle = title(form, messages("viewAllDraftMovements.title")),
+    pageTitle = title(form, heading(asPageTitle = true)),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Drafts))),
     fullWidthContent = true
@@ -121,9 +143,8 @@
             </div>
         }
 
-        @h1() {
-            @messages("viewAllDraftMovements.heading")
-        }
+        @h1()(Html(heading()))
+
 
         @link(
             link = appConfig.emcsTfeCreateMovementUrl(ern),
