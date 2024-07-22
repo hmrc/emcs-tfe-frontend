@@ -16,8 +16,7 @@
 
 package models
 
-import models.common.Enumerable
-import models.common.WithName
+import models.common.{Enumerable, WithName}
 
 sealed trait MovementEadStatus {
 
@@ -40,7 +39,7 @@ object MovementEadStatus extends Enumerable.Implicits {
 
   case object ManuallyClosed extends WithName("ManuallyClosed") with MovementEadStatus {
 
-    override val schemaValues: Seq[String] = Seq("ManuallyClosed", "e-AD Manually Closed", "e-SAD Manually Closed")
+    override val schemaValues: Seq[String] = Seq("ManuallyClosed", "e-AD/e-SAD Manually Closed", "e-AD Manually Closed", "e-SAD Manually Closed")
   }
 
   case object NoneStatus extends WithName("None") with MovementEadStatus
