@@ -96,7 +96,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     ))
   )
 
-  val manualClosureResponse = ManualClosureResponseModel(1, Some(LocalDateTime.parse("2024-01-14T19:14:20")), ReceiptAcceptedAndSatisfactory, Some("some information"), ManualClosureRequestReasonCodeType.Other, Some("some information"), false, Some(ManualClosureRejectionReasonCodeType.Other), Some("some information"), Some(Seq(SupportingDocumentModel(Some("some information"), Some("EX95489754"), Some("1")))), Some(Seq(ManualClosureItem(1,Some("B000"),Some("E"),Some(20), Some(20), Some("some information")))))
+  val manualClosureResponse = ManualClosureResponseModel(1, Some(LocalDateTime.parse("2024-01-14T19:14:20")), Some(ReceiptAcceptedAndSatisfactory), Some("some information"), ManualClosureRequestReasonCodeType.Other, Some("some information"), false, Some(ManualClosureRejectionReasonCodeType.Other), Some("some information"), Some(Seq(SupportingDocumentModel(Some("some information"), Some("EX95489754"), Some("1")))), Some(Seq(ManualClosureItem(1,Some("B000"),Some("E"),Some(20), Some(20), Some("some information")))))
 
 
   lazy val getMovementResponseModel: GetMovementResponse = GetMovementResponse(
@@ -342,7 +342,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
         ))
       )
     ),
-    manualClosureResponse = Some(ManualClosureResponseModel(1, Some(LocalDateTime.parse("2024-01-14T19:14:20")), ReceiptAcceptedAndSatisfactory, Some("some information"), ManualClosureRequestReasonCodeType.Other, Some("some information"), false, Some(ManualClosureRejectionReasonCodeType.Other), Some("some information"), Some(Seq(SupportingDocumentModel(Some("some information"), Some("EX95489754"), Some("1")))), Some(Seq(ManualClosureItem(1,Some("B000"),Some("E"),Some(20), Some(20), Some("some information"))))))
+    manualClosureResponse = Some(ManualClosureResponseModel(1, Some(LocalDateTime.parse("2024-01-14T19:14:20")), Some(ReceiptAcceptedAndSatisfactory), Some("some information"), ManualClosureRequestReasonCodeType.Other, Some("some information"), false, Some(ManualClosureRejectionReasonCodeType.Other), Some("some information"), Some(Seq(SupportingDocumentModel(Some("some information"), Some("EX95489754"), Some("1")))), Some(Seq(ManualClosureItem(1,Some("B000"),Some("E"),Some(20), Some(20), Some("some information"))))))
 
   )
 

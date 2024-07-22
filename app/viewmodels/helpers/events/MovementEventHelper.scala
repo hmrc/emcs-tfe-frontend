@@ -105,7 +105,7 @@ class MovementEventHelper @Inject()(
     movement.manualClosureResponse.map { response =>
       val date = Seq(response.dateOfArrivalOfExciseProducts.map(date => summaryListRowBuilder("movementHistoryEvent.IE881.dateExciseProductsArrived", date.toLocalDate.formatDateForUIOutput())))
       val sequenceNumber = Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.sequenceNumber", response.sequenceNumber.toString)))
-      val globalConclusionOfReceipt = Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.conclusionOfReceipt", s"movementHistoryEvent.IE881.conclusionOfReceipt.${response.globalConclusionOfReceipt.toString}")))
+      val globalConclusionOfReceipt = Seq(response.globalConclusionOfReceipt.map(reason => summaryListRowBuilder("movementHistoryEvent.IE881.conclusionOfReceipt", s"movementHistoryEvent.IE881.conclusionOfReceipt.${reason.toString}")))
       val moreReceiptInformation = Seq(response.complementaryInformation.map(info => summaryListRowBuilder("movementHistoryEvent.IE881.moreReceiptInformation", info)))
       val reasonCode = Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.reasonCode", response.manualClosureRequestReason.toString)))
       val reasonCodeDescription = Seq(Some(summaryListRowBuilder("movementHistoryEvent.IE881.reasonCodeDescription", s"movementHistoryEvent.IE881.reasonCode.${response.manualClosureRequestReason.toString}")))
