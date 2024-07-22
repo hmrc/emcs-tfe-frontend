@@ -74,11 +74,7 @@
             hidden(messages("viewAllDraftMovements.resultsFound", totalMovements))
         }
 
-        currentSearch.fold{
-            s"$resultCount ${messages("viewAllDraftMovements.heading")}"
-        } { search =>
-            s"$resultCount ${messages("viewAllDraftMovements.heading.withSearch", search)}"
-        }
+        s"$resultCount ${messages("viewAllDraftMovements.heading")}"
     } else {
         messages("viewAllDraftMovements.heading")
     }

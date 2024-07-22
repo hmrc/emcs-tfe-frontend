@@ -367,15 +367,5 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.h1 -> English.headingWithCount(2)
       ))
     }
-
-    s"being rendered with the search term should show the correct heading" when {
-
-      implicit val doc: Document = asDocument(None, showResultCount = true, currentSearch = Some("search term"))
-
-      behave like pageWithExpectedElementsAndMessages(Seq(
-        Selectors.title -> English.titleWithSearch(2, "search term"),
-        Selectors.h1 -> English.headingWithSearch(2, "search term")
-      ))
-    }
   }
 }

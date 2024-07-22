@@ -73,11 +73,7 @@
             hidden(messages("viewAllMovements.resultsFound", totalMovements))
         }
 
-        currentSearch.fold{
-            s"$resultCount ${messages("viewAllMovements.heading")}"
-        } { search =>
-            s"$resultCount ${messages("viewAllMovements.heading.withSearch", search)}"
-        }
+        s"$resultCount ${messages("viewAllMovements.heading")}"
     } else {
         messages("viewAllMovements.heading")
     }
