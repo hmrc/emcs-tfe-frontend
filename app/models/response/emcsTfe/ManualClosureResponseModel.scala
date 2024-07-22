@@ -23,7 +23,7 @@ import java.time.LocalDateTime
 case class ManualClosureResponseModel(
                                     sequenceNumber: Int,
                                     dateOfArrivalOfExciseProducts: Option[LocalDateTime],
-                                    globalConclusionOfReceipt: GlobalConclusionofReceiptReasonCodeType,
+                                    globalConclusionOfReceipt: Option[GlobalConclusionofReceiptReasonCodeType],
                                     complementaryInformation: Option[String],
                                     manualClosureRequestReason: ManualClosureRequestReasonCodeType,
                                     manualClosureRequestReasonComplement: Option[String],
