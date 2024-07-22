@@ -23,7 +23,7 @@ import models.requests.DataRequest
 import models.response.emcsTfe.CancellationReasonType.Other
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.IE818ItemModelWithCnCodeInformation
-import models.response.emcsTfe.{GetMovementResponse, IE881ItemModelWithCnCodeInformation, InterruptionReasonType, NotificationOfAlertOrRejectionModel, NotificationOfDelayModel}
+import models.response.emcsTfe._
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
@@ -75,7 +75,7 @@ class EventsHelper @Inject()(
     }
   }
 
-  private def ie801Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+  private def ie801Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Html = {
     implicit val _movement: GetMovementResponse = movement
 
     HtmlFormat.fill(
@@ -83,7 +83,8 @@ class EventsHelper @Inject()(
         p(classes = "govuk-body-l")(Html(
           messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
         )),
-        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        printOrSaveThisMovement(movement),
+        printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         movementEventHelper.movementInformationCard(),
         movementEventHelper.consignorInformationCard(),
         movementEventHelper.placeOfDispatchInformationCard(),
@@ -104,11 +105,21 @@ class EventsHelper @Inject()(
     )
   }
 
+  private def printOrSaveThisMovement(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages) = {
+    p()(HtmlFormat.fill(Seq(
+      link(
+        controllers.routes.ViewMovementController.printMovement(request.ern, movement.arc).url,
+        messages("movementHistoryEvent.printOrSaveEad.link"),
+      ),
+      Html(messages("movementHistoryEvent.printOrSaveEad.message"))
+    )))
+  }
+
   private def ie802Html(event: MovementHistoryEvent)(implicit messages: Messages): Html =
     HtmlFormat.fill(
       Seq(
         p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
-        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
+        printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
       )
     )
 
@@ -131,7 +142,7 @@ class EventsHelper @Inject()(
             ))
           }
         },
-        Some(printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"))
+        Some(printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"))
       ).flatten
     )
 
@@ -141,7 +152,7 @@ class EventsHelper @Inject()(
         movement.interruptedMovement.map { interruptedMovement =>
           HtmlFormat.fill(Seq(
             p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1", movement.interruptedMovement.get.referenceNumberOfExciseOffice))),
-            printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
+            printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
           ) ++ Seq(
             Some(summary_list(Seq(
               Some(messages(s"${timelineHelper.getEventBaseKey(event)}.interruptionReason") -> messages(s"${timelineHelper.getEventBaseKey(event)}.reason.${interruptedMovement.reasonCode.toString}")),
@@ -158,7 +169,7 @@ class EventsHelper @Inject()(
         movement.cancelMovement.map { cancelMovement =>
           HtmlFormat.fill(Seq(
             p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
-            printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
+            printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
           ) ++ Seq(
             Some(summary_list(Seq(
               Some(messages(s"${timelineHelper.getEventBaseKey(event)}.cancellationReason") -> messages(s"${timelineHelper.getEventBaseKey(event)}.reason.${cancelMovement.reason.toString}")),
@@ -169,7 +180,7 @@ class EventsHelper @Inject()(
       ).flatten)
   }
 
-  private def ie813Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit messages: Messages): Html = {
+  private def ie813Html(event: MovementHistoryEvent, movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Html = {
     implicit val _movement: GetMovementResponse = movement
 
     HtmlFormat.fill(
@@ -177,7 +188,8 @@ class EventsHelper @Inject()(
         p(classes = "govuk-body-l")(Html(
           messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
         )),
-        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        printOrSaveThisMovement(movement),
+        printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         movementEventHelper.movementInformationCard(),
         movementEventHelper.consigneeInformationCard(),
         movementEventHelper.placeOfDestinationInformationCard(),
@@ -208,7 +220,7 @@ class EventsHelper @Inject()(
       Seq(
         p(classes = "govuk-body-l")(Html(lede)),
         p()(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
-        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         movementEventHelper.rorDetailsCard(event),
         movementEventHelper.consigneeInformationCard(),
         movementEventHelper.placeOfDestinationInformationCard(),
@@ -227,7 +239,7 @@ class EventsHelper @Inject()(
         p(classes = "govuk-body-l")(Html(
           messages(s"${timelineHelper.getEventBaseKey(event)}.${eventDetails.notificationType}.p1", event.sequenceNumber)
         )),
-        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         movementEventHelper.alertRejectInformationCard(eventDetails),
         movementEventHelper.consigneeInformationCard()
       )
@@ -242,7 +254,7 @@ class EventsHelper @Inject()(
         movement.notificationOfAcceptedExport.map { notificationOfAcceptedExport =>
           HtmlFormat.fill(Seq(
             p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1", notificationOfAcceptedExport.customsOfficeNumber))),
-            printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+            printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
             movementEventHelper.ie829AcceptedExportDetails(notificationOfAcceptedExport)
           ))
         }
@@ -262,7 +274,7 @@ class EventsHelper @Inject()(
       HtmlFormat.fill(
         Seq(
           p(classes = "govuk-body-l")(Html(rejectedMessage)),
-          printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+          printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
           movementEventHelper.customsRejectionInformationCard(notificationOfCustomsRejection),
           movementEventHelper.customsRejectionDiagnosisCards(notificationOfCustomsRejection),
           movementEventHelper.consigneeInformationCard(notificationOfCustomsRejection.consignee)
@@ -275,7 +287,7 @@ class EventsHelper @Inject()(
     HtmlFormat.fill(
       Seq(
         p(classes = "govuk-body-l")(Html(messages(s"${timelineHelper.getEventBaseKey(event)}.p1"))),
-        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
+        printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage")
       )
     )
   }
@@ -286,7 +298,7 @@ class EventsHelper @Inject()(
         p(classes = "govuk-body-l")(Html(
           messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
         )),
-        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         movementEventHelper.delayInformationCard(getIE837EventDetail(event, movement), event.messageRole)
       )
     )
@@ -300,7 +312,7 @@ class EventsHelper @Inject()(
           p(classes = "govuk-body-l")(Html(
             messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
           )),
-          printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+          printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
           movementEventHelper.ie871GlobalDetails(notificationOfShortageOrExcess),
           movementEventHelper.consignorInformationCard(),
           movementEventHelper.consigneeInformationCard(),
@@ -318,7 +330,7 @@ class EventsHelper @Inject()(
         p(classes = "govuk-body-l")(Html(
           messages(s"${timelineHelper.getEventBaseKey(event)}.p1", event.sequenceNumber)
         )),
-        printPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
+        printThisPage(linkContentKey = "movementHistoryEvent.printLink", linkTrailingMessageKey = "movementHistoryEvent.printMessage"),
         movementEventHelper.responseInformation(),
         movementEventHelper.closureDocumentsInformationCard(documentTypes),
         movementEventHelper.manualClosureItemsCard(event, ie881ItemModelWithCnCodeInformation)
@@ -326,7 +338,7 @@ class EventsHelper @Inject()(
     )
   }
 
-  private def printPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
+  private def printThisPage(linkContentKey: String, linkTrailingMessageKey: String)(implicit messages: Messages): Html = {
     p(classes = "govuk-body js-visible govuk-!-display-none-print")(
       HtmlFormat.fill(
         Seq(

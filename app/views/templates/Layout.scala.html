@@ -23,22 +23,22 @@
 @import viewmodels.govuk.all._
 
 @this(
-    appConfig: AppConfig,
-    govukLayout: GovukLayout,
-    govukBackLink: GovukBackLink,
-    hmrcHead: HmrcHead,
-    hmrcStandardHeader: HmrcStandardHeader,
-    hmrcStandardFooter: HmrcStandardFooter,
-    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-    hmrcLanguageSelect: HmrcLanguageSelect,
-    hmrcTimeoutDialog: HmrcTimeoutDialog,
-    hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-    hmrcScripts: HmrcScripts,
-    betaBanner: StandardBetaBanner,
-    defaultMainContent: TwoThirdsMainContent,
-    fullWidthMainContent: FullWidthMainContentTemplate,
-    activeTrader: activeTrader,
-    navigationBar: navigation_bar
+        appConfig: AppConfig,
+        govukLayout: GovukLayout,
+        govukBackLink: GovukBackLink,
+        hmrcHead: HmrcHead,
+        hmrcStandardHeader: HmrcStandardHeader,
+        hmrcStandardFooter: HmrcStandardFooter,
+        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
+        hmrcLanguageSelect: HmrcLanguageSelect,
+        hmrcTimeoutDialog: HmrcTimeoutDialog,
+        hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
+        hmrcScripts: HmrcScripts,
+        betaBanner: StandardBetaBanner,
+        defaultMainContent: TwoThirdsMainContent,
+        fullWidthMainContent: FullWidthMainContentTemplate,
+        activeTrader: activeTrader,
+        navigationBar: navigation_bar
 )
 
 @(
@@ -57,22 +57,61 @@
 @head = {
 
     @hmrcHead(
-        headBlock = if(timeout) { Some(
-            hmrcTimeoutDialog(TimeoutDialog(
-                timeout             = Some(appConfig.timeout),
-                countdown           = Some(appConfig.countdown),
-                keepAliveUrl        = Some(routes.KeepAliveController.keepAlive().url),
-                keepAliveButtonText = Some(messages("timeout.keepAlive")),
-                signOutUrl          = Some(controllers.auth.routes.TimeoutController.onPageLoad().url),
-                signOutButtonText   = Some(messages("timeout.signOut")),
-                title               = Some(messages("timeout.title")),
-                message             = Some(messages("timeout.message"))
-            )))
+        headBlock = if(timeout) {
+            Some(
+                hmrcTimeoutDialog(TimeoutDialog(
+                    timeout = Some(appConfig.timeout),
+                    countdown = Some(appConfig.countdown),
+                    keepAliveUrl = Some(routes.KeepAliveController.keepAlive().url),
+                    keepAliveButtonText = Some(messages("timeout.keepAlive")),
+                    signOutUrl = Some(controllers.auth.routes.TimeoutController.onPageLoad().url),
+                    signOutButtonText = Some(messages("timeout.signOut")),
+                    title = Some(messages("timeout.title")),
+                    message = Some(messages("timeout.message"))
+                )))
         } else None
     )
 
+    <style>
+            .gem-c-print-link__button {
+                border: 1px solid #505a5f;
+                color: #1d70b8;
+                cursor: pointer;
+            }
+
+            @@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+                .gem-c-print-link__link, .gem-c-print-link__button {
+                    url("@routes.Assets.versioned("icons/icon-print.png")");
+                }
+            }
+
+            .gem-c-print-link__link, .gem-c-print-link__button {
+                background: url("@routes.Assets.versioned("icons/icon-print.png")") no-repeat 10px 50%;
+                background-size: 16px 18px;
+                padding: 10px 10px 10px 36px;
+                text-decoration: none;
+            }
+
+            .gem-c-print-link__link:hover, .gem-c-print-link__button:hover {
+                background-color: #f3f2f1;
+                color: #003078;
+            }
+
+            .gem-c-print-link__button:focus {
+                outline: 3px solid rgba(0, 0, 0, 0);
+                color: #0b0c0c;
+                background-color: #fd0;
+                box-shadow: 0 -2px #fd0, 0 4px #0b0c0c;
+                text-decoration: none;
+                -webkit-box-decoration-break: clone;
+                box-decoration-break: clone;
+                background-color: #fd0;
+                border-color: rgba(0, 0, 0, 0);
+            }
+    </style>
+
     @additionalCss
-    <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css"@CSPNonce.get.map {n=> nonce="@n"} />
+    <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css"@CSPNonce.get.map {n=> nonce="@n"} >
 }
 
 @scripts = {
@@ -99,16 +138,16 @@
 
 
 @govukLayout(
-    pageTitle   = Some(pageTitle),
-    headBlock   = Some(head),
+    pageTitle = Some(pageTitle),
+    headBlock = Some(head),
     headerBlock = Some(hmrcStandardHeader(
-        serviceUrl  = Some(appConfig.emcsTfeHomeUrl),
-        signOutUrl  = if(showSignOut) Some(appConfig.signOutUrl) else None,
+        serviceUrl = Some(appConfig.emcsTfeHomeUrl),
+        signOutUrl = if(showSignOut) Some(appConfig.signOutUrl) else None,
         phaseBanner = Some(betaBanner(appConfig.betaBannerFeedbackUrl))
     )),
     beforeContentBlock = Some(beforeContent),
-    footerBlock        = Some(hmrcStandardFooter()),
-    scriptsBlock       = Some(hmrcScripts(
+    footerBlock = Some(hmrcStandardFooter()),
+    scriptsBlock = Some(hmrcScripts(
         scriptsBlock = Some(scripts)
     )),
     mainContentLayout = if(fullWidthContent) Some(fullWidthMainContent(_)) else Some(defaultMainContent(_))

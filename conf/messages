@@ -482,6 +482,9 @@ movementHistoryEvent.arc = ARC: {0}
 movementHistoryEvent.printLink = Print this screen
 movementHistoryEvent.printMessage = to make a record of this message.
 
+movementHistoryEvent.printOrSaveEad.link = Print or save a copy of the eAD
+movementHistoryEvent.printOrSaveEad.message = for a printed or digital copy of the movement.
+
 movementCreatedView.heading = Movement created
 movementCreatedView.dateTimeIssued = Message issued {0} at {1}
 movementCreatedView.arc = ARC: {0}

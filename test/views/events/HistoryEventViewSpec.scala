@@ -75,7 +75,8 @@ class HistoryEventViewSpec extends ViewSpecBase
                 Selectors.eventMessageTimestamp -> messagesForLanguage.messageIssued(),
                 Selectors.arc -> messagesForLanguage.arc(getMovementResponseModel.arc),
                 Selectors.p(1) -> messagesForLanguage.ie801P1,
-                Selectors.p(2) -> messagesForLanguage.printScreenContent
+                Selectors.p(2) -> messagesForLanguage.printOrSaveEadContent,
+                Selectors.p(3) -> messagesForLanguage.printScreenContent
               )
             )(createDocument(ie801Event, getMovementResponseModel))
           }
