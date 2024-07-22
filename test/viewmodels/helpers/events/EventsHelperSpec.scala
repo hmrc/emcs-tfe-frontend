@@ -179,7 +179,8 @@ class EventsHelperSpec extends SpecBase
               val body = Jsoup.parse(result.toString())
 
               body.select(Selectors.p(1)).text() mustBe messagesForLanguage.ie813MovementDestinationP1
-              body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printScreenContent
+              body.select(Selectors.p(2)).text() mustBe messagesForLanguage.printOrSaveEadContent
+              body.select(Selectors.p(3)).text() mustBe messagesForLanguage.printScreenContent
             }
           }
 

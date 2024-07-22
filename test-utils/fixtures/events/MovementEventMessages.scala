@@ -34,6 +34,7 @@ object MovementEventMessages extends DateUtils {
     def arc(arc: String) = s"ARC: $arc"
 
     val printScreenContent: String = "Print this screen to make a record of this message."
+    val printOrSaveEadContent: String = "Print or save a copy of the eAD for a printed or digital copy of the movement."
 
     //IE801 First Notification of Movement
     val ie801Heading: String = "Movement created"
