@@ -17,7 +17,7 @@
 package models
 
 import models.MovementListSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS}
-import models.MovementSortingSelectOption.ArcAscending
+import models.MovementSortingSelectOption.Newest
 import play.api.mvc.QueryStringBindable
 import utils.Logging
 
@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter
 
 case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOption] = None,
                                      searchValue: Option[String] = None,
-                                     sortBy: MovementSortingSelectOption = ArcAscending,
+                                     sortBy: MovementSortingSelectOption = Newest,
                                      traderRole: Option[MovementFilterDirectionOption] = None,
                                      undischargedMovements: Option[MovementFilterUndischargedOption] = None,
                                      movementStatus: Option[MovementFilterStatusOption] = None,
@@ -162,7 +162,7 @@ object MovementListSearchOptions extends Logging {
 
       override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, MovementListSearchOptions]] = {
         Some(for {
-          sortOrder <- stringBinder.bind("sortBy", params).getOrElse(Right(ArcAscending.code))
+          sortOrder <- stringBinder.bind("sortBy", params).getOrElse(Right(Newest.code))
           index <- intBinder.bind("index", params).getOrElse(Right(DEFAULT_INDEX))
           searchKey <- bindStringWithDefault("searchKey", stringBinder, params)
           searchValue <- bindStringWithDefault("searchValue", stringBinder, params)

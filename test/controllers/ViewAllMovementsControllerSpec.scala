@@ -25,7 +25,7 @@ import mocks.config.MockAppConfig
 import mocks.connectors.{MockBetaAllowListConnector, MockEmcsTfeConnector, MockGetExciseProductCodesConnector, MockGetMemberStatesConnector}
 import mocks.viewmodels.MockMovementPaginationHelper
 import models.MovementFilterDirectionOption._
-import models.MovementSortingSelectOption.{ArcAscending, Newest}
+import models.MovementSortingSelectOption.Newest
 import models._
 import models.requests.DataRequest
 import models.response.emcsTfe.{GetMovementListItem, GetMovementListResponse}
@@ -113,7 +113,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
       action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
       ern = testErn,
       movementListResponse = movementListResponse,
-      sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(ArcAscending.toString)),
+      sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(Newest.toString)),
       searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
       movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
       exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
