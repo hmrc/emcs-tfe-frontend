@@ -19,7 +19,7 @@ package models
 import base.SpecBase
 import models.MovementListSearchOptions.CHOOSE_PRODUCT_CODE
 import models.MovementSearchSelectOption.{ARC, ERN, Transporter}
-import models.MovementSortingSelectOption.{ArcAscending, ArcDescending, Oldest}
+import models.MovementSortingSelectOption.{ArcDescending, Newest, Oldest}
 
 import java.time.LocalDate
 
@@ -32,7 +32,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
     "construct with default options" in {
 
       val expectedResult = MovementListSearchOptions(
-        sortBy = ArcAscending,
+        sortBy = Newest,
         index = 1,
         maxRows = 10
       )
@@ -93,7 +93,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
       "some query parameters are supplied" in {
 
         val expectedResult = Some(Right(MovementListSearchOptions(
-          sortBy = ArcAscending,
+          sortBy = Newest,
           index = 5,
           maxRows = MovementListSearchOptions.DEFAULT_MAX_ROWS
         )))
@@ -165,8 +165,8 @@ class MovementListSearchOptionsSpec extends SpecBase {
       "using default values" in {
 
         val expectedResult: Seq[(String, String)] = Seq(
-          "search.sortOrder" -> ArcAscending.sortOrder,
-          "search.sortField" -> ArcAscending.sortField,
+          "search.sortOrder" -> Newest.sortOrder,
+          "search.sortField" -> Newest.sortField,
           "search.startPosition" -> "0",
           "search.maxRows" -> "10"
         )
