@@ -23,7 +23,11 @@ object ViewAllMovementsMessages {
   sealed trait ViewMessages { _: i18n =>
     val heading: String = "Movements"
     val title: String = titleHelper(heading)
-    def headingWithCount(count: Int): String = s"$count results found - Movements"
+    val headingWithNoResults: String = "No results found for beans - Movements"
+    val titleWithNoResults: String = titleHelper(headingWithNoResults)
+    val headingWithOneResult: String = "1 result found for beans sorted by Dispatched (newest) - Movements"
+    val titleWithOneResult: String = titleHelper(headingWithOneResult)
+    def headingWithCount(count: Int): String = s"$count results found for beans sorted by Dispatched (newest) - Movements"
     def titleWithCount(count: Int): String = titleHelper(headingWithCount(count))
 
     def dateOfDispatch(string: String): String = s"Date of dispatch: $string"

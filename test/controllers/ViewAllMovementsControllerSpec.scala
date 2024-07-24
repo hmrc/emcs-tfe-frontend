@@ -105,8 +105,6 @@ class ViewAllMovementsControllerSpec extends SpecBase
   private def buildView(searchOptions: MovementListSearchOptions,
                         movementListResponse: GetMovementListResponse,
                         form: Form[MovementListSearchOptions],
-                        showResultCount: Boolean = false,
-                        currentSearch: Option[String] = None
                        )(implicit request: DataRequest[_]): Html =
     view(
       form = form,
@@ -121,16 +119,13 @@ class ViewAllMovementsControllerSpec extends SpecBase
       pagination = None,
       directionFilterOption = All,
       totalMovements = movementListResponse.count,
-      showResultCount = showResultCount,
-      currentSearch = currentSearch
+      currentFilters = searchOptions
     )
 
   private def successView(searchOptions: MovementListSearchOptions,
-                          movementListResponse: GetMovementListResponse = threePageMovementListResponse,
-                          showResultCount: Boolean = false,
-                          currentSearch: Option[String] = None,
+                          movementListResponse: GetMovementListResponse = threePageMovementListResponse
                          )(implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, movementListResponse, formProvider().fill(searchOptions), showResultCount, currentSearch)
+    buildView(searchOptions, movementListResponse, formProvider().fill(searchOptions))
 
   private def viewWithErrors(searchOptions: MovementListSearchOptions, movementListResponse: GetMovementListResponse = threePageMovementListResponse)(implicit request: DataRequest[_]): Html =
     buildView(searchOptions, movementListResponse, formProvider().withError(FormError("sortBy", Seq("error.required"))))
@@ -331,7 +326,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions, showResultCount = true)
+          Html(contentAsString(result)) shouldBe successView(searchOptions)
         }
 
         "show the correct view when a search has been applied" in new Test {
@@ -355,7 +350,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions, showResultCount = true, currentSearch = Some("search term"))
+          Html(contentAsString(result)) shouldBe successView(searchOptions)
         }
       }
 

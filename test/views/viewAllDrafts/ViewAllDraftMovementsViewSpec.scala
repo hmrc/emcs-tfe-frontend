@@ -104,8 +104,7 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
 
   def asDocument(pagination: Option[Pagination],
                  movements: Seq[DraftMovement] = twoDraftMovements,
-                 showResultCount: Boolean = false,
-                 currentSearch: Option[String] = None
+                 searchOptions: GetDraftMovementsSearchOptions = GetDraftMovementsSearchOptions()
                 )(implicit messages: Messages, request: DataRequest[_]): Document = Jsoup.parse(view(
     form = formProvider(),
     action = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad("ern", GetDraftMovementsSearchOptions()),
@@ -115,8 +114,7 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
     exciseItems = SelectItemHelper.constructSelectItems(Seq(GetDraftMovementsSearchOptions.CHOOSE_PRODUCT_CODE), None),
     pagination = pagination,
     totalMovements = movements.size,
-    showResultCount = showResultCount,
-    currentSearch = currentSearch
+    currentFilters = searchOptions
   )(request, implicitly, implicitly).toString())
 
 
@@ -288,23 +286,33 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
       homeLink.text mustBe "Home"
     }
 
-    "being rendered with the result count should show the correct heading for one movement" when {
+    "being rendered with the result count should show the correct heading for no movements" when {
 
-      implicit val doc: Document = asDocument(None, movements = Seq(draftMovementModelMax), showResultCount = true)
+      implicit val doc: Document = asDocument(None, movements = Seq(), searchOptions = GetDraftMovementsSearchOptions(searchValue = Some("beans")))
 
       behave like pageWithExpectedElementsAndMessages(Seq(
-        Selectors.title -> English.titleWithCount(1),
-        Selectors.h1 -> English.headingWithCount(1),
+        Selectors.title -> English.titleWithNoResults,
+        Selectors.h1 -> English.headingWithNoResults,
+      ))
+    }
+
+    "being rendered with the result count should show the correct heading for one movement" when {
+
+      implicit val doc: Document = asDocument(None, movements = Seq(draftMovementModelMax), searchOptions = GetDraftMovementsSearchOptions(searchValue = Some("beans")))
+
+      behave like pageWithExpectedElementsAndMessages(Seq(
+        Selectors.title -> English.titleWithOneResult,
+        Selectors.h1 -> English.headingWithOneResult
       ))
     }
 
     "being rendered with the result count should show the correct heading for two movements" when {
 
-      implicit val doc: Document = asDocument(None, movements = twoDraftMovements, showResultCount = true)
+      implicit val doc: Document = asDocument(None, movements = twoDraftMovements, searchOptions = GetDraftMovementsSearchOptions(searchValue = Some("beans")))
 
       behave like pageWithExpectedElementsAndMessages(Seq(
         Selectors.title -> English.titleWithCount(2),
-        Selectors.h1 -> English.headingWithCount(2),
+        Selectors.h1 -> English.headingWithCount(2)
       ))
     }
   }

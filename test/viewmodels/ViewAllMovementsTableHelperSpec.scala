@@ -20,6 +20,7 @@ import base.SpecBase
 import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
 import models.MovementFilterDirectionOption._
+import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
@@ -34,9 +35,9 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
 
   "ViewAllMovementsTableHelper" should {
 
-    implicit val messages = messagesApi.preferred(Seq(English.lang))
-
     s"rendering for '${English.lang.code}' language code" when {
+
+      implicit val messages = messagesApi.preferred(Seq(English.lang))
 
       Seq(All, GoodsIn, GoodsOut).foreach { direction =>
 
@@ -70,6 +71,62 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
                 )
               )
             }
+          }
+        }
+      }
+
+    }
+
+    ".generatePageTitle" when {
+      implicit val msgs = messages(FakeRequest())
+
+      "totalMovements is 0" must {
+        "return the correct message" when {
+          "neither filtered nor searchTerm are defined" in {
+            helper.generatePageTitle(0, None, isFiltered = false, "sortField") mustBe "No results found -"
+          }
+          "filtered" in {
+            helper.generatePageTitle(0, None, isFiltered = true, "sortField") mustBe "No filtered results found -"
+          }
+          "searchTerm is defined" in {
+            helper.generatePageTitle(0, Some("beans"), isFiltered = false, "sortField") mustBe "No results found for beans -"
+          }
+          "filtered and searchTerm is defined" in {
+            helper.generatePageTitle(0, Some("beans"), isFiltered = true, "sortField") mustBe "No filtered results found for beans -"
+          }
+        }
+      }
+
+      "totalMovements is 1" must {
+        "return the correct message" when {
+          "neither filtered nor searchTerm are defined" in {
+            helper.generatePageTitle(1, None, isFiltered = false, "sortField") mustBe "1 result found sorted by sortField -"
+          }
+          "filtered" in {
+            helper.generatePageTitle(1, None, isFiltered = true, "sortField") mustBe "1 filtered result found sorted by sortField -"
+          }
+          "searchTerm is defined" in {
+            helper.generatePageTitle(1, Some("beans"), isFiltered = false, "sortField") mustBe "1 result found for beans sorted by sortField -"
+          }
+          "filtered and searchTerm is defined" in {
+            helper.generatePageTitle(1, Some("beans"), isFiltered = true, "sortField") mustBe "1 filtered result found for beans sorted by sortField -"
+          }
+        }
+      }
+
+      "totalMovements is not 1 or 0" must {
+        "return the correct message" when {
+          "neither filtered nor searchTerm are defined" in {
+            helper.generatePageTitle(2, None, isFiltered = false, "sortField") mustBe "2 results found sorted by sortField -"
+          }
+          "filtered" in {
+            helper.generatePageTitle(2, None, isFiltered = true, "sortField") mustBe "2 filtered results found sorted by sortField -"
+          }
+          "searchTerm is defined" in {
+            helper.generatePageTitle(2, Some("beans"), isFiltered = false, "sortField") mustBe "2 results found for beans sorted by sortField -"
+          }
+          "filtered and searchTerm is defined" in {
+            helper.generatePageTitle(2, Some("beans"), isFiltered = true, "sortField") mustBe "2 filtered results found for beans sorted by sortField -"
           }
         }
       }

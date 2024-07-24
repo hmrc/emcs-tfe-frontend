@@ -103,9 +103,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
 
   private def buildView(searchOptions: GetDraftMovementsSearchOptions,
                         form: Form[GetDraftMovementsSearchOptions],
-                        numberOfMovements: Int,
-                        showResultCount: Boolean = false,
-                        currentSearch: Option[String] = None
+                        numberOfMovements: Int
                        )(implicit request: DataRequest[_]): Html =
     view(
       form = form,
@@ -116,22 +114,17 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
       exciseItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
       pagination = None,
       totalMovements = numberOfMovements,
-      showResultCount = showResultCount,
-      currentSearch = currentSearch
+      currentFilters = searchOptions
     )
 
   private def successView(searchOptions: GetDraftMovementsSearchOptions,
                           numberOfMovements: Int,
                           form: Form[GetDraftMovementsSearchOptions] = formProvider(),
-                          showResultCount: Boolean = false,
-                          currentSearch: Option[String] = None
                          )(implicit request: DataRequest[_]): Html =
     buildView(
       searchOptions = searchOptions,
       form = form,
-      numberOfMovements = numberOfMovements,
-      showResultCount = showResultCount,
-      currentSearch = currentSearch
+      numberOfMovements = numberOfMovements
     )
 
   private def viewWithErrors(searchOptions: GetDraftMovementsSearchOptions,
@@ -302,7 +295,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
           status(result) shouldBe Status.OK
-          Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 39, formProvider().fill(searchOptions), showResultCount = true)
+          Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 39, formProvider().fill(searchOptions))
         }
       }
 
@@ -326,9 +319,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           Html(contentAsString(result)) shouldBe successView(
             searchOptions = searchOptions,
             numberOfMovements = 39,
-            form = formProvider().fill(searchOptions),
-            showResultCount = true,
-            currentSearch = Some("search term")
+            form = formProvider().fill(searchOptions)
           )
         }
       }

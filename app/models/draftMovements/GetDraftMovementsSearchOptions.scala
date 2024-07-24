@@ -38,7 +38,7 @@ case class GetDraftMovementsSearchOptions(
                                            exciseProductCode: Option[String] = None
                                          ) {
 
-  val hasFilterApplied = Seq(
+  val hasFilterApplied: Boolean = Seq(
     searchValue,
     draftHasErrors,
     destinationTypes,
