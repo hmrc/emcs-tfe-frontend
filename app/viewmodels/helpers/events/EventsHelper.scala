@@ -32,6 +32,7 @@ import utils.DateUtils
 import viewmodels.helpers.TimelineHelper
 import views.html.components.{bullets, link, p, summary_list}
 
+import java.time.{LocalDateTime, ZoneOffset}
 import javax.inject.Inject
 
 class EventsHelper @Inject()(
@@ -349,14 +350,25 @@ class EventsHelper @Inject()(
     )
   }
 
-  private def getIE819EventDetail(event: MovementHistoryEvent, movement: GetMovementResponse): NotificationOfAlertOrRejectionModel =
-    movement.notificationOfAlertOrRejection.flatMap(_.find(_.notificationDateAndTime == event.eventDate)).getOrElse {
-      throw new BadRequestException(s"Unable to find the IE819 event details for the event for the date: ${event.eventDate}}")
-    }
+  private def getIE819EventDetail(event: MovementHistoryEvent, movement: GetMovementResponse): NotificationOfAlertOrRejectionModel = {
+    for {
+      alertRejections <- movement.notificationOfAlertOrRejection
+      dateTime = findClosestDate(alertRejections.map(_.notificationDateAndTime), event.eventDate)
+      event <- alertRejections.find(_.notificationDateAndTime == dateTime)
+    } yield event
+  }.getOrElse(throw new BadRequestException(s"Unable to find the IE819 event details for the event for the date: ${event.eventDate}}"))
 
-  private def getIE837EventDetail(event: MovementHistoryEvent, movement: GetMovementResponse): NotificationOfDelayModel =
-    movement.notificationOfDelay.flatMap(_.find(_.dateTime == event.eventDate)).getOrElse {
-      throw new BadRequestException(s"Unable to find the IE837 event details for the event for the date: ${event.eventDate}}")
-    }
+  private def getIE837EventDetail(event: MovementHistoryEvent, movement: GetMovementResponse): NotificationOfDelayModel = {
+    for {
+      notificationOfDelay <- movement.notificationOfDelay
+      dateTime = findClosestDate(notificationOfDelay.map(_.dateTime), event.eventDate)
+      event <- notificationOfDelay.find(_.dateTime == dateTime)
+    } yield event
+  }.getOrElse(throw new BadRequestException(s"Unable to find the IE837 event details for the event for the date: ${event.eventDate}}"))
+
+
+  private[events] def findClosestDate(dateTimes: Seq[LocalDateTime], targetDateTime: LocalDateTime): LocalDateTime =
+    dateTimes.minBy(date => math.abs(date.toEpochSecond(ZoneOffset.UTC) - targetDateTime.toEpochSecond(ZoneOffset.UTC)))
+
 
 }

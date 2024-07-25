@@ -656,4 +656,46 @@ class EventsHelperSpec extends SpecBase
         }
       }
   }
+
+  ".findClosestDate" should {
+
+    "return the closest date" in {
+
+      val dateTimes = Seq(
+        LocalDateTime.parse("2024-01-01T14:05:22.499"),
+        LocalDateTime.parse("2024-01-01T14:05:26.985"),
+        LocalDateTime.parse("2024-01-01T14:25:01.155"),
+        LocalDateTime.parse("2024-01-01T14:27:01.155"),
+        LocalDateTime.parse("2024-01-01T14:27:02.500"),
+        LocalDateTime.parse("2024-01-01T14:30:01.567"),
+        LocalDateTime.parse("2024-01-01T14:45:05.100"),
+        LocalDateTime.parse("2024-01-01T14:46:01.999")
+      )
+
+      helper.findClosestDate(
+        dateTimes = dateTimes,
+        targetDateTime = LocalDateTime.parse("2024-01-01T14:27:01.499")
+      ) mustBe LocalDateTime.parse("2024-01-01T14:27:01.155")
+
+      helper.findClosestDate(
+        dateTimes = dateTimes,
+        targetDateTime = LocalDateTime.parse("2024-01-01T14:27:02.499")
+      ) mustBe LocalDateTime.parse("2024-01-01T14:27:02.500")
+
+      helper.findClosestDate(
+        dateTimes = dateTimes,
+        targetDateTime = LocalDateTime.parse("2024-01-01T14:05:22")
+      ) mustBe LocalDateTime.parse("2024-01-01T14:05:22.499")
+
+      helper.findClosestDate(
+        dateTimes = dateTimes,
+        targetDateTime = LocalDateTime.parse("2024-01-02T14:05:22")
+      ) mustBe LocalDateTime.parse("2024-01-01T14:46:01.999")
+
+      helper.findClosestDate(
+        dateTimes = dateTimes,
+        targetDateTime = LocalDateTime.parse("2024-01-01T14:27:02.500")
+      ) mustBe LocalDateTime.parse("2024-01-01T14:27:02.500")
+    }
+  }
 }
