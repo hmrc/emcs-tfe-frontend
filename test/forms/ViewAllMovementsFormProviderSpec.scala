@@ -92,14 +92,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
       boundForm.get mustBe MovementListSearchOptions(searchValue = Some("beans"))
     }
 
-    "remove any non-query-params from the form values" in {
-      val boundForm = form.bind(Map(
-        searchValue -> "ARC1/injecting viruses?query=thing&beans",
-        sortBy -> Newest.code
-      ))
-      boundForm.get mustBe MovementListSearchOptions(searchValue = Some("ARC1injecting virusesquerythingbeans"))
-    }
-
     "return an error when the value is invalid" in {
       val boundForm = form.bind(Map(
         searchValue -> "<script>alert('hi')</script>",

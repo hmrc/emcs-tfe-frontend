@@ -20,18 +20,6 @@ import base.SpecBase
 
 class packageSpec extends SpecBase {
 
-  "removeAnyQueryParamCharacters" must {
-    "remove any query param characters" in {
-      removeAnyQueryParamCharacters("value&unexpected/ parameter2") mustBe "valueunexpected parameter2"
-    }
-    "trim leading and trailing whitespace" in {
-      removeAnyQueryParamCharacters(" value&unexpected/ parameter2 ") mustBe "valueunexpected parameter2"
-    }
-    "not remove alphanumeric characters" in {
-      removeAnyQueryParamCharacters("valueunexpected123 parameter") mustBe "valueunexpected123 parameter"
-    }
-  }
-
   "removeAnyNonAlphanumerics" must {
     "remove any non-alphanumeric characters" in {
       removeAnyNonAlphanumerics("value&unexpected/ parameter2") mustBe "valueunexpectedparameter2"

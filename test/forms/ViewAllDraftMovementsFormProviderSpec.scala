@@ -87,14 +87,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       actualResult mustBe expectedResult
     }
 
-    "remove any non-query-params from the form values" in {
-      val boundForm = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
-        searchValue -> "ARC1/injecting viruses?query=thing&beans",
-      ))
-      boundForm.get mustBe GetDraftMovementsSearchOptions(searchValue = Some("ARC1injecting virusesquerythingbeans"))
-    }
-
     "return an error when the value is invalid" in {
       val boundForm = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
