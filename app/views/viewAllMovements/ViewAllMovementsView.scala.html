@@ -73,7 +73,7 @@
         val resultCount = if(asPageTitle) {
             helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName))
         } else {
-            helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName))
+            hidden(helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName)))
         }
 
         s"$resultCount ${messages("viewAllMovements.heading")}"
