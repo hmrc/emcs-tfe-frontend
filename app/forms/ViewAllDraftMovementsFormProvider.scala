@@ -30,9 +30,7 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
     Form(
       mapping(
         ViewAllDraftMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
-        ViewAllDraftMovementsFormProvider.searchValue ->
-          optional(playText().verifying(regexpUnlessEmpty(XSS_REGEX, "error.invalidCharacter")))
-            .transform[Option[String]](_.map(removeAnyQueryParamCharacters), identity),
+        ViewAllDraftMovementsFormProvider.searchValue -> optional(playText().verifying(regexpUnlessEmpty(XSS_REGEX, "error.invalidCharacter"))),
         ViewAllDraftMovementsFormProvider.draftHasErrors -> set(enumerable[DraftMovementsErrorsOption]()),
         ViewAllDraftMovementsFormProvider.destinationTypes -> set(enumerable[DestinationTypeSearchOption]()),
         ViewAllDraftMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),

@@ -29,9 +29,7 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
     Form(
       mapping(
         ViewAllMovementsFormProvider.searchKey -> optional(playText()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
-        ViewAllMovementsFormProvider.searchValue ->
-          optional(playText().verifying(regexpUnlessEmpty(XSS_REGEX, "error.invalidCharacter")))
-            .transform[Option[String]](_.map(removeAnyQueryParamCharacters), identity),
+        ViewAllMovementsFormProvider.searchValue -> optional(playText().verifying(regexpUnlessEmpty(XSS_REGEX, "error.invalidCharacter"))),
         ViewAllMovementsFormProvider.sortBy -> enumerable[MovementSortingSelectOption](),
         ViewAllMovementsFormProvider.traderRole -> set(enumerable[MovementFilterDirectionOption]()),
         ViewAllMovementsFormProvider.undischarged -> set(enumerable[MovementFilterUndischargedOption]()),
