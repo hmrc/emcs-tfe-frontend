@@ -49,4 +49,21 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
     Table(
       rows = dataRows(ern, movements, directionFilterOption)(messages)
     )
+
+  def generatePageTitle(totalMovements: Int, searchTerm: Option[String], isFiltered: Boolean, sortBy: String)
+                       (implicit messages: Messages): String = {
+
+    val filtered = if (isFiltered) messages("viewAllMovements.filtered") else ""
+
+    val searchTermMessage = searchTerm match {
+      case Some(searchTerm) => messages(s"viewAllMovements.searchTerm", searchTerm)
+      case None => ""
+    }
+
+    totalMovements match {
+      case 0 => messages(s"viewAllMovements.noResultsFound", "", filtered, searchTermMessage)
+      case 1 => messages(s"viewAllMovements.resultFound", "", filtered, searchTermMessage, sortBy)
+      case _ => messages(s"viewAllMovements.resultsFound", totalMovements, filtered, searchTermMessage, sortBy)
+    }
+  }
 }

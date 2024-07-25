@@ -97,8 +97,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
           exciseItems = SelectItemHelper.constructSelectItems(exciseCodesWithDefault, None, searchOptions.exciseProductCode),
           pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions),
           totalMovements = draftMovements.count,
-          showResultCount = searchOptions.hasFilterApplied,
-          currentSearch = searchOptions.searchValue
+          currentFilters = searchOptions
         ))
       }
     }

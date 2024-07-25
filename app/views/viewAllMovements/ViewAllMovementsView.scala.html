@@ -45,7 +45,6 @@
         helper: ViewAllMovementsTableHelper
 )
 
-
 @(
         form: Form[_],
         action: Call,
@@ -59,18 +58,22 @@
         pagination: Option[Pagination],
         directionFilterOption: MovementFilterDirectionOption,
         totalMovements: Int,
-        showResultCount: Boolean,
-        currentSearch: Option[String]
+        currentFilters: MovementListSearchOptions
 )(implicit request: DataRequest[_], messages: Messages)
+
+@defaultFilters = @{MovementListSearchOptions(
+    sortBy = currentFilters.sortBy,
+    searchValue = currentFilters.searchValue
+)}
 
 @heading(asPageTitle: Boolean = false) = @{
 
-    if(showResultCount) {
+    if(currentFilters.hasFilterApplied) {
 
         val resultCount = if(asPageTitle) {
-            messages("viewAllMovements.resultsFound", totalMovements)
+            helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName))
         } else {
-            hidden(messages("viewAllMovements.resultsFound", totalMovements))
+            helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName))
         }
 
         s"$resultCount ${messages("viewAllMovements.heading")}"

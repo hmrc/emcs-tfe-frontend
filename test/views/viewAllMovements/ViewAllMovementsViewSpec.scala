@@ -121,8 +121,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
   def asDocument(pagination: Option[Pagination],
                  direction: MovementFilterDirectionOption = All,
                  movementListResponse: GetMovementListResponse = getMovementListResponse,
-                 showResultCount: Boolean = false,
-                 currentSearch: Option[String] = None
+                 searchOptions: MovementListSearchOptions = MovementListSearchOptions()
                 )(implicit messages: Messages): Document = Jsoup.parse(view(
     form = formProvider(),
     action = routes.ViewAllMovementsController.onPageLoad("ern", MovementListSearchOptions()),
@@ -136,8 +135,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     pagination = pagination,
     directionFilterOption = direction,
     totalMovements = movementListResponse.count,
-    showResultCount = true,
-    currentSearch = currentSearch
+    currentFilters = searchOptions
   ).toString())
 
 
@@ -344,15 +342,27 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
       }
     }
 
+    s"being rendered with the result count should show the correct heading for no movements" when {
+
+      val response: GetMovementListResponse = GetMovementListResponse(Seq(), 0)
+
+      implicit val doc: Document = asDocument(None, movementListResponse = response, searchOptions = MovementListSearchOptions(searchValue = Some("beans")))
+
+      behave like pageWithExpectedElementsAndMessages(Seq(
+        Selectors.title -> English.titleWithNoResults,
+        Selectors.h1 -> English.headingWithNoResults
+      ))
+    }
+
     s"being rendered with the result count should show the correct heading for one movement" when {
 
       val response: GetMovementListResponse = GetMovementListResponse(Seq(movement1), 1)
 
-      implicit val doc: Document = asDocument(None, movementListResponse = response, showResultCount = true)
+      implicit val doc: Document = asDocument(None, movementListResponse = response, searchOptions = MovementListSearchOptions(searchValue = Some("beans")))
 
       behave like pageWithExpectedElementsAndMessages(Seq(
-        Selectors.title -> English.titleWithCount(1),
-        Selectors.h1 -> English.headingWithCount(1)
+        Selectors.title -> English.titleWithOneResult,
+        Selectors.h1 -> English.headingWithOneResult
       ))
     }
 
@@ -360,7 +370,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
 
       val response: GetMovementListResponse = GetMovementListResponse(Seq(movement1, movement2), 2)
 
-      implicit val doc: Document = asDocument(None, movementListResponse = response, showResultCount = true)
+      implicit val doc: Document = asDocument(None, movementListResponse = response, searchOptions = MovementListSearchOptions(searchValue = Some("beans")))
 
       behave like pageWithExpectedElementsAndMessages(Seq(
         Selectors.title -> English.titleWithCount(2),

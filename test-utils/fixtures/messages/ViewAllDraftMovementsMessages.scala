@@ -28,7 +28,11 @@ object ViewAllDraftMovementsMessages {
     val heading: String = "Drafts"
     val title: String = titleHelper(heading)
 
-    def headingWithCount(count: Int): String = s"$count results found - Drafts"
+    val headingWithNoResults: String = "No results found for beans - Drafts"
+    val titleWithNoResults: String = titleHelper(headingWithNoResults)
+    val headingWithOneResult: String = "1 result found for beans sorted by Last updated (newest) - Drafts"
+    val titleWithOneResult: String = titleHelper(headingWithOneResult)
+    def headingWithCount(count: Int): String = s"$count results found for beans sorted by Last updated (newest) - Drafts"
     def titleWithCount(count: Int): String = titleHelper(headingWithCount(count))
 
     def dateOfDispatch(string: String): String = s"Date of dispatch: $string"

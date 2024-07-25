@@ -109,8 +109,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
           pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions),
           directionFilterOption = searchOptions.traderRole.getOrElse(MovementFilterDirectionOption.All),
           totalMovements = movementList.count,
-          showResultCount = searchOptions.hasFilterApplied,
-          currentSearch = searchOptions.searchValue
+          currentFilters = searchOptions
         ))
       }
     }

@@ -61,20 +61,24 @@
         exciseItems: Seq[SelectItem],
         pagination: Option[Pagination],
         totalMovements: Int,
-        showResultCount: Boolean,
-        currentSearch: Option[String]
+        currentFilters: GetDraftMovementsSearchOptions
 )(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
 
-@heading(asPageTitle: Boolean = false) = @{
-    if(showResultCount) {
+@defaultFilters = @{GetDraftMovementsSearchOptions(
+    sortBy = currentFilters.sortBy,
+    searchValue = currentFilters.searchValue
+)}
 
-        val resultCount = if(asPageTitle) {
-            messages("viewAllDraftMovements.resultsFound", totalMovements)
+@heading(asPageTitle: Boolean = false) = @{
+    if(currentFilters.hasFilterApplied) {
+
+        val resultOutcome = if(asPageTitle) {
+            helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName))
         } else {
-            hidden(messages("viewAllDraftMovements.resultsFound", totalMovements))
+            hidden(helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName)))
         }
 
-        s"$resultCount ${messages("viewAllDraftMovements.heading")}"
+        s"$resultOutcome ${messages("viewAllDraftMovements.heading")}"
     } else {
         messages("viewAllDraftMovements.heading")
     }
@@ -175,7 +179,7 @@
                         )
 
                         @link(
-                            link = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url,
+                            link = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, defaultFilters).url,
                             messageKey = "viewAllDraftMovements.filters.clear.button",
                             id = Some("clearFiltersButton"),
                             classes = "govuk-link govuk-link--no-visited-state"
