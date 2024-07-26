@@ -16,11 +16,19 @@
 
 package config
 
+import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
+
 object EnrolmentKeys {
 
   val EMCS_ENROLMENT = "HMRC-EMCS-ORG"
   val ERN = "ExciseNumber"
   val ACTIVATED = "activated"
   val INACTIVE = "inactive"
+
+  def withActiveEmcsEnrolment(ern: String): Enrolment = Enrolment(
+    EnrolmentKeys.EMCS_ENROLMENT,
+    Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, ern)),
+    EnrolmentKeys.ACTIVATED
+  )
 
 }

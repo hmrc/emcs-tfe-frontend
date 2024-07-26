@@ -143,6 +143,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def denyDutyPaidUsers: Boolean = isEnabled(DenyDutyPaidUsers)
 
+  def messageStatisticsCacheTtl: Duration = Duration(configuration.get[String]("mongodb.messageStatistics.TTL"))
+  def messageStatisticsReplaceIndexes(): Boolean = configuration.get[Boolean]("mongodb.messageStatistics.replaceIndexes")
   def messagesCacheTtl: Duration = Duration(configuration.get[String]("mongodb.messages.TTL"))
   def messagesReplaceIndexes(): Boolean = configuration.get[Boolean]("mongodb.messages.replaceIndexes")
 

@@ -86,9 +86,8 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
           val response: WSResponse = await(request().get())
           response.status mustBe Status.OK
         }
-      }
-      "return an error page" when {
-        "downstream call returns unexpected JSON" in new Test {
+
+        "downstream call to Message Statistics returns unexpected JSON" in new Test {
           val emcsTfeResponseBody: JsValue = Json.parse(
             s"""
                |{
@@ -104,11 +103,10 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
           }
 
           val response: WSResponse = await(request().get())
-          response.status mustBe Status.INTERNAL_SERVER_ERROR
-          response.body must include("Sorry, we’re experiencing technical difficulties")
+          response.status mustBe Status.OK
         }
 
-        "downstream call returns something other than JSON" in new Test {
+        "downstream call to Message Statistics returns something other than JSON" in new Test {
           val emcsTfeResponseBody: Elem = <message>test message</message>
 
           override def setupStubs(): StubMapping = {
@@ -118,11 +116,9 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
           }
 
           val response: WSResponse = await(request().get())
-          response.status mustBe Status.INTERNAL_SERVER_ERROR
-          response.header("Content-Type") mustBe Some("text/html; charset=UTF-8")
-          response.body must include("Sorry, we’re experiencing technical difficulties")
+          response.status mustBe Status.OK
         }
-        "downstream call returns a non-200 HTTP response" in new Test {
+        "downstream call to Message Statistics returns a non-200 HTTP response" in new Test {
           val emcsTfeResponseBody: JsValue = Json.parse(
             s"""
                |{
@@ -138,8 +134,7 @@ class AccountHomeIntegrationSpec extends IntegrationBaseSpec with BaseFixtures {
           }
 
           val response: WSResponse = await(request().get())
-          response.status mustBe Status.INTERNAL_SERVER_ERROR
-          response.body must include("Sorry, we’re experiencing technical difficulties")
+          response.status mustBe Status.OK
         }
       }
     }

@@ -21,29 +21,42 @@ import connectors.emcsTfe.GetMessageStatisticsConnector
 import controllers.messages.routes
 import featureswitch.core.config.FeatureSwitching
 import models.auth.UserRequest
-import models.messages.MessagesSearchOptions
+import models.messages.{MessageStatisticsCache, MessagesSearchOptions}
 import models.response.MessageStatisticsException
 import models.response.emcsTfe.GetMessageStatisticsResponse
+import play.api.mvc.Request
+import repositories.MessageStatisticsRepository
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Logging
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class GetMessageStatisticsService @Inject()(connector: GetMessageStatisticsConnector,
+                                            messageStatisticsRepository: MessageStatisticsRepository,
                                             override val config: AppConfig
-                                           )(implicit ec: ExecutionContext) extends FeatureSwitching {
+                                           )(implicit ec: ExecutionContext) extends FeatureSwitching with Logging {
 
-  def getMessageStatistics(ern: String)(implicit hc: HeaderCarrier, request: UserRequest[_]): Future[Option[GetMessageStatisticsResponse]] = {
+  def getMessageStatistics(ern: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[Option[GetMessageStatisticsResponse]] = {
 
-    val isOnMessagesPage = request.request.path.contains(
-      routes.ViewAllMessagesController.onPageLoad(request.ern, MessagesSearchOptions()).path().split("\\?").head
+    val isOnMessagesPage = request.path.contains(
+      routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).path().split("\\?").head
     )
 
     if(config.messageStatisticsNotificationEnabled || isOnMessagesPage) {
-      connector.getMessageStatistics(ern).map {
-        case Right(messageStatistics) => Some(messageStatistics)
-        case _ => throw MessageStatisticsException(s"No message statistics found for trader $ern")
+      messageStatisticsRepository.get(ern).flatMap {
+        case Some(cacheValue) => Future.successful(Some(cacheValue.statistics))
+        case _ =>
+          connector.getMessageStatistics(ern).map {
+            case Right(messageStatistics) =>
+              //Intentional non-blocking async storage - as if fails, processing can continue anyway
+              messageStatisticsRepository.set(MessageStatisticsCache(ern, messageStatistics))
+              Some(messageStatistics)
+            case _ =>
+              logger.warn(s"[getMessageStatistics] No message statistics found for trader $ern")
+              None
+          }
       }
     } else {
       Future.successful(None)
