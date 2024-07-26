@@ -1,4 +1,5 @@
 # Add all the application routes to the app.routes file
 ->         /emcs/account         app.Routes
+->         /emcs/partials        partials.Routes
 ->         /emcs                 redirect.Routes
 ->         /                     health.Routes

@@ -1,0 +1,2 @@
+#Partial which returns the Navigation Bar to render in sub-services. Centralising rendering logic.
+GET        /navigation/trader/:ern                  controllers.partials.NavBarPartialController.navBar(ern: String)

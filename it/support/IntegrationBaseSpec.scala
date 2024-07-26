@@ -60,6 +60,11 @@ trait IntegrationBaseSpec extends SessionCookieBaker with SpecBase with WireMock
     super.afterAll()
   }
 
+  def buildAPIRequest(path: String, additionalHeaders: Map[String, String] = Map()): WSRequest = client
+    .url(s"http://localhost:$port$path")
+    .withHttpHeaders(Seq(HeaderNames.AUTHORIZATION -> "auth") ++ additionalHeaders.toSeq: _*)
+    .withFollowRedirects(false)
+
   def buildRequest(path: String, additionalCookieData: Map[String, String] = Map()): WSRequest = client
     .url(s"http://localhost:$port/emcs/account$path")
     .withHttpHeaders(HeaderNames.COOKIE -> bakeSessionCookie(additionalCookieData))
