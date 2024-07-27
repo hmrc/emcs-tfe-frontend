@@ -65,30 +65,34 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
           s"have the correct navigation links for $roleType" when {
             "EnableXIPCInCaM is enabled" in {
               enable(EnableXIPCInCaM)
-              val navigationLinks = doc.getElementsByTag("ul").get(0).children()
+              val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
               navigationLinks.get(0).text mustBe "Home"
               navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
               navigationLinks.get(2).text mustBe "Drafts"
               navigationLinks.get(3).text mustBe "Movements"
+              navigationLinks.get(4).text mustBe "Business tax account"
             }
             "EnableXIPCInCaM is disabled" in {
               disable(EnableXIPCInCaM)
-              val navigationLinks = doc.getElementsByTag("ul").get(0).children()
+              val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
               navigationLinks.get(0).text mustBe "Home"
               navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
               navigationLinks.get(2).text mustBe "Movements"
+              navigationLinks.get(3).text mustBe "Business tax account"
             }
           }
         } else {
           s"have the correct navigation links for $roleType" in {
-            val navigationLinks = doc.getElementsByTag("ul").get(0).children()
+            val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
             navigationLinks.get(0).text mustBe "Home"
             navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
             if (roleType.canCreateNewMovement(appConfig)) {
               navigationLinks.get(2).text mustBe "Drafts"
               navigationLinks.get(3).text mustBe "Movements"
+              navigationLinks.get(4).text mustBe "Business tax account"
             } else {
               navigationLinks.get(2).text mustBe "Movements"
+              navigationLinks.get(3).text mustBe "Business tax account"
             }
           }
         }
@@ -151,6 +155,11 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
             prevalidateLinks.get(1).text mustBe "Check Europa to find out if a trader can receive excise goods"
             prevalidateLinks.get(1).getElementsByTag("a").get(0).attr("href") mustBe appConfig.europaCheckLink
           }
+
+          doc.getElementsByTag("h2").get(4).text mustBe "Business tax account"
+          val btaLink = doc.getElementById("bta-link")
+          btaLink.text mustBe "Go to your business tax account"
+          btaLink.attr("href") mustBe appConfig.businessTaxAccountUrl
         }
     }
   }

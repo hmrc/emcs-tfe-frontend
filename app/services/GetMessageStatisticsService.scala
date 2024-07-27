@@ -20,9 +20,7 @@ import config.AppConfig
 import connectors.emcsTfe.GetMessageStatisticsConnector
 import controllers.messages.routes
 import featureswitch.core.config.FeatureSwitching
-import models.auth.UserRequest
 import models.messages.{MessageStatisticsCache, MessagesSearchOptions}
-import models.response.MessageStatisticsException
 import models.response.emcsTfe.GetMessageStatisticsResponse
 import play.api.mvc.Request
 import repositories.MessageStatisticsRepository

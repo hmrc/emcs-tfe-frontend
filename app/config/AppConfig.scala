@@ -129,6 +129,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def signUpBetaFormUrl: String = configuration.get[String]("urls.signupBetaForm")
 
+  def businessTaxAccountUrl: String = configuration.get[String]("urls.businessTaxAccount")
+
   private def traderKnownFactsReferenceDataService: String =
     if (isEnabled(StubGetTraderKnownFacts)) {
       servicesConfig.baseUrl("emcs-tfe-reference-data-stub")

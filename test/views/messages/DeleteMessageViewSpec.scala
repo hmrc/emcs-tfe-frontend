@@ -126,7 +126,7 @@ class DeleteMessageViewSpec extends ViewSpecBase with ViewBehaviours with Messag
 
     "render the nav links" in {
       val document = viewAsDocument(previousPage = ViewAllMessagesPage)
-      val homeLink = document.select(".moj-primary-navigation").select("a").first()
+      val homeLink = document.select("#navigation-home-link")
       homeLink.text mustBe "Home"
     }
   }

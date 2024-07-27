@@ -97,6 +97,11 @@
             )
         }
     )
+
+    @h2("accountHome.bta", classes = "govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1")
+    @p() {
+        @link(appConfig.businessTaxAccountUrl, "accountHome.btaLink", id = Some("bta-link"))
+    }
 }
 
 

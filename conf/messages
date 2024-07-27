@@ -694,6 +694,7 @@ navigation.home = Home
 navigation.messages = Messages
 navigation.drafts = Drafts
 navigation.movements = Movements
+navigation.bta = Business tax account
 
 accountHome.caption = Account home
 accountHome.roleType.GBWK = Excise warehousekeeper located in Great Britain
@@ -717,6 +718,8 @@ accountHome.undischargedMovementsLink = Undischarged movements
 accountHome.draftMovementsLink = Draft movements
 accountHome.createMovementLink = Create a new movement
 accountHome.prevalidate = Prevalidate
+accountHome.bta = Business tax account
+accountHome.btaLink = Go to your business tax account
 accountHome.checkLink = Check if a trader can receive excise goods
 accountHome.checkLink.europa = Check Europa to find out if a trader can receive excise goods
 
