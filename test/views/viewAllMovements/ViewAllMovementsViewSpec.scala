@@ -337,7 +337,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
       }
 
       "render the nav links" in {
-        val homeLink = doc.select(".moj-primary-navigation").select("a").first()
+        val homeLink = doc.select("#navigation-home-link")
         homeLink.text mustBe "Home"
       }
     }

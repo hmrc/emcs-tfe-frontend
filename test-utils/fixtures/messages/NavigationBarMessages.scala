@@ -26,6 +26,7 @@ object NavigationBarMessages {
     }
     val drafts = "Drafts"
     val movements = "Movements"
+    val bta = "Business Tax Account"
   }
 
   object English extends ViewMessages with BaseEnglish

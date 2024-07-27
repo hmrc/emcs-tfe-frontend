@@ -26,61 +26,47 @@
 
 @roleType = @{RoleType.fromExciseRegistrationNumber(navInfo.ern)}
 
-<div class="moj-primary-navigation">
+<nav id="secondary-nav" class="hmrc-account-menu" aria-label="Account" data-module="hmrc-account-menu">
 
-    <div class="moj-primary-navigation__container">
+    <a id="navigation-home-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Home)) { hmrc-account-menu__link--active}"
+        @if(navInfo.currentSection.contains(PageSection.Home)) { aria-current="page" }
+        href="@appConfig.host@appConfig.emcsTfeHomeUrl">
+        <span class="hmrc-account-icon hmrc-account-icon--home">@messages("navigation.home")</span>
+    </a>
 
-        <div class="moj-primary-navigation__nav">
+    <a id="navigation-messages-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Messages)) { hmrc-account-menu__link--active}"
+        @if(navInfo.currentSection.contains(PageSection.Messages)) { aria-current="page" }
+        href="@appConfig.host@appConfig.emcsTfeMessagesUrl(navInfo.ern)">
+        @messages("navigation.messages")
+        @navInfo.countOfNewMessages.map { count =>
+            <span class="hmrc-notification-badge govuk-!-margin-left-1">@count</span>
+        }
+    </a>
 
-            <nav class="moj-primary-navigation" aria-label="Primary navigation">
+    @if(roleType.canCreateNewMovement(appConfig)) {
+        <a id="navigation-drafts-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Drafts)) { hmrc-account-menu__link--active}"
+            @if(navInfo.currentSection.contains(PageSection.Drafts)) {
+                aria-current="page"
+            }
+        href="@appConfig.host @appConfig.emcsTfeDraftMovementsUrl(navInfo.ern)">
+        @messages("navigation.drafts")
+        </a>
+    }
 
-                <ul class="moj-primary-navigation__list">
-                    <li class="moj-primary-navigation__item">
-                        <a id="navigation-home-link"
-                           class="moj-primary-navigation__link"
-                           @if(navInfo.currentSection.contains(PageSection.Home)) { aria-current="page" }
-                           href="@appConfig.host@appConfig.emcsTfeHomeUrl">
-                            @messages("navigation.home")
-                        </a>
-                    </li>
+    <a id="navigation-movements-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Movements)) { hmrc-account-menu__link--active}"
+        @if(navInfo.currentSection.contains(PageSection.Movements)) { aria-current="page" }
+        href="@appConfig.host@appConfig.emcsTfeListMovementsUrl(navInfo.ern)">
+        @messages("navigation.movements")
+    </a>
 
-                    <li class="moj-primary-navigation__item">
-                        <a id="navigation-messages-link"
-                           class="moj-primary-navigation__link"
-                           @if(navInfo.currentSection.contains(PageSection.Messages)) { aria-current="page" }
-                           href="@appConfig.host@appConfig.emcsTfeMessagesUrl(navInfo.ern)">@messages("navigation.messages")
-                            @if(appConfig.messageStatisticsNotificationEnabled) {
-                                @navInfo.countOfNewMessages.map { count =>
-                                    <span class="hmrc-notification-badge govuk-!-margin-left-1">@count</span>
-                                }
-                            }
-                        </a>
-                    </li>
-
-                    @if(roleType.canCreateNewMovement(appConfig)) {
-                        <li class="moj-primary-navigation__item">
-                            <a id="navigation-drafts-link"
-                               class="moj-primary-navigation__link"
-                               @if(navInfo.currentSection.contains(PageSection.Drafts)) { aria-current="page" }
-                               href="@appConfig.host@appConfig.emcsTfeDraftMovementsUrl(navInfo.ern)">@messages("navigation.drafts")
-                            </a>
-                        </li>
-                    }
-
-                    <li class="moj-primary-navigation__item">
-                        <a id="navigation-movements-link"
-                           class="moj-primary-navigation__link"
-                           @if(navInfo.currentSection.contains(PageSection.Movements)) { aria-current="page" }
-                           href="@appConfig.host@appConfig.emcsTfeListMovementsUrl(navInfo.ern)">@messages("navigation.movements")</a>
-                    </li>
-                </ul>
-
-            </nav>
-
-        </div>
-    </div>
-
-</div>
+    <ul id="navigation-bta-link" class="hmrc-account-menu__main">
+        <li>
+            <a href="@appConfig.businessTaxAccountUrl" class="hmrc-account-menu__link">
+                <span class="hmrc-account-icon hmrc-account-icon--home">Business Tax Account</span>
+            </a>
+        </li>
+    </ul>
+</nav>
 
 @{
     //$COVERAGE-OFF$

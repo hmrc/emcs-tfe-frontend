@@ -65,7 +65,7 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
           s"have the correct navigation links for $roleType" when {
             "EnableXIPCInCaM is enabled" in {
               enable(EnableXIPCInCaM)
-              val navigationLinks = doc.getElementsByTag("ul").get(0).children()
+              val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
               navigationLinks.get(0).text mustBe "Home"
               navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
               navigationLinks.get(2).text mustBe "Drafts"
@@ -73,7 +73,7 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
             }
             "EnableXIPCInCaM is disabled" in {
               disable(EnableXIPCInCaM)
-              val navigationLinks = doc.getElementsByTag("ul").get(0).children()
+              val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
               navigationLinks.get(0).text mustBe "Home"
               navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
               navigationLinks.get(2).text mustBe "Movements"
@@ -81,7 +81,7 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
           }
         } else {
           s"have the correct navigation links for $roleType" in {
-            val navigationLinks = doc.getElementsByTag("ul").get(0).children()
+            val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
             navigationLinks.get(0).text mustBe "Home"
             navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
             if (roleType.canCreateNewMovement(appConfig)) {
