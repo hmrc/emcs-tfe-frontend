@@ -70,7 +70,9 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
               navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
               navigationLinks.get(2).text mustBe "Drafts"
               navigationLinks.get(3).text mustBe "Movements"
-              navigationLinks.get(4).text mustBe "Business tax account"
+              navigationLinks.get(4).text mustBe "Menu"
+              navigationLinks.get(4).hasClass("hidden") mustBe true
+              navigationLinks.get(5).text mustBe "Business tax account"
             }
             "EnableXIPCInCaM is disabled" in {
               disable(EnableXIPCInCaM)
@@ -78,7 +80,9 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
               navigationLinks.get(0).text mustBe "Home"
               navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
               navigationLinks.get(2).text mustBe "Movements"
-              navigationLinks.get(3).text mustBe "Business tax account"
+              navigationLinks.get(3).text mustBe "Menu"
+              navigationLinks.get(3).hasClass("hidden") mustBe true
+              navigationLinks.get(4).text mustBe "Business tax account"
             }
           }
         } else {
@@ -89,10 +93,14 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
             if (roleType.canCreateNewMovement(appConfig)) {
               navigationLinks.get(2).text mustBe "Drafts"
               navigationLinks.get(3).text mustBe "Movements"
-              navigationLinks.get(4).text mustBe "Business tax account"
+              navigationLinks.get(4).text mustBe "Menu"
+              navigationLinks.get(4).hasClass("hidden") mustBe true
+              navigationLinks.get(5).text mustBe "Business tax account"
             } else {
               navigationLinks.get(2).text mustBe "Movements"
-              navigationLinks.get(3).text mustBe "Business tax account"
+              navigationLinks.get(3).text mustBe "Menu"
+              navigationLinks.get(3).hasClass("hidden") mustBe true
+              navigationLinks.get(4).text mustBe "Business tax account"
             }
           }
         }
