@@ -1027,7 +1027,7 @@ class ViewMessageViewSpec extends ViewSpecBase
 
   "render the nav links" in {
     val document = asDocument(ie802ReminderToReportReceipt.message)
-    val homeLink = document.select(".moj-primary-navigation").select("a").first()
+    val homeLink = document.select("#navigation-home-link")
     homeLink.text mustBe "Home"
   }
 }

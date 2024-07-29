@@ -230,7 +230,7 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
           approved = Seq.empty,
           notApproved = Seq.empty
         ).toString())
-        val homeLink = doc.select(".moj-primary-navigation").select("a").first()
+        val homeLink = doc.select("#navigation-home-link")
         homeLink.text mustBe "Home"
       }
     }

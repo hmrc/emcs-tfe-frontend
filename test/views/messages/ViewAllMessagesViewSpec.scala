@@ -199,7 +199,7 @@ class ViewAllMessagesViewSpec extends ViewSpecBase with ViewBehaviours with Mess
 
   "render the nav links" in {
     val document = asDocument(1)
-    val homeLink = document.select(".moj-primary-navigation").select("a").first()
+    val homeLink = document.select("#navigation-home-link")
     homeLink.text mustBe "Home"
   }
 

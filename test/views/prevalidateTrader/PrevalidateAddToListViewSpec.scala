@@ -158,7 +158,7 @@ class PrevalidateAddToListViewSpec extends ViewSpecBase
             onSubmitCall = testOnwardRoute,
             addedEpcs = PrevalidateAddToListHelper.addedEpcs()
           ).toString())
-          val homeLink = document.select(".moj-primary-navigation").select("a").first()
+          val homeLink = document.select("#navigation-home-link")
           homeLink.text mustBe "Home"
         }
       }

@@ -517,7 +517,7 @@ class HistoryEventViewSpec extends ViewSpecBase
 
         "render the nav links" in {
           val document = createDocument(ie801Event, getMovementResponseModel)
-          val homeLink = document.select(".moj-primary-navigation").select("a").first()
+          val homeLink = document.select("#navigation-home-link")
           homeLink.text mustBe "Home"
         }
       }

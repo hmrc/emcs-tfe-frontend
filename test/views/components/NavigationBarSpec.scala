@@ -80,6 +80,10 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
                   doc.select("#navigation-movements-link").text() mustBe messagesForLanguage.movements
                 }
 
+                "render the Business tax account link" in new Test(messageStatisticsNotificationEnabled) {
+                  doc.select("#navigation-bta-link").text() mustBe messagesForLanguage.bta
+                }
+
                 "show the user which page they are currently on" in new Test(messageStatisticsNotificationEnabled) {
                   doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
                 }
