@@ -78,6 +78,8 @@ case class GetMovementResponse(
   }
 
   def isConsigneeOfMovement(ern: String): Boolean = consigneeTrader.exists(_.traderExciseNumber.getOrElse("") == ern)
+
+  def isConsignorOfMovement(ern: String): Boolean = consignorTrader.traderExciseNumber.contains(ern)
 }
 
 object GetMovementResponse {

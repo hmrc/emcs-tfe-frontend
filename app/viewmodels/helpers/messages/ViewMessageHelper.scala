@@ -72,6 +72,8 @@ class ViewMessageHelper @Inject()(
     messagesHelper.additionalInformationKey(message) -> message.messageType match {
       case Some(_) -> "IE871" if movement.exists(!_.isConsigneeOfMovement(request.ern)) =>
         Empty.asHtml
+      case Some(key) -> "IE802" if movement.exists(_.isConsignorOfMovement(request.ern)) =>
+        p() { Html(messages(key + ".consignor")) }
       case Some(key) -> _ =>
         p() { Html(messages(key)) }
       case _ =>
@@ -116,7 +118,7 @@ class ViewMessageHelper @Inject()(
       case ("IE802", false, 2, _) if movement.exists(_.isConsigneeOfMovement(request.ern)) =>
         Seq(viewMovementLink, reportOfReceiptLink, explainDelayLink, printMessageLink, deleteMessageLink)
       case ("IE802", false, 2, _) =>
-        Seq(viewMovementLink, explainDelayLink, printMessageLink, deleteMessageLink)
+        Seq(viewMovementLink, printMessageLink, deleteMessageLink)
       case ("IE802", false, 3, _) =>
         Seq(changeDestinationLink, explainDelayLink, viewMovementLink, printMessageLink, deleteMessageLink)
       case ("IE829", false, _, _) | ("IE837", true, 2, _) | ("IE839", false, _, _) =>
