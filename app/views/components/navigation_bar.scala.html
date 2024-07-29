@@ -48,7 +48,7 @@
             @if(navInfo.currentSection.contains(PageSection.Drafts)) {
                 aria-current="page"
             }
-        href="@appConfig.host @appConfig.emcsTfeDraftMovementsUrl(navInfo.ern)">
+        href="@appConfig.host@appConfig.emcsTfeDraftMovementsUrl(navInfo.ern)">
         @messages("navigation.drafts")
         </a>
     }
@@ -58,6 +58,8 @@
         href="@appConfig.host@appConfig.emcsTfeListMovementsUrl(navInfo.ern)">
         @messages("navigation.movements")
     </a>
+
+    <a href="#" class="hmrc-account-menu__link hmrc-account-menu__link--menu hidden" tabindex="-1" aria-hidden="true">@messages("navigation.menu")</a>
 
     <ul id="navigation-bta-link" class="hmrc-account-menu__main">
         <li>

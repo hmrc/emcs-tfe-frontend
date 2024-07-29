@@ -695,6 +695,7 @@ navigation.messages = Messages
 navigation.drafts = Drafts
 navigation.movements = Movements
 navigation.bta = Business tax account
+navigation.menu = Menu
 
 accountHome.caption = Account home
 accountHome.roleType.GBWK = Excise warehousekeeper located in Great Britain
