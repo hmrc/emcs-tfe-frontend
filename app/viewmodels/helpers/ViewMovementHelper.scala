@@ -217,7 +217,13 @@ class ViewMovementHelper @Inject()(
         messages(s"viewMovement.movement.summary.type.2.$destinationType")
 
       case (XIPA | XIPC, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
-        messages(s"viewMovement.movement.summary.type.dutyPaid.$destinationType")
+        messages(s"viewMovement.movement.summary.type.XIPAorXIPC.dutyPaid.$destinationType")
+
+      case (XIPB | XIPD, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
+        messages(s"viewMovement.movement.summary.type.XIPBorXIPD.dutyPaid.$destinationType") // TODO: test this
+
+      case (XITC, _) =>
+        messages("viewMovement.movement.summary.type.XITC") // TODO: test this
 
       case (userType, destinationType) =>
         logger.error(s"[constructMovementView][${PagerDutyTrigger.invalidUserType}] invalid UserType and movement scenario combination for MOV journey: $userType | $destinationType")

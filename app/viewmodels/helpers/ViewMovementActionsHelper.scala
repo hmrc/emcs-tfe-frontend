@@ -37,7 +37,7 @@ class ViewMovementActionsHelper @Inject()(
                                          ) extends Logging {
 
   def movementActions(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Html = {
-    val isConsignor = movement.consignorTrader.traderExciseNumber.contains(request.ern)
+    val isConsignor = movement.consignorTrader.traderExciseNumber.contains(request.ern) || movement.isFromTemporaryCertifiedConsignor // TODO: is this right?
     val isConsignee = movement.consigneeTrader.flatMap(_.traderExciseNumber).contains(request.ern)
 
     def when(bool: Boolean)(f: => Option[Html]): Option[Html] = Option.when(bool)(f).flatten

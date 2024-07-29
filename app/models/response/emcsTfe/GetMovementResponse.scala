@@ -80,6 +80,8 @@ case class GetMovementResponse(
   def isConsigneeOfMovement(ern: String): Boolean = consigneeTrader.exists(_.traderExciseNumber.getOrElse("") == ern)
 
   def isConsignorOfMovement(ern: String): Boolean = consignorTrader.traderExciseNumber.contains(ern)
+
+  def isFromTemporaryCertifiedConsignor: Boolean = consignorTrader.traderExciseNumber.exists(_.startsWith("XIPTA")) // TODO: test this
 }
 
 object GetMovementResponse {
