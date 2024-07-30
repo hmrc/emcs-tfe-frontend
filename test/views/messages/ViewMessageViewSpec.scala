@@ -88,7 +88,7 @@ class ViewMessageViewSpec extends ViewSpecBase
 
   Seq(
     ie801ReceivedMovement, ie801SubmittedMovement,
-    ie802ReminderToChangeDestination, ie802ReminderToProvideDestination,
+    ie802ReminderToChangeDestination, ie802ReminderToProvideDestination, ie802ReminderToReportReceiptAsAConsignor,
     ie803ReceivedChangeDestination, ie803ReceivedSplit,
     ie818ReceivedReportOfReceipt, ie818SubmittedReportOfReceipt,
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
