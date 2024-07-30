@@ -43,22 +43,26 @@ class GetMessageStatisticsService @Inject()(connector: GetMessageStatisticsConne
     )
 
     if(config.messageStatisticsNotificationEnabled || isOnMessagesPage) {
-      messageStatisticsRepository.get(ern).flatMap {
-        case Some(cacheValue) => Future.successful(Some(cacheValue.statistics))
-        case _ =>
-          connector.getMessageStatistics(ern).map {
-            case Right(messageStatistics) =>
-              //Intentional non-blocking async storage - as if fails, processing can continue anyway
-              messageStatisticsRepository.set(MessageStatisticsCache(ern, messageStatistics))
-              Some(messageStatistics)
-            case _ =>
-              logger.warn(s"[getMessageStatistics] No message statistics found for trader $ern")
-              None
-          }
-      }
+      if(isOnMessagesPage) retrieveFromCore(ern) else retrieveFromCache(ern)
     } else {
       Future.successful(None)
     }
   }
 
+  private def retrieveFromCache(ern: String)(implicit hc: HeaderCarrier): Future[Option[GetMessageStatisticsResponse]] =
+    messageStatisticsRepository.get(ern).flatMap {
+      case Some(cacheValue) => Future.successful(Some(cacheValue.statistics))
+      case _ => retrieveFromCore(ern)
+    }
+
+  private def retrieveFromCore(ern: String)(implicit hc: HeaderCarrier): Future[Option[GetMessageStatisticsResponse]] =
+    connector.getMessageStatistics(ern).map {
+      case Right(messageStatistics) =>
+        //Intentional non-blocking async storage - as if fails, processing can continue anyway
+        messageStatisticsRepository.set(MessageStatisticsCache(ern, messageStatistics))
+        Some(messageStatistics)
+      case _ =>
+        logger.warn(s"[getMessageStatistics] No message statistics found for trader $ern")
+        None
+    }
 }

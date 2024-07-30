@@ -47,7 +47,7 @@ class GetMessageStatisticsServiceSpec extends SpecBase with BaseFixtures with Sc
 
     "return Some(MessageStatistics)" when {
 
-      "the MessagesStatisticsNotification feature switch is enabled" when {
+      "the MessagesStatisticsNotification feature switch is enabled and NOT on the messages page" when {
 
         "the cache returns a value" must {
 
@@ -74,16 +74,21 @@ class GetMessageStatisticsServiceSpec extends SpecBase with BaseFixtures with Sc
         }
       }
 
-      "the MessagesStatisticsNotification feature switch is disabled BUT the request is from the Messages page" in {
+      "the MessagesStatisticsNotification feature switch is disabled BUT the request is from the Messages page" should {
 
-        implicit val request: UserRequest[_] = userRequest(FakeRequest(
-          method = "GET",
-          path = controllers.messages.routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url
-        ), testErn)
+        "always return the value from Core and not the Cache to ensure up to date" in {
 
-        MockedAppConfig.messageStatisticsNotificationEnabled.returns(false)
-        MockMessageStatisticsRepository.get(testErn).returns(Future.successful(Some(MessageStatisticsCache(testErn, testMessageStatistics))))
-        testService.getMessageStatistics(testErn).futureValue mustBe Some(testMessageStatistics)
+          implicit val request: UserRequest[_] = userRequest(FakeRequest(
+            method = "GET",
+            path = controllers.messages.routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url
+          ), testErn)
+
+          MockedAppConfig.messageStatisticsNotificationEnabled.returns(false)
+          MockMessageStatisticsRepository.get(testErn).never()
+          MockGetMessageStatisticsConnector.getMessageStatistics(testErn).returns(Future.successful(Right(testMessageStatistics)))
+          MockMessageStatisticsRepository.set(MessageStatisticsCache(testErn, testMessageStatistics)).returns(Future.successful(true))
+          testService.getMessageStatistics(testErn).futureValue mustBe Some(testMessageStatistics)
+        }
       }
     }
 
