@@ -17,7 +17,9 @@
 package models.response.emcsTfe
 
 import models.MovementEadStatus
+import models.common.RoleType.XIPC
 import models.common._
+import models.requests.DataRequest
 import models.response.emcsTfe.customsRejection.NotificationOfCustomsRejectionModel
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.ReportOfReceiptModel
@@ -77,11 +79,13 @@ case class GetMovementResponse(
     ).toLocalDate.formatDateForUIOutput()
   }
 
-  def isConsigneeOfMovement(ern: String): Boolean = consigneeTrader.exists(_.traderExciseNumber.getOrElse("") == ern)
+  def isFromConsignor(implicit request: DataRequest[_]): Boolean =
+    consignorTrader.traderExciseNumber.contains(request.ern) || (isFromTemporaryCertifiedConsignor && request.userTypeFromErn == XIPC)
 
-  def isConsignorOfMovement(ern: String): Boolean = consignorTrader.traderExciseNumber.contains(ern)
 
-  def isFromTemporaryCertifiedConsignor: Boolean = consignorTrader.traderExciseNumber.exists(_.startsWith("XIPTA")) // TODO: test this
+  def isFromConsignee(implicit request: DataRequest[_]): Boolean = consigneeTrader.flatMap(_.traderExciseNumber).contains(request.ern)
+
+  private def isFromTemporaryCertifiedConsignor: Boolean = consignorTrader.traderExciseNumber.exists(_.startsWith("XIPTA"))
 }
 
 object GetMovementResponse {

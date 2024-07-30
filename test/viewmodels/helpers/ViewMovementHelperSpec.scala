@@ -23,9 +23,7 @@ import mocks.services.MockGetDocumentTypesService
 import models.DocumentType
 import models.MovementEadStatus._
 import models.common.DestinationType._
-import models.common.RoleType.GBWK
 import models.common.{AddressModel, TraderModel}
-import models.movementScenario.MovementScenario.EuTaxWarehouse
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -44,7 +42,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures with LogCapturing with Logging with MockGetDocumentTypesService {
 
-  implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"))
+  implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"), ern = getMovementResponseModel.consignorTrader.traderExciseNumber.get)
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
@@ -136,7 +134,6 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
     }
   }
 
-
   "constructMovementView" should {
     "output the correct HTML" when {
       "the date of arrival is set" in {
@@ -150,7 +147,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
         doc.select(Selectors.summaryListAtIndexRowKey(1, 3)).text() mustBe "Receipt status"
         doc.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Accepted and unsatisfactory"
         doc.select(Selectors.summaryListAtIndexRowKey(1, 4)).text() mustBe "Movement type"
-        doc.select(Selectors.summaryListAtIndexRowValue(1, 4)).text() mustBe "Great Britain tax warehouse to Great Britain tax warehouse"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 4)).text() mustBe "Import for Tax warehouse in Great Britain"
         doc.select(Selectors.summaryListAtIndexRowKey(1, 5)).text() mustBe "Movement direction"
         doc.select(Selectors.summaryListAtIndexRowValue(1, 5)).text() mustBe "Outbound"
 
@@ -178,7 +175,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
         doc.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "eAD status"
         doc.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe "Accepted An eAD has been created and the movement may be in transit."
         doc.select(Selectors.summaryListAtIndexRowKey(1, 3)).text() mustBe "Movement type"
-        doc.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Great Britain tax warehouse to Great Britain tax warehouse"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Import for Tax warehouse in Great Britain"
         doc.select(Selectors.summaryListAtIndexRowKey(1, 4)).text() mustBe "Movement direction"
         doc.select(Selectors.summaryListAtIndexRowValue(1, 4)).text() mustBe "Outbound"
 
@@ -228,47 +225,15 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
   }
 
   "getMovementTypeForMovementView" should {
-    "show GB tax warehouse to GB tax warehouse" when {
-      "the users ERN starts with GBWK and the movement scenario is GB Tax Warehouse " +
-        "(destination type is TaxWarehouse and Delivery Place ERN starts with GB)" in {
+    "show GB tax warehouse to Y" when {
+      "the users ERN starts with GBWK and the logged in user is the consignor" in {
+        implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789")
         val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
           destinationType = TaxWarehouse,
-          deliveryPlaceTrader = Some(TraderModel(
-            traderExciseNumber = Some("GBWK123456789"),
-            traderName = Some("Current 801 Consignee"),
-            address = Some(AddressModel(
-              streetNumber = None,
-              street = Some("Main101"),
-              postcode = Some("ZZ78"),
-              city = Some("Zeebrugge")
-            )),
-            vatNumber = Some("GB123456789"),
-            eoriNumber = None
-          ))
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GBWK123456789"))
         ))
 
-        result mustBe Some("Great Britain tax warehouse to Great Britain tax warehouse")
-      }
-
-      "the users ERN starts with GBWK and the movement scenario is NI Tax Warehouse " +
-        "(destination type is TaxWarehouse and Delivery Place ERN starts with XI)" in {
-        val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
-          destinationType = TaxWarehouse,
-          deliveryPlaceTrader = Some(TraderModel(
-            traderExciseNumber = Some("XI00345GTR145"),
-            traderName = Some("Current 801 Consignee"),
-            address = Some(AddressModel(
-              streetNumber = None,
-              street = Some("Main101"),
-              postcode = Some("ZZ78"),
-              city = Some("Zeebrugge")
-            )),
-            vatNumber = Some("GB123456789"),
-            eoriNumber = None
-          ))
-        ))
-
-        result mustBe Some("Great Britain tax warehouse to Northern Ireland tax warehouse")
+        result mustBe "Great Britain tax warehouse to Tax warehouse in Great Britain"
       }
     }
 
@@ -299,7 +264,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
-          result mustBe Some(destinationTypeToMessage._2)
+          result mustBe destinationTypeToMessage._2
         }
 
       }
@@ -332,7 +297,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
             ))
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
-          result mustBe Some(destinationTypeToMessage._2)
+          result mustBe destinationTypeToMessage._2
         }
 
       }
@@ -366,7 +331,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
               ))
             ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
-            result mustBe Some(message)
+            result mustBe message
           }
 
       }
@@ -401,7 +366,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
                 ))
               ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
-              result mustBe Some(message)
+              result mustBe message
             }
 
             "placeOfDispatchTrader is missing" in {
@@ -410,11 +375,31 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
                 placeOfDispatchTrader = None
               ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
 
-              result mustBe Some(message)
+              result mustBe message
             }
           }
 
       }
+    }
+
+    "show movement to Y for GBWK ERN" when {
+      "logged in user is consignee" in {
+        val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GBRC123456789")),
+          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some("GBWK123456789")))
+        ))(dataRequest(FakeRequest("GET", "/"), ern = s"GBWK123456789"), implicitly)
+        result mustBe "Movement to tax warehouse in Great Britain"
+      }
+    }
+
+    Seq("GB00", "XI00").foreach {
+      ernPrefix =>
+        s"show movement to Y for $ernPrefix ERN" in {
+          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+            destinationType = RegisteredConsignee
+          ))(dataRequest(FakeRequest("GET", "/"), ern = s"${ernPrefix}123456789"), implicitly)
+          result mustBe "Movement to Registered consignee"
+        }
     }
 
     "show Import for GB/XI" when {
@@ -423,14 +408,14 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
         val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
           destinationType = RegisteredConsignee
         ))(dataRequest(FakeRequest("GET", "/"), ern = "GBRC123456789"), implicitly)
-        result mustBe Some("Import for Registered consignee")
+        result mustBe "Import for Registered consignee"
       }
 
       "the users ERN starts with XIRC" in {
         val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
           destinationType = RegisteredConsignee
         ))(dataRequest(FakeRequest("GET", "/"), ern = "XIRC123456789"), implicitly)
-        result mustBe Some("Import for Registered consignee")
+        result mustBe "Import for Registered consignee"
       }
 
     }
@@ -442,7 +427,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           deliveryPlaceCustomsOfficeReferenceNumber = Some("GBWK123456789"),
           destinationType = Export
         ))(dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789"), implicitly)
-        result mustBe Some("Export with customs declaration lodged in the United Kingdom")
+        result mustBe "Export with customs declaration lodged in the United Kingdom"
       }
 
       "the users ERN starts with GBWK and the movement type is an Export (Customs declaration in EU)" in {
@@ -450,7 +435,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           deliveryPlaceCustomsOfficeReferenceNumber = Some("FR123456789"),
           destinationType = Export
         ))(dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789"), implicitly)
-        result mustBe Some("Export with customs declaration lodged in the European Union")
+        result mustBe "Export with customs declaration lodged in the European Union"
       }
 
       "the users ERN starts with XIWK and the movement type is an Export (Customs declaration in UK)" in {
@@ -458,7 +443,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           deliveryPlaceCustomsOfficeReferenceNumber = Some("GBWK123456789"),
           destinationType = Export
         ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
-        result mustBe Some("Export with customs declaration lodged in the United Kingdom")
+        result mustBe "Export with customs declaration lodged in the United Kingdom"
       }
 
       "the users ERN starts with XIWK and the movement type is an Export (Customs declaration in EU)" in {
@@ -466,7 +451,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           deliveryPlaceCustomsOfficeReferenceNumber = Some("FR123456789"),
           destinationType = Export
         ))(dataRequest(FakeRequest("GET", "/"), ern = "XIWK123456789"), implicitly)
-        result mustBe Some("Export with customs declaration lodged in the European Union")
+        result mustBe "Export with customs declaration lodged in the European Union"
       }
     }
 
@@ -478,21 +463,21 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = CertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe Some("Northern Ireland tax warehouse to certified consignee")
+          result mustBe "Northern Ireland tax warehouse to certified consignee"
         }
 
         "DestinationType is TemporaryRegisteredConsignee" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = TemporaryCertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe Some("Northern Ireland tax warehouse to temporary certified consignee")
+          result mustBe "Northern Ireland tax warehouse to temporary certified consignee"
         }
 
         "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = ReturnToThePlaceOfDispatchOfTheConsignor
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe Some("Return to place of dispatch")
+          result mustBe "Return to place of dispatch"
         }
       }
 
@@ -502,35 +487,53 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = CertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe Some("Northern Ireland tax warehouse to certified consignee")
+          result mustBe "Northern Ireland tax warehouse to certified consignee"
         }
 
         "DestinationType is TemporaryRegisteredConsignee" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = TemporaryCertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe Some("Northern Ireland tax warehouse to temporary certified consignee")
+          result mustBe "Northern Ireland tax warehouse to temporary certified consignee"
         }
 
         "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = ReturnToThePlaceOfDispatchOfTheConsignor
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe Some("Return to place of dispatch")
+          result mustBe "Return to place of dispatch"
         }
+      }
+
+      "user is XIPB" in {
+        val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+          destinationType = CertifiedConsignee
+        ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPB00123456"), implicitly)
+        result mustBe "European Union duty paid movement to Northern Ireland certified consignee"
+      }
+
+      "user is XIPD" in {
+        val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+          destinationType = CertifiedConsignee
+        ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPD00123456"), implicitly)
+        result mustBe "European Union duty paid movement to Northern Ireland temporary certified consignee"
       }
     }
 
-    "return None when the user type / destination type can't be matched and trigger PagerDuty" in {
-      withCaptureOfLoggingFrom(helper.logger) { logs =>
-        lazy val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
-          deliveryPlaceTrader = None,
-          destinationType = TaxWarehouse
-        ))(dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789"), implicitly)
+    "cater for XITC" in {
+      val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+        destinationType = CertifiedConsignee
+      ))(dataRequest(FakeRequest("GET", "/"), ern = "XITC00123456"), implicitly)
+      result mustBe "European Union duty-suspended movement to Northern Ireland temporary registered consignee"
+    }
 
-        result mustBe None
-        logs.head.getMessage mustBe s"[ViewMovementHelper][constructMovementView][${PagerDutyTrigger.invalidUserType}] invalid UserType and movement scenario combination for MOV journey: $GBWK | $EuTaxWarehouse"
-      }
+    "return Movement to Y when the user type / destination type can't be matched" in {
+      lazy val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+        deliveryPlaceTrader = None,
+        destinationType = TaxWarehouse
+      ))(dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789"), implicitly)
+
+      result mustBe "Movement to Tax warehouse in the European Union"
     }
   }
 
