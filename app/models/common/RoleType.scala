@@ -158,6 +158,7 @@ object RoleType extends Logging {
     GBRC,
     XIRC,
     XI00,
+    GB00,
     XITC,
     XIPA,
     XIPB,

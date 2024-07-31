@@ -80,7 +80,8 @@ case class GetMovementResponse(
   }
 
   def isFromConsignor(implicit request: DataRequest[_]): Boolean =
-    consignorTrader.traderExciseNumber.contains(request.ern) || (isFromTemporaryCertifiedConsignor && request.userTypeFromErn == XIPC)
+    consignorTrader.traderExciseNumber.contains(request.ern) ||
+      (isFromTemporaryCertifiedConsignor && request.userTypeFromErn == XIPC)
 
 
   def isFromConsignee(implicit request: DataRequest[_]): Boolean = consigneeTrader.flatMap(_.traderExciseNumber).contains(request.ern)
