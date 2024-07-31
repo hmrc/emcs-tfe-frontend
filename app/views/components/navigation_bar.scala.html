@@ -39,7 +39,13 @@
         href="@appConfig.host@appConfig.emcsTfeMessagesUrl(navInfo.ern)">
         @messages("navigation.messages")
         @navInfo.countOfNewMessages.map { count =>
-            <span class="hmrc-notification-badge govuk-!-margin-left-1">@count</span>
+            @if(count > 99 ) {
+                <span class="hmrc-notification-badge govuk-!-margin-left-1">99+</span>
+            } else {
+                @if(count > 0) {
+                    <span class="hmrc-notification-badge govuk-!-margin-left-1">@count</span>
+                }
+            }
         }
     </a>
 

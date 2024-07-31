@@ -92,6 +92,11 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
       boundForm.get mustBe MovementListSearchOptions(searchValue = Some("beans"))
     }
 
+    "bind leading and trailing spaces by removing them" in {
+      val boundForm = form.bind(Map(searchValue -> "   beans  ", sortBy -> Newest.code))
+      boundForm.get mustBe MovementListSearchOptions(searchValue = Some("beans"))
+    }
+
     "return an error when the value is invalid" in {
       val boundForm = form.bind(Map(
         searchValue -> "<script>alert('hi')</script>",
