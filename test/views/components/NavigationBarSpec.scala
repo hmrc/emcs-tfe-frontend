@@ -30,6 +30,7 @@ import views.html.components.navigation_bar
 class NavigationBarSpec extends SpecBase with FeatureSwitching {
 
   override implicit lazy val config: AppConfig = app.injector.instanceOf[AppConfig]
+
   def navigationBar: navigation_bar = app.injector.instanceOf[navigation_bar]
 
   class Test(messageStatisticsNotificationEnabled: Boolean) {
@@ -42,7 +43,7 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
 
       s"MessageStatisticsNotification enabled is '$messageStatisticsNotificationEnabled'" when {
 
-        val newMessageCount = Option.when(messageStatisticsNotificationEnabled)(testMessageStatistics.countOfNewMessages)
+        val newMessageCount = Option.when(messageStatisticsNotificationEnabled)(testMessageStatistics.countOfNewMessages.toString)
 
         Seq(NavigationBarMessages.English).foreach { messagesForLanguage =>
 
@@ -56,7 +57,7 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
                 prefix + "123"
               }
 
-              val html = navigationBar(NavigationBannerInfo(ern, newMessageCount, Some(Movements)))
+              val html = navigationBar(NavigationBannerInfo(ern, newMessageCount.map(_.toInt), Some(Movements)))
               val doc = Jsoup.parse(html.toString())
 
               s"Role Type is [${msgs(roleType.descriptionKey)}]" must {
@@ -93,8 +94,11 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
 
           s"Role Type is [${msgs(RoleType.XIPC.descriptionKey)}]" must {
             val ern = "XIPC123"
-            def html = navigationBar(NavigationBannerInfo(ern, newMessageCount, Some(Movements)))
+
+            def html = navigationBar(NavigationBannerInfo(ern, newMessageCount.map(_.toInt), Some(Movements)))
+
             def doc = Jsoup.parse(html.toString())
+
             "render the Home link" in new Test(messageStatisticsNotificationEnabled) {
               doc.select("#navigation-home-link").text() mustBe messagesForLanguage.home
             }
@@ -143,6 +147,57 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
               val doc = Jsoup.parse(html.toString())
 
               doc.select("a[aria-current]").size() mustBe 0
+            }
+          }
+        }
+      }
+    }
+
+    "Notification banner checks" when {
+
+      Seq(NavigationBarMessages.English).foreach { messagesForLanguage =>
+
+        implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
+
+        s"being rendered with lang code of '${messagesForLanguage.lang.code}'" when {
+
+          "the number of unread messages is `0`" should {
+            "not show notification banner" in new Test(messageStatisticsNotificationEnabled = true) {
+
+              val html = navigationBar(NavigationBannerInfo(testErn, Some(0), Some(Movements)))
+              val doc = Jsoup.parse(html.toString())
+
+              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(None)
+            }
+          }
+
+          "the number of unread messages is `1`" should {
+            "show notification banner with 1" in new Test(messageStatisticsNotificationEnabled = true) {
+
+              val html = navigationBar(NavigationBannerInfo(testErn, Some(1), Some(Movements)))
+              val doc = Jsoup.parse(html.toString())
+
+              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some("1"))
+            }
+          }
+
+          "the number of unread messages is `99`" should {
+            "show notification banner with 99" in new Test(messageStatisticsNotificationEnabled = true) {
+
+              val html = navigationBar(NavigationBannerInfo(testErn, Some(99), Some(Movements)))
+              val doc = Jsoup.parse(html.toString())
+
+              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some("99"))
+            }
+          }
+
+          "the number of unread messages is greater than `99`" should {
+            "show notification banner with 99+" in new Test(messageStatisticsNotificationEnabled = true) {
+
+              val html = navigationBar(NavigationBannerInfo(testErn, Some(100), Some(Movements)))
+              val doc = Jsoup.parse(html.toString())
+
+              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some("99+"))
             }
           }
         }
