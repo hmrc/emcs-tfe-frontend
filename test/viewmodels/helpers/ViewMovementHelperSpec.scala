@@ -147,7 +147,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
         doc.select(Selectors.summaryListAtIndexRowKey(1, 3)).text() mustBe "Receipt status"
         doc.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Accepted and unsatisfactory"
         doc.select(Selectors.summaryListAtIndexRowKey(1, 4)).text() mustBe "Movement type"
-        doc.select(Selectors.summaryListAtIndexRowValue(1, 4)).text() mustBe "Import for Tax warehouse in Great Britain"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 4)).text() mustBe "Import for tax warehouse in Great Britain"
         doc.select(Selectors.summaryListAtIndexRowKey(1, 5)).text() mustBe "Movement direction"
         doc.select(Selectors.summaryListAtIndexRowValue(1, 5)).text() mustBe "Outbound"
 
@@ -175,7 +175,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
         doc.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "eAD status"
         doc.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe "Accepted An eAD has been created and the movement may be in transit."
         doc.select(Selectors.summaryListAtIndexRowKey(1, 3)).text() mustBe "Movement type"
-        doc.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Import for Tax warehouse in Great Britain"
+        doc.select(Selectors.summaryListAtIndexRowValue(1, 3)).text() mustBe "Import for tax warehouse in Great Britain"
         doc.select(Selectors.summaryListAtIndexRowKey(1, 4)).text() mustBe "Movement direction"
         doc.select(Selectors.summaryListAtIndexRowValue(1, 4)).text() mustBe "Outbound"
 
@@ -242,18 +242,18 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GBWK123456789"))
         ))
 
-        result mustBe "Great Britain tax warehouse to Tax warehouse in Great Britain"
+        result mustBe "Great Britain tax warehouse to tax warehouse in Great Britain"
       }
     }
 
     "show GB tax warehouse to Y for XIWK ERN (dispatch place is GB)" when {
       Seq(
-        TaxWarehouse -> "Great Britain tax warehouse to Tax warehouse in Great Britain",
-        DirectDelivery -> "Great Britain tax warehouse to Direct delivery",
-        RegisteredConsignee -> "Great Britain tax warehouse to Registered consignee",
-        TemporaryRegisteredConsignee -> "Great Britain tax warehouse to Temporary registered consignee",
-        ExemptedOrganisation -> "Great Britain tax warehouse to Exempted organisation",
-        UnknownDestination -> "Great Britain tax warehouse to Unknown destination"
+        TaxWarehouse -> "Great Britain tax warehouse to tax warehouse in Great Britain",
+        DirectDelivery -> "Great Britain tax warehouse to direct delivery",
+        RegisteredConsignee -> "Great Britain tax warehouse to registered consignee",
+        TemporaryRegisteredConsignee -> "Great Britain tax warehouse to temporary registered consignee",
+        ExemptedOrganisation -> "Great Britain tax warehouse to exempted organisation",
+        UnknownDestination -> "Great Britain tax warehouse to unknown destination"
       ).foreach { destinationTypeToMessage =>
 
         s"when the destination type is ${destinationTypeToMessage._1}" in {
@@ -281,12 +281,12 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
 
     "show XI tax warehouse to Y for XIWK ERN (dispatch place is XI)" when {
       Seq(
-        TaxWarehouse -> "Northern Ireland tax warehouse to Tax warehouse in Great Britain",
-        DirectDelivery -> "Northern Ireland tax warehouse to Direct delivery",
-        RegisteredConsignee -> "Northern Ireland tax warehouse to Registered consignee",
-        TemporaryRegisteredConsignee -> "Northern Ireland tax warehouse to Temporary registered consignee",
-        ExemptedOrganisation -> "Northern Ireland tax warehouse to Exempted organisation",
-        UnknownDestination -> "Northern Ireland tax warehouse to Unknown destination"
+        TaxWarehouse -> "Northern Ireland tax warehouse to tax warehouse in Great Britain",
+        DirectDelivery -> "Northern Ireland tax warehouse to direct delivery",
+        RegisteredConsignee -> "Northern Ireland tax warehouse to registered consignee",
+        TemporaryRegisteredConsignee -> "Northern Ireland tax warehouse to temporary registered consignee",
+        ExemptedOrganisation -> "Northern Ireland tax warehouse to exempted organisation",
+        UnknownDestination -> "Northern Ireland tax warehouse to unknown destination"
       ).foreach { destinationTypeToMessage =>
 
         s"the destination type is ${destinationTypeToMessage._1}" in {
@@ -314,12 +314,12 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
 
     "show non-UK movement to Y for XIWK ERN (dispatch place is neither GB not XI)" when {
       Seq(
-        TaxWarehouse -> "Movement from outside the United Kingdom to Tax warehouse in Great Britain",
-        DirectDelivery -> "Movement from outside the United Kingdom to Direct delivery",
-        RegisteredConsignee -> "Movement from outside the United Kingdom to Registered consignee",
-        TemporaryRegisteredConsignee -> "Movement from outside the United Kingdom to Temporary registered consignee",
-        ExemptedOrganisation -> "Movement from outside the United Kingdom to Exempted organisation",
-        UnknownDestination -> "Movement from outside the United Kingdom to Unknown destination"
+        TaxWarehouse -> "Movement from outside the United Kingdom to tax warehouse in Great Britain",
+        DirectDelivery -> "Movement from outside the United Kingdom to direct delivery",
+        RegisteredConsignee -> "Movement from outside the United Kingdom to registered consignee",
+        TemporaryRegisteredConsignee -> "Movement from outside the United Kingdom to temporary registered consignee",
+        ExemptedOrganisation -> "Movement from outside the United Kingdom to exempted organisation",
+        UnknownDestination -> "Movement from outside the United Kingdom to unknown destination"
       ).foreach {
         case (destinationType, message) =>
 
@@ -348,12 +348,12 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
 
     "show movement to Y for XIWK ERN" when {
       Seq(
-        TaxWarehouse -> "Movement to Tax warehouse in Great Britain",
-        DirectDelivery -> "Movement to Direct delivery",
-        RegisteredConsignee -> "Movement to Registered consignee",
-        TemporaryRegisteredConsignee -> "Movement to Temporary registered consignee",
-        ExemptedOrganisation -> "Movement to Exempted organisation",
-        UnknownDestination -> "Movement to Unknown destination"
+        TaxWarehouse -> "Movement to tax warehouse in Great Britain",
+        DirectDelivery -> "Movement to direct delivery",
+        RegisteredConsignee -> "Movement to registered consignee",
+        TemporaryRegisteredConsignee -> "Movement to temporary registered consignee",
+        ExemptedOrganisation -> "Movement to exempted organisation",
+        UnknownDestination -> "Movement to unknown destination"
       ).foreach {
         case (destinationType, message) =>
 
@@ -407,7 +407,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = RegisteredConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = s"${ernPrefix}123456789"), implicitly)
-          result mustBe "Movement to Registered consignee"
+          result mustBe "Movement to registered consignee"
         }
     }
 
@@ -417,14 +417,14 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
         val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
           destinationType = RegisteredConsignee
         ))(dataRequest(FakeRequest("GET", "/"), ern = "GBRC123456789"), implicitly)
-        result mustBe "Import for Registered consignee"
+        result mustBe "Import for registered consignee"
       }
 
       "the users ERN starts with XIRC" in {
         val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
           destinationType = RegisteredConsignee
         ))(dataRequest(FakeRequest("GET", "/"), ern = "XIRC123456789"), implicitly)
-        result mustBe "Import for Registered consignee"
+        result mustBe "Import for registered consignee"
       }
 
     }
@@ -472,14 +472,14 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = CertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe "Northern Ireland certified consignor to Certified consignee in European Union"
+          result mustBe "Northern Ireland certified consignor to certified consignee in European Union"
         }
 
         "DestinationType is TemporaryRegisteredConsignee" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = TemporaryCertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe "Northern Ireland certified consignor to Temporary certified consignee in European Union"
+          result mustBe "Northern Ireland certified consignor to temporary certified consignee in European Union"
         }
       }
 
@@ -489,14 +489,14 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = CertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe "Northern Ireland temporary certified consignor to Certified consignee in European Union"
+          result mustBe "Northern Ireland temporary certified consignor to certified consignee in European Union"
         }
 
         "DestinationType is TemporaryRegisteredConsignee" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = TemporaryCertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe "Northern Ireland temporary certified consignor to Temporary certified consignee in European Union"
+          result mustBe "Northern Ireland temporary certified consignor to temporary certified consignee in European Union"
         }
       }
 
@@ -528,7 +528,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
         destinationType = TaxWarehouse
       ))(dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789"), implicitly)
 
-      result mustBe "Movement to Tax warehouse in the European Union"
+      result mustBe "Movement to tax warehouse in the European Union"
     }
   }
 

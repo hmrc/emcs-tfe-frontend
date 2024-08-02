@@ -194,38 +194,38 @@ class ViewMovementHelper @Inject()(
           case Some(placeOfDispatch) => placeOfDispatch.traderExciseNumber match {
             case Some(dispatchErn) =>
               if (isGB(dispatchErn)) {
-                messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.$destinationType"))
+                messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
               } else if (isXI(dispatchErn)) {
-                messages("viewMovement.movement.summary.type.niTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.$destinationType"))
+                messages("viewMovement.movement.summary.type.niTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
               } else {
-                messages("viewMovement.movement.summary.type.nonUkMovementTo", messages(s"viewMovement.movement.summary.type.$destinationType"))
+                messages("viewMovement.movement.summary.type.nonUkMovementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
               }
             case None =>
               logger.info(s"[constructMovementView] Missing place of dispatch ERN for $XIWK")
-              messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.$destinationType"))
+              messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
           }
           case None =>
             logger.info(s"[constructMovementView] Missing place of dispatch trader for $XIWK")
-            messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.$destinationType"))
+            messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
         }
 
       case (GBRC | XIRC, destinationType) =>
-        messages("viewMovement.movement.summary.type.importFor", messages(s"viewMovement.movement.summary.type.$destinationType"))
+        messages("viewMovement.movement.summary.type.importFor", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
 
       case (GBWK | XIWK, destinationType@(ExportWithCustomsDeclarationLodgedInTheUk | ExportWithCustomsDeclarationLodgedInTheEu)) =>
         messages(s"viewMovement.movement.summary.type.$destinationType")
 
       case (GBWK, destinationType) if movementResponse.isFromConsignor =>
-        messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.$destinationType"))
+        messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
 
       case (GBWK, _) if movementResponse.isFromConsignee =>
         messages("viewMovement.movement.summary.type.movementToGbTaxWarehouse")
 
       case (XIPA, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
-        messages(s"viewMovement.movement.summary.type.XIPA", messages(s"viewMovement.movement.summary.type.$destinationType"))
+        messages(s"viewMovement.movement.summary.type.XIPA", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
 
       case (XIPC, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
-        messages(s"viewMovement.movement.summary.type.XIPC", messages(s"viewMovement.movement.summary.type.$destinationType"))
+        messages(s"viewMovement.movement.summary.type.XIPC", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
 
       case (XIPB, (CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
         messages(s"viewMovement.movement.summary.type.XIPB")
@@ -238,7 +238,7 @@ class ViewMovementHelper @Inject()(
 
       case (userType, destinationType) =>
         logger.warn(s"[constructMovementView] catch-all UserType and movement scenario combination for MOV journey: $userType | $destinationType")
-        messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.$destinationType"))
+        messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
     }
   }
   //scalastyle:on
