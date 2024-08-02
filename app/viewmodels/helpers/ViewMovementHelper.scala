@@ -186,6 +186,9 @@ class ViewMovementHelper @Inject()(
   //scalastyle:off cyclomatic.complexity line.size.limit
   private[helpers] def getMovementTypeForMovementView(movementResponse: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): String = {
     (request.userTypeFromErn, MovementScenario.getMovementScenarioFromMovement(movementResponse)) match {
+      case (_, ReturnToThePlaceOfDispatchOfTheConsignor) =>
+        messages("viewMovement.movement.summary.type.returnToThePlaceOfDispatchOfTheConsignor")
+
       case (XIWK, destinationType@(UkTaxWarehouse.GB | UkTaxWarehouse.NI | EuTaxWarehouse | DirectDelivery | RegisteredConsignee | TemporaryRegisteredConsignee | ExemptedOrganisation | UnknownDestination)) =>
         movementResponse.placeOfDispatchTrader match {
           case Some(placeOfDispatch) => placeOfDispatch.traderExciseNumber match {
@@ -218,8 +221,11 @@ class ViewMovementHelper @Inject()(
       case (GBWK, _) if movementResponse.isFromConsignee =>
         messages("viewMovement.movement.summary.type.movementToGbTaxWarehouse")
 
-      case (XIPA | XIPC, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
-        messages(s"viewMovement.movement.summary.type.XIPAorXIPC.dutyPaid.$destinationType")
+      case (XIPA, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
+        messages(s"viewMovement.movement.summary.type.XIPA", messages(s"viewMovement.movement.summary.type.$destinationType"))
+
+      case (XIPC, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
+        messages(s"viewMovement.movement.summary.type.XIPC", messages(s"viewMovement.movement.summary.type.$destinationType"))
 
       case (XIPB, (CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
         messages(s"viewMovement.movement.summary.type.XIPB")

@@ -225,6 +225,15 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
   }
 
   "getMovementTypeForMovementView" should {
+    "show Return to the place of dispatch" when {
+      s"the destination type is $ReturnToThePlaceOfDispatchOfTheConsignor" in {
+        val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
+          destinationType = ReturnToThePlaceOfDispatchOfTheConsignor
+        ))
+        result mustBe "Return to the place of dispatch of the consignor"
+      }
+    }
+
     "show GB tax warehouse to Y" when {
       "the users ERN starts with GBWK and the logged in user is the consignor" in {
         implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"), ern = "GBWK123456789")
@@ -463,21 +472,14 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = CertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe "Northern Ireland tax warehouse to certified consignee"
+          result mustBe "Northern Ireland certified consignor to Certified consignee in European Union"
         }
 
         "DestinationType is TemporaryRegisteredConsignee" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = TemporaryCertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe "Northern Ireland tax warehouse to temporary certified consignee"
-        }
-
-        "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" in {
-          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
-            destinationType = ReturnToThePlaceOfDispatchOfTheConsignor
-          ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPA00123456"), implicitly)
-          result mustBe "Return to place of dispatch"
+          result mustBe "Northern Ireland certified consignor to Temporary certified consignee in European Union"
         }
       }
 
@@ -487,21 +489,14 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = CertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe "Northern Ireland tax warehouse to certified consignee"
+          result mustBe "Northern Ireland temporary certified consignor to Certified consignee in European Union"
         }
 
         "DestinationType is TemporaryRegisteredConsignee" in {
           val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
             destinationType = TemporaryCertifiedConsignee
           ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe "Northern Ireland tax warehouse to temporary certified consignee"
-        }
-
-        "DestinationType is ReturnToThePlaceOfDispatchOfTheConsignor" in {
-          val result = helper.getMovementTypeForMovementView(getMovementResponseModel.copy(
-            destinationType = ReturnToThePlaceOfDispatchOfTheConsignor
-          ))(dataRequest(FakeRequest("GET", "/"), ern = "XIPC00123456"), implicitly)
-          result mustBe "Return to place of dispatch"
+          result mustBe "Northern Ireland temporary certified consignor to Temporary certified consignee in European Union"
         }
       }
 
