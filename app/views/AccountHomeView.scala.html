@@ -44,7 +44,10 @@
 }
 
 @businessName = @{
-    request.traderKnownFacts.traderName
+    request.traderKnownFacts.map(_.traderName) match {
+        case Some(name) if name != "" => name
+        case _ => ern
+    }
 }
 
 @layout(
@@ -61,8 +64,10 @@
     @p("govuk-caption-m govuk-!-margin-bottom-1 govuk-!-margin-top-0") {
         @roleTypeDescription
     }
-    @p("govuk-caption-m govuk-!-margin-0") {
-        @messages("accountHome.ern") @ern
+    @if(request.traderKnownFacts.map(_.traderName).getOrElse("") != "") {
+        @p("govuk-caption-m govuk-!-margin-0") {
+            @messages("accountHome.ern") @ern
+        }
     }
 
     @h2("accountHome.yourMessages", classes = "govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1")

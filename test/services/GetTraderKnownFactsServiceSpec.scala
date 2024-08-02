@@ -20,7 +20,7 @@ import base.SpecBase
 import fixtures.BaseFixtures
 import mocks.config.MockAppConfig
 import mocks.connectors.MockGetTraderKnownFactsConnector
-import models.response.{TraderKnownFactsException, UnexpectedDownstreamResponseError}
+import models.response.UnexpectedDownstreamResponseError
 import org.scalatest.concurrent.ScalaFutures
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -34,30 +34,27 @@ class GetTraderKnownFactsServiceSpec extends SpecBase with BaseFixtures with Sca
   lazy val testService = new GetTraderKnownFactsService(mockGetTraderKnownFactsConnector)
 
   ".getTraderKnownFacts(ern)" must {
-    "return TraderKnownFacts" when {
+    "return Some(TraderKnownFacts)" when {
       "when Connector returns success from downstream" in {
 
         MockGetTraderKnownFactsConnector.getTraderKnownFacts(testErn).returns(Future.successful(Right(Some(testMinTraderKnownFacts))))
-        testService.getTraderKnownFacts(testErn).futureValue mustBe testMinTraderKnownFacts
+        testService.getTraderKnownFacts(testErn).futureValue mustBe Some(testMinTraderKnownFacts)
       }
     }
 
-    "throw TraderKnownFactsException" when {
+    "return None" when {
 
       "when Connector returns success from downstream with no data" in {
 
         MockGetTraderKnownFactsConnector.getTraderKnownFacts(testErn).returns(Future.successful(Right(None)))
-        intercept[TraderKnownFactsException](await(testService.getTraderKnownFacts(testErn))).getMessage mustBe
-          s"No known facts found for trader $testErn"
+        testService.getTraderKnownFacts(testErn).futureValue mustBe None
       }
 
       "when Connector returns failure from downstream" in {
 
         MockGetTraderKnownFactsConnector.getTraderKnownFacts(testErn).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
-        intercept[TraderKnownFactsException](await(testService.getTraderKnownFacts(testErn))).getMessage mustBe
-          s"No known facts found for trader $testErn"
+        testService.getTraderKnownFacts(testErn).futureValue mustBe None
       }
     }
   }
-
 }

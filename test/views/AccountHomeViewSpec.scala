@@ -170,5 +170,19 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
           btaLink.attr("href") mustBe appConfig.businessTaxAccountUrl
         }
     }
+
+    "when the trader name is not in known facts" must {
+
+      "use the ERN as the H1 and not output the ERN paragraph" in {
+
+        def doc = Jsoup.parse(page(testErn, GBWK)(
+          dataRequest(FakeRequest(), knownFacts = Some(testMinTraderKnownFacts.copy(traderName = ""))), messages
+        ).toString())
+
+        doc.getElementsByTag("h1").text mustBe testErn
+        doc.getElementsByTag("p").get(1).text mustBe "Excise warehousekeeper located in Great Britain"
+        doc.getElementsByTag("p").get(2).text mustNot be(s"Excise registration number (ERN): $testErn")
+      }
+    }
   }
 }

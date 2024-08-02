@@ -43,13 +43,13 @@ class DataRetrievalActionSpec
 
     "return a DataRequest" when {
       "downstream calls are successful" in {
-        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(testMinTraderKnownFacts))
+        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(Some(testMinTraderKnownFacts)))
         MockGetMessageStatisticsService.getMessageStatistics(testErn).returns(Future.successful(Some(testMessageStatistics)))
 
         val result = dataRetrievalAction.refine(UserRequest(FakeRequest(), testErn, testInternalId, testCredId, false)).futureValue.toOption.get
 
         result mustBe a[DataRequest[_]]
-        result.traderKnownFacts mustBe testMinTraderKnownFacts
+        result.traderKnownFacts mustBe Some(testMinTraderKnownFacts)
         result.messageStatistics mustBe Some(testMessageStatistics)
       }
     }
@@ -63,7 +63,7 @@ class DataRetrievalActionSpec
       }
 
       "must return a MessageStatisticsException, given the call to getMessageStatistics fails" in {
-        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(testMinTraderKnownFacts))
+        MockGetTraderKnownFactsService.getTraderKnownFacts(testErn).returns(Future.successful(Some(testMinTraderKnownFacts)))
         MockGetMessageStatisticsService.getMessageStatistics(testErn).returns(Future.failed(MessageStatisticsException("kablam")))
 
         intercept[MessageStatisticsException] {

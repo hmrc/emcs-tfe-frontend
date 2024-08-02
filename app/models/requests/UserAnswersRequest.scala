@@ -26,6 +26,5 @@ case class UserAnswersRequest[A](request: DataRequest[A], userAnswers: UserAnswe
   val isWarehouseKeeper: Boolean = request.isWarehouseKeeper
   val isRegisteredConsignor: Boolean = request.isRegisteredConsignor
   val userTypeFromErn: RoleType = request.userTypeFromErn
-  val traderKnownFacts = request.traderKnownFacts
   val messageStatistics = request.messageStatistics
 }

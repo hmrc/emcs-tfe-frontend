@@ -24,7 +24,8 @@ import play.api.mvc.ActionTransformer
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRetrievalAction(traderKnownFacts: TraderKnownFacts, messageStatisticsResponse: Option[GetMessageStatisticsResponse]) extends DataRetrievalAction {
+class FakeDataRetrievalAction(traderKnownFacts: Option[TraderKnownFacts],
+                              messageStatisticsResponse: Option[GetMessageStatisticsResponse]) extends DataRetrievalAction {
 
   def apply(): ActionTransformer[UserRequest, DataRequest] =
 

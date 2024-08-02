@@ -23,7 +23,7 @@ import models.common.TraderKnownFacts
 import models.response.emcsTfe.GetMessageStatisticsResponse
 
 case class DataRequest[A](request: UserRequest[A],
-                          traderKnownFacts: TraderKnownFacts,
+                          traderKnownFacts: Option[TraderKnownFacts],
                           messageStatistics: Option[GetMessageStatisticsResponse]) extends WrappedRequest[A](request) {
   val internalId: String = request.internalId
   val ern: String = request.ern

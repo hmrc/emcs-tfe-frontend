@@ -21,6 +21,7 @@ import controllers.predicates.PrevalidateTraderDataRetrievalAction
 import fixtures.BaseFixtures
 import models.UserAnswers
 import models.auth.UserRequest
+import models.common.TraderKnownFacts
 import models.requests.{DataRequest, UserAnswersRequest}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.OptionValues
@@ -57,8 +58,10 @@ trait SpecBase extends AnyWordSpecLike
   def userRequest[A](request: Request[A], ern: String = testErn): UserRequest[A] =
     UserRequest(request, ern, testInternalId, testCredId, hasMultipleErns = false)
 
-  def dataRequest[A](request: Request[A], ern: String = testErn): DataRequest[A] =
-    DataRequest(userRequest(request, ern), testMinTraderKnownFacts, Some(testMessageStatistics))
+  def dataRequest[A](request: Request[A],
+                     ern: String = testErn,
+                     knownFacts: Option[TraderKnownFacts] = Some(testMinTraderKnownFacts)): DataRequest[A] =
+    DataRequest(userRequest(request, ern), knownFacts, Some(testMessageStatistics))
 
   def userAnswersRequest[A](request: Request[A], userAnswers: UserAnswers = emptyUserAnswers): UserAnswersRequest[A] =
     UserAnswersRequest(dataRequest(request, userAnswers.ern), userAnswers)

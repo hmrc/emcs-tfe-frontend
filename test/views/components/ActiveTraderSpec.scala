@@ -72,9 +72,15 @@ class ActiveTraderSpec extends SpecBase {
 
           (link.attr("href"), link.text) mustEqual (controllers.routes.IndexController.exciseNumber().url, messagesForLanguage.changeTraderType)
         }
-
       }
 
+      "if trader name is '' (blank) then only output the ERN" in {
+        val traderInfo = TraderInfo("", testErn)
+        val html = activeTrader(Some(traderInfo))
+        val doc = Jsoup.parse(html.toString())
+
+        doc.select(titleSelector).text mustEqual testErn
+      }
     }
   }
 }

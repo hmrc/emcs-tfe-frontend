@@ -35,7 +35,7 @@ class ViewUtilsSpec extends SpecBase with BaseFixtures {
   def createDataRequest(hasMultipleErns: Boolean): DataRequest[_] =
     DataRequest(
       UserRequest(FakeRequest("GET", s"/consignment/$testErn/$testArc"), testErn, testInternalId, testCredId, hasMultipleErns)(messagesApi),
-      testMinTraderKnownFacts,
+      Some(testMinTraderKnownFacts),
       Some(testMessageStatistics)
     )
 

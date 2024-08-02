@@ -72,7 +72,7 @@ class DeleteMessageControllerSpec extends SpecBase
     lazy val controller: DeleteMessageController = new DeleteMessageController(
       mcc = app.injector.instanceOf[MessagesControllerComponents],
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
+      getData = new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics)),
       betaAllowList = betaAllowListAction,
       getMessagesService = mockGetMessagesService,
       deleteMessageService = mockDeleteMessagesService,
