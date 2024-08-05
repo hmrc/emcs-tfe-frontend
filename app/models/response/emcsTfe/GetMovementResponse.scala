@@ -17,7 +17,7 @@
 package models.response.emcsTfe
 
 import models.MovementEadStatus
-import models.common.RoleType.XIPC
+import models.common.RoleType.{XIPC, XITC}
 import models.common._
 import models.requests.DataRequest
 import models.response.emcsTfe.customsRejection.NotificationOfCustomsRejectionModel
@@ -83,8 +83,9 @@ case class GetMovementResponse(
     consignorTrader.traderExciseNumber.contains(request.ern) ||
       (isFromTemporaryCertifiedConsignor && request.userTypeFromErn == XIPC)
 
-
-  def isFromConsignee(implicit request: DataRequest[_]): Boolean = consigneeTrader.flatMap(_.traderExciseNumber).contains(request.ern)
+  def isFromConsignee(implicit request: DataRequest[_]): Boolean =
+    consigneeTrader.flatMap(_.traderExciseNumber).contains(request.ern) ||
+      (request.userTypeFromErn == XITC)
 
   private def isFromTemporaryCertifiedConsignor: Boolean = consignorTrader.traderExciseNumber.exists(_.startsWith("XIPTA"))
 }

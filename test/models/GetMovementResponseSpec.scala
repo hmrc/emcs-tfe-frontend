@@ -24,6 +24,7 @@ package models
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import models.common.RoleType
+import models.common.RoleType.XITC
 import models.response.emcsTfe.GetMovementResponse
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, convertToStringShouldWrapper}
 import play.api.libs.json.Json
@@ -111,7 +112,7 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
 
     "isFromConsignee" should {
       "return true" when {
-        RoleType.values.foreach {
+        RoleType.values.filterNot(_ == XITC).foreach {
           ernPrefix =>
             s"$ernPrefix and Consignee is $ernPrefix" in {
               implicit val request = dataRequest(FakeRequest(), s"${ernPrefix}123456789")
@@ -121,10 +122,26 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
                 .copy(consignorTrader = consignorModel, consigneeTrader = Some(consigneeModel))
                 .isFromConsignee shouldBe true
             }
+            s"XITC and Consignee is $ernPrefix" in {
+              implicit val request = dataRequest(FakeRequest(), "XITC123456789")
+              val consignorModel = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("BEANS123456789"))
+              val consigneeModel = getMovementResponseModel.consigneeTrader.get.copy(traderExciseNumber = Some(s"${ernPrefix}123456789"))
+              getMovementResponseModel
+                .copy(consignorTrader = consignorModel, consigneeTrader = Some(consigneeModel))
+                .isFromConsignee shouldBe true
+            }
+        }
+        s"XITC and Consignee is XITC" in {
+          implicit val request = dataRequest(FakeRequest(), "XITC123456789")
+          val consignorModel = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("BEANS123456789"))
+          val consigneeModel = getMovementResponseModel.consigneeTrader.get.copy(traderExciseNumber = Some("XITC123456789"))
+          getMovementResponseModel
+            .copy(consignorTrader = consignorModel, consigneeTrader = Some(consigneeModel))
+            .isFromConsignee shouldBe true
         }
       }
       "return false" when {
-        RoleType.values.foreach {
+        RoleType.values.filterNot(_ == XITC).foreach {
           ernPrefix =>
             s"$ernPrefix and Consignee is not $ernPrefix" in {
               implicit val request = dataRequest(FakeRequest(), s"${ernPrefix}123456789")

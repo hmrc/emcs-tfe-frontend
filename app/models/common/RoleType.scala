@@ -35,7 +35,6 @@ object RoleType extends Logging {
     case invalidPrefix =>
       logger.error(s"[fromExciseRegistrationNumber] Invalid exciseRegistrationNumber prefix: $invalidPrefix")
       throw new IllegalArgumentException(s"Invalid exciseRegistrationNumber prefix: $invalidPrefix")
-
   }
 
   def isGB(ern: String): Boolean = ern.take(2).equals("GB")
