@@ -88,7 +88,7 @@ class ViewMessageViewSpec extends ViewSpecBase
 
   Seq(
     ie801ReceivedMovement, ie801SubmittedMovement,
-    ie802ReminderToChangeDestination, ie802ReminderToProvideDestination,
+    ie802ReminderToChangeDestination, ie802ReminderToProvideDestination, ie802ReminderToReportReceiptAsAConsignor,
     ie803ReceivedChangeDestination, ie803ReceivedSplit,
     ie818ReceivedReportOfReceipt, ie818SubmittedReportOfReceipt,
     ie819ReceivedAlert, ie819ReceivedReject, ie819SubmittedAlert, ie819SubmittedReject,
@@ -177,7 +177,7 @@ class ViewMessageViewSpec extends ViewSpecBase
 
   "when being rendered with an IE802 Reminder for report of receipt message" when {
 
-    val testMessage = ie802ReminderToReportReceipt
+    val testMessage = ie802ReminderToReportReceiptAsAConsignor
 
     "the logged in user is not the consignee of the movement" should {
 
@@ -227,15 +227,7 @@ class ViewMessageViewSpec extends ViewSpecBase
       "show the correct actions" when {
         movementActionsLinksTest()
 
-        behave like pageWithElementsNotPresent(Seq(Selectors.reportOfReceiptLink))
-
-        if (testMessage.explainDelayLink) {
-          behave like pageWithExpectedElementsAndMessages(
-            Seq(
-              Selectors.explainDelayLink -> English.explainDelayLinkText
-            )
-          )
-        }
+        behave like pageWithElementsNotPresent(Seq(Selectors.reportOfReceiptLink, Selectors.explainDelayLink))
 
         if (testMessage.changeDestinationLink) {
           behave like pageWithExpectedElementsAndMessages(
@@ -492,6 +484,25 @@ class ViewMessageViewSpec extends ViewSpecBase
       behave like pageWithExpectedElementsAndMessages(
         Seq(
           Selectors.p(1) -> "You have received a movement but we have not yet received your Report of Receipt. However if you have sent a Report of Receipt within the last 7 days, please ignore this reminder."
+        )
+      )
+    }
+  }
+
+  s"when an IE802 reminder to receipt is viewed by consignor" should {
+    "contain other information" when {
+      val testMessage = ie802ReminderToReportReceiptAsAConsignor
+      val movementWithLoggedInUserAsConsignor = Some(getMovementResponseModel
+        .copy(
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(testErn)),
+          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some("GB00000000000")))
+        )
+      )
+
+      implicit val doc: Document = asDocument(testMessage.message, optMovement = movementWithLoggedInUserAsConsignor)
+      behave like pageWithExpectedElementsAndMessages(
+        Seq(
+          Selectors.p(1) -> "The consignee has not yet submitted a report of receipt for this movement.",
         )
       )
     }

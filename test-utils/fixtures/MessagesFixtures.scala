@@ -115,6 +115,12 @@ trait MessagesFixtures extends BaseFixtures {
     explainDelayLink = true
   )
 
+  val ie802ReminderToReportReceiptAsAConsignor = TestMessage(
+    message = createMessage("IE802").copy(messageRole = 2, submittedByRequestingTrader = false),
+    messageTitle = "Reminder for report of receipt",
+    messageSubTitle = None,
+  )
+
   val ie802ReminderToProvideDestination = TestMessage(
     message = createMessage("IE802").copy(messageRole = 3, submittedByRequestingTrader = false),
     messageTitle = "Reminder to provide a destination",
