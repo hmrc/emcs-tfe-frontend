@@ -37,21 +37,19 @@ class ViewMovementActionsHelper @Inject()(
                                          ) extends Logging {
 
   def movementActions(movement: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): Html = {
-    val isConsignor = movement.consignorTrader.traderExciseNumber.contains(request.ern)
-    val isConsignee = movement.consigneeTrader.flatMap(_.traderExciseNumber).contains(request.ern)
 
     def when(bool: Boolean)(f: => Option[Html]): Option[Html] = Option.when(bool)(f).flatten
 
     list(
       content = Seq(
-        when(isConsignor)(changeDestinationLink(movement)),
-        when(isConsignor)(cancelMovementLink(movement)),
+        when(movement.isFromConsignor)(changeDestinationLink(movement)),
+        when(movement.isFromConsignor)(cancelMovementLink(movement)),
 
-        when(isConsignee)(reportOfReceiptLink(movement)),
-        when(isConsignee)(alertOrRejectionLink(movement)),
+        when(movement.isFromConsignee)(reportOfReceiptLink(movement)),
+        when(movement.isFromConsignee)(alertOrRejectionLink(movement)),
 
-        when(isConsignor || isConsignee)(explainADelayLink(movement)),
-        when(isConsignor || isConsignee)(shortageOrExcessLink(movement)),
+        when(movement.isFromConsignor || movement.isFromConsignee)(explainADelayLink(movement)),
+        when(movement.isFromConsignor || movement.isFromConsignee)(shortageOrExcessLink(movement)),
         printLink(request.ern, movement.arc)
       ).flatten,
       extraClasses = Some("govuk-list--spaced")
@@ -107,7 +105,12 @@ class ViewMovementActionsHelper @Inject()(
   }
 
   def printLink(ern: String, arc: String)(implicit messages: Messages): Option[Html] =
-      Some(link(controllers.routes.ViewMovementController.printMovement(ern, arc).url, "viewMovement.printOrSaveEad", Some("print-or-save-ead"), hintKey = Some("viewMovement.printOrSaveEad.info")))
+      Some(link(
+        link = controllers.routes.ViewMovementController.printMovement(ern, arc).url,
+        messageKey = "viewMovement.printOrSaveEad",
+        id = Some("print-or-save-ead"),
+        hintKey = Some("viewMovement.printOrSaveEad.info")
+      ))
 }
 
 object ViewMovementActionsHelper {

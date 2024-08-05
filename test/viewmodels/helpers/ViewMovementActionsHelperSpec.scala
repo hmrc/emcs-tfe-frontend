@@ -24,7 +24,7 @@ import models.common.DestinationType.ReturnToThePlaceOfDispatchOfTheConsignor
 import models.requests.DataRequest
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import views.html.components.link
+import views.html.components.{link, list}
 
 import java.time.LocalDate
 
@@ -32,9 +32,75 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
   val helper: ViewMovementActionsHelper = app.injector.instanceOf[ViewMovementActionsHelper]
   val link: link = app.injector.instanceOf[link]
+  val list: list = app.injector.instanceOf[list]
 
   implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"), ern = testErn)
   implicit lazy val messages: Messages = messages(request)
+
+  ".movementActions" should {
+    "return consignor links" when {
+      "logged in user ERN is the consignor" in {
+        val testMovement = getMovementResponseModel.copy(consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(testErn)))
+        helper.movementActions(testMovement) mustBe list(
+          content = Seq(
+            // 'change destination' link only present for consignors
+            helper.changeDestinationLink(testMovement).get,
+            helper.explainADelayLink(testMovement).get,
+            helper.printLink(testErn, testArc).get
+          ),
+          extraClasses = Some("govuk-list--spaced")
+        )
+      }
+
+      "logged in user ERN is XIPC and consignor ERN is XIPTA" in {
+        implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"), ern = "XIPC123")
+        val testMovement = getMovementResponseModel.copy(consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("XIPTA123")))
+        helper.movementActions(testMovement) mustBe list(
+          content = Seq(
+            // 'change destination' link only present for consignors
+            helper.changeDestinationLink(testMovement).get,
+            helper.explainADelayLink(testMovement).get,
+            helper.printLink("XIPC123", testArc).get
+          ),
+          extraClasses = Some("govuk-list--spaced")
+        )
+      }
+    }
+
+    "return consignee links" when {
+      "logged in user ERN is the consignee" in {
+        val testMovement = getMovementResponseModel.copy(consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some(testErn))))
+        helper.movementActions(testMovement) mustBe list(
+          content = Seq(
+            // 'report of receipt' and 'alert or rejection' links only present for consignees
+            helper.reportOfReceiptLink(testMovement).get,
+            helper.alertOrRejectionLink(testMovement).get,
+            helper.explainADelayLink(testMovement).get,
+            helper.printLink(testErn, testArc).get
+          ),
+          extraClasses = Some("govuk-list--spaced")
+        )
+      }
+    }
+
+    "only return the print link" when {
+      "logged in user ERN is neither the consignor nor the consignee" in {
+        implicit val request: DataRequest[_] = dataRequest(FakeRequest("GET", "/"), ern = "GB00123456789")
+        helper.movementActions(getMovementResponseModel) mustBe
+          list(
+            content = Seq(
+              link(
+                link = controllers.routes.ViewMovementController.printMovement("GB00123456789", testArc).url,
+                messageKey = "viewMovement.printOrSaveEad",
+                id = Some("print-or-save-ead"),
+                hintKey = Some("viewMovement.printOrSaveEad.info")
+              )
+            ),
+            extraClasses = Some("govuk-list--spaced")
+          )
+      }
+    }
+  }
 
   ".cancelMovementLink" should {
 
@@ -256,18 +322,17 @@ class ViewMovementActionsHelperSpec extends SpecBase with GetMovementResponseFix
 
   }
 
-// ETFE-2556 will re-enable this link
-//  ".printLink" should {
-//    "always be present" in {
-//      helper.printLink() mustBe
-//        Some(
-//          link(
-//            link = "print",
-//            messageKey = "viewMovement.printOrSaveEad",
-//            id = Some("print-or-save-ead"),
-//            hintKey = Some("viewMovement.printOrSaveEad.info")
-//          )
-//        )
-//    }
-//  }
+  ".printLink" should {
+    "always be present" in {
+      helper.printLink(testErn, testArc) mustBe
+        Some(
+          link(
+            link = controllers.routes.ViewMovementController.printMovement(testErn, testArc).url,
+            messageKey = "viewMovement.printOrSaveEad",
+            id = Some("print-or-save-ead"),
+            hintKey = Some("viewMovement.printOrSaveEad.info")
+          )
+        )
+    }
+  }
 }

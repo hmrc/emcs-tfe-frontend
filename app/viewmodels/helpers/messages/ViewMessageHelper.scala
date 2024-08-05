@@ -70,9 +70,9 @@ class ViewMessageHelper @Inject()(
 
   def constructAdditionalInformation(message: Message, movement: Option[GetMovementResponse])(implicit request: DataRequest[_], messages: Messages): Html =
     messagesHelper.additionalInformationKey(message) -> message.messageType match {
-      case Some(_) -> "IE871" if movement.exists(!_.isConsigneeOfMovement(request.ern)) =>
+      case Some(_) -> "IE871" if movement.exists(!_.isFromConsignee) =>
         Empty.asHtml
-      case Some(key) -> "IE802" if movement.exists(_.isConsignorOfMovement(request.ern)) =>
+      case Some(key) -> "IE802" if movement.exists(_.isFromConsignor) =>
         p() { Html(messages(key + ".consignor")) }
       case Some(key) -> _ =>
         p() { Html(messages(key)) }
@@ -115,7 +115,7 @@ class ViewMessageHelper @Inject()(
         Seq(viewMovementLink, changeDestinationLink, printMessageLink, deleteMessageLink)
       case ("IE802", false, 1, _) =>
         Seq(changeDestinationLink, explainDelayLink,viewMovementLink, printMessageLink, deleteMessageLink)
-      case ("IE802", false, 2, _) if movement.exists(_.isConsigneeOfMovement(request.ern)) =>
+      case ("IE802", false, 2, _) if movement.exists(_.isFromConsignee) =>
         Seq(viewMovementLink, reportOfReceiptLink, explainDelayLink, printMessageLink, deleteMessageLink)
       case ("IE802", false, 2, _) =>
         Seq(viewMovementLink, printMessageLink, deleteMessageLink)
@@ -129,7 +129,7 @@ class ViewMessageHelper @Inject()(
         Seq(explainShortageExcessLink, viewMovementLink, printMessageLink, deleteMessageLink)
       case ("IE837", true, 1, _) =>
         Seq(reportOfReceiptLink, viewMovementLink, printMessageLink, deleteMessageLink)
-      case ("IE871", true, _, _) if movement.exists(_.isConsigneeOfMovement(request.ern)) =>
+      case ("IE871", true, _, _) if movement.exists(_.isFromConsignee) =>
         Seq(reportOfReceiptLink, viewMovementLink, printMessageLink, deleteMessageLink)
       case (_, _, _, Some("IE815")) =>
         Seq(printMessageLink, deleteMessageLink)

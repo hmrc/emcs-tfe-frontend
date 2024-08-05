@@ -44,8 +44,6 @@ case class MemberStatesException(message: String) extends Exception(message) wit
 
 case class TraderKnownFactsException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
-case class InvalidDestinationTypeException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
-
 case class InvalidUserTypeException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class CnCodeInformationException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
