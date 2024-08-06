@@ -91,7 +91,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
       view = view,
       errorHandler = errorHandler,
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
+      getData = new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics)),
       betaAllowList = betaAllowListAction,
       paginationHelper = mockMovementPaginationHelper,
       formProvider = formProvider

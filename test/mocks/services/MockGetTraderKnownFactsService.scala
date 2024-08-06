@@ -30,7 +30,7 @@ trait MockGetTraderKnownFactsService extends MockFactory {
 
   object MockGetTraderKnownFactsService {
 
-    def getTraderKnownFacts(ern: String): CallHandler2[String, HeaderCarrier, Future[TraderKnownFacts]] =
+    def getTraderKnownFacts(ern: String): CallHandler2[String, HeaderCarrier, Future[Option[TraderKnownFacts]]] =
       (mockGetTraderKnownFactsService.getTraderKnownFacts(_: String)(_: HeaderCarrier)).expects(ern, *)
 
   }

@@ -39,7 +39,7 @@ object ViewUtils extends DateUtils {
 
   def maybeShowActiveTrader(request: DataRequest[_]): Option[TraderInfo] =
     Option.when(request.request.hasMultipleErns) {
-      TraderInfo(request.traderKnownFacts.traderName, request.ern)
+      TraderInfo(request.traderKnownFacts.map(_.traderName).getOrElse(""), request.ern)
     }
 
   def pluralSingular(msg: String, count: Int, additionalArgs: String*)(implicit messages: Messages): String = {

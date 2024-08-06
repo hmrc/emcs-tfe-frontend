@@ -71,7 +71,7 @@ class ViewMessageControllerSpec extends SpecBase
     lazy val controller: ViewMessageController = new ViewMessageController(
       mcc = app.injector.instanceOf[MessagesControllerComponents],
       auth = FakeSuccessAuthAction,
-      getData = new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
+      getData = new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics)),
       betaAllowList = betaAllowListAction,
       getMessagesService = mockGetMessagesService,
       getMovementService = mockGetMovementService,

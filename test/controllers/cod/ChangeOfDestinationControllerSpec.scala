@@ -52,7 +52,7 @@ class ChangeOfDestinationControllerSpec extends SpecBase with FakeAuthAction wit
     val controller: ChangeOfDestinationController = new ChangeOfDestinationController(
       app.injector.instanceOf[MessagesControllerComponents],
       FakeSuccessAuthAction,
-      new FakeDataRetrievalAction(testMinTraderKnownFacts, Some(testMessageStatistics)),
+      new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics)),
       betaAllowListAction
     )(ec, appConfig)
 
