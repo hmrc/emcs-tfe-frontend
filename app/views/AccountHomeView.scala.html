@@ -14,13 +14,12 @@
  * limitations under the License.
  *@
 
-@import views.html.components._
-@import views.html.templates.Layout
 @import config.AppConfig
-@import models.response.emcsTfe.GetMessageStatisticsResponse
+@import models.NavigationBannerInfo
 @import models.common.RoleType.RoleType
 @import models.requests.DataRequest
-@import models.NavigationBannerInfo
+@import views.html.components._
+@import views.html.templates.Layout
 
 @this(
         layout: Layout,
@@ -31,7 +30,8 @@
         h2: h2,
         h1: h1,
         p: p,
-        navigationBar: navigation_bar
+        navigationBar: navigation_bar,
+        govukNotificationBanner : GovukNotificationBanner
 )
 
 @(
@@ -68,6 +68,14 @@
         @p("govuk-caption-m govuk-!-margin-0") {
             @messages("accountHome.ern") @ern
         }
+    }
+
+    @if(appConfig.accountHomeBanner) {
+        @govukNotificationBanner(NotificationBanner(
+            classes = "govuk-!-margin-top-5 govuk-!-margin-bottom-10",
+            content = HtmlContent(bannerHtml),
+            attributes = Map("id" -> "banner")
+        ))
     }
 
     @h2("accountHome.yourMessages", classes = "govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1")
@@ -109,6 +117,11 @@
     }
 }
 
+@bannerHtml = {
+    @p("govuk-notification-banner__heading") {@messages("accountHome.banner.p1")}
+    @p("govuk-notification-banner__heading") {@messages("accountHome.banner.p2")}
+    @p() {@messages("accountHome.banner.p3")}
+}
 
 @{
     //$COVERAGE-OFF$
