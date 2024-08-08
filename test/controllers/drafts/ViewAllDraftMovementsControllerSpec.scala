@@ -607,7 +607,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           status(result) shouldBe Status.SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.ViewAllDraftMovementsController.onPageLoad(testErn, GetDraftMovementsSearchOptions(
             index = 1,
-            sortBy = DraftMovementSortingSelectOption.Newest
+            sortBy = None
           )).url)
         }
       }

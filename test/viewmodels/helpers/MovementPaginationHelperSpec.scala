@@ -31,7 +31,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
   object Helper extends MovementPaginationHelper()
 
   def baseOptions(index: Int) =
-    MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, None, None, None, None, None, None, None, None, None, index, 10)
+    MovementListSearchOptions(Some(ARC), Some("ARC123456"), None, None, None, None, None, None, None, None, None, None, index, 10)
 
   def createPageItem(index: Int): PaginationItem = PaginationItem(
     href = onPageLoad(testErn, baseOptions(index)).url,

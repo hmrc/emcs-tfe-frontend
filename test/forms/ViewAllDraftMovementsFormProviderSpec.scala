@@ -47,7 +47,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
     "bind when the searchValue is present" in {
 
       val expectedResult = GetDraftMovementsSearchOptions(
-        sortBy = DraftMovementSortingSelectOption.Oldest
+        sortBy = Some(DraftMovementSortingSelectOption.Oldest)
       )
 
       val actualResult = form.bind(Map(
@@ -60,7 +60,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
     "remove any non-alphanumerics from the form values" in {
 
       val expectedResult = GetDraftMovementsSearchOptions(
-        sortBy = DraftMovementSortingSelectOption.Oldest
+        sortBy = Some(DraftMovementSortingSelectOption.Oldest)
       )
 
       val actualResult = form.bind(Map(

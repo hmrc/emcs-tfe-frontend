@@ -18,7 +18,7 @@ package models.draftMovements
 
 import models.SelectOptionModel
 import models.draftMovements.DraftMovementSortingSelectOption.Newest
-import models.draftMovements.GetDraftMovementsSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS}
+import models.draftMovements.GetDraftMovementsSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS, DEFAULT_SORT_BY}
 import play.api.mvc.QueryStringBindable
 import utils.Logging
 import viewmodels.draftMovements.DraftMovementsErrorsOption
@@ -27,7 +27,7 @@ import viewmodels.draftMovements.DraftMovementsErrorsOption.DraftHasErrors
 import java.time.LocalDate
 
 case class GetDraftMovementsSearchOptions(
-                                           sortBy: DraftMovementSortingSelectOption = Newest,
+                                           sortBy: Option[DraftMovementSortingSelectOption] = None,
                                            index: Int = DEFAULT_INDEX,
                                            maxRows: Int = DEFAULT_MAX_ROWS,
                                            searchValue: Option[String] = None,
@@ -49,8 +49,8 @@ case class GetDraftMovementsSearchOptions(
   val startingPosition: Int = (index - 1) * maxRows
 
   val queryParams: Seq[(String, String)] = Seq(
-    Some("search.sortField" -> sortBy.sortField),
-    Some("search.sortOrder" -> sortBy.sortOrder),
+    Some("search.sortField" -> sortBy.getOrElse(DEFAULT_SORT_BY).sortField),
+    Some("search.sortOrder" -> sortBy.getOrElse(DEFAULT_SORT_BY).sortOrder),
     Some("search.startPosition" -> startingPosition.toString),
     Some("search.maxRows" -> maxRows.toString),
     searchValue.map(search => "search.searchTerm" -> search),
@@ -68,6 +68,7 @@ object GetDraftMovementsSearchOptions extends Logging {
 
   val DEFAULT_INDEX: Int = 1
   val DEFAULT_MAX_ROWS: Int = 10
+  val DEFAULT_SORT_BY: DraftMovementSortingSelectOption = Newest
 
   object CHOOSE_PRODUCT_CODE extends SelectOptionModel {
     override val code: String = "chooseProductCode"
@@ -84,7 +85,7 @@ object GetDraftMovementsSearchOptions extends Logging {
 
       override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, GetDraftMovementsSearchOptions]] = {
         Some(for {
-          sortBy <- stringBinder.bind("sortBy", params).getOrElse(Right(Newest.code))
+          sortBy <- stringBinder.bind("sortBy", params).map(_.map(Some(_))).getOrElse(Right(None))
           index <- intBinder.bind("index", params).getOrElse(Right(DEFAULT_INDEX))
           searchValue <- stringBinder.bind("searchValue", params).map(_.map(Some(_))).getOrElse(Right(None))
           draftHasErrors <- booleanBinder.bind("draftHasErrors", params).map(_.map(Some(_))).getOrElse(Right(None))
@@ -95,7 +96,7 @@ object GetDraftMovementsSearchOptions extends Logging {
         } yield {
           try {
             GetDraftMovementsSearchOptions(
-              sortBy = DraftMovementSortingSelectOption(sortBy),
+              sortBy = sortBy.map(DraftMovementSortingSelectOption(_)),
               index = index,
               maxRows = DEFAULT_MAX_ROWS,
               searchValue = searchValue,
@@ -117,7 +118,7 @@ object GetDraftMovementsSearchOptions extends Logging {
 
       override def unbind(key: String, searchOptions: GetDraftMovementsSearchOptions): String = {
         Seq(
-          Some(stringBinder.unbind("sortBy", searchOptions.sortBy.code)),
+          searchOptions.sortBy.map(sortBy => (stringBinder.unbind("sortBy", sortBy.code))),
           Some(intBinder.unbind("index", searchOptions.index)),
           searchOptions.searchValue.map(searchValue => stringBinder.unbind("searchValue", searchValue)),
           searchOptions.draftHasErrors.map(hasErrors => booleanBinder.unbind("draftHasErrors", hasErrors)),
@@ -130,7 +131,7 @@ object GetDraftMovementsSearchOptions extends Logging {
     }
 
   def apply(
-             sortBy: String,
+             sortBy: Option[String],
              searchValue: Option[String],
              errors: Set[DraftMovementsErrorsOption],
              destinationTypes: Set[DestinationTypeSearchOption],
@@ -145,7 +146,7 @@ object GetDraftMovementsSearchOptions extends Logging {
     }
 
     GetDraftMovementsSearchOptions(
-      sortBy = DraftMovementSortingSelectOption(sortBy),
+      sortBy = sortBy.map(DraftMovementSortingSelectOption(_)),
       index = DEFAULT_INDEX,
       maxRows = DEFAULT_MAX_ROWS,
       searchValue = searchValue,
@@ -158,7 +159,7 @@ object GetDraftMovementsSearchOptions extends Logging {
   }
 
   def unapply(options: GetDraftMovementsSearchOptions): Option[(
-      String,
+      Option[String],
       Option[String],
       Set[DraftMovementsErrorsOption],
       Set[DestinationTypeSearchOption],
@@ -167,7 +168,7 @@ object GetDraftMovementsSearchOptions extends Logging {
       Option[LocalDate]
     )] = Some(
     (
-      options.sortBy.code,
+      options.sortBy.map(_.code),
       options.searchValue,
       options.draftHasErrors.fold[Set[DraftMovementsErrorsOption]](Set.empty){
         case true => Set(DraftMovementsErrorsOption.DraftHasErrors)

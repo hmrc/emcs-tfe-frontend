@@ -737,7 +737,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           status(result) shouldBe Status.SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.ViewAllMovementsController.onPageLoad(testErn, MovementListSearchOptions(
             index = 1,
-            sortBy = Newest
+            sortBy = None
           )).url)
         }
       }

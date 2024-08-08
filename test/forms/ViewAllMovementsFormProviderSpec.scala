@@ -56,7 +56,7 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
             sortBy -> value.code
           ))
 
-          boundForm.get mustBe MovementListSearchOptions(sortBy = value)
+          boundForm.get mustBe MovementListSearchOptions(sortBy = Some(value))
         }
     }
 

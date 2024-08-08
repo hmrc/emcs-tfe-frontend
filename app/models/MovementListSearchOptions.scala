@@ -16,7 +16,7 @@
 
 package models
 
-import models.MovementListSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS}
+import models.MovementListSearchOptions.{DEFAULT_INDEX, DEFAULT_MAX_ROWS, DEFAULT_SORT_BY}
 import models.MovementSortingSelectOption.Newest
 import play.api.mvc.QueryStringBindable
 import utils.Logging
@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter
 
 case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOption] = None,
                                      searchValue: Option[String] = None,
-                                     sortBy: MovementSortingSelectOption = Newest,
+                                     sortBy: Option[MovementSortingSelectOption] = None,
                                      traderRole: Option[MovementFilterDirectionOption] = None,
                                      undischargedMovements: Option[MovementFilterUndischargedOption] = None,
                                      movementStatus: Option[MovementFilterStatusOption] = None,
@@ -112,8 +112,8 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     dateOfDispatchTo.map(date => "search.dateOfDispatchTo" -> MovementListSearchOptions.localDateToString(date)),
     dateOfReceiptFrom.map(date => "search.dateOfReceiptFrom" -> MovementListSearchOptions.localDateToString(date)),
     dateOfReceiptTo.map(date => "search.dateOfReceiptTo" -> MovementListSearchOptions.localDateToString(date)),
-    Some("search.sortOrder" -> sortBy.sortOrder),
-    Some("search.sortField" -> sortBy.sortField),
+    Some("search.sortOrder" -> sortBy.getOrElse(DEFAULT_SORT_BY).sortOrder),
+    Some("search.sortField" -> sortBy.getOrElse(DEFAULT_SORT_BY).sortField),
     Some("search.startPosition" -> startingPosition.toString),
     Some("search.maxRows" -> maxRows.toString)
   ).flatten
@@ -130,6 +130,7 @@ object MovementListSearchOptions extends Logging {
 
   val DEFAULT_INDEX: Int = 1
   val DEFAULT_MAX_ROWS: Int = 10
+  val DEFAULT_SORT_BY: MovementSortingSelectOption = Newest
 
   object CHOOSE_PRODUCT_CODE extends SelectOptionModel {
     override val code: String = "chooseProductCode"
@@ -161,7 +162,7 @@ object MovementListSearchOptions extends Logging {
 
       override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, MovementListSearchOptions]] = {
         Some(for {
-          sortOrder <- stringBinder.bind("sortBy", params).getOrElse(Right(Newest.code))
+          sortOrder <- bindStringWithDefault("sortBy", stringBinder, params)
           index <- intBinder.bind("index", params).getOrElse(Right(DEFAULT_INDEX))
           searchKey <- bindStringWithDefault("searchKey", stringBinder, params)
           searchValue <- bindStringWithDefault("searchValue", stringBinder, params)
@@ -179,7 +180,7 @@ object MovementListSearchOptions extends Logging {
             MovementListSearchOptions(
               searchKey = searchKey.map(MovementSearchSelectOption(_)),
               searchValue = searchValue,
-              sortBy = MovementSortingSelectOption(sortOrder),
+              sortBy = sortOrder.map(MovementSortingSelectOption(_)),
               traderRole = traderRole.map(MovementFilterDirectionOption(_)),
               undischargedMovements = undischargedMovements.map(MovementFilterUndischargedOption(_)),
               movementStatus = movementStatus.map(MovementFilterStatusOption(_)),
@@ -206,7 +207,7 @@ object MovementListSearchOptions extends Logging {
         Seq(
           searchOptions.searchKey.map(field => stringBinder.unbind("searchKey", field.code)),
           searchOptions.searchValue.map(field => stringBinder.unbind("searchValue", field)),
-          Some(stringBinder.unbind("sortBy", searchOptions.sortBy.code)),
+          searchOptions.sortBy.map(sortBy => stringBinder.unbind("sortBy", sortBy.code)),
           Some(intBinder.unbind("index", searchOptions.index)),
           searchOptions.traderRole.map(field => stringBinder.unbind("traderRole", field.code)),
           searchOptions.undischargedMovements.map(field => stringBinder.unbind("undischargedMovements", field.code)),
@@ -223,7 +224,7 @@ object MovementListSearchOptions extends Logging {
   def apply(
              searchKey: Option[String],
              searchValue: Option[String],
-             sortBy: MovementSortingSelectOption,
+             sortBy: Option[MovementSortingSelectOption],
              traderRoleOptions: Set[MovementFilterDirectionOption],
              undischargedMovementsOptions: Set[MovementFilterUndischargedOption],
              movementStatusOption: Option[MovementFilterStatusOption],
@@ -269,7 +270,7 @@ object MovementListSearchOptions extends Logging {
   def unapply(options: MovementListSearchOptions): Option[(
     Option[String],
       Option[String],
-      MovementSortingSelectOption,
+      Option[MovementSortingSelectOption],
       Set[MovementFilterDirectionOption],
       Set[MovementFilterUndischargedOption],
       Option[MovementFilterStatusOption],

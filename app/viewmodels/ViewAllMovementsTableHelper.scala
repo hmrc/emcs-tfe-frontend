@@ -56,7 +56,7 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
     generatePageTitle(
       totalMovements = totalMovements,
       searchValue = currentFilters.searchValue,
-      sortByDisplayName = currentFilters.sortBy.displayName,
+      sortByDisplayName = currentFilters.sortBy.map(_.displayName),
       hasFilterApplied = currentFilters.hasFilterApplied,
     )
 
@@ -65,18 +65,22 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
     generatePageTitle(
       totalMovements = totalMovements,
       searchValue = currentFilters.searchValue,
-      sortByDisplayName = currentFilters.sortBy.displayName,
+      sortByDisplayName = currentFilters.sortBy.map(_.displayName),
       hasFilterApplied = currentFilters.hasFilterApplied,
     )
 
   private[viewmodels] def generatePageTitle(
                                              totalMovements: Int,
                                              searchValue: Option[String],
-                                             sortByDisplayName: String,
+                                             sortByDisplayName: Option[String],
                                              hasFilterApplied: Boolean,
                                            )(implicit messages: Messages): String = {
     val filteredMessage: String = if (hasFilterApplied) messages("viewAllMovements.filtered") else ""
-    val sortByMessage: String = messages(sortByDisplayName)
+
+    val sortByMessage: String = sortByDisplayName match {
+      case Some(value) => messages("viewAllMovements.sortBy", value)
+      case None => ""
+    }
 
     val searchTermMessage = searchValue match {
       case Some(searchTerm) => messages(s"viewAllMovements.searchTerm", searchTerm)
@@ -84,9 +88,9 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
     }
 
     totalMovements match {
-      case 0 => messages(s"viewAllMovements.noResultsFound", "", filteredMessage, searchTermMessage)
-      case 1 => messages(s"viewAllMovements.resultFound", "", filteredMessage, searchTermMessage, sortByMessage)
-      case _ => messages(s"viewAllMovements.resultsFound", totalMovements, filteredMessage, searchTermMessage, sortByMessage)
+      case 0 => messages("viewAllMovements.noResultsFound", "", filteredMessage, searchTermMessage)
+      case 1 => messages("viewAllMovements.resultFound", "", filteredMessage, searchTermMessage)
+      case _ => messages("viewAllMovements.resultsFound", totalMovements, filteredMessage, searchTermMessage, sortByMessage)
     }
   }
 }

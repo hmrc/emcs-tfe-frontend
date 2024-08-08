@@ -29,7 +29,7 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
   def apply(): Form[GetDraftMovementsSearchOptions] =
     Form(
       mapping(
-        ViewAllDraftMovementsFormProvider.sortByKey -> text().transform[String](removeAnyNonAlphanumerics, identity),
+        ViewAllDraftMovementsFormProvider.sortByKey -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllDraftMovementsFormProvider.searchValue -> optional(playText().verifying(regexpUnlessEmpty(XSS_REGEX, "error.invalidCharacter"))),
         ViewAllDraftMovementsFormProvider.draftHasErrors -> set(enumerable[DraftMovementsErrorsOption]()),
         ViewAllDraftMovementsFormProvider.destinationTypes -> set(enumerable[DestinationTypeSearchOption]()),

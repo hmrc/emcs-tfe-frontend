@@ -18,6 +18,7 @@ package models.draftMovements
 
 import base.SpecBase
 import models.common.DestinationType
+import models.draftMovements.DraftMovementSortingSelectOption.Newest
 import viewmodels.draftMovements.DraftMovementsErrorsOption
 
 import java.time.LocalDate
@@ -161,7 +162,6 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         )
 
         val actualResult = GetDraftMovementsSearchOptions(
-          sortBy = DraftMovementSortingSelectOption.Newest,
           index = 1,
           maxRows = 10
         ).queryParams
@@ -185,7 +185,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         )
 
         val actualResult = GetDraftMovementsSearchOptions(
-          sortBy = DraftMovementSortingSelectOption.LrnAscending,
+          sortBy = Some(DraftMovementSortingSelectOption.LrnAscending),
           index = 1,
           maxRows = 10,
           searchValue = Some("term"),
@@ -223,7 +223,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         )
 
         val actualResult = GetDraftMovementsSearchOptions(
-          sortBy = DraftMovementSortingSelectOption.LrnAscending,
+          sortBy = Some(DraftMovementSortingSelectOption.LrnAscending),
           index = 1,
           maxRows = 10,
           searchValue = Some("term"),
@@ -252,7 +252,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
       "all query parameters are supplied" in {
 
         val expectedResult = Some(Right(GetDraftMovementsSearchOptions(
-          sortBy = DraftMovementSortingSelectOption.LrnAscending,
+          sortBy = Some(DraftMovementSortingSelectOption.LrnAscending),
           index = 1,
           maxRows = 10,
           searchValue = Some("term"),
@@ -307,7 +307,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           "exciseProductCode=exciseProductCode"
 
         val actualResult = GetDraftMovementsSearchOptions.queryStringBinder.unbind("", GetDraftMovementsSearchOptions(
-          sortBy = DraftMovementSortingSelectOption.LrnAscending,
+          sortBy = Some(DraftMovementSortingSelectOption.LrnAscending),
           index = 1,
           maxRows = 10,
           searchValue = Some("term"),
@@ -341,7 +341,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
       "should return valid GetDraftMovementSearchOptions" in {
 
         val expectedResult = GetDraftMovementsSearchOptions(
-          sortBy = DraftMovementSortingSelectOption.Oldest,
+          sortBy = Some(DraftMovementSortingSelectOption.Oldest),
           searchValue = Some("search term"),
           draftHasErrors = Some(true),
           destinationTypes = Some(Seq(DestinationTypeSearchOption.TaxWarehouse)),
@@ -351,7 +351,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         )
 
         val actualResult = GetDraftMovementsSearchOptions.apply(
-          sortBy = DraftMovementSortingSelectOption.Oldest.toString,
+          sortBy = Some(DraftMovementSortingSelectOption.Oldest.toString),
           searchValue = Some("search term"),
           errors = Set(DraftMovementsErrorsOption.DraftHasErrors),
           destinationTypes = Set(DestinationTypeSearchOption.TaxWarehouse),
@@ -366,7 +366,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
       "should return GetDraftMovementSearchOptions with exciseProductCode None for ExciseProductCode when left as default" in {
 
         val expectedResult = GetDraftMovementsSearchOptions(
-          sortBy = DraftMovementSortingSelectOption.Oldest,
+          sortBy = Some(DraftMovementSortingSelectOption.Oldest),
           searchValue = Some("search term"),
           draftHasErrors = Some(true),
           destinationTypes = Some(Seq(DestinationTypeSearchOption.TaxWarehouse)),
@@ -376,7 +376,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         )
 
         val actualResult = GetDraftMovementsSearchOptions.apply(
-          sortBy = DraftMovementSortingSelectOption.Oldest.toString,
+          sortBy = Some(DraftMovementSortingSelectOption.Oldest.toString),
           searchValue = Some("search term"),
           errors = Set(DraftMovementsErrorsOption.DraftHasErrors),
           destinationTypes = Set(DestinationTypeSearchOption.TaxWarehouse),
@@ -405,7 +405,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
 
         val actualResult = GetDraftMovementsSearchOptions.unapply(
           GetDraftMovementsSearchOptions(
-            sortBy = DraftMovementSortingSelectOption.Oldest,
+            sortBy = Some(DraftMovementSortingSelectOption.Oldest),
             searchValue = Some("search term"),
             draftHasErrors = Some(true),
             destinationTypes = Some(Seq(DestinationTypeSearchOption.TaxWarehouse)),
