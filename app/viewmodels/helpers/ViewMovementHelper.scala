@@ -112,7 +112,7 @@ class ViewMovementHelper @Inject()(
       } else {
         Some(summaryListRowBuilder("viewMovement.movement.summary.eADStatus",
           HtmlFormat.fill(Seq(
-            p()(Text(movementResponse.eadStatus.toString).asHtml),
+            p()(Text(messages(s"viewAllMovements.filters.status.${movementResponse.eadStatus.toString.toLowerCase}")).asHtml),
             p(classes = "govuk-hint govuk-!-margin-top-0")(Text(eadStatusExplanation).asHtml)
           )
           )))
