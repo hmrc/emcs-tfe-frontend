@@ -32,6 +32,7 @@
         h2: h2,
         hidden: hidden,
         p: p,
+        link: link,
         govukPagination: GovukPagination,
         govukSelect: GovukSelect,
         govukInput: GovukInput,
@@ -61,33 +62,22 @@
         currentFilters: MovementListSearchOptions
 )(implicit request: DataRequest[_], messages: Messages)
 
-@defaultFilters = @{MovementListSearchOptions(
-    sortBy = currentFilters.sortBy,
-    searchValue = currentFilters.searchValue
-)}
-
 @heading(asPageTitle: Boolean = false) = @{
-
-    if(currentFilters.hasFilterApplied) {
-
-        val resultCount = if(asPageTitle) {
-            helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName))
-        } else {
-            hidden(helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName)))
-        }
-
-        s"$resultCount ${messages("viewAllMovements.heading")}"
+    val resultCount = if(asPageTitle) {
+        helper.generatePageTitle(totalMovements, currentFilters)
     } else {
-        messages("viewAllMovements.heading")
+        hidden(helper.generatePageTitle(totalMovements, currentFilters))
     }
+
+    s"$resultCount ${messages("viewAllMovements.heading")}"
 }
 
 
 @searchFields = {
 
-    @p(id = Some("search-hint")) {
-        @messages("viewAllMovements.search.p1")
-    }
+@p(id = Some("search-hint")) {
+    @messages("viewAllMovements.search.p1")
+}
 
     <div class="hmrc-search-group-wrapper">
         <div class="govuk-grid-column-one-half hmrc-search-group">
@@ -156,10 +146,22 @@
             <div class="govuk-grid-column-one-third govuk-!-padding-bottom-2 filter-column no-print">
                 <aside class="filter-panel">
                     @h2("viewAllMovements.filters.heading", "govuk-heading-m")
-                    @govukButton(
-                        ButtonViewModel(Text(messages("viewAllMovements.filters.button")))
-                        .withId("filtersButton")
-                    )
+                    <div class="govuk-button-group">
+                        @govukButton(
+                            ButtonViewModel(Text(messages("viewAllMovements.filters.button")))
+                            .withId("filtersButton")
+                        )
+
+                        @link(
+                            link = controllers.routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions(
+                                sortBy = currentFilters.sortBy,
+                                searchValue = currentFilters.searchValue
+                            )).url,
+                            messageKey = "viewAllMovements.filters.clear.button",
+                            id = Some("clearFiltersButton"),
+                            classes = "govuk-link govuk-link--no-visited-state"
+                        )
+                    </div>
                     @* Direction *@
                     @govukCheckboxes(
                         CheckboxesViewModel(

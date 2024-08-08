@@ -64,24 +64,14 @@
         currentFilters: GetDraftMovementsSearchOptions
 )(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
 
-@defaultFilters = @{GetDraftMovementsSearchOptions(
-    sortBy = currentFilters.sortBy,
-    searchValue = currentFilters.searchValue
-)}
-
 @heading(asPageTitle: Boolean = false) = @{
-    if(currentFilters.hasFilterApplied) {
-
-        val resultOutcome = if(asPageTitle) {
-            helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName))
-        } else {
-            hidden(helper.generatePageTitle(totalMovements, currentFilters.searchValue, currentFilters != defaultFilters, messages(currentFilters.sortBy.displayName)))
-        }
-
-        s"$resultOutcome ${messages("viewAllDraftMovements.heading")}"
+    val resultOutcome = if(asPageTitle) {
+        helper.generatePageTitle(totalMovements, currentFilters)
     } else {
-        messages("viewAllDraftMovements.heading")
+        hidden(helper.generatePageTitle(totalMovements, currentFilters))
     }
+
+    s"$resultOutcome ${messages("viewAllDraftMovements.heading")}"
 }
 
 @searchFields = {
@@ -179,7 +169,10 @@
                         )
 
                         @link(
-                            link = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, defaultFilters).url,
+                            link = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions(
+                                sortBy = currentFilters.sortBy,
+                                searchValue = currentFilters.searchValue
+                            )).url,
                             messageKey = "viewAllDraftMovements.filters.clear.button",
                             id = Some("clearFiltersButton"),
                             classes = "govuk-link govuk-link--no-visited-state"

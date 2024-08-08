@@ -39,7 +39,6 @@ case class GetDraftMovementsSearchOptions(
                                          ) {
 
   val hasFilterApplied: Boolean = Seq(
-    searchValue,
     draftHasErrors,
     destinationTypes,
     dateOfDispatchFrom,

@@ -42,7 +42,6 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
   val startingPosition: Int = (index - 1) * maxRows
 
   val hasFilterApplied: Boolean = Seq(
-    searchValue,
     traderRole,
     undischargedMovements,
     movementStatus,
