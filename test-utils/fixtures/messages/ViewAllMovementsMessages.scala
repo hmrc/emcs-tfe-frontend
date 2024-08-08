@@ -56,6 +56,7 @@ object ViewAllMovementsMessages {
 
     val filtersHeading = "Filters"
     val filtersButton = "Apply filters"
+    val clearFiltersLink = "Clear filters"
     val filtersDirection = "Direction"
     val filtersDirectionOption1 = "Goods in"
     val filtersDirectionOption2 = "Goods out"

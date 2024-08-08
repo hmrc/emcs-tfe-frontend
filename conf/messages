@@ -743,7 +743,6 @@ site.govuk = GOV.UK
 site.back = Back
 site.confirm = Confirm
 
-viewAllMovements.title = Movements
 viewAllMovements.heading = Movements
 viewAllMovements.filtered = ' filtered'
 viewAllMovements.searchTerm = ' for '{0}
@@ -770,6 +769,7 @@ viewAllMovements.sort.newest = Dispatched (newest)
 viewAllMovements.sort.oldest = Dispatched (oldest)
 viewAllMovements.filters.heading = Filters
 viewAllMovements.filters.button = Apply filters
+viewAllMovements.filters.clear.button = Clear filters
 viewAllMovements.filters.direction.heading = Direction
 viewAllMovements.filters.direction.consignee = Goods in
 viewAllMovements.filters.direction.consignor = Goods out

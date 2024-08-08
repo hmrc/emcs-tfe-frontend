@@ -16,7 +16,8 @@
 
 package viewmodels
 
-import models.MovementFilterDirectionOption
+import models.{MovementFilterDirectionOption, MovementListSearchOptions}
+import models.draftMovements.GetDraftMovementsSearchOptions
 import models.response.emcsTfe.GetMovementListItem
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
@@ -50,20 +51,42 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
       rows = dataRows(ern, movements, directionFilterOption)(messages)
     )
 
-  def generatePageTitle(totalMovements: Int, searchTerm: Option[String], isFiltered: Boolean, sortBy: String)
-                       (implicit messages: Messages): String = {
+  def generatePageTitle(totalMovements: Int, currentFilters: MovementListSearchOptions)
+                       (implicit messages: Messages): String =
+    generatePageTitle(
+      totalMovements = totalMovements,
+      searchValue = currentFilters.searchValue,
+      sortByDisplayName = currentFilters.sortBy.displayName,
+      hasFilterApplied = currentFilters.hasFilterApplied,
+    )
 
-    val filtered = if (isFiltered) messages("viewAllMovements.filtered") else ""
+  def generatePageTitle(totalMovements: Int, currentFilters: GetDraftMovementsSearchOptions)
+                       (implicit messages: Messages): String =
+    generatePageTitle(
+      totalMovements = totalMovements,
+      searchValue = currentFilters.searchValue,
+      sortByDisplayName = currentFilters.sortBy.displayName,
+      hasFilterApplied = currentFilters.hasFilterApplied,
+    )
 
-    val searchTermMessage = searchTerm match {
+  private[viewmodels] def generatePageTitle(
+                                             totalMovements: Int,
+                                             searchValue: Option[String],
+                                             sortByDisplayName: String,
+                                             hasFilterApplied: Boolean,
+                                           )(implicit messages: Messages): String = {
+    val filteredMessage: String = if (hasFilterApplied) messages("viewAllMovements.filtered") else ""
+    val sortByMessage: String = messages(sortByDisplayName)
+
+    val searchTermMessage = searchValue match {
       case Some(searchTerm) => messages(s"viewAllMovements.searchTerm", searchTerm)
       case None => ""
     }
 
     totalMovements match {
-      case 0 => messages(s"viewAllMovements.noResultsFound", "", filtered, searchTermMessage)
-      case 1 => messages(s"viewAllMovements.resultFound", "", filtered, searchTermMessage, sortBy)
-      case _ => messages(s"viewAllMovements.resultsFound", totalMovements, filtered, searchTermMessage, sortBy)
+      case 0 => messages(s"viewAllMovements.noResultsFound", "", filteredMessage, searchTermMessage)
+      case 1 => messages(s"viewAllMovements.resultFound", "", filteredMessage, searchTermMessage, sortByMessage)
+      case _ => messages(s"viewAllMovements.resultsFound", totalMovements, filteredMessage, searchTermMessage, sortByMessage)
     }
   }
 }
