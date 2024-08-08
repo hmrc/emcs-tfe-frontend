@@ -125,7 +125,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               searchValue = None,
               sortByDisplayName = "sortField",
               hasFilterApplied = false
-            ) mustBe "1 result found sorted by sortField -"
+            ) mustBe "1 result -"
           }
           "filtered" in {
             helper.generatePageTitle(
@@ -133,7 +133,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               searchValue = None,
               sortByDisplayName = "sortField",
               hasFilterApplied = true
-            ) mustBe "1 filtered result found sorted by sortField -"
+            ) mustBe "1 filtered result -"
           }
           "searchTerm is defined" in {
             helper.generatePageTitle(
@@ -141,7 +141,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               searchValue = Some("beans"),
               sortByDisplayName = "sortField",
               hasFilterApplied = false
-            ) mustBe "1 result found for beans sorted by sortField -"
+            ) mustBe "1 result for beans -"
           }
           "filtered and searchTerm is defined" in {
             helper.generatePageTitle(
@@ -149,7 +149,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               searchValue = Some("beans"),
               sortByDisplayName = "sortField",
               hasFilterApplied = true
-            ) mustBe "1 filtered result found for beans sorted by sortField -"
+            ) mustBe "1 filtered result for beans -"
           }
         }
       }
@@ -162,7 +162,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               searchValue = None,
               sortByDisplayName = "sortField",
               hasFilterApplied = false
-            ) mustBe "2 results found sorted by sortField -"
+            ) mustBe "2 results sorted by sortField -"
           }
           "filtered" in {
             helper.generatePageTitle(
@@ -170,7 +170,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               searchValue = None,
               sortByDisplayName = "sortField",
               hasFilterApplied = true
-            ) mustBe "2 filtered results found sorted by sortField -"
+            ) mustBe "2 filtered results sorted by sortField -"
           }
           "searchTerm is defined" in {
             helper.generatePageTitle(
@@ -178,7 +178,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               searchValue = Some("beans"),
               sortByDisplayName = "sortField",
               hasFilterApplied = false
-            ) mustBe "2 results found for beans sorted by sortField -"
+            ) mustBe "2 results for beans sorted by sortField -"
           }
           "filtered and searchTerm is defined" in {
             helper.generatePageTitle(
@@ -186,7 +186,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               searchValue = Some("beans"),
               sortByDisplayName = "sortField",
               hasFilterApplied = true
-            ) mustBe "2 filtered results found for beans sorted by sortField -"
+            ) mustBe "2 filtered results for beans sorted by sortField -"
           }
         }
       }
