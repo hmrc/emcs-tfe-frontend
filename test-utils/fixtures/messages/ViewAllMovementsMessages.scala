@@ -23,7 +23,7 @@ object ViewAllMovementsMessages {
   sealed trait ViewMessages { _: i18n =>
     val heading: String = "Movements"
     val title: String = titleHelper(heading)
-    val headingWithNoResults: String = "No results found for beans - Movements"
+    val headingWithNoResults: String = "No results for beans - Movements"
     val titleWithNoResults: String = titleHelper(headingWithNoResults)
     val headingWithOneResult: String = "1 result for beans - Movements"
     val titleWithOneResult: String = titleHelper(headingWithOneResult)

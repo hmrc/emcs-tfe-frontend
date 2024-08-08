@@ -28,7 +28,7 @@ object ViewAllDraftMovementsMessages {
     val heading: String = "Drafts"
     val title: String = titleHelper(heading)
 
-    val headingWithNoResults: String = "No results found for beans - Drafts"
+    val headingWithNoResults: String = "No results for beans - Drafts"
     val titleWithNoResults: String = titleHelper(headingWithNoResults)
     val headingWithOneResult: String = "1 result for beans - Drafts"
     val titleWithOneResult: String = titleHelper(headingWithOneResult)
