@@ -158,4 +158,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def enableXIPCInCaM: Boolean = isEnabled(EnableXIPCInCaM)
 
   def messageStatisticsNotificationEnabled: Boolean = isEnabled(MessageStatisticsNotification)
+
+  def accountHomeBanner: Boolean = isEnabled(AccountHomeBanner)
 }

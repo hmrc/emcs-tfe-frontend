@@ -19,7 +19,7 @@ package views
 import base.SpecBase
 import config.AppConfig
 import controllers.routes
-import featureswitch.core.config.{EnableXIPCInCaM, FeatureSwitching}
+import featureswitch.core.config.{AccountHomeBanner, EnableXIPCInCaM, FeatureSwitching}
 import models.MovementFilterUndischargedOption.Undischarged
 import models.MovementListSearchOptions
 import models.common.RoleType._
@@ -105,6 +105,7 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
           }
         }
         s"have the correct content for $roleType" in {
+          disable(AccountHomeBanner)
           doc.getElementsByTag("h2").get(0).text mustBe "This section is Account home"
           doc.getElementsByTag("h1").text mustBe testTraderName
           doc.getElementsByTag("p").get(1).text mustBe roleTypeDescription
@@ -183,6 +184,20 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
         doc.getElementsByTag("p").get(1).text mustBe "Excise warehousekeeper located in Great Britain"
         doc.getElementsByTag("p").get(2).text mustNot be(s"Excise registration number (ERN): $testErn")
       }
+    }
+
+    "show the banner and its content when enabled" in {
+      enable(AccountHomeBanner)
+
+      def doc = Jsoup.parse(page(testErn, GBWK)(
+        dataRequest(FakeRequest(), knownFacts = Some(testMinTraderKnownFacts.copy(traderName = ""))), messages
+      ).toString())
+
+      val bannerElements = doc.getElementById("banner")
+      bannerElements.getElementsByClass("govuk-notification-banner__title").get(0).text mustBe "Important"
+      bannerElements.getElementsByTag("p").get(0).text mustBe "EMCS will unavailable from midday on Friday 16 August 2024 to 10am on Monday 19 August 2024, due to scheduled updates"
+      bannerElements.getElementsByTag("p").get(1).text mustBe "Movements must follow fallback procedures during this time."
+      bannerElements.getElementsByTag("p").get(2).text mustBe "Updates are part of a wider plan to improve EMCS and bring it in line with other HMRC services."
     }
   }
 }
