@@ -18,6 +18,7 @@ package viewmodels.helpers
 
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
+import models.MovementEadStatus._
 import models.requests.DataRequest
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -57,5 +58,28 @@ class ViewMovementOverviewHelperSpec extends SpecBase with GetMovementResponseFi
       doc.select(Selectors.summaryListRowKey(7)).text() mustBe "Transporting vehicle(s)"
       doc.select(Selectors.summaryListRowValue(7)).text() mustBe "AB11 1T4 AB22 2T4"
     }
+
+    Seq(
+      Accepted -> "Accepted",
+      Cancelled -> "Cancelled",
+      DeemedExported -> "Deemed exported",
+      Delivered -> "Delivered",
+      Diverted -> "Diverted",
+      Exporting -> "Exporting",
+      ManuallyClosed -> "Manually closed",
+      NoneStatus -> "None",
+      PartiallyRefused -> "Partially refused",
+      Refused -> "Refused",
+      Replaced -> "Replaced",
+      Rejected -> "Rejected",
+      Stopped -> "Stopped"
+    ).foreach { case (testStatus, expectedValue) =>
+      s"output the correct wording for EAD status ${simpleName(testStatus)} " in {
+        val result = helper.constructMovementOverview(getMovementResponseModel.copy(eadStatus = testStatus))
+        val doc = Jsoup.parse(result.toString())
+        doc.select(Selectors.summaryListRowValue(2)).text() mustBe expectedValue
+      }
+    }
+
   }
 }
