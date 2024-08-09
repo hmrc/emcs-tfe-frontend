@@ -203,10 +203,12 @@ class ViewMessageHelper @Inject()(
     messageType match {
       case "IE815" if numberOfNonFixableErrors == 0 && draftMovementExists =>
         Seq(
-          p()(HtmlFormat.fill(Seq(
-            link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(ern, uniqueMessageId).url,
-              "messages.IE704.IE815.fixError.fixable.link", id = Some("update-draft-movement"), withFullStop = true)
-          )))
+          p()(HtmlFormat.fill(
+            Seq(
+              link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(ern, uniqueMessageId).url, "messages.IE704.IE815.fixError.fixable.link", id = Some("update-draft-movement"), withFullStop = true),
+              Html(messages("messages.IE704.IE815.fixError.fixable.link.afterLink"))
+            )
+          ))
         )
       case "IE815" if numberOfNonFixableErrors > 0 =>
         Seq(

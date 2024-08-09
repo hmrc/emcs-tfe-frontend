@@ -106,6 +106,7 @@ object ViewMessageMessages {
     val fixableDraftExpiredP2 = s"$fixableDraftExpiredP2PreLink $fixableDraftExpiredP2Link $fixableDraftExpiredP2AfterLink"
 
     val updateMovementLink = "Update and resubmit the movement."
+    val updateMovementLinkPostText = "When you click the link to update and resubmit the movement, this message will be deleted from your inbox. The draft will then be accessible in your Draft movements until you submit it."
     val warningTextWhenFixable = "If you delete this message you will not be able to access the original draft movement details from EMCS and must create a new movement."
 
     val arcText = "An ARC will only be created for a movement once it has been successfully submitted."
