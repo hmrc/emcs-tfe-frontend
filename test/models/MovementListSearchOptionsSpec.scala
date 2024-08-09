@@ -159,7 +159,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
       actualResult mustBe expectedResult
     }
 
-    "have the correct queryParams values" when {
+    "have the correct downstreamQueryParams values" when {
 
       "using default values" in {
 
@@ -170,7 +170,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
           "search.maxRows" -> "10"
         )
 
-        val actualResult = MovementListSearchOptions().queryParams
+        val actualResult = MovementListSearchOptions().downstreamQueryParams
 
         actualResult mustBe expectedResult
       }
@@ -199,7 +199,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
           dateOfReceiptTo = Some(testDate),
           index = 6,
           maxRows = 5
-        ).queryParams
+        ).downstreamQueryParams
 
         actualResult mustBe expectedResult
       }
@@ -480,7 +480,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         val expectedResult = Some((
           Some("otherTraderId"),
           Some("ERN123456"),
-          Oldest,
+          Some(Oldest),
           Set(MovementFilterDirectionOption.GoodsOut),
           Set(MovementFilterUndischargedOption.Undischarged),
           Some(MovementFilterStatusOption.Active),

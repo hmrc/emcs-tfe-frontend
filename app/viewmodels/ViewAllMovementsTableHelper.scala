@@ -78,7 +78,7 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
     val filteredMessage: String = if (hasFilterApplied) messages("viewAllMovements.filtered") else ""
 
     val sortByMessage: String = sortByDisplayName match {
-      case Some(value) => messages("viewAllMovements.sortBy", value)
+      case Some(value) => messages("viewAllMovements.sortBy", messages(value))
       case None => ""
     }
 

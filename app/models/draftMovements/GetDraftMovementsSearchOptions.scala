@@ -48,7 +48,7 @@ case class GetDraftMovementsSearchOptions(
 
   val startingPosition: Int = (index - 1) * maxRows
 
-  val queryParams: Seq[(String, String)] = Seq(
+  val downstreamQueryParams: Seq[(String, String)] = Seq(
     Some("search.sortField" -> sortBy.getOrElse(DEFAULT_SORT_BY).sortField),
     Some("search.sortOrder" -> sortBy.getOrElse(DEFAULT_SORT_BY).sortOrder),
     Some("search.startPosition" -> startingPosition.toString),
@@ -118,7 +118,7 @@ object GetDraftMovementsSearchOptions extends Logging {
 
       override def unbind(key: String, searchOptions: GetDraftMovementsSearchOptions): String = {
         Seq(
-          searchOptions.sortBy.map(sortBy => (stringBinder.unbind("sortBy", sortBy.code))),
+          Some(stringBinder.unbind("sortBy", searchOptions.sortBy.getOrElse(DEFAULT_SORT_BY).code)),
           Some(intBinder.unbind("index", searchOptions.index)),
           searchOptions.searchValue.map(searchValue => stringBinder.unbind("searchValue", searchValue)),
           searchOptions.draftHasErrors.map(hasErrors => booleanBinder.unbind("draftHasErrors", hasErrors)),

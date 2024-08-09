@@ -308,7 +308,7 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
 
     "being rendered with the result count should show the correct heading for two movements" when {
 
-      implicit val doc: Document = asDocument(None, movements = twoDraftMovements, searchOptions = GetDraftMovementsSearchOptions(searchValue = Some("beans")))
+      implicit val doc: Document = asDocument(None, movements = twoDraftMovements, searchOptions = GetDraftMovementsSearchOptions(sortBy = Some(DraftMovementSortingSelectOption.Newest), searchValue = Some("beans")))
 
       behave like pageWithExpectedElementsAndMessages(Seq(
         Selectors.title -> English.titleWithCount(2),

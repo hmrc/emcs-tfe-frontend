@@ -18,7 +18,6 @@ package models.draftMovements
 
 import base.SpecBase
 import models.common.DestinationType
-import models.draftMovements.DraftMovementSortingSelectOption.Newest
 import viewmodels.draftMovements.DraftMovementsErrorsOption
 
 import java.time.LocalDate
@@ -150,7 +149,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
       }
     }
 
-    "have the correct query params" when {
+    "have the correct downstream query params" when {
 
       "minimum values given" in {
 
@@ -164,7 +163,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
         val actualResult = GetDraftMovementsSearchOptions(
           index = 1,
           maxRows = 10
-        ).queryParams
+        ).downstreamQueryParams
 
         actualResult mustBe expectedResult
       }
@@ -194,7 +193,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo),
           exciseProductCode = Some("exciseProductCode")
-        ).queryParams
+        ).downstreamQueryParams
 
         actualResult mustBe expectedResult
       }
@@ -232,7 +231,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
           dateOfDispatchFrom = Some(dateOfDispatchFrom),
           dateOfDispatchTo = Some(dateOfDispatchTo),
           exciseProductCode = Some("exciseProductCode")
-        ).queryParams
+        ).downstreamQueryParams
 
         actualResult mustBe expectedResult
       }
@@ -394,7 +393,7 @@ class GetDraftMovementsSearchOptionsSpec extends SpecBase {
       "should return form field values from the GetDraftMovementSearchOptions model" in {
 
         val expectedResult = Some((
-          DraftMovementSortingSelectOption.Oldest.toString,
+          Some(DraftMovementSortingSelectOption.Oldest.toString),
           Some("search term"),
           Set(DraftMovementsErrorsOption.DraftHasErrors),
           Set(DestinationTypeSearchOption.TaxWarehouse),

@@ -44,7 +44,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
   ".sortBy" should {
 
-    "bind when the searchValue is present" in {
+    "bind when the sortBy is present" in {
 
       val expectedResult = GetDraftMovementsSearchOptions(
         sortBy = Some(DraftMovementSortingSelectOption.Oldest)
@@ -80,7 +80,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       )
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         searchValue -> "searchValue"
       )).get
 
@@ -89,7 +88,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
     "return an error when the value is invalid" in {
       val boundForm = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         searchValue -> "<script>alert('hi')</script>",
       ))
       boundForm.errors mustBe List(FormError(searchValue, List("error.invalidCharacter"), List(XSS_REGEX)))
@@ -105,7 +103,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       )
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         draftHasErrors -> DraftMovementsErrorsOption.DraftHasErrors.toString
       )).get
 
@@ -118,9 +115,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
         draftHasErrors = None
       )
 
-      val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code
-      )).get
+      val actualResult = form.bind(Map.empty[String, String]).get
 
       actualResult mustBe expectedResult
     }
@@ -134,7 +129,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         draftHasErrors -> "InvalidOption"
       )).errors
 
@@ -151,7 +145,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       )
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         destinationTypes(0) -> DestinationTypeSearchOption.TaxWarehouse.toString
       )).get
 
@@ -168,7 +161,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       )
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         destinationTypes(0) -> DestinationTypeSearchOption.TaxWarehouse.toString,
         destinationTypes(1) -> DestinationTypeSearchOption.CertifiedConsignee.toString
       )).get
@@ -182,9 +174,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
         destinationTypes = None
       )
 
-      val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code
-      )).get
+      val actualResult = form.bind(Map.empty[String, String]).get
 
       actualResult mustBe expectedResult
     }
@@ -198,7 +188,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         destinationTypes(0) -> "InvalidOption"
       )).errors
 
@@ -215,7 +204,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       )
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         exciseProductCode -> "exciseProductCode"
       )).get
 
@@ -229,7 +217,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       )
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         exciseProductCode -> "exciseProductCode1/injecting-viruses!!!!<script>\"alert</script>"
       )).get
 
@@ -246,7 +233,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       )
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromDay -> "01",
         dateOfDispatchFromMonth -> "01",
         dateOfDispatchFromYear -> "2020"
@@ -264,7 +250,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromDay -> "29",
         dateOfDispatchFromMonth -> "02",
         dateOfDispatchFromYear -> "2022"
@@ -282,7 +267,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromMonth -> "02",
         dateOfDispatchFromYear -> "2022"
       )).errors
@@ -316,7 +300,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromDay -> "01",
         dateOfDispatchFromMonth -> "02"
       )).errors
@@ -333,7 +316,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromDay -> "01"
       )).errors
 
@@ -349,7 +331,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromMonth -> "01"
       )).errors
 
@@ -365,7 +346,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchFromYear -> "2020"
       )).errors
 
@@ -382,7 +362,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       )
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToDay -> "01",
         dateOfDispatchToMonth -> "01",
         dateOfDispatchToYear -> "2020"
@@ -400,7 +379,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToDay -> "29",
         dateOfDispatchToMonth -> "02",
         dateOfDispatchToYear -> "2022"
@@ -418,7 +396,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToMonth -> "02",
         dateOfDispatchToYear -> "2022"
       )).errors
@@ -435,7 +412,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToDay -> "01",
         dateOfDispatchToYear -> "2022"
       )).errors
@@ -452,7 +428,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToDay -> "01",
         dateOfDispatchToMonth -> "02"
       )).errors
@@ -469,7 +444,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToDay -> "01"
       )).errors
 
@@ -485,7 +459,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToMonth -> "01"
       )).errors
 
@@ -501,7 +474,6 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       ))
 
       val actualResult = form.bind(Map(
-        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToYear -> "2020"
       )).errors
 

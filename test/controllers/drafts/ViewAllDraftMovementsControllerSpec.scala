@@ -45,6 +45,7 @@ import views.html.viewAllDrafts.ViewAllDraftMovementsView
 
 import scala.concurrent.Future
 
+// scalastyle:off magic.number
 class ViewAllDraftMovementsControllerSpec extends SpecBase
   with DraftMovementsFixtures
   with FakeAuthAction
@@ -128,10 +129,12 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
     )
 
   private def viewWithErrors(searchOptions: GetDraftMovementsSearchOptions,
-                             numberOfMovements: Int,
-                             form: Form[GetDraftMovementsSearchOptions] = formProvider().withError(FormError("sortBy", Seq("error.required")))
-                            )(implicit request: DataRequest[_]): Html =
+                             numberOfMovements: Int
+                            )(
+                             form: Form[GetDraftMovementsSearchOptions] = formProvider().fill(searchOptions.copy(searchValue = Some("<invalid>"))).withError(FormError("searchValue", Seq("error.invalidCharacter")))
+                            )(implicit request: DataRequest[_]): Html = {
     buildView(searchOptions, form, numberOfMovements)
+  }
 
   "GET /" when {
 
@@ -391,7 +394,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
               .returns(Future.successful(Right(epcsListConnectorResult)))
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.SEE_OTHER
@@ -413,11 +416,11 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 3)(None)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, threePageMovementListResponse.count)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, threePageMovementListResponse.count)()
           }
 
           "show the correct view and pagination with an index of 2" in new Test {
@@ -435,11 +438,11 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             MockMovementPaginationHelper.constructPagination(index = 2, pageCount = 3)(None)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, threePageMovementListResponse.count)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, threePageMovementListResponse.count)()
           }
 
           "show the correct view and pagination with an index of 3" in new Test {
@@ -457,11 +460,11 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 3)(None)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, threePageMovementListResponse.count)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, threePageMovementListResponse.count)()
           }
 
           "redirect to the index 1 when current index is above the maximum" in new Test {
@@ -477,7 +480,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
               .returns(Future.successful(Right(epcsListConnectorResult)))
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.SEE_OTHER
@@ -499,11 +502,11 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, numberOfMovements = 31)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, numberOfMovements = 31)()
           }
 
           "show the correct view when some form fields are invalid" in new Test {
@@ -523,17 +526,19 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
               fakeRequest.withFormUrlEncodedBody(Seq(
                 s"${ViewAllDraftMovementsFormProvider.dateOfDispatchFrom}.day" -> "invalid",
-                s"${ViewAllDraftMovementsFormProvider.dateOfDispatchFrom}.month" -> "2"
+                s"${ViewAllDraftMovementsFormProvider.dateOfDispatchFrom}.month" -> "2",
+                "searchValue" -> "<invalid>"
               ): _*)
             )
 
             val boundForm = formProvider().bind(Map(
               s"${ViewAllDraftMovementsFormProvider.dateOfDispatchFrom}.day" -> "invalid",
-              s"${ViewAllDraftMovementsFormProvider.dateOfDispatchFrom}.month" -> "2"
+              s"${ViewAllDraftMovementsFormProvider.dateOfDispatchFrom}.month" -> "2",
+              "searchValue" -> "<invalid>"
             ))
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, numberOfMovements = 31, form = boundForm)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, numberOfMovements = 31)(form = boundForm)
           }
 
           "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in new Test {
@@ -551,11 +556,11 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
             MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, numberOfMovements = 39)
+            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions, numberOfMovements = 39)()
           }
         }
 
@@ -567,7 +572,9 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
               .getDraftMovements(testErn, Some(GetDraftMovementsSearchOptions(index = 1)))
               .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-            val result: Future[Result] = controller.onSubmit(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
+            val result: Future[Result] = controller.onSubmit(testErn, GetDraftMovementsSearchOptions(index = 1))(
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
+            )
 
             status(result) shouldBe Status.INTERNAL_SERVER_ERROR
             Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
@@ -586,7 +593,9 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
               .getExciseProductCodes()
               .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-            val result: Future[Result] = controller.onSubmit(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
+            val result: Future[Result] = controller.onSubmit(testErn, GetDraftMovementsSearchOptions(index = 1))(
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
+            )
 
             status(result) shouldBe Status.INTERNAL_SERVER_ERROR
             Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)

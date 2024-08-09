@@ -114,7 +114,8 @@
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = {
                 form.errors.map {
-                    case FormError(key, _, args) => key -> s"$key.${args.headOption.getOrElse("day")}"
+                    case FormError(key, _, args) if key.toLowerCase.contains("date") => key -> s"$key.${args.headOption.getOrElse("day")}"
+                    case FormError(key, _, args) => key -> s"$key"
                 }.toMap
             }))
         }

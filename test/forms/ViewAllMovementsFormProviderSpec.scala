@@ -72,14 +72,13 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
   ".searchKey" should {
 
     "bind" in {
-      val boundForm = form.bind(Map(searchKey -> ARC.code, sortBy -> Newest.code))
+      val boundForm = form.bind(Map(searchKey -> ARC.code))
       boundForm.get mustBe MovementListSearchOptions(Some(ARC))
     }
 
     "remove any alphanumeric characters from the form values" in {
       val boundForm = form.bind(Map(
-        searchKey -> "$$ ar ?c\\/&. ?",
-        sortBy -> Newest.code
+        searchKey -> "$$ ar ?c\\/&. ?"
       ))
       boundForm.get mustBe MovementListSearchOptions(searchKey = Some(ARC))
     }
@@ -88,12 +87,12 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
   ".searchValue" should {
 
     "bind" in {
-      val boundForm = form.bind(Map(searchValue -> "beans", sortBy -> Newest.code))
+      val boundForm = form.bind(Map(searchValue -> "beans"))
       boundForm.get mustBe MovementListSearchOptions(searchValue = Some("beans"))
     }
 
     "bind leading and trailing spaces by removing them" in {
-      val boundForm = form.bind(Map(searchValue -> "   beans  ", sortBy -> Newest.code))
+      val boundForm = form.bind(Map(searchValue -> "   beans  "))
       boundForm.get mustBe MovementListSearchOptions(searchValue = Some("beans"))
     }
 
@@ -110,7 +109,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "bind when Goods in is present" in {
       val boundForm = form.bind(Map(
-        sortBy -> Newest.code,
         traderRole(0) -> GoodsIn.code
       ))
 
@@ -119,7 +117,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "bind when Goods out is present" in {
       val boundForm = form.bind(Map(
-        sortBy -> Newest.code,
         traderRole(0) -> GoodsOut.code
       ))
 
@@ -128,7 +125,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "bind when both Goods in and Goods out are present" in {
       val boundForm = form.bind(Map(
-        sortBy -> Newest.code,
         traderRole(0) -> GoodsIn.code,
         traderRole(1) -> GoodsOut.code
       ))
@@ -150,7 +146,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "bind when Undischarged is present" in {
       val boundForm = form.bind(Map(
-        sortBy -> Newest.code,
         undischarged(0) -> Undischarged.code
       ))
 
@@ -159,7 +154,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "bind an invalid value to None" in {
       val boundForm = form.bind(Map(
-        sortBy -> Newest.code,
         undischarged(0) -> "BEANS"
       ))
 
@@ -172,7 +166,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
       value =>
         s"bind when $value is present" in {
           val boundForm = form.bind(Map(
-            sortBy -> Newest.code,
             status -> value.code
           ))
 
@@ -182,7 +175,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "bind ChooseStatus to None" in {
       val boundForm = form.bind(Map(
-        sortBy -> Newest.code,
         status -> ChooseStatus.code
       ))
 
@@ -191,7 +183,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
     "not bind an invalid value" in {
       val boundForm = form.bind(Map(
-        sortBy -> Newest.code,
         status -> "BEANS"
       ))
 
@@ -202,14 +193,13 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
   ".exciseProductCode" should {
 
     "bind" in {
-      val boundForm = form.bind(Map(exciseProductCode -> "beans", sortBy -> Newest.code))
+      val boundForm = form.bind(Map(exciseProductCode -> "beans"))
       boundForm.get mustBe MovementListSearchOptions(exciseProductCode = Some("beans"))
     }
 
     "remove any non-alphanumeric characters from the form values" in {
       val boundForm = form.bind(Map(
-        exciseProductCode -> "$$ bea ?ns\\/&. ?",
-        sortBy -> Newest.code
+        exciseProductCode -> "$$ bea ?ns\\/&. ?"
       ))
       boundForm.get mustBe MovementListSearchOptions(exciseProductCode = Some("beans"))
     }
@@ -218,14 +208,13 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
   ".countryOfOrigin" should {
 
     "bind" in {
-      val boundForm = form.bind(Map(countryOfOrigin -> "beans", sortBy -> Newest.code))
+      val boundForm = form.bind(Map(countryOfOrigin -> "beans"))
       boundForm.get mustBe MovementListSearchOptions(countryOfOrigin = Some("beans"))
     }
 
     "remove any non-alphanumeric characters from the form values" in {
       val boundForm = form.bind(Map(
-        countryOfOrigin -> "$$ bea ?ns\\/&. ?",
-        sortBy -> Newest.code
+        countryOfOrigin -> "$$ bea ?ns\\/&. ?"
       ))
       boundForm.get mustBe MovementListSearchOptions(countryOfOrigin = Some("beans"))
     }
@@ -246,7 +235,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
                         year: String = date.getYear.toString
                       ): Map[String, String] =
       Map(
-        sortBy -> Newest.code,
         s"$dateKey.day" -> day,
         s"$dateKey.month" -> month,
         s"$dateKey.year" -> year

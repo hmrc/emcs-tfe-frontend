@@ -38,7 +38,7 @@ class GetDraftMovementsConnector @Inject()(val http: HttpClient,
 
     def url: String = s"$baseUrl/user-answers/create-movement/drafts/search/$ern"
 
-    get(url, search.map(_.queryParams).getOrElse(Seq.empty))
+    get(url, search.map(_.downstreamQueryParams).getOrElse(Seq.empty))
       .recover {
         case JsResultException(errors) =>
           logger.warn(s"[getDraftMovements][$ern] Bad JSON response from emcs-tfe: " + errors)

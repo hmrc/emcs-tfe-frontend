@@ -93,7 +93,7 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
           action = routes.ViewAllDraftMovementsController.onSubmit(ern, searchOptions),
           ern = ern,
           movements = draftMovements.paginatedDrafts,
-          sortSelectItems = DraftMovementSortingSelectOption.constructSelectItems(searchOptions.sortBy.map(_.code)),
+          sortSelectItems = DraftMovementSortingSelectOption.constructSelectItems(Some(searchOptions.sortBy.getOrElse(GetDraftMovementsSearchOptions.DEFAULT_SORT_BY).code)),
           exciseItems = SelectItemHelper.constructSelectItems(exciseCodesWithDefault, None, searchOptions.exciseProductCode),
           pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions),
           totalMovements = draftMovements.count,

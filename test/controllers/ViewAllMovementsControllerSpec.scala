@@ -111,7 +111,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
       action = routes.ViewAllMovementsController.onSubmit(testErn, searchOptions),
       ern = testErn,
       movementListResponse = movementListResponse,
-      sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(Newest.toString)),
+      sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(form.value.flatMap(_.sortBy).getOrElse(MovementListSearchOptions.DEFAULT_SORT_BY).code)),
       searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
       movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
       exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
@@ -128,7 +128,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
     buildView(searchOptions, movementListResponse, formProvider().fill(searchOptions))
 
   private def viewWithErrors(searchOptions: MovementListSearchOptions, movementListResponse: GetMovementListResponse = threePageMovementListResponse)(implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, movementListResponse, formProvider().withError(FormError("sortBy", Seq("error.required"))))
+    buildView(searchOptions, movementListResponse, formProvider().fill(searchOptions.copy(searchValue = Some("<invalid>"))).withError(FormError("searchValue", Seq("error.invalidCharacter"))))
 
   "GET /" when {
 
@@ -473,7 +473,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
               .returns(Future.successful(Right(countryListConnectorResult)))
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.SEE_OTHER
@@ -499,7 +499,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 3)(None)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.BAD_REQUEST
@@ -525,7 +525,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             MockMovementPaginationHelper.constructPagination(index = 2, pageCount = 3)(None)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.BAD_REQUEST
@@ -551,7 +551,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 3)(None)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.BAD_REQUEST
@@ -575,7 +575,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
               .returns(Future.successful(Right(countryListConnectorResult)))
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.SEE_OTHER
@@ -602,7 +602,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.BAD_REQUEST
@@ -629,7 +629,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             MockMovementPaginationHelper.constructPagination(index = 3, pageCount = 4)(None)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
             )
 
             status(result) shouldBe Status.BAD_REQUEST
@@ -658,7 +658,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
               MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 1)(None)
 
               val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-                fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
+                fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
               )
 
               status(result) shouldBe Status.BAD_REQUEST
@@ -673,7 +673,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
                 .getMovementList(testErn, Some(MovementListSearchOptions(index = 1)))
                 .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-              val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+              val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(
+                fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
+              )
 
               status(result) shouldBe Status.INTERNAL_SERVER_ERROR
               Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
@@ -693,7 +695,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
               .getExciseProductCodes()
               .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-            val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+            val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
+            )
 
             status(result) shouldBe Status.INTERNAL_SERVER_ERROR
             Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
@@ -716,7 +720,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
               .getMemberStates()
               .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
-            val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
+            val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(
+              fakeRequest.withFormUrlEncodedBody(("searchValue", "<invalid>"))
+            )
 
             status(result) shouldBe Status.INTERNAL_SERVER_ERROR
             Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
@@ -737,7 +743,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           status(result) shouldBe Status.SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.ViewAllMovementsController.onPageLoad(testErn, MovementListSearchOptions(
             index = 1,
-            sortBy = None
+            sortBy = Some(Newest)
           )).url)
         }
       }

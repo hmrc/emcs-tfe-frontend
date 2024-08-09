@@ -17,26 +17,26 @@
 package viewmodels.helpers
 
 import base.SpecBase
-import controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad
 import models.draftMovements.GetDraftMovementsSearchOptions
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
 import viewmodels.draftMovements.DraftMovementsPaginationHelper
 
+// scalastyle:off magic.number
 class DraftMovementsPaginationHelperSpec extends SpecBase {
 
   object Helper extends DraftMovementsPaginationHelper()
 
-  def baseOptions(index: Int) =
+  def baseOptions(index: Int): GetDraftMovementsSearchOptions =
     GetDraftMovementsSearchOptions(index = index)
 
   def createPageItem(index: Int): PaginationItem = PaginationItem(
-    href = onPageLoad(testErn, baseOptions(index)).url,
+    href = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(testErn, baseOptions(index)).url,
     number = Some(index.toString)
   )
 
   def createCurrentPageItem(index: Int): PaginationItem = PaginationItem(
-    href = onPageLoad(testErn, baseOptions(index)).url,
+    href = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(testErn, baseOptions(index)).url,
     number = Some(index.toString),
     current = Some(true)
   )
@@ -47,7 +47,7 @@ class DraftMovementsPaginationHelperSpec extends SpecBase {
   )
 
   def createPageLink(index: Int): PaginationLink = PaginationLink(
-    href = onPageLoad(testErn, baseOptions(index)).url
+    href = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(testErn, baseOptions(index)).url
   )
 
   ".constructPagination" when {

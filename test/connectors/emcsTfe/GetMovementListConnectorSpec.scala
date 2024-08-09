@@ -63,7 +63,7 @@ class GetMovementListConnectorSpec extends SpecBase with Status with MimeTypes w
         val searchOptions = MovementListSearchOptions()
 
         MockHttpClient
-          .get(s"$baseUrl/movements/$testErn", searchOptions.queryParams)
+          .get(s"$baseUrl/movements/$testErn", searchOptions.downstreamQueryParams)
           .returns(Future.successful(getMovementListResponse))
 
         val expectedResult = getMovementListResponse

@@ -17,29 +17,28 @@
 package viewmodels.helpers
 
 import base.SpecBase
-import controllers.routes.ViewAllMovementsController.onPageLoad
 import fixtures.MovementListFixtures
 import models.MovementListSearchOptions
 import models.MovementSearchSelectOption.ARC
-import models.MovementSortingSelectOption.ArcAscending
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
 import viewmodels.MovementPaginationHelper
 
+// scalastyle:off magic.number
 class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
 
   object Helper extends MovementPaginationHelper()
 
-  def baseOptions(index: Int) =
+  def baseOptions(index: Int): MovementListSearchOptions =
     MovementListSearchOptions(Some(ARC), Some("ARC123456"), None, None, None, None, None, None, None, None, None, None, index, 10)
 
   def createPageItem(index: Int): PaginationItem = PaginationItem(
-    href = onPageLoad(testErn, baseOptions(index)).url,
+    href = controllers.routes.ViewAllMovementsController.onPageLoad(testErn, baseOptions(index)).url,
     number = Some(index.toString)
   )
 
   def createCurrentPageItem(index: Int): PaginationItem = PaginationItem(
-    href = onPageLoad(testErn, baseOptions(index)).url,
+    href = controllers.routes.ViewAllMovementsController.onPageLoad(testErn, baseOptions(index)).url,
     number = Some(index.toString),
     current = Some(true)
   )
@@ -50,7 +49,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
   )
 
   def createPageLink(index: Int): PaginationLink = PaginationLink(
-    href = onPageLoad(testErn, baseOptions(index)).url
+    href = controllers.routes.ViewAllMovementsController.onPageLoad(testErn, baseOptions(index)).url
   )
 
   ".constructPagination" when {

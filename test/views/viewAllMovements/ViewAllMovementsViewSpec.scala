@@ -22,6 +22,7 @@ import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
 import forms.ViewAllMovementsFormProvider
 import models.MovementFilterDirectionOption.{All, GoodsIn, GoodsOut}
+import models.MovementSortingSelectOption.Newest
 import models._
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementListResponse
@@ -372,7 +373,7 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
 
       val response: GetMovementListResponse = GetMovementListResponse(Seq(movement1, movement2), 2)
 
-      implicit val doc: Document = asDocument(None, movementListResponse = response, searchOptions = MovementListSearchOptions(searchValue = Some("beans")))
+      implicit val doc: Document = asDocument(None, movementListResponse = response, searchOptions = MovementListSearchOptions(sortBy = Some(Newest), searchValue = Some("beans")))
 
       behave like pageWithExpectedElementsAndMessages(Seq(
         Selectors.title -> English.titleWithCount(2),

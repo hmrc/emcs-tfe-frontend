@@ -101,7 +101,7 @@ case class MovementListSearchOptions(searchKey: Option[MovementSearchSelectOptio
     }
   }
 
-  def queryParams: Seq[(String, String)] = Seq(
+  def downstreamQueryParams: Seq[(String, String)] = Seq(
     getSearchFields,
     getTraderRole,
     getUndischargedMovementsFlag,
