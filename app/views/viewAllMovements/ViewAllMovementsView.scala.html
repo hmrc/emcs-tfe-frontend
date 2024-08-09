@@ -155,7 +155,8 @@
                         @link(
                             link = controllers.routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions(
                                 sortBy = currentFilters.sortBy,
-                                searchValue = currentFilters.searchValue
+                                searchValue = currentFilters.searchValue,
+                                searchKey = currentFilters.searchKey
                             )).url,
                             messageKey = "viewAllMovements.filters.clear.button",
                             id = Some("clearFiltersButton"),
