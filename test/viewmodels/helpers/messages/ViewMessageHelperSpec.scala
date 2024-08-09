@@ -756,10 +756,13 @@ class ViewMessageHelperSpec extends SpecBase
 
     "return the correct content for an IE815 error - fixable with draft movement (draftMovementExists = true)" in {
       helper.contentForFixingError("IE815", numberOfErrors = 1, numberOfNonFixableErrors = 0, draftMovementExists = true)(implicitly, messageCache(ie704ErrorCreateMovementIE815)) mustBe Seq(
-        p()(HtmlFormat.fill(Seq(
-          link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
-            ViewMessageMessages.English.updateMovementLink.dropRight(1), id = Some("update-draft-movement"), withFullStop = true)
-        )))
+        p()(HtmlFormat.fill(
+          Seq(
+            link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
+              ViewMessageMessages.English.updateMovementLink.dropRight(1), id = Some("update-draft-movement"), withFullStop = true),
+            Html(ViewMessageMessages.English.updateMovementLinkPostText)
+          )
+        ))
       )
     }
 
@@ -1351,8 +1354,13 @@ class ViewMessageHelperSpec extends SpecBase
         val result = helper.constructFixErrorsContent(MessageCache(testErn, ie704ErrorCreateMovementIE815.message, Some(failureMessageResponse)))
         removeNewLines(result.toString()) mustBe removeNewLines(HtmlFormat.fill(Seq(
           p() {
-            link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
-              ViewMessageMessages.English.updateMovementLink.dropRight(1), id = Some("update-draft-movement"), withFullStop = true)
+            HtmlFormat.fill(
+              Seq(
+                link(controllers.messages.routes.ViewMessageController.removeMessageAndRedirectToDraftMovement(testErn, ie704ErrorCreateMovementIE815.message.uniqueMessageIdentifier).url,
+                  ViewMessageMessages.English.updateMovementLink.dropRight(1), id = Some("update-draft-movement"), withFullStop = true),
+                Html(ViewMessageMessages.English.updateMovementLinkPostText)
+              )
+            )
           },
           p() {
             Html(ViewMessageMessages.English.arcText)
