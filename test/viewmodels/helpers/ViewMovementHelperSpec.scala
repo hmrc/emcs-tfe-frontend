@@ -194,29 +194,30 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
         doc.select(Selectors.summaryListAtIndexRowValue(3, 2)).text() mustBe "1 December 2023"
       }
 
-      Seq(Accepted -> "An eAD has been created and the movement may be in transit.",
-        Cancelled -> "The consignor has cancelled the movement before the date of dispatch on the eAD.",
-        Delivered -> "The consignee has accepted the goods and the movement has been closed.",
-        Diverted -> "The consignor has successfully submitted a change of destination before the goods have been received or in response to the consignee’s complete refusal of the goods.",
-        ManuallyClosed -> "The member state of the consignor has manually closed the movement due to a technical problem preventing a report of receipt or because the consignee has gone out of business.",
-        Refused -> "The consignee has refused all goods in the movement and the consignor must create a change of destination.",
-        NoneStatus -> "",
-        PartiallyRefused -> "The consignee has refused some goods in the movement and the consignor must create a change of destination.",
-        Exporting -> "The movement has been accepted for export by customs.",
-        DeemedExported -> "The movement has been approved for export by customs, but this status does not confirm that the goods have been exported (the report of receipt will provide confirmation).",
-        Replaced -> "The movement of energy products has been split into two or more parts (up to a maximum of 9 parts).",
-        Stopped -> "Officials have seized the movement because of an incident or irregularity.",
-        Rejected -> "The consignee has rejected the movement and the consignor must now submit a change of destination if the goods are in transit or cancel the movement if the goods have not departed."
-      ).foreach { statusToExplanation =>
+      Seq(
+        (Accepted, "Accepted", "An eAD has been created and the movement may be in transit."),
+        (Cancelled, "Cancelled", "The consignor has cancelled the movement before the date of dispatch on the eAD."),
+        (Delivered, "Delivered", "The consignee has accepted the goods and the movement has been closed."),
+        (Diverted, "Diverted", "The consignor has successfully submitted a change of destination before the goods have been received or in response to the consignee’s complete refusal of the goods."),
+        (ManuallyClosed, "Manually closed", "The member state of the consignor has manually closed the movement due to a technical problem preventing a report of receipt or because the consignee has gone out of business."),
+        (Refused, "Refused", "The consignee has refused all goods in the movement and the consignor must create a change of destination."),
+        (NoneStatus, "None", ""),
+        (PartiallyRefused, "Partially refused", "The consignee has refused some goods in the movement and the consignor must create a change of destination."),
+        (Exporting, "Exporting", "The movement has been accepted for export by customs."),
+        (DeemedExported, "Deemed exported", "The movement has been approved for export by customs, but this status does not confirm that the goods have been exported (the report of receipt will provide confirmation)."),
+        (Replaced, "Replaced", "The movement of energy products has been split into two or more parts (up to a maximum of 9 parts)."),
+        (Stopped, "Stopped", "Officials have seized the movement because of an incident or irregularity."),
+        (Rejected, "Rejected", "The consignee has rejected the movement and the consignor must now submit a change of destination if the goods are in transit or cancel the movement if the goods have not departed.")
+      ).foreach { case (status, statusWording, explanation) =>
 
-        s"when the eAD status is ${statusToExplanation._1} - show the correct status and explanation" in {
-          val result = helper.constructMovementView(getMovementResponseModel.copy(eadStatus = statusToExplanation._1))
+        s"when the eAD status is ${status} - show the correct status and explanation" in {
+          val result = helper.constructMovementView(getMovementResponseModel.copy(eadStatus = status))
           val doc = Jsoup.parse(result.toString())
-          if (statusToExplanation._1 == NoneStatus) {
+          if (status == NoneStatus) {
             doc.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "Receipt status"
           } else {
             doc.select(Selectors.summaryListAtIndexRowKey(1, 2)).text() mustBe "eAD status"
-            doc.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe s"${statusToExplanation._1} ${statusToExplanation._2}"
+            doc.select(Selectors.summaryListAtIndexRowValue(1, 2)).text() mustBe s"${statusWording} ${explanation}"
           }
         }
 

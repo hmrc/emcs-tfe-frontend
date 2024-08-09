@@ -37,7 +37,10 @@ class ViewMovementOverviewHelper @Inject()(list: list,
 
     val localReferenceNumber = summaryListRowBuilder("viewMovement.overview.lrn", movementResponse.localReferenceNumber)
 
-    val eadStatus = summaryListRowBuilder("viewMovement.overview.eadStatus", movementResponse.eadStatus.toString)
+    val eadStatus = summaryListRowBuilder(
+      "viewMovement.overview.eadStatus",
+      messages(s"viewAllMovements.filters.status.${movementResponse.eadStatus.toString.toLowerCase}")
+    )
 
     val dateOfDispatch = summaryListRowBuilder("viewMovement.overview.dateOfDispatch", movementResponse.formattedDateOfDispatch)
 

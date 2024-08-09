@@ -790,6 +790,7 @@ viewAllMovements.filters.status.refused = Refused
 viewAllMovements.filters.status.replaced = Replaced
 viewAllMovements.filters.status.rejected = Rejected
 viewAllMovements.filters.status.stopped = Stopped
+viewAllMovements.filters.status.none = None
 viewAllMovements.filters.exciseProductCode = Excise product code
 viewAllMovements.filters.exciseProductCode.chooseProductCode = Choose item
 viewAllMovements.filters.countryOfOrigin = Country of origin
