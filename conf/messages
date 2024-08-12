@@ -1075,6 +1075,7 @@ messages.IE704.IE815.fixError.nonFixable.link.createNewMovement = create a new m
 messages.IE704.IE815.fixError.nonFixable.software = However, if you used commercial software for your submission, please correct these errors with the same software that you used for the submission.
 
 messages.IE704.IE815.fixError.fixable.link = Update and resubmit the movement
+messages.IE704.IE815.fixError.fixable.link.afterLink = When you click the link to update and resubmit the movement, this message will be deleted from your inbox. The draft will then be accessible in your Draft movements until you submit it.
 messages.IE704.IE815.fixError.fixable.warning = If you delete this message you will not be able to access the original draft movement details from EMCS and must create a new movement.
 messages.IE704.IE815.fixError.fixable.expired.p1 = This draft movement is not available on EMCS. This is because:
 messages.IE704.IE815.fixError.fixable.expired.bullet1 = the draft was not updated and resubmitted on EMCS within 30 days, or
