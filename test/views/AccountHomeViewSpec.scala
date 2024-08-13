@@ -195,7 +195,7 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
 
       val bannerElements = doc.getElementById("banner")
       bannerElements.getElementsByClass("govuk-notification-banner__title").get(0).text mustBe "Important"
-      bannerElements.getElementsByTag("p").get(0).text mustBe "EMCS will unavailable from midday on Friday 16 August 2024 to 10am on Monday 19 August 2024, due to scheduled updates"
+      bannerElements.getElementsByTag("p").get(0).text mustBe "EMCS will unavailable from midday on Friday 16 August 2024 to 10am on Monday 19 August 2024, due to scheduled updates."
       bannerElements.getElementsByTag("p").get(1).text mustBe "Movements must follow fallback procedures during this time."
       bannerElements.getElementsByTag("p").get(2).text mustBe "Updates are part of a wider plan to improve EMCS and bring it in line with other HMRC services."
     }
