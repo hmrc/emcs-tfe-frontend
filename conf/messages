@@ -736,7 +736,7 @@ accountHome.bta = Business tax account
 accountHome.btaLink = Go to your business tax account
 accountHome.checkLink = Check if a trader can receive excise goods
 accountHome.checkLink.europa = Check Europa to find out if a trader can receive excise goods
-accountHome.banner.p1 = EMCS will unavailable from midday on Friday 16 August 2024 to 10am on Monday 19 August 2024, due to scheduled updates
+accountHome.banner.p1 = EMCS will unavailable from midday on Friday 16 August 2024 to 10am on Monday 19 August 2024, due to scheduled updates.
 accountHome.banner.p2 = Movements must follow fallback procedures during this time.
 accountHome.banner.p3 = Updates are part of a wider plan to improve EMCS and bring it in line with other HMRC services.
 
