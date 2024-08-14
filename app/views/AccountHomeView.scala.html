@@ -14,13 +14,12 @@
  * limitations under the License.
  *@
 
-@import views.html.components._
-@import views.html.templates.Layout
 @import config.AppConfig
-@import models.response.emcsTfe.GetMessageStatisticsResponse
+@import models.NavigationBannerInfo
 @import models.common.RoleType.RoleType
 @import models.requests.DataRequest
-@import models.NavigationBannerInfo
+@import views.html.components._
+@import views.html.templates.Layout
 
 @this(
         layout: Layout,
@@ -31,7 +30,8 @@
         h2: h2,
         h1: h1,
         p: p,
-        navigationBar: navigation_bar
+        navigationBar: navigation_bar,
+        govukNotificationBanner : GovukNotificationBanner
 )
 
 @(
@@ -57,7 +57,16 @@
     fullWidthContent = true,
     showBackLink = false
 ) {
+    @if(appConfig.accountHomeBanner) {
+        @govukNotificationBanner(NotificationBanner(
+            content = HtmlContent(bannerHtml),
+            classes = "govuk-!-width-three-quarters",
+            attributes = Map("id" -> "banner")
+        ))
+    }
+
     @h2("accountHome.caption", classes = "govuk-caption-l hmrc-caption-l", hiddenContent = Some("base.captionHiddenText"))
+
     @h1("govuk-heading-xl govuk-!-margin-bottom-1") {
         @businessName
     }
@@ -109,6 +118,11 @@
     }
 }
 
+@bannerHtml = {
+    @p("govuk-notification-banner__heading") {@messages("accountHome.banner.p1")}
+    @p("govuk-notification-banner__heading") {@messages("accountHome.banner.p2")}
+    @p() {@messages("accountHome.banner.p3")}
+}
 
 @{
     //$COVERAGE-OFF$

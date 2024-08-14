@@ -31,7 +31,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     DenyDutyPaidUsers,
     CheckBetaAllowList,
     MessageStatisticsNotification,
-    EnableXIPCInCaM
+    EnableXIPCInCaM,
+    AccountHomeBanner
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -69,4 +70,9 @@ case object MessageStatisticsNotification extends FeatureSwitch {
 case object EnableXIPCInCaM extends FeatureSwitch {
   override val configName: String = "features.enableXIPCInCaM"
   override val displayName: String = "Enables XIPC users in CaM"
+}
+
+case object AccountHomeBanner extends FeatureSwitch {
+  override val configName: String = "features.accountHomeBanner"
+  override val displayName: String = "Enables the account home page banner"
 }
