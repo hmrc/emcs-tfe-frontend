@@ -73,7 +73,7 @@ class ItemDetailsControllerSpec
         "return OK and the correct view for a GET" in new Test {
 
           MockGetMovementService.getLatestMovementForLoggedInUser(testErn, testArc)
-            .returns(Future.successful(getMovementResponseModel.copy(items = Seq(item1WithWineAndPackagingAndCnCodeInfo))))
+            .returns(Future.successful(getMovementResponseModel.copy(items = Seq(item2WithWineAndPackagingAndCnCodeInfo, item1WithWineAndPackagingAndCnCodeInfo))))
 
           val request = FakeRequest(GET, onPageLoadUrl(idx = 1))
           val result = controller.onPageLoad(testErn, testArc, 1)(request)

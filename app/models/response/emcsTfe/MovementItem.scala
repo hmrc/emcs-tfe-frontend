@@ -42,14 +42,14 @@ case class MovementItem(itemUniqueReference: Int,
                         productCodeDescription: Option[String]) {
 
   /**
-   * Product code S500 has no corresponding CN Codes in reference data.
+   * Product codes S500 and S600 have no corresponding CN Codes in reference data.
    * Reference: https://www.revenue.ie/en/online-services/support/documents/emcs/technical-information/emcs-trader-guide.pdf
    * BR018 - It is obligatory that the cn code of each body ead that is
    * included in the draft message exists in the same
    * correspondence cn code-excise product of the reference data
    * in seed, with the excise product code of the same body ead
    * that is included in the draft message, if the excise product
-   * code is anything but S500.
+   * code is anything but S500 or S600.
    *
    * BR29 - Exceptionally, when the excise product is S500 (in the
    * IE815,IE801 and IE825 messages), the <(BODY) E-AD.CN
@@ -58,7 +58,7 @@ case class MovementItem(itemUniqueReference: Int,
    * @return true if the MovementItem productCode is not in the list of Product Codes without a corresponding CN Code (i.e. productCode != S500)
    */
   def hasProductCodeWithValidCnCode: Boolean = {
-    val productCodesWithoutAnyCorrespondingCnCodes = Seq("S500")
+    val productCodesWithoutAnyCorrespondingCnCodes = Seq("S500", "S600")
     !productCodesWithoutAnyCorrespondingCnCodes.contains(productCode)
   }
 }

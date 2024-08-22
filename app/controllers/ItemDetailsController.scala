@@ -45,7 +45,7 @@ class ItemDetailsController @Inject()(mcc: MessagesControllerComponents,
   def onPageLoad(ern: String, arc: String, idx: Int): Action[AnyContent] =
     authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
       movementService.getLatestMovementForLoggedInUser(ern, arc).map { movement =>
-        val item = movement.items(idx - 1)
+        val item = movement.items.find(_.itemUniqueReference == idx).get // `get` is safe here because the recover block will catch and log any exceptions and safely redirect
         Ok(view(item))
       }.recover {
         case e =>
