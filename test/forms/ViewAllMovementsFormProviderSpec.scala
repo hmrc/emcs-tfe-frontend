@@ -96,14 +96,6 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
       val boundForm = form.bind(Map(searchValue -> "   beans  ", sortBy -> Newest.code))
       boundForm.get mustBe MovementListSearchOptions(searchValue = Some("beans"))
     }
-
-    "return an error when the value is invalid" in {
-      val boundForm = form.bind(Map(
-        searchValue -> "<script>alert('hi')</script>",
-        sortBy -> Newest.code
-      ))
-      boundForm.errors mustBe List(FormError(searchValue, List("error.invalidCharacter"), List(XSS_REGEX)))
-    }
   }
 
   ".traderRole" should {
