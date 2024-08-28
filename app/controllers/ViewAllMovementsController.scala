@@ -64,7 +64,14 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
   def onSubmit(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
     authorisedDataRequestAsync(ern, searchMovementsBetaGuard(ern)) { implicit request =>
       formProvider().bindFromRequest().fold(
-        formWithErrors => renderView(BadRequest, ern, searchOptions, formWithErrors),
+        formWithErrors => {
+          val modifiedFormWithErrors = formWithErrors.copy(errors = formWithErrors.errors.map {
+            case fe if fe.message.contains("searchValue") => fe.copy(key = "searchValue")
+            case fe if fe.message.contains("searchKey") => fe.copy(key = "searchKey")
+            case fe => fe
+          })
+          renderView(BadRequest, ern, searchOptions, modifiedFormWithErrors)
+        },
         value => Future(Redirect(routes.ViewAllMovementsController.onPageLoad(ern, value)))
       )
     }
@@ -102,7 +109,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
           ern = ern,
           movementListResponse = movementList,
           sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(searchOptions.sortBy.code)),
-          searchSelectItems = MovementSearchSelectOption.constructSelectItems(searchOptions.searchKey.map(_.code)),
+          searchSelectItems = MovementSearchSelectOption.constructSelectItems(formToRender),
           movementStatusItems = movementStatusItems,
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(exciseProductCodeOptions, None, searchOptions.exciseProductCode),
           countrySelectItems = SelectItemHelper.constructSelectItems(selectCountryOptions, None, searchOptions.countryOfOrigin),

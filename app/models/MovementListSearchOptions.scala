@@ -221,7 +221,7 @@ object MovementListSearchOptions extends Logging {
     }
 
   def apply(
-             searchKey: Option[String],
+             searchKeyOption: Option[String],
              searchValue: Option[String],
              sortBy: MovementSortingSelectOption,
              traderRoleOptions: Set[MovementFilterDirectionOption],
@@ -251,7 +251,7 @@ object MovementListSearchOptions extends Logging {
     }
 
     MovementListSearchOptions(
-      searchKey = searchKey.map(MovementSearchSelectOption(_)),
+      searchKey = MovementSearchSelectOption.filterNotChooseSearch(searchKeyOption),
       searchValue = searchValue,
       sortBy = sortBy,
       traderRole = MovementFilterDirectionOption.getOptionalValueFromCheckboxes(traderRoleOptions),

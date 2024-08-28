@@ -16,8 +16,10 @@
 
 package models
 
+import forms.ViewAllMovementsFormProvider
 import play.api.i18n.Messages
 import models.common.WithName
+import play.api.data.Form
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 import viewmodels.helpers.SelectItemHelper
 
@@ -26,6 +28,10 @@ sealed trait MovementSearchSelectOption extends SelectOptionModel {
 }
 
 object MovementSearchSelectOption {
+
+  case object ChooseSearch extends WithName("chooseRefType") with MovementSearchSelectOption {
+    override val displayName = "viewAllMovements.search.suffix.chooseRefType"
+  }
 
   case object ARC extends WithName("arc") with MovementSearchSelectOption {
     override val displayName = "viewAllMovements.search.suffix.arc"
@@ -46,6 +52,7 @@ object MovementSearchSelectOption {
   val values: Seq[MovementSearchSelectOption] = Seq(ARC, LRN, ERN, Transporter)
 
   def apply(code: String): MovementSearchSelectOption = code match {
+    case ChooseSearch.code => ChooseSearch
     case ARC.code => ARC
     case LRN.code => LRN
     case ERN.code => ERN
@@ -53,6 +60,18 @@ object MovementSearchSelectOption {
     case invalid => throw new IllegalArgumentException(s"Invalid argument of '$invalid' received which can not be mapped to a MovementSearchSelectOption")
   }
 
-  def constructSelectItems(existingAnswer: Option[String] = None)(implicit messages: Messages): Seq[SelectItem] =
-    SelectItemHelper.constructSelectItems(values, None, existingAnswer)
+  def filterNotChooseSearch(value: Option[String]): Option[MovementSearchSelectOption] = value.map(apply) match {
+    case Some(ChooseSearch) => None
+    case value => value
+  }
+
+  def constructSelectItems(form: Form[MovementListSearchOptions])(implicit messages: Messages): Seq[SelectItem] = {
+    val searchKey = form.data.get(ViewAllMovementsFormProvider.searchKey)
+    val searchValue = form.data.get(ViewAllMovementsFormProvider.searchValue)
+
+    // default to ChooseSearch if no searchValue as this is not selectable otherwise
+    val existingAnswer = if (searchValue.isDefined && searchValue.exists(_.trim.nonEmpty)) searchKey else None
+
+    SelectItemHelper.constructSelectItems(values, Some(ChooseSearch.displayName), existingAnswer)
+  }
 }

@@ -17,9 +17,11 @@
 package forms
 
 import forms.mappings.Mappings
+import models.MovementSearchSelectOption
 import models._
 import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, set, text => playText}
+import play.api.data.validation.{Constraint, Invalid, Valid}
 
 import javax.inject.Inject
 
@@ -37,26 +39,26 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
         ViewAllMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllMovementsFormProvider.countryOfOrigin -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllMovementsFormProvider.dateOfDispatchFrom -> optionalLocalDate(
-          invalidKey     = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid",
+          invalidKey = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid",
           twoRequiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required.two",
-          requiredKey    = "viewAllMovements.filters.dateOfDispatchFrom.error.required"
+          requiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required"
         ),
         ViewAllMovementsFormProvider.dateOfDispatchTo -> optionalLocalDate(
-          invalidKey     = "viewAllMovements.filters.dateOfDispatchTo.error.invalid",
+          invalidKey = "viewAllMovements.filters.dateOfDispatchTo.error.invalid",
           twoRequiredKey = "viewAllMovements.filters.dateOfDispatchTo.error.required.two",
-          requiredKey    = "viewAllMovements.filters.dateOfDispatchTo.error.required"
+          requiredKey = "viewAllMovements.filters.dateOfDispatchTo.error.required"
         ),
         ViewAllMovementsFormProvider.dateOfReceiptFrom -> optionalLocalDate(
-          invalidKey     = "viewAllMovements.filters.dateOfReceiptFrom.error.invalid",
+          invalidKey = "viewAllMovements.filters.dateOfReceiptFrom.error.invalid",
           twoRequiredKey = "viewAllMovements.filters.dateOfReceiptFrom.error.required.two",
-          requiredKey    = "viewAllMovements.filters.dateOfReceiptFrom.error.required"
+          requiredKey = "viewAllMovements.filters.dateOfReceiptFrom.error.required"
         ),
         ViewAllMovementsFormProvider.dateOfReceiptTo -> optionalLocalDate(
-          invalidKey     = "viewAllMovements.filters.dateOfReceiptTo.error.invalid",
+          invalidKey = "viewAllMovements.filters.dateOfReceiptTo.error.invalid",
           twoRequiredKey = "viewAllMovements.filters.dateOfReceiptTo.error.required.two",
-          requiredKey    = "viewAllMovements.filters.dateOfReceiptTo.error.required"
+          requiredKey = "viewAllMovements.filters.dateOfReceiptTo.error.required"
         )
-      )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply)
+      )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply).verifying(ViewAllMovementsFormProvider.validateSearchValue())
     )
 }
 
@@ -77,5 +79,34 @@ object ViewAllMovementsFormProvider {
   val dateOfDispatchTo = "dateOfDispatchTo"
   val dateOfReceiptFrom = "dateOfReceiptFrom"
   val dateOfReceiptTo = "dateOfReceiptTo"
+
+  val ARC_MAX_LENGTH = 21
+  val ERN_MAX_LENGTH = 16
+  val LRN_MAX_LENGTH = 22
+  val TRANSPORTER_MAX_LENGTH = 35
+
+  val searchKeyRequiredMessage = "viewAllMovements.error.searchKey.required"
+  val arcMaxLengthMessage = "viewAllMovements.error.searchValue.maxLength.arc"
+  val ernMaxLengthMessage = "viewAllMovements.error.searchValue.maxLength.ern"
+  val lrnMaxLengthMessage = "viewAllMovements.error.searchValue.maxLength.lrn"
+  val transporterMaxLengthMessage = "viewAllMovements.error.searchValue.maxLength.transporter"
+
+  def validateSearchValue(): Constraint[MovementListSearchOptions] = {
+    import MovementSearchSelectOption._
+    Constraint {
+      case MovementListSearchOptions(searchKey, Some(searchValue), _, _, _, _, _, _, _, _, _, _) if searchKey.isEmpty || searchKey.contains(ChooseSearch.code) =>
+        if(searchValue.trim.isEmpty) Valid else Invalid(searchKeyRequiredMessage)
+      case MovementListSearchOptions(Some(ARC.code), Some(searchValue), _, _, _, _, _, _, _, _, _, _) if searchValue.length > ARC_MAX_LENGTH =>
+        Invalid(arcMaxLengthMessage)
+      case MovementListSearchOptions(Some(ERN.code), Some(searchValue), _, _, _, _, _, _, _, _, _, _) if searchValue.length > ERN_MAX_LENGTH =>
+        Invalid(ernMaxLengthMessage)
+      case MovementListSearchOptions(Some(LRN.code), Some(searchValue), _, _, _, _, _, _, _, _, _, _) if searchValue.length > LRN_MAX_LENGTH =>
+        Invalid(lrnMaxLengthMessage)
+      case MovementListSearchOptions(Some(Transporter.code), Some(searchValue), _, _, _, _, _, _, _, _, _, _) if searchValue.length > TRANSPORTER_MAX_LENGTH =>
+        Invalid(transporterMaxLengthMessage)
+      case _ =>
+        Valid
+    }
+  }
 
 }

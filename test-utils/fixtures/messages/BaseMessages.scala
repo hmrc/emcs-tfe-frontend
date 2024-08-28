@@ -34,6 +34,8 @@ trait BaseMessages { _: i18n =>
   val yes = "Yes"
   val no = "No"
   val signIn = "Sign back in to EMCS"
+
+  def errorHelper(error: String) = s"Error: $error"
 }
 
 trait BaseEnglish extends BaseMessages with EN {

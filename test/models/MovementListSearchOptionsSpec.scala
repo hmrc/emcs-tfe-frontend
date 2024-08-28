@@ -23,6 +23,7 @@ import models.MovementSortingSelectOption.{ArcDescending, Newest, Oldest}
 
 import java.time.LocalDate
 
+// scalastyle:off magic.number
 class MovementListSearchOptionsSpec extends SpecBase {
 
   val testDate: LocalDate = LocalDate.now()
@@ -348,7 +349,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         )
 
         val actualResult = MovementListSearchOptions.apply(
-          searchKey = Some(ARC.code),
+          searchKeyOption = Some(ARC.code),
           searchValue = Some("ARC123"),
           sortBy = Oldest,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
@@ -384,7 +385,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         )
 
         val actualResult = MovementListSearchOptions.apply(
-          searchKey = Some(ARC.code),
+          searchKeyOption = Some(ARC.code),
           searchValue = Some("ARC123"),
           sortBy = Oldest,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
@@ -420,7 +421,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         )
 
         val actualResult = MovementListSearchOptions.apply(
-          searchKey = Some(ARC.code),
+          searchKeyOption = Some(ARC.code),
           searchValue = Some("ARC123"),
           sortBy = Oldest,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),
@@ -456,7 +457,7 @@ class MovementListSearchOptionsSpec extends SpecBase {
         )
 
         val actualResult = MovementListSearchOptions.apply(
-          searchKey = Some(ARC.code),
+          searchKeyOption = Some(ARC.code),
           searchValue = Some("ARC123"),
           sortBy = Oldest,
           traderRoleOptions = Set(MovementFilterDirectionOption.GoodsIn),

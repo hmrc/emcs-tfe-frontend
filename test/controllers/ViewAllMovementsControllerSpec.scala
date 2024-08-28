@@ -112,7 +112,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
       ern = testErn,
       movementListResponse = movementListResponse,
       sortSelectItems = MovementSortingSelectOption.constructSelectItems(Some(Newest.toString)),
-      searchSelectItems = MovementSearchSelectOption.constructSelectItems(None),
+      searchSelectItems = MovementSearchSelectOption.constructSelectItems(form),
       movementStatusItems = MovementFilterStatusOption.selectItems(searchOptions.movementStatus),
       exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(epcsListForView, None, None),
       countrySelectItems = SelectItemHelper.constructSelectItems(countryListForView, None, None),
@@ -127,8 +127,12 @@ class ViewAllMovementsControllerSpec extends SpecBase
                          )(implicit request: DataRequest[_]): Html =
     buildView(searchOptions, movementListResponse, formProvider().fill(searchOptions))
 
-  private def viewWithErrors(searchOptions: MovementListSearchOptions, movementListResponse: GetMovementListResponse = threePageMovementListResponse)(implicit request: DataRequest[_]): Html =
-    buildView(searchOptions, movementListResponse, formProvider().withError(FormError("sortBy", Seq("error.required"))))
+  private def viewWithErrors(
+                              searchOptions: MovementListSearchOptions,
+                              movementListResponse: GetMovementListResponse = threePageMovementListResponse,
+                              form: Form[MovementListSearchOptions] = formProvider().withError(FormError("sortBy", Seq("error.required")))
+                            )(implicit request: DataRequest[_]): Html =
+    buildView(searchOptions, movementListResponse, form)
 
   "GET /" when {
 
@@ -480,30 +484,92 @@ class ViewAllMovementsControllerSpec extends SpecBase
             redirectLocation(result) shouldBe Some(routes.ViewAllMovementsController.onPageLoad(testErn, MovementListSearchOptions(index = 1)).url)
           }
 
-          "show the correct view and pagination with an index of 1" in new Test {
+          "show the correct view and pagination with an index of 1" when {
+            "form errors contain searchValue" in new Test {
 
-            val searchOptions = MovementListSearchOptions(index = 1)
+              val searchOptions = MovementListSearchOptions(index = 1, searchValue = Some("beans"))
 
-            MockEmcsTfeConnector
-              .getMovementList(testErn, Some(searchOptions))
-              .returns(Future.successful(Right(threePageMovementListResponse)))
+              MockEmcsTfeConnector
+                .getMovementList(testErn, Some(searchOptions))
+                .returns(Future.successful(Right(threePageMovementListResponse)))
 
-            MockGetExciseProductCodesConnector
-              .getExciseProductCodes()
-              .returns(Future.successful(Right(epcsListConnectorResult)))
+              MockGetExciseProductCodesConnector
+                .getExciseProductCodes()
+                .returns(Future.successful(Right(epcsListConnectorResult)))
 
-            MockGetMemberStatesConnector
-              .getMemberStates()
-              .returns(Future.successful(Right(countryListConnectorResult)))
+              MockGetMemberStatesConnector
+                .getMemberStates()
+                .returns(Future.successful(Right(countryListConnectorResult)))
 
-            MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 3)(None)
+              MockMovementPaginationHelper.constructPaginationWithSearch(searchOptions, pageCount = 3)(None)
 
-            val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
-            )
+              val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
+                fakeRequest.withFormUrlEncodedBody(ViewAllMovementsFormProvider.sortBy -> Newest.code, ViewAllMovementsFormProvider.searchValue -> "beans")
+              )
 
-            status(result) shouldBe Status.BAD_REQUEST
-            Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
+              status(result) shouldBe Status.BAD_REQUEST
+              Html(contentAsString(result)) shouldBe viewWithErrors(
+                searchOptions,
+                form = formProvider().fill(searchOptions).withError(FormError(ViewAllMovementsFormProvider.searchKey, ViewAllMovementsFormProvider.searchKeyRequiredMessage))
+              )
+            }
+            "form errors contain searchKey" in new Test {
+
+              val searchOptions = MovementListSearchOptions(index = 1, searchValue = Some("aaaaaaaaaaaaaaaaaaaaaa"), searchKey = Some(MovementSearchSelectOption.ARC))
+
+              MockEmcsTfeConnector
+                .getMovementList(testErn, Some(searchOptions))
+                .returns(Future.successful(Right(threePageMovementListResponse)))
+
+              MockGetExciseProductCodesConnector
+                .getExciseProductCodes()
+                .returns(Future.successful(Right(epcsListConnectorResult)))
+
+              MockGetMemberStatesConnector
+                .getMemberStates()
+                .returns(Future.successful(Right(countryListConnectorResult)))
+
+              MockMovementPaginationHelper.constructPaginationWithSearch(searchOptions, pageCount = 3)(None)
+
+              val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
+                fakeRequest.withFormUrlEncodedBody(
+                  ViewAllMovementsFormProvider.sortBy -> Newest.code,
+                  ViewAllMovementsFormProvider.searchKey -> MovementSearchSelectOption.ARC.code,
+                  ViewAllMovementsFormProvider.searchValue -> ("a" * (ViewAllMovementsFormProvider.ARC_MAX_LENGTH + 1))
+                )
+              )
+
+              status(result) shouldBe Status.BAD_REQUEST
+              Html(contentAsString(result)) shouldBe viewWithErrors(
+                searchOptions,
+                form = formProvider().fill(searchOptions).withError(FormError(ViewAllMovementsFormProvider.searchValue, ViewAllMovementsFormProvider.arcMaxLengthMessage))
+              )
+            }
+            "form errors contain anything else" in new Test {
+
+              val searchOptions = MovementListSearchOptions(index = 1)
+
+              MockEmcsTfeConnector
+                .getMovementList(testErn, Some(searchOptions))
+                .returns(Future.successful(Right(threePageMovementListResponse)))
+
+              MockGetExciseProductCodesConnector
+                .getExciseProductCodes()
+                .returns(Future.successful(Right(epcsListConnectorResult)))
+
+              MockGetMemberStatesConnector
+                .getMemberStates()
+                .returns(Future.successful(Right(countryListConnectorResult)))
+
+              MockMovementPaginationHelper.constructPagination(index = 1, pageCount = 3)(None)
+
+              val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
+                fakeRequest.withFormUrlEncodedBody("value" -> "invalid")
+              )
+
+              status(result) shouldBe Status.BAD_REQUEST
+              Html(contentAsString(result)) shouldBe viewWithErrors(searchOptions)
+            }
           }
 
           "show the correct view and pagination with an index of 2" in new Test {
