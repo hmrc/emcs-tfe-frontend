@@ -79,11 +79,11 @@ case class GetMovementResponse(
     ).toLocalDate.formatDateForUIOutput()
   }
 
-  def isFromConsignor(implicit request: DataRequest[_]): Boolean =
+  def isBeingViewedByConsignor(implicit request: DataRequest[_]): Boolean =
     consignorTrader.traderExciseNumber.contains(request.ern) ||
       (isFromTemporaryCertifiedConsignor && request.userTypeFromErn == XIPC)
 
-  def isFromConsignee(implicit request: DataRequest[_]): Boolean =
+  def isBeingViewedByConsignee(implicit request: DataRequest[_]): Boolean =
     consigneeTrader.flatMap(_.traderExciseNumber).contains(request.ern) ||
       (request.userTypeFromErn == XITC)
 

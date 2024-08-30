@@ -18,7 +18,7 @@ package viewmodels.helpers.events
 
 import models.DocumentType
 import models.common.DestinationType._
-import models.common.{AcceptMovement, DestinationType, TraderModel, WrongWithMovement}
+import models.common.{AcceptMovement, DestinationType, OriginType, RoleType, TraderModel, WrongWithMovement}
 import models.requests.DataRequest
 import models.response.emcsTfe.customsRejection.NotificationOfCustomsRejectionModel
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
@@ -82,11 +82,55 @@ class MovementEventHelper @Inject()(
     )
   }
 
+  // TODO: test
+  private[events] def getOriginTypeForMovementInformationCard()(implicit movement: GetMovementResponse, messages: Messages): String = {
+    // TODO: check what to do about non-WK consignors
+    def consignorIsGBWK = movement.consignorTrader.traderExciseNumber.exists(RoleType.fromExciseRegistrationNumber(_) == RoleType.GBWK)
+    def consignorIsXIWK = movement.consignorTrader.traderExciseNumber.exists(RoleType.fromExciseRegistrationNumber(_) == RoleType.XIWK)
+
+    def consignorIsWarehouseKeeperAndNotGBOrXI = movement.consignorTrader.traderExciseNumber.exists(RoleType.isWarehouseKeeper) && (!consignorIsGBWK && !consignorIsXIWK)
+
+    // TODO: check if this is against the correct ERN
+    def dispatchIsGB: Boolean = movement.placeOfDispatchTrader.flatMap(_.traderExciseNumber).exists(RoleType.isGB)
+    def dispatchIsXI: Boolean = movement.placeOfDispatchTrader.flatMap(_.traderExciseNumber).exists(RoleType.isXI)
+
+    movement.eadEsad.originTypeCode match {
+      case OriginType.TaxWarehouse if consignorIsGBWK =>
+        messages(s"movementCreatedView.section.movement.originType.${OriginType.TaxWarehouse}.inGB")
+      case OriginType.TaxWarehouse if consignorIsXIWK && dispatchIsGB =>
+        messages(s"movementCreatedView.section.movement.originType.${OriginType.TaxWarehouse}.inGB")
+      case OriginType.TaxWarehouse if consignorIsXIWK && dispatchIsXI =>
+        messages(s"movementCreatedView.section.movement.originType.${OriginType.TaxWarehouse}.inXI")
+      case OriginType.TaxWarehouse if consignorIsWarehouseKeeperAndNotGBOrXI =>
+        messages(s"movementCreatedView.section.movement.originType.${OriginType.TaxWarehouse}.inEU")
+      case _ =>
+        messages(s"movementCreatedView.section.movement.originType.${movement.eadEsad.originTypeCode}")
+    }
+  }
+
+  // TODO: test
+  private[events] def getDestinationTypeForMovementInformationCard()(implicit movement: GetMovementResponse, messages: Messages): String = {
+    def consigneeIsGB = movement.consigneeTrader.exists(_.traderExciseNumber.exists(RoleType.isGB))
+    def consigneeIsXI = movement.consigneeTrader.exists(_.traderExciseNumber.exists(RoleType.isXI))
+    def consigneeIsNotGBOrXI = !consigneeIsGB && !consigneeIsXI
+
+    movement.headerEadEsad.destinationType match {
+      case DestinationType.TaxWarehouse if consigneeIsGB =>
+        messages(s"movementCreatedView.section.movement.destinationType.${DestinationType.TaxWarehouse}.inGB")
+      case DestinationType.TaxWarehouse if consigneeIsXI =>
+        messages(s"movementCreatedView.section.movement.destinationType.${DestinationType.TaxWarehouse}.inXI")
+      case DestinationType.TaxWarehouse if consigneeIsNotGBOrXI =>
+        messages(s"movementCreatedView.section.movement.destinationType.${DestinationType.TaxWarehouse}.inEU")
+      case _ =>
+        messages(s"movementCreatedView.section.movement.destinationType.${movement.headerEadEsad.destinationType}")
+    }
+  }
+
   def movementInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
     val upstreamArc = movement.eadEsad.upstreamArc.map(summaryListRowBuilder("movementCreatedView.section.movement.replacedArc", _))
     val localReferenceNumber = summaryListRowBuilder("movementCreatedView.section.movement.lrn", movement.localReferenceNumber)
-    val originType = summaryListRowBuilder("movementCreatedView.section.movement.originType", messages(s"movementCreatedView.section.movement.originType.${movement.eadEsad.originTypeCode}"))
-    val destinationType = summaryListRowBuilder("movementCreatedView.section.movement.destinationType", messages(s"movementCreatedView.section.movement.destinationType.${movement.headerEadEsad.destinationType}"))
+    val originType = summaryListRowBuilder("movementCreatedView.section.movement.originType", getOriginTypeForMovementInformationCard())
+    val destinationType = summaryListRowBuilder("movementCreatedView.section.movement.destinationType", getDestinationTypeForMovementInformationCard())
     val dateOfDispatch = summaryListRowBuilder("movementCreatedView.section.movement.dateOfDispatch", movement.formattedDateOfDispatch)
     val timeOfDispatch = summaryListRowBuilder("movementCreatedView.section.movement.timeOfDispatch", movement.eadEsad.formattedTimeOfDispatch.getOrElse(""))
     val invoiceNumber = summaryListRowBuilder("movementCreatedView.section.movement.invoiceReference", movement.eadEsad.invoiceNumber)

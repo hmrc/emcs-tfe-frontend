@@ -215,10 +215,10 @@ class ViewMovementHelper @Inject()(
       case (GBWK | XIWK, destinationType@(ExportWithCustomsDeclarationLodgedInTheUk | ExportWithCustomsDeclarationLodgedInTheEu)) =>
         messages(s"viewMovement.movement.summary.type.$destinationType")
 
-      case (GBWK, destinationType) if movementResponse.isFromConsignor =>
+      case (GBWK, destinationType) if movementResponse.isBeingViewedByConsignor =>
         messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
 
-      case (GBWK, _) if movementResponse.isFromConsignee =>
+      case (GBWK, _) if movementResponse.isBeingViewedByConsignee =>
         messages("viewMovement.movement.summary.type.movementToGbTaxWarehouse")
 
       case (XIPA, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>

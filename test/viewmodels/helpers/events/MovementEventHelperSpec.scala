@@ -98,7 +98,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         doc.select(Selectors.summaryListRowKey(3)).text() mustBe "Origin type"
         doc.select(Selectors.summaryListRowValue(3)).text() mustBe "Tax warehouse"
         doc.select(Selectors.summaryListRowKey(4)).text() mustBe "Destination type"
-        doc.select(Selectors.summaryListRowValue(4)).text() mustBe "Tax warehouse"
+        doc.select(Selectors.summaryListRowValue(4)).text() mustBe "Tax warehouse in Great Britain"
         doc.select(Selectors.summaryListRowKey(5)).text() mustBe "Date of dispatch"
         doc.select(Selectors.summaryListRowValue(5)).text() mustBe "20 November 2008"
         doc.select(Selectors.summaryListRowKey(6)).text() mustBe "Time of dispatch"

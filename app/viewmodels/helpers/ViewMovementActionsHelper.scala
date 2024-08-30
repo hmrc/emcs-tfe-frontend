@@ -42,14 +42,14 @@ class ViewMovementActionsHelper @Inject()(
 
     list(
       content = Seq(
-        when(movement.isFromConsignor)(changeDestinationLink(movement)),
-        when(movement.isFromConsignor)(cancelMovementLink(movement)),
+        when(movement.isBeingViewedByConsignor)(changeDestinationLink(movement)),
+        when(movement.isBeingViewedByConsignor)(cancelMovementLink(movement)),
 
-        when(movement.isFromConsignee)(reportOfReceiptLink(movement)),
-        when(movement.isFromConsignee)(alertOrRejectionLink(movement)),
+        when(movement.isBeingViewedByConsignee)(reportOfReceiptLink(movement)),
+        when(movement.isBeingViewedByConsignee)(alertOrRejectionLink(movement)),
 
-        when(movement.isFromConsignor || movement.isFromConsignee)(explainADelayLink(movement)),
-        when(movement.isFromConsignor || movement.isFromConsignee)(shortageOrExcessLink(movement)),
+        when(movement.isBeingViewedByConsignor || movement.isBeingViewedByConsignee)(explainADelayLink(movement)),
+        when(movement.isBeingViewedByConsignor || movement.isBeingViewedByConsignee)(shortageOrExcessLink(movement)),
         printLink(request.ern, movement.arc)
       ).flatten,
       extraClasses = Some("govuk-list--spaced")
