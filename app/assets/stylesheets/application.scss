@@ -13,12 +13,12 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
   margin-left: -1px;
 }
 
-@media (max-width: 640px) {
-  .hmrc-search-group-wrapper {
-    display: flex;
-    align-items: flex-end;
-  }
+.hmrc-search-group-wrapper {
+  display: flex;
+  align-items: flex-end;
+}
 
+@media (max-width: 640px) {
   .results-column {
     padding-top: 15px;
   }

@@ -17,13 +17,15 @@
 package forms
 
 import base.SpecBase
+import forms.ViewAllMovementsFormProvider._
 import models.MovementFilterDirectionOption._
 import models.MovementFilterStatusOption.ChooseStatus
 import models.MovementFilterUndischargedOption.Undischarged
-import models.MovementSearchSelectOption.ARC
+import models.MovementSearchSelectOption._
 import models.MovementSortingSelectOption.Newest
 import models.{MovementFilterStatusOption, MovementListSearchOptions, MovementSortingSelectOption}
 import play.api.data.FormError
+import play.api.data.validation.{Invalid, Valid}
 
 import java.time.LocalDate
 
@@ -88,13 +90,13 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
   ".searchValue" should {
 
     "bind" in {
-      val boundForm = form.bind(Map(searchValue -> "beans", sortBy -> Newest.code))
-      boundForm.get mustBe MovementListSearchOptions(searchValue = Some("beans"))
+      val boundForm = form.bind(Map(searchKey -> ARC.code, searchValue -> "beans", sortBy -> Newest.code))
+      boundForm.get mustBe MovementListSearchOptions(searchKey = Some(ARC), searchValue = Some("beans"))
     }
 
     "bind leading and trailing spaces by removing them" in {
-      val boundForm = form.bind(Map(searchValue -> "   beans  ", sortBy -> Newest.code))
-      boundForm.get mustBe MovementListSearchOptions(searchValue = Some("beans"))
+      val boundForm = form.bind(Map(searchKey -> ARC.code, searchValue -> "   beans  ", sortBy -> Newest.code))
+      boundForm.get mustBe MovementListSearchOptions(searchKey = Some(ARC), searchValue = Some("beans"))
     }
   }
 
@@ -329,6 +331,79 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
           actualResult.errors mustBe expectedResult
         }
+      }
+    }
+  }
+
+  ".validateSearchValue" should {
+    "return Valid" when {
+      "searchKey is present but searchValue is empty" in {
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(ARC), searchValue = Some(""))) mustBe Valid
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(ChooseSearch), searchValue = Some(""))) mustBe Valid
+      }
+      "searchKey is present but searchValue is missing" in {
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(ARC))) mustBe Valid
+      }
+      "searchKey is missing but searchValue is empty" in {
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchValue = Some(""))) mustBe Valid
+      }
+      "searchKey is missing and searchValue is missing" in {
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions()) mustBe Valid
+      }
+      s"searchKey is ARC and searchValue is less than or equal to $ARC_MAX_LENGTH" in {
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(ARC), searchValue = Some("beans"))) mustBe Valid
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(ARC), searchValue = Some("a"*ARC_MAX_LENGTH))) mustBe Valid
+      }
+      s"searchKey is ERN and searchValue is less than or equal to $ERN_MAX_LENGTH" in {
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(ERN), searchValue = Some("beans"))) mustBe Valid
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(ERN), searchValue = Some("a"*ERN_MAX_LENGTH))) mustBe Valid
+      }
+      s"searchKey is LRN and searchValue is less than or equal to $LRN_MAX_LENGTH" in {
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(LRN), searchValue = Some("beans"))) mustBe Valid
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(LRN), searchValue = Some("a"*LRN_MAX_LENGTH))) mustBe Valid
+      }
+      s"searchKey is Transporter and searchValue is less than or equal to $TRANSPORTER_MAX_LENGTH" in {
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(Transporter), searchValue = Some("beans"))) mustBe Valid
+        ViewAllMovementsFormProvider.validateSearchValue()(MovementListSearchOptions(searchKey = Some(Transporter), searchValue = Some("a"*TRANSPORTER_MAX_LENGTH))) mustBe Valid
+      }
+    }
+
+    "return Invalid" when {
+      "searchKey is empty and searchValue is non-empty" in {
+        val result = ViewAllMovementsFormProvider.validateSearchValue()(
+          MovementListSearchOptions(searchKey = None, searchValue = Some("value"))
+        )
+        result mustEqual Invalid(ViewAllMovementsFormProvider.searchKeyRequiredMessage)
+      }
+      "searchKey is ChooseSearch and searchValue is non-empty" in {
+        val result = ViewAllMovementsFormProvider.validateSearchValue()(
+          MovementListSearchOptions(searchKey = Some(ChooseSearch), searchValue = Some("value"))
+        )
+        result mustEqual Invalid(ViewAllMovementsFormProvider.searchKeyRequiredMessage)
+      }
+      s"searchKey is ARC and searchValue exceeds $ARC_MAX_LENGTH" in {
+        val result = ViewAllMovementsFormProvider.validateSearchValue()(
+          MovementListSearchOptions(searchKey = Some(ARC), searchValue = Some("A" * (ARC_MAX_LENGTH + 1)))
+        )
+        result mustEqual Invalid(ViewAllMovementsFormProvider.arcMaxLengthMessage)
+      }
+      s"searchKey is ERN and searchValue exceeds $ERN_MAX_LENGTH" in {
+        val result = ViewAllMovementsFormProvider.validateSearchValue()(
+          MovementListSearchOptions(searchKey = Some(ERN), searchValue = Some("A" * (ERN_MAX_LENGTH + 1)))
+        )
+        result mustEqual Invalid(ViewAllMovementsFormProvider.ernMaxLengthMessage)
+      }
+      s"searchKey is LRN and searchValue exceeds $LRN_MAX_LENGTH" in {
+        val result = ViewAllMovementsFormProvider.validateSearchValue()(
+          MovementListSearchOptions(searchKey = Some(LRN), searchValue = Some("A" * (LRN_MAX_LENGTH + 1)))
+        )
+        result mustEqual Invalid(ViewAllMovementsFormProvider.lrnMaxLengthMessage)
+      }
+      s"searchKey is Transporter and searchValue exceeds $TRANSPORTER_MAX_LENGTH" in {
+        val result = ViewAllMovementsFormProvider.validateSearchValue()(
+          MovementListSearchOptions(searchKey = Some(Transporter), searchValue = Some("A" * (TRANSPORTER_MAX_LENGTH + 1)))
+        )
+        result mustEqual Invalid(ViewAllMovementsFormProvider.transporterMaxLengthMessage)
       }
     }
   }

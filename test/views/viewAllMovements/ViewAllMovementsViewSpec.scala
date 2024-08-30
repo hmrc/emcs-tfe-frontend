@@ -19,6 +19,7 @@ package views.viewAllMovements
 import base.ViewSpecBase
 import controllers.routes
 import fixtures.MovementListFixtures
+import fixtures.messages.ViewAllMovementsMessages
 import fixtures.messages.ViewAllMovementsMessages.English
 import forms.ViewAllMovementsFormProvider
 import models.MovementFilterDirectionOption.{All, GoodsIn, GoodsOut}
@@ -27,6 +28,7 @@ import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementListResponse
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.data.Form
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -122,14 +124,15 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
   def asDocument(pagination: Option[Pagination],
                  direction: MovementFilterDirectionOption = All,
                  movementListResponse: GetMovementListResponse = getMovementListResponse,
-                 searchOptions: MovementListSearchOptions = MovementListSearchOptions()
+                 searchOptions: MovementListSearchOptions = MovementListSearchOptions(),
+                 form: Form[MovementListSearchOptions] = formProvider()
                 )(implicit messages: Messages): Document = Jsoup.parse(view(
-    form = formProvider(),
+    form = form,
     action = routes.ViewAllMovementsController.onPageLoad("ern", MovementListSearchOptions()),
     ern = testErn,
     movementListResponse = movementListResponse,
     sortSelectItems = MovementSortingSelectOption.constructSelectItems(),
-    searchSelectItems = MovementSearchSelectOption.constructSelectItems(),
+    searchSelectItems = MovementSearchSelectOption.constructSelectItems(formProvider()),
     movementStatusItems = MovementFilterStatusOption.selectItems(None),
     exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_PRODUCT_CODE), None),
     countrySelectItems = SelectItemHelper.constructSelectItems(Seq(MovementListSearchOptions.CHOOSE_COUNTRY), None),
@@ -378,6 +381,36 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.title -> English.titleWithCount(2),
         Selectors.h1 -> English.headingWithCount(2)
       ))
+    }
+
+    "being rendered with errors" when {
+      "searchKey is in error" should {
+        implicit val doc: Document = asDocument(None, form = formProvider().withError("searchKey", messages(ViewAllMovementsFormProvider.searchKeyRequiredMessage)))
+
+        "show an error summary" in {
+          doc.select(".govuk-error-summary__title").text() mustBe "There is a problem"
+          doc.select(".govuk-error-summary__body").text() mustBe English.searchKeyErrorMessage
+        }
+
+        "show an error message against the field" in {
+          doc.select(".hmrc-search-group-wrapper").hasClass("govuk-form-group--error") mustBe true
+          doc.select(".hmrc-search-by-dropdown").hasClass("govuk-select--error") mustBe true
+          doc.select(".govuk-error-message").text() mustBe ViewAllMovementsMessages.errorHelper(English.searchKeyErrorMessage)
+        }
+      }
+
+      "searchValue is in error" should {
+        implicit val doc: Document = asDocument(None, form = formProvider().withError("searchValue", messages(ViewAllMovementsFormProvider.arcMaxLengthMessage)))
+
+        "show an error summary" in {
+          doc.select(".govuk-error-summary__title").text() mustBe "There is a problem"
+          doc.select(".govuk-error-summary__body").text() mustBe English.searchValueErrorMessage("ARC", ViewAllMovementsFormProvider.ARC_MAX_LENGTH)
+        }
+
+        "show an error message against the field" in {
+          doc.select(".govuk-error-message").text() mustBe ViewAllMovementsMessages.errorHelper(English.searchValueErrorMessage("ARC", ViewAllMovementsFormProvider.ARC_MAX_LENGTH))
+        }
+      }
     }
   }
 }

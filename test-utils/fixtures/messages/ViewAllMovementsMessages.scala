@@ -16,9 +16,7 @@
 
 package fixtures.messages
 
-import fixtures.messages.BaseEnglish.titleHelper
-
-object ViewAllMovementsMessages {
+object ViewAllMovementsMessages extends BaseEnglish {
 
   sealed trait ViewMessages { _: i18n =>
     val heading: String = "Movements"
@@ -44,6 +42,7 @@ object ViewAllMovementsMessages {
     val searchText = "You can search by Administrative Reference Code (ARC), Local Reference Number (LRN), trader Excise Reference Number (ERN) or transporter name."
     val searchInputHiddenLabel = "Search for a movement"
     val searchSelectHiddenLabel = "Search by"
+    val searchSelectChooseSearch = "Select reference type"
     val searchSelectARC = "ARC"
     val searchSelectLRN = "LRN"
     val searchSelectERN = "ERN"
@@ -92,6 +91,8 @@ object ViewAllMovementsMessages {
     val movementConsignor: String => String = ern => s"Consignor: $ern"
     val movementOtherTraderId: String => String = ern => s"Other trader ID: $ern"
 
+    val searchKeyErrorMessage: String = "Select your reference type from the dropdown to submit a search"
+    def searchValueErrorMessage(field: String, maxLength: Int): String = s"The $field must be $maxLength characters or less"
   }
 
   object English extends ViewMessages with EN

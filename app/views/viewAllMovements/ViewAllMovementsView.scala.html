@@ -43,6 +43,7 @@
         govukCheckboxes: GovukCheckboxes,
         govukSkipLink: GovukSkipLink,
         movementList: MovementsList,
+        govukErrorMessage: GovukErrorMessage,
         helper: ViewAllMovementsTableHelper
 )
 
@@ -79,15 +80,22 @@
     @messages("viewAllMovements.search.p1")
 }
 
-    <div class="hmrc-search-group-wrapper">
+@* Manually adding the searchKeyError styling so it sits nicely inline with the input element, otherwise it looks very ugly *@
+@defining(form.errors.find(error => error.key == searchKey).map(_.message)) { searchKeyError =>
+    <div class="hmrc-search-group-wrapper@{if(searchKeyError.nonEmpty) " govuk-form-group--error" else ""}">
         <div class="govuk-grid-column-one-half hmrc-search-group">
+            @searchKeyError.map { error =>
+                @govukErrorMessage(ErrorMessage(
+                    content = Text(messages(error))
+                ))
+            }
 
-        @govukInput(
-            InputViewModel(
-                field = form(searchValue),
-                label = LabelViewModel(Text(messages("viewAllMovements.search.heading"))).hidden
-            ).withCssClass("govuk-input--width-30").withInputType("search")
-        )
+            @govukInput(
+                InputViewModel(
+                    field = form(searchValue),
+                    label = LabelViewModel(Text(messages("viewAllMovements.search.heading"))).hidden
+                ).withCssClass("govuk-input--width-30").withInputType("search")
+            )
 
         </div>
 
@@ -99,7 +107,7 @@
                 label = LabelViewModel(
                     content = Text(messages("viewAllMovements.search.by.hidden"))
                 ).hidden,
-                classes = "hmrc-search-by-dropdown"
+                classes = "hmrc-search-by-dropdown" + (if(searchKeyError.isDefined) " govuk-select--error" else ""),
             ))
             @govukButton(
                 ButtonViewModel(Text(messages("viewAllMovements.search.button")))
@@ -108,6 +116,7 @@
             )
         </div>
     </div>
+}
 }
 
 @layout(
@@ -122,7 +131,8 @@
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = {
                 form.errors.map {
-                    case FormError(key, _, args) => key -> s"$key.${args.headOption.getOrElse("day")}"
+                    case FormError(key, _, args) if key.contains("date") => key -> s"$key.${args.headOption.getOrElse("day")}"
+                    case FormError(key, _, _) => key -> key
                 }.toMap
             }))
         }
