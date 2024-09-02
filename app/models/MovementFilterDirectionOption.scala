@@ -23,7 +23,6 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import viewmodels.govuk.checkbox._
 
-// TODO: ChRIS requires sentence-case, not lowercase (EIS requires lowercase)
 sealed trait MovementFilterDirectionOption extends SelectOptionModel {
   override val code: String = this.toString
 

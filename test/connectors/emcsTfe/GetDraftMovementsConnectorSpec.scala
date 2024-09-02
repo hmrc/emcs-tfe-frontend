@@ -19,6 +19,7 @@ package connectors.emcsTfe
 import base.SpecBase
 import fixtures.GetMovementResponseFixtures
 import mocks.connectors.MockHttpClient
+import models.draftMovements.GetDraftMovementsSearchOptions
 import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -56,7 +57,6 @@ class GetDraftMovementsConnectorSpec extends SpecBase
         }
       }
 
-      //TODO update test with search query params
       "with query params" when {
 
         "downstream call is successful" in {
@@ -64,12 +64,14 @@ class GetDraftMovementsConnectorSpec extends SpecBase
           val expectedResult = Right(getMovementResponseModel)
 
           MockHttpClient
-            .get(s"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/drafts/search/$testErn")
-            .returns(Future.successful(Right(getMovementResponseModel)))
+            .get(
+              s"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/drafts/search/$testErn",
+              Seq(("search.sortField", "lastUpdated"), ("search.sortOrder", "D"), ("search.startPosition", "10"), ("search.maxRows", "10"))
+            ).returns(Future.successful(Right(getMovementResponseModel)))
 
           val actualResult = connector.getDraftMovements(
             ern = testErn,
-            search = None
+            search = Some(GetDraftMovementsSearchOptions(index = 2))
           ).futureValue
 
           actualResult mustBe expectedResult

@@ -40,7 +40,7 @@ import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
 
-//noinspection ScalaStyle TODO: Maybe consider splitting this out, although it's already split to be in this helper...
+//noinspection ScalaStyle
 @Singleton
 class MovementEventHelper @Inject()(
                                      h2: h2,
