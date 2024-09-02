@@ -18,12 +18,12 @@ package viewmodels.helpers.events
 
 import models.DocumentType
 import models.common.DestinationType._
-import models.common.{AcceptMovement, DestinationType, OriginType, RoleType, TraderModel, WrongWithMovement}
+import models.common._
 import models.requests.DataRequest
+import models.response.emcsTfe._
 import models.response.emcsTfe.customsRejection.NotificationOfCustomsRejectionModel
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.emcsTfe.reportOfReceipt.{IE818ItemModelWithCnCodeInformation, UnsatisfactoryModel}
-import models.response.emcsTfe._
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Details
@@ -40,7 +40,7 @@ import views.html.viewMovement.partials.overview_partial
 
 import javax.inject.{Inject, Singleton}
 
-//noinspection ScalaStyle
+// scalastyle:off number.of.methods
 @Singleton
 class MovementEventHelper @Inject()(
                                      h2: h2,
@@ -82,17 +82,19 @@ class MovementEventHelper @Inject()(
     )
   }
 
-  // TODO: test
   private[events] def getOriginTypeForMovementInformationCard()(implicit movement: GetMovementResponse, messages: Messages): String = {
     // TODO: check what to do about non-WK consignors
-    def consignorIsGBWK = movement.consignorTrader.traderExciseNumber.exists(RoleType.fromExciseRegistrationNumber(_) == RoleType.GBWK)
-    def consignorIsXIWK = movement.consignorTrader.traderExciseNumber.exists(RoleType.fromExciseRegistrationNumber(_) == RoleType.XIWK)
+    lazy val consignorErn: Option[String] = movement.consignorTrader.traderExciseNumber
+    lazy val isWK: Boolean = consignorErn.exists(RoleType.isWarehouseKeeper)
+    lazy val consignorIsGBWK: Boolean = isWK && consignorErn.exists(RoleType.isGB)
+    lazy val consignorIsXIWK: Boolean = isWK && consignorErn.exists(RoleType.isXI)
 
-    def consignorIsWarehouseKeeperAndNotGBOrXI = movement.consignorTrader.traderExciseNumber.exists(RoleType.isWarehouseKeeper) && (!consignorIsGBWK && !consignorIsXIWK)
+    lazy val consignorIsWarehouseKeeperAndNotGBOrXI = consignorErn.exists(RoleType.isWarehouseKeeper) && (!consignorIsGBWK && !consignorIsXIWK)
 
     // TODO: check if this is against the correct ERN
-    def dispatchIsGB: Boolean = movement.placeOfDispatchTrader.flatMap(_.traderExciseNumber).exists(RoleType.isGB)
-    def dispatchIsXI: Boolean = movement.placeOfDispatchTrader.flatMap(_.traderExciseNumber).exists(RoleType.isXI)
+    lazy val dispatchErn: Option[String] = movement.placeOfDispatchTrader.flatMap(_.traderExciseNumber)
+    lazy val dispatchIsGB: Boolean = dispatchErn.exists(RoleType.isGB)
+    lazy val dispatchIsXI: Boolean = dispatchErn.exists(RoleType.isXI)
 
     movement.eadEsad.originTypeCode match {
       case OriginType.TaxWarehouse if consignorIsGBWK =>
@@ -108,11 +110,10 @@ class MovementEventHelper @Inject()(
     }
   }
 
-  // TODO: test
   private[events] def getDestinationTypeForMovementInformationCard()(implicit movement: GetMovementResponse, messages: Messages): String = {
-    def consigneeIsGB = movement.consigneeTrader.exists(_.traderExciseNumber.exists(RoleType.isGB))
-    def consigneeIsXI = movement.consigneeTrader.exists(_.traderExciseNumber.exists(RoleType.isXI))
-    def consigneeIsNotGBOrXI = !consigneeIsGB && !consigneeIsXI
+    lazy val consigneeIsGB = movement.consigneeTrader.exists(_.traderExciseNumber.exists(RoleType.isGB))
+    lazy val consigneeIsXI = movement.consigneeTrader.exists(_.traderExciseNumber.exists(RoleType.isXI))
+    lazy val consigneeIsNotGBOrXI = !consigneeIsGB && !consigneeIsXI
 
     movement.headerEadEsad.destinationType match {
       case DestinationType.TaxWarehouse if consigneeIsGB =>
@@ -230,7 +231,7 @@ class MovementEventHelper @Inject()(
     }
 
     HtmlFormat.fill(
-      if (items.isEmpty != true) {
+      if (items.nonEmpty) {
         Seq(
           h2(messages(s"movementHistoryEvent.${event.eventType}.response.heading"), "govuk-heading-m govuk-!-margin-top-9")
         ) ++ items
@@ -277,7 +278,7 @@ class MovementEventHelper @Inject()(
       buildOverviewPartial(
         headingTitle = Some("movementCreatedView.section.import"),
         headingId = Some("import-information-heading"),
-        headingMessageClass = if(isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9",
+        headingMessageClass = if (isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9",
         summaryListRows = Seq(
           Some(summaryListRowBuilder("movementCreatedView.section.import.customsOfficeCode", officeCode))
         ),
@@ -321,7 +322,7 @@ class MovementEventHelper @Inject()(
       buildOverviewPartial(
         headingTitle = Some("movementCreatedView.section.exemptedConsignee"),
         headingId = Some("exempted-organisation-information-heading"),
-        headingMessageClass = if(isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9",
+        headingMessageClass = if (isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9",
         summaryListRows = Seq(memberState, serialNumber),
         summaryListAttributes = Map("id" -> "exempted-organisation-information-summary")
       )
@@ -351,7 +352,7 @@ class MovementEventHelper @Inject()(
       buildOverviewPartial(
         headingTitle = Some("movementCreatedView.section.export"),
         headingId = Some("export-information-heading"),
-        headingMessageClass = if(isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9",
+        headingMessageClass = if (isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9",
         summaryListRows = Seq(
           Some(summaryListRowBuilder("movementCreatedView.section.export.customsOfficeCode", officeCode))
         ),
@@ -469,14 +470,14 @@ class MovementEventHelper @Inject()(
 
       val sadCards = sadNumbers.zipWithIndex.map {
         case (sad, index) =>
-          if(isSummaryCard) {
-          buildOverviewPartial(
-            cardTitleMessageKey = Some(messages("movementCreatedView.section.sad.heading", index + 1)),
-            summaryListRows = Seq(
-              Some(summaryListRowBuilder("movementCreatedView.section.sad.importNumber", sad))
-            ),
-            summaryListAttributes = Map("id" -> s"sad-information-summary-${index + 1}")
-          )
+          if (isSummaryCard) {
+            buildOverviewPartial(
+              cardTitleMessageKey = Some(messages("movementCreatedView.section.sad.heading", index + 1)),
+              summaryListRows = Seq(
+                Some(summaryListRowBuilder("movementCreatedView.section.sad.importNumber", sad))
+              ),
+              summaryListAttributes = Map("id" -> s"sad-information-summary-${index + 1}")
+            )
           } else {
             buildOverviewPartial(
               headingTitle = Some(messages("movementCreatedView.section.sad.heading", index + 1)),
@@ -491,7 +492,7 @@ class MovementEventHelper @Inject()(
 
       HtmlFormat.fill(
         Seq(
-          h2(messages("movementCreatedView.section.sads.heading"), classes = if(isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9", id = Some("sad-information-heading"))
+          h2(messages("movementCreatedView.section.sads.heading"), classes = if (isLargeHeading) "govuk-heading-l govuk-!-margin-top-9" else "govuk-heading-m govuk-!-margin-top-9", id = Some("sad-information-heading"))
         ) ++ sadCards
       )
 

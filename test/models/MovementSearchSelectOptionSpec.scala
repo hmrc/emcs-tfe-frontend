@@ -20,7 +20,6 @@ import base.SpecBase
 import fixtures.messages.ViewAllMovementsMessages.English
 import forms.ViewAllMovementsFormProvider
 import models.MovementSearchSelectOption._
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
 
