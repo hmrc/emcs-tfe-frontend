@@ -18,7 +18,7 @@ package connectors.emcsTfe
 
 import config.AppConfig
 import models.requests.PrevalidateTraderRequest
-import models.response.emcsTfe.prevalidateTrader.PreValidateTraderApiResponse
+import models.response.emcsTfe.prevalidateTrader.PreValidateTraderResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -28,14 +28,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PrevalidateTraderConnector @Inject()(val http: HttpClientV2, config: AppConfig) extends EmcsTfeHttpParser[PreValidateTraderApiResponse] {
+class PrevalidateTraderConnector @Inject()(val http: HttpClientV2, config: AppConfig) extends EmcsTfeHttpParser[PreValidateTraderResponse] {
 
-  override implicit val reads: Reads[PreValidateTraderApiResponse] = PreValidateTraderApiResponse.format
+  override implicit val reads: Reads[PreValidateTraderResponse] = PreValidateTraderResponse.format
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 
   def prevalidateTrader(ern: String, requestModel: PrevalidateTraderRequest)
-                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, PreValidateTraderApiResponse]] = {
+                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, PreValidateTraderResponse]] = {
     def url: String = s"$baseUrl/pre-validate-trader/$ern"
 
     post(url, requestModel).recover {

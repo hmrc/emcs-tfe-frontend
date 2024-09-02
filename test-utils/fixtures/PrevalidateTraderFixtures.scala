@@ -16,45 +16,28 @@
 
 package fixtures
 
-import models.response.emcsTfe.prevalidateTrader._
+import models.response.emcsTfe.prevalidateTrader.PreValidateTraderResponse
 import play.api.libs.json.{JsValue, Json}
 
 trait PrevalidateTraderFixtures extends BaseFixtures {
 
   val preValidateApiResponseAsJson: JsValue = Json.parse(
     s"""
-       | {
-       |   "exciseTraderValidationResponse": {
-       |     "validationTimestamp": "2023-12-15T10:55:17.443Z",
-       |     "exciseTraderResponse": [
-       |       {
-       |         "exciseRegistrationNumber": "GBWK002281023",
-       |         "entityGroup": "UK Record",
-       |         "validTrader": true,
-       |         "traderType": "1",
-       |         "validateProductAuthorisationResponse": {
-       |           "valid": true
-       |         }
-       |       }
-       |     ]
-       |   }
-       | }
+       |{
+       |  "processingDateTime": "2023-12-15T10:55:17.443Z",
+       |  "exciseId": "GBWK002281023",
+       |  "validationResult": "Pass"
+       |}
        |""".stripMargin)
-
-  val exciseTraderResponse: ExciseTraderResponse = ExciseTraderResponse(
-    exciseRegistrationNumber = "GBWK002281023",
-    entityGroup = "UK Record",
-    validTrader = true,
-    traderType = Some("1"),
-    validateProductAuthorisationResponse = Some(ValidateProductAuthorisationResponse(valid = true))
-  )
 
   val validationTimestamp = "2023-12-15T10:55:17.443Z"
 
-  val preValidateApiResponseModel: PreValidateTraderApiResponse = PreValidateTraderApiResponse(
-    exciseTraderValidationResponse = ExciseTraderValidationResponse(
-      validationTimestamp = validationTimestamp,
-      exciseTraderResponse = Seq(exciseTraderResponse)
-    )
+  val exciseTraderResponse: PreValidateTraderResponse = PreValidateTraderResponse(
+    processingDateTime = validationTimestamp,
+    exciseId = "GBWK002281023",
+    validationResult = "Pass",
+    failDetails = None
   )
+
+  val preValidateApiResponseModel = exciseTraderResponse
 }

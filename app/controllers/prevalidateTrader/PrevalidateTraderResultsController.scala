@@ -21,7 +21,6 @@ import controllers.BaseNavigationController
 import controllers.predicates._
 import models.prevalidate.PrevalidateTraderModel
 import models.requests.UserAnswersRequest
-import models.response.emcsTfe.prevalidateTrader.ExciseTraderResponse
 import models.{Index, NormalMode}
 import navigation.PrevalidateTraderNavigator
 import pages.prevalidateTrader.{PrevalidateAddedProductCodesPage, PrevalidateConsigneeTraderIdentificationPage}
@@ -61,21 +60,21 @@ class PrevalidateTraderResultsController @Inject()(
         val prevalidateTraderUserAnswers: PrevalidateTraderModel = request.userAnswers.get(PrevalidateConsigneeTraderIdentificationPage).get
 
         getExciseProductCodesService.getExciseProductCodes().flatMap { epcs =>
-          prevalidateTraderService.prevalidateTrader(ern, prevalidateTraderUserAnswers.ern, prevalidateTraderUserAnswers.entityGroup, enteredEPCs).map { prevalidateTraderResult =>
-            //Spec says that whilst the "exciseTraderResponse" is an array, it has a fixed size of 1, hence headOption (option just in case)
-            val firstPrevalidateEntry: Option[ExciseTraderResponse] = prevalidateTraderResult.exciseTraderValidationResponse.exciseTraderResponse.headOption
-            val validTraderErn: Option[String] = Option.when(firstPrevalidateEntry.exists(_.validTrader))(firstPrevalidateEntry.map(_.exciseRegistrationNumber)).flatten
-            val ineligibleEPCs: Seq[String] = firstPrevalidateEntry.flatMap(
-              _.validateProductAuthorisationResponse.flatMap(
-                _.productError.map(
-                  _.map(_.exciseProductCode)
-                )
-              )
-            ).getOrElse(Seq.empty)
+          prevalidateTraderService.prevalidateTrader(ern, prevalidateTraderUserAnswers.ern, Some(prevalidateTraderUserAnswers.entityGroup), Some(enteredEPCs))
+            .map { prevalidateTraderResult =>
+
+            val validTraderErn:Boolean = prevalidateTraderResult.failDetails.forall(_.validTrader)
+
+            val ineligibleEPCs: Seq[String] = prevalidateTraderResult.failDetails
+              .flatMap(_.validateProductAuthorisationResponse)
+              .flatMap(_.productError.map(_.map(_.exciseProductCode)))
+              .getOrElse(Seq.empty)
 
             val eligibleEPCs = enteredEPCs.diff(ineligibleEPCs)
+
             Ok(view(
-              ernOpt = validTraderErn,
+              requestedErn = prevalidateTraderUserAnswers.ern,
+              validTraderErn = validTraderErn,
               addCodeCall = addItemCall,
               approved = PrevalidateTraderResultsHelper.parseExciseProductCodeFromStringToModel(eligibleEPCs, epcs),
               notApproved = PrevalidateTraderResultsHelper.parseExciseProductCodeFromStringToModel(ineligibleEPCs, epcs)

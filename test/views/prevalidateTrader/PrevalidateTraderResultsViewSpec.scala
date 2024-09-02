@@ -65,7 +65,8 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
         implicit val request: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(FakeRequest(), emptyUserAnswers)
 
         implicit val doc: Document = Jsoup.parse(view(
-          ernOpt = None,
+          requestedErn = testErn,
+          validTraderErn = false,
           addCodeCall = testOnwardRoute,
           approved = Seq.empty,
           notApproved = Seq.empty
@@ -100,7 +101,8 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
         implicit val request: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(FakeRequest(), emptyUserAnswers)
 
         implicit val doc: Document = Jsoup.parse(view(
-          ernOpt = Some(testErn),
+          requestedErn = testErn,
+          validTraderErn = true,
           addCodeCall = testOnwardRoute,
           approved = exciseProductCodes,
           notApproved = Seq.empty
@@ -142,7 +144,8 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
         implicit val request: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(FakeRequest(), emptyUserAnswers)
 
         implicit val doc: Document = Jsoup.parse(view(
-          ernOpt = Some(testErn),
+          requestedErn = testErn,
+          validTraderErn = true,
           addCodeCall = testOnwardRoute,
           approved = Seq.empty,
           notApproved = exciseProductCodes
@@ -185,7 +188,8 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
         implicit val request: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(FakeRequest(), emptyUserAnswers)
 
         implicit val doc: Document = Jsoup.parse(view(
-          ernOpt = Some(testErn),
+          requestedErn = testErn,
+          validTraderErn = true,
           addCodeCall = testOnwardRoute,
           approved = approved,
           notApproved = notApproved
@@ -225,7 +229,8 @@ class PrevalidateTraderResultsViewSpec extends ViewSpecBase
         implicit val request: UserAnswersRequest[AnyContentAsEmpty.type] = userAnswersRequest(FakeRequest(), emptyUserAnswers)
 
         implicit val doc: Document = Jsoup.parse(view(
-          ernOpt = None,
+          requestedErn = testErn,
+          validTraderErn = true,
           addCodeCall = testOnwardRoute,
           approved = Seq.empty,
           notApproved = Seq.empty

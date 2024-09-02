@@ -36,7 +36,7 @@ class PrevalidateTraderServiceSpec extends SpecBase with MockPrevalidateTraderCo
   val ernToCheck = "GBWK002281023"
   val entityGroupToCheck = EntityGroup.UKTrader
 
-  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, entityGroupToCheck, Seq(testEpcWine, testEpcBeer))
+  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, Some(entityGroupToCheck), Some(Seq(testEpcWine, testEpcBeer)))
 
   ".prevalidateTrader" must {
 
@@ -46,7 +46,7 @@ class PrevalidateTraderServiceSpec extends SpecBase with MockPrevalidateTraderCo
 
         MockPrevalidateTraderConnector.prevalidateTrader(testErn, requestModel).returns(Future(Right(preValidateApiResponseModel)))
 
-        val actualResults = testService.prevalidateTrader(testErn, ernToCheck, entityGroupToCheck, Seq(testEpcWine, testEpcBeer)).futureValue
+        val actualResults = testService.prevalidateTrader(testErn, ernToCheck, Some(entityGroupToCheck), Some(Seq(testEpcWine, testEpcBeer))).futureValue
 
         actualResults mustBe preValidateApiResponseModel
       }
@@ -61,7 +61,7 @@ class PrevalidateTraderServiceSpec extends SpecBase with MockPrevalidateTraderCo
         MockPrevalidateTraderConnector.prevalidateTrader(testErn, requestModel).returns(Future(Left(UnexpectedDownstreamResponseError)))
 
         val actualResult = intercept[PrevalidateTraderException](
-          await(testService.prevalidateTrader(testErn, ernToCheck, entityGroupToCheck, Seq(testEpcWine, testEpcBeer)))
+          await(testService.prevalidateTrader(testErn, ernToCheck, Some(entityGroupToCheck), Some(Seq(testEpcWine, testEpcBeer))))
         ).getMessage
 
         actualResult mustBe expectedResult
