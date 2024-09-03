@@ -18,7 +18,6 @@ package controllers.prevalidateTrader
 
 import config.AppConfig
 import controllers.BaseNavigationController
-import controllers.helpers.BetaChecks
 import controllers.predicates._
 import models.prevalidate.PrevalidateTraderModel
 import models.requests.UserAnswersRequest
@@ -39,7 +38,6 @@ import scala.concurrent.Future
 class PrevalidateTraderResultsController @Inject()(
                                                     override val messagesApi: MessagesApi,
                                                     override val userAnswersService: PrevalidateTraderUserAnswersService,
-                                                    override val betaAllowList: BetaAllowListAction,
                                                     override val navigator: PrevalidateTraderNavigator,
                                                     override val auth: AuthAction,
                                                     override val getData: DataRetrievalAction,
@@ -48,9 +46,9 @@ class PrevalidateTraderResultsController @Inject()(
                                                     val controllerComponents: MessagesControllerComponents,
                                                     getExciseProductCodesService: GetExciseProductCodesService,
                                                     view: PrevalidateTraderResultsView
-                                                  )(implicit appConfig: AppConfig) extends BaseNavigationController with AuthActionHelper with BetaChecks {
+                                                  )(implicit appConfig: AppConfig) extends BaseNavigationController with AuthActionHelper {
   def onPageLoad(ern: String): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
+    (auth(ern) andThen getData() andThen requireData).async { implicit request =>
       withAllValidRequestData {
 
         val addItemCall = onMax(

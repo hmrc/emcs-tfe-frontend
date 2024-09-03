@@ -16,38 +16,20 @@
 
 package controllers.predicates
 
-import controllers.helpers.BetaChecks
-import models.auth.UserRequest
 import models.requests.DataRequest
-import play.api.mvc.{Action, ActionBuilder, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, Result}
 
 import scala.concurrent.Future
 
-trait AuthActionHelper extends BetaChecks {
+trait AuthActionHelper {
 
   val auth: AuthAction
   val getData: DataRetrievalAction
-  val betaAllowList: BetaAllowListAction
-
-  private def authorised(ern: String): ActionBuilder[UserRequest, AnyContent] =
-    auth(ern) andThen betaAllowList(navigationHubBetaGuard())
-
-  def authorisedWithData(ern: String): ActionBuilder[DataRequest, AnyContent] =
-    authorised(ern) andThen getData()
-
-  def authorisedWithBetaGuardData(ern: String, betaGuard: (String, Result)): ActionBuilder[DataRequest, AnyContent] =
-    authorised(ern) andThen betaAllowList(betaGuard) andThen getData()
 
   def authorisedDataRequest(ern: String)(block: DataRequest[_] => Result): Action[AnyContent] =
-    authorisedWithData(ern)(block)
-
-  def authorisedDataRequest(ern: String, betaGuard: (String, Result))(block: DataRequest[_] => Result): Action[AnyContent] =
-    authorisedWithBetaGuardData(ern, betaGuard)(block)
+    (auth(ern) andThen getData())(block)
 
   def authorisedDataRequestAsync(ern: String)(block: DataRequest[_] => Future[Result]): Action[AnyContent] =
-    authorisedWithData(ern).async(block)
-
-  def authorisedDataRequestAsync(ern: String, betaGuard: (String, Result))(block: DataRequest[_] => Future[Result]): Action[AnyContent] =
-    authorisedWithBetaGuardData(ern, betaGuard).async(block)
+    (auth(ern) andThen getData()).async(block)
 
 }

@@ -19,7 +19,6 @@ package controllers.predicates
 import com.google.inject.Inject
 import config.{AppConfig, EnrolmentKeys}
 import models.auth.UserRequest
-import models.common.RoleType
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results._
 import play.api.mvc._
@@ -103,11 +102,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector,
       case emcsEnrolments =>
         emcsEnrolments.find(_.identifiers.exists(ident => ident.key == EnrolmentKeys.ERN && ident.value == ernFromUrl)) match {
           case Some(enrolment) if enrolment.isActivated =>
-            if (config.denyDutyPaidUsers && RoleType.fromExciseRegistrationNumber(ernFromUrl).isDutyPaid) {
-              Future.successful(Redirect(controllers.errors.routes.DutyPaidUnauthorisedController.unauthorised()))
-            } else {
-              block(UserRequest(request, ernFromUrl, internalId, credId, emcsEnrolments.size > 1))
-            }
+            block(UserRequest(request, ernFromUrl, internalId, credId, emcsEnrolments.size > 1))
           case Some(_) =>
             logger.debug(s"[checkOrganisationEMCSEnrolment] ${EnrolmentKeys.EMCS_ENROLMENT} enrolment found but not activated")
             Future.successful(Redirect(controllers.errors.routes.UnauthorisedController.unauthorised()))

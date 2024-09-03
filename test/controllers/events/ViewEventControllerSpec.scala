@@ -17,18 +17,18 @@
 package controllers.events
 
 import base.SpecBase
-import controllers.predicates.{FakeAuthAction, FakeBetaAllowListAction, FakeDataRetrievalAction}
+import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import fixtures.messages.EN
 import fixtures.{GetMovementHistoryEventsResponseFixtures, GetMovementResponseFixtures, MessagesFixtures}
 import mocks.config.MockAppConfig
 import mocks.services.{MockGetCnCodeInformationService, MockGetDocumentTypesService, MockGetMovementHistoryEventsService, MockGetMovementService}
-import models.{DocumentType, EventTypes}
 import models.common.AcceptMovement
 import models.common.UnitOfMeasure.Kilograms
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import models.response.emcsTfe.getMovementHistoryEvents.MovementHistoryEvent
 import models.response.referenceData.CnCodeInformation
+import models.{DocumentType, EventTypes}
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
@@ -69,14 +69,13 @@ class ViewEventControllerSpec
     mcc = app.injector.instanceOf[MessagesControllerComponents],
     auth = FakeSuccessAuthAction,
     getData = new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics)),
-    betaAllowList = new FakeBetaAllowListAction,
     getMovementHistoryEventsService = mockGetMovementHistoryEventsService,
     getMovementService = mockGetMovementService,
     getCnCodeInformationService = mockGetCnCodeInformationService,
     view = view,
     errorHandler = errorHandler,
     getDocumentTypesService = mockGetDocumentTypesService
-  )(ec, appConfig)
+  )(ec)
 
 
   private def renderASuccessfulEventView(

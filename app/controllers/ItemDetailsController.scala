@@ -16,9 +16,7 @@
 
 package controllers
 
-import config.AppConfig
-import controllers.helpers.BetaChecks
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GetMovementService
@@ -32,18 +30,13 @@ import scala.concurrent.ExecutionContext
 class ItemDetailsController @Inject()(mcc: MessagesControllerComponents,
                                       val auth: AuthAction,
                                       val getData: DataRetrievalAction,
-                                      val betaAllowList: BetaAllowListAction,
                                       view: ItemDetailsView,
                                       movementService: GetMovementService
-                                     )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc)
-    with AuthActionHelper
-    with I18nSupport
-    with BetaChecks
-    with Logging {
+                                     )(implicit val executionContext: ExecutionContext)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with Logging {
 
   def onPageLoad(ern: String, arc: String, idx: Int): Action[AnyContent] =
-    authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
       movementService.getLatestMovementForLoggedInUser(ern, arc).map { movement =>
         val item = movement.items.find(_.itemUniqueReference == idx).get // `get` is safe here because the recover block will catch and log any exceptions and safely redirect
         Ok(view(item))

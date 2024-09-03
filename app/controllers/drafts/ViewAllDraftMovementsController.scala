@@ -20,8 +20,7 @@ import cats.data.EitherT
 import config.{AppConfig, ErrorHandler}
 import connectors.emcsTfe.GetDraftMovementsConnector
 import connectors.referenceData.GetExciseProductCodesConnector
-import controllers.helpers.BetaChecks
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import forms.ViewAllDraftMovementsFormProvider
 import models.draftMovements.GetDraftMovementsSearchOptions.DEFAULT_MAX_ROWS
 import models.draftMovements.{DraftMovementSortingSelectOption, GetDraftMovementsSearchOptions}
@@ -47,20 +46,19 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
                                                 errorHandler: ErrorHandler,
                                                 val auth: AuthAction,
                                                 val getData: DataRetrievalAction,
-                                                val betaAllowList: BetaAllowListAction,
                                                 formProvider: ViewAllDraftMovementsFormProvider,
                                                 paginationHelper: DraftMovementsPaginationHelper
-                                          )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
+                                               )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(ern: String, searchOptions: GetDraftMovementsSearchOptions): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, draftsBetaGuard(ern)) { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
       renderView(Ok, ern, searchOptions, formProvider())
     }
   }
 
   def onSubmit(ern: String, searchOptions: GetDraftMovementsSearchOptions): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, draftsBetaGuard(ern)) { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
       formProvider().bindFromRequest().fold(
         renderView(BadRequest, ern, searchOptions, _),
         value => Future(Redirect(routes.ViewAllDraftMovementsController.onPageLoad(ern, value)))

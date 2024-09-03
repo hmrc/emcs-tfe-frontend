@@ -35,7 +35,6 @@ class Module extends AbstractModule {
     bind(classOf[GetDocumentTypesConnector]).to(classOf[GetDocumentTypesConnectorImpl]).asEagerSingleton()
     bind(classOf[MessageInboxRepository]).to(classOf[MessageInboxRepositoryImpl]).asEagerSingleton()
     bind(classOf[MessageStatisticsRepository]).to(classOf[MessageStatisticsRepositoryImpl]).asEagerSingleton()
-    bind(classOf[BetaAllowListAction]).to(classOf[BetaAllowListActionImpl]).asEagerSingleton()
     bind(classOf[TimeMachine]).to(classOf[TimeMachineImpl]).asEagerSingleton()
     bind(classOf[PrevalidateTraderUserAnswersRepository]).asEagerSingleton()
   }

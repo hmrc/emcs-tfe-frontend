@@ -106,24 +106,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def emcsLegacyMessageInboxUrl(ern: String): String =
     servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/messages"
 
-  def emcsLegacyHomeUrl(ern: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern"
-
-  def emcsLegacyDraftsUrl(ern: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movement/drafts"
-
-  def emcsLegacySearchMovementsUrl(ern: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movements"
-
-  def emcsLegacyViewMovementUrl(ern: String, arc: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movement/$arc/history?movementtype=all"
-
-  def emcsLegacyChangeDestinationUrl(ern: String, arc: String, ver: Int): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/movement/$arc/version/$ver/changedestination"
-
-  def emcsLegacyPreValidateUrl(ern: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/prevalidate"
-
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")
 
@@ -143,8 +125,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   lazy val tradeTariffCommoditiesUrl: String = configuration.get[String]("urls.tradeTariffCommodities")
   def getUrlForCommodityCode(code: String): String = s"$tradeTariffCommoditiesUrl/${code}00"
 
-  def denyDutyPaidUsers: Boolean = isEnabled(DenyDutyPaidUsers)
-
   def messageStatisticsCacheTtl: Duration = Duration(configuration.get[String]("mongodb.messageStatistics.TTL"))
   def messageStatisticsReplaceIndexes(): Boolean = configuration.get[Boolean]("mongodb.messageStatistics.replaceIndexes")
   def messagesCacheTtl: Duration = Duration(configuration.get[String]("mongodb.messages.TTL"))
@@ -152,12 +132,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def prevalidateTraderUserAnswersCacheTtl: Duration = Duration(configuration.get[String]("mongodb.prevalidateTraderUserAnswers.TTL"))
   def prevalidateTraderUserAnswersReplaceIndexes: Boolean = configuration.get[Boolean]("mongodb.prevalidateTraderUserAnswers.replaceIndexes")
-
-  def betaAllowListCheckingEnabled: Boolean = isEnabled(CheckBetaAllowList)
-
-  def enableXIPCInCaM: Boolean = isEnabled(EnableXIPCInCaM)
-
-  def messageStatisticsNotificationEnabled: Boolean = isEnabled(MessageStatisticsNotification)
 
   def accountHomeBanner: Boolean = isEnabled(AccountHomeBanner)
 }

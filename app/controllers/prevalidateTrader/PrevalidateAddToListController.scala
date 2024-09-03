@@ -16,9 +16,7 @@
 
 package controllers.prevalidateTrader
 
-import config.AppConfig
 import controllers.BaseNavigationController
-import controllers.helpers.BetaChecks
 import controllers.predicates._
 import forms.prevalidate.PrevalidateAddToListFormProvider
 import models.requests.UserAnswersRequest
@@ -39,7 +37,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class PrevalidateAddToListController @Inject()(
                                                 override val messagesApi: MessagesApi,
                                                 override val userAnswersService: PrevalidateTraderUserAnswersService,
-                                                override val betaAllowList: BetaAllowListAction,
                                                 override val navigator: PrevalidateTraderNavigator,
                                                 override val auth: AuthAction,
                                                 override val getData: DataRetrievalAction,
@@ -47,13 +44,11 @@ class PrevalidateAddToListController @Inject()(
                                                 formProvider: PrevalidateAddToListFormProvider,
                                                 val controllerComponents: MessagesControllerComponents,
                                                 view: PrevalidateAddToListView
-                                              )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends BaseNavigationController
-    with AuthActionHelper
-    with BetaChecks {
+                                              )(implicit val executionContext: ExecutionContext)
+  extends BaseNavigationController with AuthActionHelper {
 
   def onPageLoad(ern: String): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
+    (auth(ern) andThen getData() andThen requireData).async { implicit request =>
       withAtLeastOneItem {
         val form = onMax(maxF = None, notMaxF = Some(fillForm(PrevalidateAddToListPage, formProvider())))
         Future.successful(renderView(Ok, form))
@@ -61,7 +56,7 @@ class PrevalidateAddToListController @Inject()(
     }
 
   def onSubmit(ern: String): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
+    (auth(ern) andThen getData() andThen requireData).async { implicit request =>
       onMax(
         maxF = Future.successful(Redirect(navigator.nextPage(
           page = PrevalidateAddToListPage,

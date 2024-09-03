@@ -27,11 +27,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
   val switches: Seq[FeatureSwitch] = Seq(
     StubGetTraderKnownFacts,
-    ReturnToLegacy,
-    DenyDutyPaidUsers,
-    CheckBetaAllowList,
-    MessageStatisticsNotification,
-    EnableXIPCInCaM,
     AccountHomeBanner
   )
 
@@ -45,31 +40,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 case object StubGetTraderKnownFacts extends FeatureSwitch {
   override val configName: String = "features.stub-get-trader-known-facts"
   override val displayName: String = "Use stub to get trader known facts"
-}
-
-case object ReturnToLegacy extends FeatureSwitch {
-  override val configName: String = "features.returnToLegacy"
-  override val displayName: String = "Return the User to the Legacy EMCS service"
-}
-
-case object DenyDutyPaidUsers extends FeatureSwitch {
-  override val configName: String = "features.denyDutyPaidUsers"
-  override val displayName: String = "Deny access to duty paid users"
-}
-
-case object CheckBetaAllowList extends FeatureSwitch {
-  override val configName: String = "features.checkBetaAllowList"
-  override val displayName: String = "Check beta allow list"
-}
-
-case object MessageStatisticsNotification extends FeatureSwitch {
-  override val configName: String = "features.messageStatisticsNotification"
-  override val displayName: String = "Show the message statistics red notification badge (new messages count)"
-}
-
-case object EnableXIPCInCaM extends FeatureSwitch {
-  override val configName: String = "features.enableXIPCInCaM"
-  override val displayName: String = "Enables XIPC users in CaM"
 }
 
 case object AccountHomeBanner extends FeatureSwitch {

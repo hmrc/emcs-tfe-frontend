@@ -17,7 +17,6 @@
 package viewmodels.helpers
 
 import config.AppConfig
-import models.common.RoleType
 import models.common.RoleType._
 import models.movementScenario.MovementScenario
 import models.movementScenario.MovementScenario._
@@ -96,8 +95,6 @@ class ViewMovementHelper @Inject()(
   private[helpers] def constructMovementView(movementResponse: GetMovementResponse)
                                             (implicit request: DataRequest[_], messages: Messages): Html = {
 
-    val userRole = RoleType.fromExciseRegistrationNumber(request.ern)
-
     val movementTypeValue = getMovementTypeForMovementView(movementResponse)
 
     lazy val eadStatusExplanation = messages(s"viewMovement.movement.summary.eADStatus.explanation.${movementResponse.eadStatus.toString.toLowerCase}")
@@ -122,7 +119,7 @@ class ViewMovementHelper @Inject()(
     val movementType: SummaryListRow = summaryListRowBuilder("viewMovement.movement.summary.type", movementTypeValue)
     val movementDirection: SummaryListRow = summaryListRowBuilder(
       "viewMovement.movement.summary.direction",
-      s"viewMovement.movement.summary.direction.${if (userRole.isConsignor(appConfig)) "out" else "in"}"
+      s"viewMovement.movement.summary.direction.${if (movementResponse.consignorTrader.traderExciseNumber.contains(request.ern)) "out" else "in"}"
     )
     //Summary section - end
 

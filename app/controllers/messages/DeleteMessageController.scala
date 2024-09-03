@@ -17,9 +17,7 @@
 package controllers.messages
 
 import config.SessionKeys.{DELETED_MESSAGE_DESCRIPTION_KEY, FROM_PAGE}
-import config.{AppConfig, ErrorHandler}
-import controllers.helpers.BetaChecks
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import forms.DeleteMessageFormProvider
 import models.messages.{MessageCache, MessagesSearchOptions}
 import models.requests.DataRequest
@@ -39,19 +37,17 @@ import scala.concurrent.{ExecutionContext, Future}
 class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
                                         val auth: AuthAction,
                                         val getData: DataRetrievalAction,
-                                        val betaAllowList: BetaAllowListAction,
                                         val getMessagesService: GetMessagesService,
                                         val deleteMessageService: DeleteMessageService,
                                         formProvider: DeleteMessageFormProvider,
                                         val view: DeleteMessageView,
                                         val deleteMessageHelper: DeleteMessageHelper,
-                                        val messagesHelper: MessagesHelper,
-                                        errorHandler: ErrorHandler)
-                                       (implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
+                                        val messagesHelper: MessagesHelper)
+                                       (implicit val executionContext: ExecutionContext)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
-    authorisedDataRequestAsync(exciseRegistrationNumber, messageInboxBetaGuard(exciseRegistrationNumber)) { implicit request =>
+    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       renderView(
         exciseRegistrationNumber,
         uniqueMessageIdentifier,
@@ -62,7 +58,7 @@ class DeleteMessageController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def onSubmit(exciseRegistrationNumber: String, uniqueMessageIdentifier: Long): Action[AnyContent] =
-    authorisedDataRequestAsync(exciseRegistrationNumber, messageInboxBetaGuard(exciseRegistrationNumber)) { implicit request =>
+    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       formProvider().bindFromRequest().fold(
         formWithErrors => {
           renderView(exciseRegistrationNumber, uniqueMessageIdentifier, formWithErrors, pageFromSession(request.session.get(FROM_PAGE)))

@@ -21,7 +21,6 @@ import controllers.predicates._
 import fixtures.{ExciseProductCodeFixtures, ItemFixtures}
 import forms.prevalidate.PrevalidateAddToListFormProvider
 import mocks.config.MockAppConfig
-import mocks.connectors.MockBetaAllowListConnector
 import mocks.services.MockPrevalidateUserAnswersService
 import models.requests.UserAnswersRequest
 import models.{NormalMode, UserAnswers}
@@ -42,7 +41,6 @@ class PrevalidateAddToListControllerSpec extends SpecBase
   with MockPrevalidateUserAnswersService
   with ItemFixtures
   with ExciseProductCodeFixtures
-  with MockBetaAllowListConnector
   with MockAppConfig {
 
   lazy val formProvider: PrevalidateAddToListFormProvider = new PrevalidateAddToListFormProvider()
@@ -66,16 +64,9 @@ class PrevalidateAddToListControllerSpec extends SpecBase
 
     MockUserAnswersService.get(userAnswers.ern).returns(Future.successful(Some(userAnswers))).anyNumberOfTimes()
 
-    lazy val betaAllowListAction = new BetaAllowListActionImpl(
-      betaAllowListConnector = mockBetaAllowListConnector,
-      errorHandler = errorHandler,
-      config = mockAppConfig
-    )
-
     lazy val testController = new PrevalidateAddToListController(
       messagesApi = messagesApi,
       userAnswersService = mockUserAnswersService,
-      betaAllowList = betaAllowListAction,
       navigator = new FakePrevalidateNavigator(testOnwardRoute),
       auth = FakeSuccessAuthAction,
       getData = new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics)),
@@ -83,133 +74,99 @@ class PrevalidateAddToListControllerSpec extends SpecBase
       formProvider = formProvider,
       controllerComponents = messagesControllerComponents,
       view = view
-    )(ec, appConfig)
-
-    MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
-    MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(true)))
-    MockBetaAllowListConnector.check(testErn, "tfePreValidate").returns(Future.successful(Right(preValidateEnabled)))
+    )(ec)
   }
 
   "PrevalidateAddToList Controller" when {
 
     "GET onPageLoad" when {
 
-      "user is on the private beta list" should {
+      "return SEE_OTHER and Redirect to First EPC when there are no EPCs added yet" in new Setup() {
 
-        "return SEE_OTHER and Redirect to First EPC when there are no EPCs added yet" in new Setup() {
+        val result = testController.onPageLoad(testErn)(request)
 
-          val result = testController.onPageLoad(testErn)(request)
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustBe routes.PrevalidateExciseProductCodeController.onPageLoad(testErn, testIndex1, NormalMode).url
-        }
-
-        "return OK and the correct view when EPCs are added" in new Setup(
-          emptyUserAnswers.set(PrevalidateEPCPage(testIndex1), wineExciseProductCode)
-        ) {
-
-          val result = testController.onPageLoad(testErn)(request)
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            formOpt = Some(form),
-            onSubmitCall = onSubmitCall,
-            PrevalidateAddToListHelper.addedEpcs()
-          ).toString
-        }
-
-        "return OK and the correct view when there are MAX EPCs already added" in new Setup(userAnswersWithMaxPrevalidate) {
-
-          val result = testController.onPageLoad(testErn)(request)
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            formOpt = None,
-            onSubmitCall = onSubmitCall,
-            PrevalidateAddToListHelper.addedEpcs()
-          ).toString
-        }
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustBe routes.PrevalidateExciseProductCodeController.onPageLoad(testErn, testIndex1, NormalMode).url
       }
 
-      "user is NOT on the private beta list" should {
+      "return OK and the correct view when EPCs are added" in new Setup(
+        emptyUserAnswers.set(PrevalidateEPCPage(testIndex1), wineExciseProductCode)
+      ) {
 
-        "redirect to legacy" in new Setup(preValidateEnabled = false) {
-          val result = testController.onPageLoad(testErn)(request)
+        val result = testController.onPageLoad(testErn)(request)
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual "http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate"
-        }
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          formOpt = Some(form),
+          onSubmitCall = onSubmitCall,
+          PrevalidateAddToListHelper.addedEpcs()
+        ).toString
       }
 
+      "return OK and the correct view when there are MAX EPCs already added" in new Setup(userAnswersWithMaxPrevalidate) {
+
+        val result = testController.onPageLoad(testErn)(request)
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          formOpt = None,
+          onSubmitCall = onSubmitCall,
+          PrevalidateAddToListHelper.addedEpcs()
+        ).toString
+      }
     }
 
     "POST onSubmit" when {
 
-      "user is on the private beta list" should {
+      "redirect to the next page when Yes is submitted" in new Setup(
+        emptyUserAnswers.set(PrevalidateEPCPage(testIndex1), wineExciseProductCode)
+      ) {
 
-        "redirect to the next page when Yes is submitted" in new Setup(
-          emptyUserAnswers.set(PrevalidateEPCPage(testIndex1), wineExciseProductCode)
-        ) {
+        MockUserAnswersService.set(userAnswers).returns(Future.successful(userAnswers))
 
-          MockUserAnswersService.set(userAnswers).returns(Future.successful(userAnswers))
+        val req = FakeRequest(POST, controllerRoute).withFormUrlEncodedBody(("value", "true"))
+        val result = testController.onSubmit(testErn)(req)
 
-          val req = FakeRequest(POST, controllerRoute).withFormUrlEncodedBody(("value", "true"))
-          val result = testController.onSubmit(testErn)(req)
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual testOnwardRoute.url
-        }
-
-        "redirect to the next page and save the answer when No is submitted" in new Setup(
-          emptyUserAnswers.set(PrevalidateEPCPage(testIndex1), wineExciseProductCode)
-        ) {
-
-          val savedAnswers = userAnswers.set(PrevalidateAddToListPage, false)
-          MockUserAnswersService.set(savedAnswers).returns(Future.successful(savedAnswers))
-
-          val req = FakeRequest(POST, controllerRoute).withFormUrlEncodedBody(("value", "false"))
-          val result = testController.onSubmit(testErn)(req)
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual testOnwardRoute.url
-        }
-
-        "redirect to the next page when submitted with MAX packages already added" in new Setup(userAnswersWithMaxPrevalidate) {
-
-          val req = FakeRequest(POST, controllerRoute)
-          val result = testController.onSubmit(testErn)(req)
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual testOnwardRoute.url
-        }
-
-        "return a Bad Request and errors when invalid data is submitted" in new Setup() {
-
-          val req = FakeRequest(POST, controllerRoute).withFormUrlEncodedBody(("value", "invalid value"))
-          val boundForm = form.bind(Map("value" -> "invalid value"))
-          val result = testController.onSubmit(testErn)(req)
-
-          status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(
-            formOpt = Some(boundForm),
-            onSubmitCall = onSubmitCall,
-            PrevalidateAddToListHelper.addedEpcs()
-          ).toString
-        }
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual testOnwardRoute.url
       }
 
-      "user is NOT on the private beta list" should {
+      "redirect to the next page and save the answer when No is submitted" in new Setup(
+        emptyUserAnswers.set(PrevalidateEPCPage(testIndex1), wineExciseProductCode)
+      ) {
 
-        "redirect to legacy" in new Setup(preValidateEnabled = false) {
-          val req = FakeRequest(POST, controllerRoute).withFormUrlEncodedBody(("value", "true"))
-          val result = testController.onSubmit(testErn)(req)
+        val savedAnswers = userAnswers.set(PrevalidateAddToListPage, false)
+        MockUserAnswersService.set(savedAnswers).returns(Future.successful(savedAnswers))
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual "http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate"
-        }
+        val req = FakeRequest(POST, controllerRoute).withFormUrlEncodedBody(("value", "false"))
+        val result = testController.onSubmit(testErn)(req)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual testOnwardRoute.url
       }
 
+      "redirect to the next page when submitted with MAX packages already added" in new Setup(userAnswersWithMaxPrevalidate) {
 
+        val req = FakeRequest(POST, controllerRoute)
+        val result = testController.onSubmit(testErn)(req)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual testOnwardRoute.url
+      }
+
+      "return a Bad Request and errors when invalid data is submitted" in new Setup() {
+
+        val req = FakeRequest(POST, controllerRoute).withFormUrlEncodedBody(("value", "invalid value"))
+        val boundForm = form.bind(Map("value" -> "invalid value"))
+        val result = testController.onSubmit(testErn)(req)
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(
+          formOpt = Some(boundForm),
+          onSubmitCall = onSubmitCall,
+          PrevalidateAddToListHelper.addedEpcs()
+        ).toString
+      }
     }
   }
 }

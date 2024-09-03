@@ -17,24 +17,23 @@
 package controllers.cod
 
 import config.AppConfig
-import controllers.helpers.BetaChecks
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class ChangeOfDestinationController @Inject()(mcc: MessagesControllerComponents,
                                               val auth: AuthAction,
                                               val getData: DataRetrievalAction,
-                                              val betaAllowList: BetaAllowListAction
-                                )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
+                                              )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
-  def onPageLoad(ern: String, arc: String, ver: Int): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, changeDestinationBetaGuard(ern, arc, ver)) { _ =>
+  def onPageLoad(ern: String, arc: String, @unused ver: Int): Action[AnyContent] = {
+    authorisedDataRequestAsync(ern) { _ =>
       Future.successful(
         Redirect(appConfig.emcsTfeChangeDestinationUrl(ern, arc))
       )

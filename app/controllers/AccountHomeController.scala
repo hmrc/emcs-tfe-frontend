@@ -16,9 +16,7 @@
 
 package controllers
 
-import config.AppConfig
-import controllers.helpers.BetaChecks
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import models.common.RoleType
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -31,13 +29,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class AccountHomeController @Inject()(mcc: MessagesControllerComponents,
                                       view: AccountHomeView,
                                       val auth: AuthAction,
-                                      val getData: DataRetrievalAction,
-                                      val betaAllowList: BetaAllowListAction
-                                     )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks {
+                                      val getData: DataRetrievalAction)
+                                     (implicit val executionContext: ExecutionContext)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def viewAccountHome(exciseRegistrationNumber: String): Action[AnyContent] = {
-    authorisedDataRequestAsync(exciseRegistrationNumber, homeBetaGuard(exciseRegistrationNumber)) { implicit request =>
+    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       Future.successful(
         Ok(
           view(

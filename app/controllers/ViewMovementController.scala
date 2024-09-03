@@ -16,8 +16,8 @@
 
 package controllers
 
-import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import config.ErrorHandler
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GetMovementService
@@ -34,14 +34,13 @@ import scala.concurrent.ExecutionContext
 class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                                        val auth: AuthAction,
                                        val getData: DataRetrievalAction,
-                                       val betaAllowList: BetaAllowListAction,
                                        getMovementService: GetMovementService,
                                        view: ViewMovementView,
                                        printMovementView: PrintMovementView,
                                        errorHandler: ErrorHandler,
                                        helper: ViewMovementHelper,
                                        timelineHelper: TimelineHelper
-                                      )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
+                                      )(implicit val executionContext: ExecutionContext)
   extends FrontendController(mcc)
     with I18nSupport with AuthActionHelper with Logging {
 
@@ -72,7 +71,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
                             currentSubNavigationTab: SubNavigationTab
                           ): Action[AnyContent] =
 
-    authorisedDataRequestAsync(exciseRegistrationNumber, viewMovementBetaGuard(exciseRegistrationNumber, arc)) { implicit request =>
+    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       getMovementService.getLatestMovementForLoggedInUser(exciseRegistrationNumber, arc).flatMap { movement =>
         helper.movementCard(Some(currentSubNavigationTab), movement).map { movementCard =>
 
@@ -96,7 +95,7 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
     }
 
   def printMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
-    authorisedDataRequestAsync(exciseRegistrationNumber, viewMovementBetaGuard(exciseRegistrationNumber, arc)) { implicit request =>
+    authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       getMovementService.getLatestMovementForLoggedInUser(exciseRegistrationNumber, arc).flatMap { movement =>
         helper.movementCard(None, movement).map { movementCard =>
           Ok(printMovementView(
