@@ -83,7 +83,6 @@ class MovementEventHelper @Inject()(
   }
 
   private[events] def getOriginTypeForMovementInformationCard()(implicit movement: GetMovementResponse, messages: Messages): String = {
-    // TODO: check what to do about non-WK consignors
     lazy val consignorErn: Option[String] = movement.consignorTrader.traderExciseNumber
     lazy val isWK: Boolean = consignorErn.exists(RoleType.isWarehouseKeeper)
     lazy val consignorIsGBWK: Boolean = isWK && consignorErn.exists(RoleType.isGB)
@@ -91,7 +90,6 @@ class MovementEventHelper @Inject()(
 
     lazy val consignorIsWarehouseKeeperAndNotGBOrXI = consignorErn.exists(RoleType.isWarehouseKeeper) && (!consignorIsGBWK && !consignorIsXIWK)
 
-    // TODO: check if this is against the correct ERN
     lazy val dispatchErn: Option[String] = movement.placeOfDispatchTrader.flatMap(_.traderExciseNumber)
     lazy val dispatchIsGB: Boolean = dispatchErn.exists(RoleType.isGB)
     lazy val dispatchIsXI: Boolean = dispatchErn.exists(RoleType.isXI)
