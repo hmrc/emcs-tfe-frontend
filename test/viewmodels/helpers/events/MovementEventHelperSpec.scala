@@ -25,7 +25,7 @@ import models.common.DestinationType.{DirectDelivery, Export, RegisteredConsigne
 import models.common.TransportArrangement.OwnerOfGoods
 import models.common.UnitOfMeasure.Kilograms
 import models.common.WrongWithMovement.{BrokenSeals, Damaged, Excess, Other, Shortage}
-import models.common._
+import models.common.{OriginType, _}
 import models.requests.DataRequest
 import models.response.emcsTfe.AlertOrRejectionType.Rejection
 import models.response.emcsTfe._
@@ -77,6 +77,117 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
     val cardTitle = s".govuk-summary-card__title"
   }
 
+  "getOriginTypeForMovementInformationCard" must {
+    "return inGB text" when {
+      "TaxWarehouse and consignor is GBWK" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+          eadEsad = getMovementResponseModel.eadEsad.copy(originTypeCode = OriginType.TaxWarehouse),
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GBWK123"))
+        )
+
+        helper.getOriginTypeForMovementInformationCard mustBe "Tax warehouse in Great Britain"
+      }
+      "TaxWarehouse and consignor is XIWK and dispatchPlace is GB" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+          eadEsad = getMovementResponseModel.eadEsad.copy(originTypeCode = OriginType.TaxWarehouse),
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GBWK123")),
+          placeOfDispatchTrader = Some(TraderModel(traderExciseNumber = Some("GB00123"), None, None, None, None))
+        )
+
+        helper.getOriginTypeForMovementInformationCard mustBe "Tax warehouse in Great Britain"
+      }
+    }
+    "return inXI text" when {
+      "TaxWarehouse and consignor is XIWK and dispatchPlace is XI" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+          eadEsad = getMovementResponseModel.eadEsad.copy(originTypeCode = OriginType.TaxWarehouse),
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("XIWK123")),
+          placeOfDispatchTrader = Some(TraderModel(traderExciseNumber = Some("XI00123"), None, None, None, None))
+        )
+
+        helper.getOriginTypeForMovementInformationCard mustBe "Tax warehouse in Northern Ireland"
+      }
+    }
+    "return inEU text" when {
+      "TaxWarehouse and consignor is __WK and not GB or XI" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+          eadEsad = getMovementResponseModel.eadEsad.copy(originTypeCode = OriginType.TaxWarehouse),
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("IEWK123"))
+        )
+
+        helper.getOriginTypeForMovementInformationCard mustBe "Tax warehouse in European Union"
+      }
+    }
+    "return generic OriginType text" when {
+      "TaxWarehouse and consignor is __RC" in {
+        Seq("GBRC123", "XIRC123", "IERC123").foreach { traderExciseNumber =>
+          implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+            eadEsad = getMovementResponseModel.eadEsad.copy(originTypeCode = OriginType.TaxWarehouse),
+            consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(traderExciseNumber)),
+            placeOfDispatchTrader = Some(TraderModel(traderExciseNumber = Some("XI00123"), None, None, None, None))
+          )
+
+          helper.getOriginTypeForMovementInformationCard mustBe "Tax warehouse"
+        }
+      }
+      "not TaxWarehouse" in {
+        OriginType.values.filterNot(_ == OriginType.TaxWarehouse).foreach { originType =>
+          implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+            eadEsad = getMovementResponseModel.eadEsad.copy(originTypeCode = originType),
+            consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GBWK123"))
+          )
+
+          helper.getOriginTypeForMovementInformationCard mustBe messages(s"movementCreatedView.section.movement.originType.$originType")
+        }
+      }
+    }
+  }
+
+  "getDestinationTypeForMovementInformationCard" must {
+    "return inGB text" when {
+      "TaxWarehouse and consignee is GB" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+          headerEadEsad = getMovementResponseModel.headerEadEsad.copy(destinationType = TaxWarehouse),
+          consigneeTrader = Some(TraderModel(traderExciseNumber = Some("GBRC123"), None, None, None, None))
+        )
+
+        helper.getDestinationTypeForMovementInformationCard mustBe "Tax warehouse in Great Britain"
+      }
+    }
+    "return inXI text" when {
+      "TaxWarehouse and consignee is XI" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+          headerEadEsad = getMovementResponseModel.headerEadEsad.copy(destinationType = TaxWarehouse),
+          consigneeTrader = Some(TraderModel(traderExciseNumber = Some("XIRC123"), None, None, None, None))
+        )
+
+        helper.getDestinationTypeForMovementInformationCard mustBe "Tax warehouse in Northern Ireland"
+      }
+    }
+    "return inEU text" when {
+      "TaxWarehouse and consignee is not GB or XI" in {
+        implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+          headerEadEsad = getMovementResponseModel.headerEadEsad.copy(destinationType = TaxWarehouse),
+          consigneeTrader = Some(TraderModel(traderExciseNumber = Some("IERC123"), None, None, None, None))
+        )
+
+        helper.getDestinationTypeForMovementInformationCard mustBe "Tax warehouse in European Union"
+      }
+    }
+    "return generic DestinationType text" when {
+      "not TaxWarehouse" in {
+        DestinationType.values.filterNot(_ == TaxWarehouse).foreach { destinationType =>
+          implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
+            headerEadEsad = getMovementResponseModel.headerEadEsad.copy(destinationType = destinationType),
+            consigneeTrader = Some(TraderModel(traderExciseNumber = Some("GBRC123"), None, None, None, None))
+          )
+
+          helper.getDestinationTypeForMovementInformationCard mustBe messages(s"movementCreatedView.section.movement.destinationType.$destinationType")
+        }
+      }
+    }
+  }
+
   "movementInformationCard" must {
     implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
       eadEsad = eadEsadModel.copy(
@@ -98,7 +209,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         doc.select(Selectors.summaryListRowKey(3)).text() mustBe "Origin type"
         doc.select(Selectors.summaryListRowValue(3)).text() mustBe "Tax warehouse"
         doc.select(Selectors.summaryListRowKey(4)).text() mustBe "Destination type"
-        doc.select(Selectors.summaryListRowValue(4)).text() mustBe "Tax warehouse"
+        doc.select(Selectors.summaryListRowValue(4)).text() mustBe "Tax warehouse in Great Britain"
         doc.select(Selectors.summaryListRowKey(5)).text() mustBe "Date of dispatch"
         doc.select(Selectors.summaryListRowValue(5)).text() mustBe "20 November 2008"
         doc.select(Selectors.summaryListRowKey(6)).text() mustBe "Time of dispatch"

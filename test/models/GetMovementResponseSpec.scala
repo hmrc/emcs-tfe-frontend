@@ -82,7 +82,7 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
           val consignorModel = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("XIPTA123456789"))
           getMovementResponseModel
             .copy(consignorTrader = consignorModel, consigneeTrader = None)
-            .isFromConsignor shouldBe true
+            .isBeingViewedByConsignor shouldBe true
         }
 
         RoleType.values.foreach {
@@ -92,7 +92,7 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
               val consignorModel = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(s"${ernPrefix}123456789"))
               getMovementResponseModel
                 .copy(consignorTrader = consignorModel, consigneeTrader = None)
-                .isFromConsignor shouldBe true
+                .isBeingViewedByConsignor shouldBe true
             }
         }
       }
@@ -104,7 +104,7 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
               val consignorModel = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("BEANS123456789"))
               getMovementResponseModel
                 .copy(consignorTrader = consignorModel, consigneeTrader = None)
-                .isFromConsignor shouldBe false
+                .isBeingViewedByConsignor shouldBe false
             }
         }
       }
@@ -120,7 +120,7 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
               val consigneeModel = getMovementResponseModel.consigneeTrader.get.copy(traderExciseNumber = Some(s"${ernPrefix}123456789"))
               getMovementResponseModel
                 .copy(consignorTrader = consignorModel, consigneeTrader = Some(consigneeModel))
-                .isFromConsignee shouldBe true
+                .isBeingViewedByConsignee shouldBe true
             }
             s"XITC and Consignee is $ernPrefix" in {
               implicit val request = dataRequest(FakeRequest(), "XITC123456789")
@@ -128,7 +128,7 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
               val consigneeModel = getMovementResponseModel.consigneeTrader.get.copy(traderExciseNumber = Some(s"${ernPrefix}123456789"))
               getMovementResponseModel
                 .copy(consignorTrader = consignorModel, consigneeTrader = Some(consigneeModel))
-                .isFromConsignee shouldBe true
+                .isBeingViewedByConsignee shouldBe true
             }
         }
         s"XITC and Consignee is XITC" in {
@@ -137,7 +137,7 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
           val consigneeModel = getMovementResponseModel.consigneeTrader.get.copy(traderExciseNumber = Some("XITC123456789"))
           getMovementResponseModel
             .copy(consignorTrader = consignorModel, consigneeTrader = Some(consigneeModel))
-            .isFromConsignee shouldBe true
+            .isBeingViewedByConsignee shouldBe true
         }
       }
       "return false" when {
@@ -149,7 +149,7 @@ class GetMovementResponseSpec extends SpecBase with GetMovementResponseFixtures 
               val consigneeModel = getMovementResponseModel.consigneeTrader.get.copy(traderExciseNumber = Some("BEANS123456789"))
               getMovementResponseModel
                 .copy(consignorTrader = consignorModel, consigneeTrader = Some(consigneeModel))
-                .isFromConsignee shouldBe false
+                .isBeingViewedByConsignee shouldBe false
             }
         }
       }

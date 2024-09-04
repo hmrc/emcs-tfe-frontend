@@ -28,7 +28,7 @@ case class UserRequest[A](request: Request[A],
                           hasMultipleErns: Boolean)(implicit val messagesApi: MessagesApi) extends WrappedRequest[A](request) with PreferredMessagesProvider with MessagesRequestHeader {
 
   lazy val userTypeFromErn: RoleType = RoleType.fromExciseRegistrationNumber(ern)
-  lazy val isWarehouseKeeper: Boolean = (userTypeFromErn == GBWK) || (userTypeFromErn == XIWK)
+  lazy val isWarehouseKeeper: Boolean = RoleType.isWarehouseKeeper(ern)
   lazy val isRegisteredConsignor: Boolean = (userTypeFromErn == GBRC) || (userTypeFromErn == XIRC)
   lazy val isCertifiedConsignor: Boolean = (userTypeFromErn == XIPA) || (userTypeFromErn == XIPC)
 }

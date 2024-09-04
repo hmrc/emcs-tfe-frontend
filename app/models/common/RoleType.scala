@@ -41,6 +41,8 @@ object RoleType extends Logging {
 
   def isXI(ern: String): Boolean = ern.take(2).equals("XI")
 
+  def isWarehouseKeeper(ern: String): Boolean = ern.substring(2, 4).equals("WK")
+
   sealed trait RoleType {
     val descriptionKey: String
     val countryCode: String

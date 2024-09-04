@@ -99,7 +99,6 @@
 
     @h2("accountHome.prevalidate", classes = "govuk-heading-m govuk-!-margin-top-7 govuk-!-margin-bottom-1")
     @list(
-        //TODO: subject to change
         if(roleType.isDutyPaid) {
             Seq(
                 link(appConfig.europaCheckLink, "accountHome.checkLink.europa", id = Some("prevalidate-europa-link"))
