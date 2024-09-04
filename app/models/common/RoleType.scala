@@ -16,7 +16,6 @@
 
 package models.common
 
-import config.AppConfig
 import utils.Logging
 
 object RoleType extends Logging {
@@ -48,8 +47,7 @@ object RoleType extends Logging {
     val countryCode: String
     val isNorthernIreland: Boolean
     val isGreatBritain: Boolean
-    def canCreateNewMovement(appConfig: AppConfig): Boolean
-    def isConsignor(appConfig: AppConfig): Boolean = canCreateNewMovement(appConfig)
+    val canCreateNewMovement: Boolean
     val isDutyPaid: Boolean
   }
 
@@ -58,7 +56,7 @@ object RoleType extends Logging {
     override val countryCode = "GB"
     override val isNorthernIreland: Boolean = false
     override val isGreatBritain: Boolean = true
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = true
+    override val canCreateNewMovement: Boolean = true
     override val isDutyPaid: Boolean = false
   }
 
@@ -67,7 +65,7 @@ object RoleType extends Logging {
     override val countryCode = "XI"
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = true
+    override val canCreateNewMovement: Boolean = true
     override val isDutyPaid: Boolean = false
   }
 
@@ -76,7 +74,7 @@ object RoleType extends Logging {
     override val countryCode = "GB"
     override val isNorthernIreland: Boolean = false
     override val isGreatBritain: Boolean = true
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = true
+    override val canCreateNewMovement: Boolean = true
     override val isDutyPaid: Boolean = false
   }
 
@@ -85,7 +83,7 @@ object RoleType extends Logging {
     override val countryCode = "XI"
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = true
+    override val canCreateNewMovement: Boolean = true
     override val isDutyPaid: Boolean = false
   }
 
@@ -94,7 +92,7 @@ object RoleType extends Logging {
     override val countryCode = "XI"
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = false
+    override val canCreateNewMovement: Boolean = false
     override val isDutyPaid: Boolean = false
   }
 
@@ -103,7 +101,7 @@ object RoleType extends Logging {
     override val countryCode = "GB"
     override val isNorthernIreland: Boolean = false
     override val isGreatBritain: Boolean = true
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = false
+    override val canCreateNewMovement: Boolean = false
     override val isDutyPaid: Boolean = false
   }
 
@@ -112,7 +110,7 @@ object RoleType extends Logging {
     override val countryCode = "XI"
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = false
+    override val canCreateNewMovement: Boolean = false
     override val isDutyPaid: Boolean = false
   }
 
@@ -121,7 +119,7 @@ object RoleType extends Logging {
     override val countryCode = "XI"
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = true
+    override val canCreateNewMovement: Boolean = true
     override val isDutyPaid: Boolean = true
   }
 
@@ -130,7 +128,7 @@ object RoleType extends Logging {
     override val countryCode = "XI"
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = false
+    override val canCreateNewMovement: Boolean = false
     override val isDutyPaid: Boolean = true
   }
 
@@ -139,8 +137,7 @@ object RoleType extends Logging {
     override val countryCode = "XI"
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = appConfig.enableXIPCInCaM
-    override def isConsignor(appConfig: AppConfig): Boolean = true
+    override val canCreateNewMovement: Boolean = true
     override val isDutyPaid: Boolean = true
   }
 
@@ -149,7 +146,7 @@ object RoleType extends Logging {
     override val countryCode = "XI"
     override val isNorthernIreland: Boolean = true
     override val isGreatBritain: Boolean = false
-    override def canCreateNewMovement(appConfig: AppConfig): Boolean = false
+    override val canCreateNewMovement: Boolean = false
     override val isDutyPaid: Boolean = true
   }
 

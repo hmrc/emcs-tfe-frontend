@@ -16,9 +16,8 @@
 
 package controllers.events
 
-import config.{AppConfig, ErrorHandler}
-import controllers.helpers.BetaChecks
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import config.ErrorHandler
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import models.EventTypes
 import models.EventTypes._
 import models.common.AcceptMovement
@@ -39,19 +38,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class ViewEventController @Inject()(mcc: MessagesControllerComponents,
                                     val auth: AuthAction,
                                     val getData: DataRetrievalAction,
-                                    val betaAllowList: BetaAllowListAction,
                                     getMovementHistoryEventsService: GetMovementHistoryEventsService,
                                     getMovementService: GetMovementService,
                                     getCnCodeInformationService: GetCnCodeInformationService,
                                     getDocumentTypesService: GetDocumentTypesService,
                                     view: HistoryEventView,
                                     errorHandler: ErrorHandler
-                                   )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc)
-    with AuthActionHelper
-    with I18nSupport
-    with Logging
-    with BetaChecks {
+                                   )(implicit val executionContext: ExecutionContext)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with Logging {
 
   def movementCreated(ern: String, arc: String, eventId: Int): Action[AnyContent] =
     onPageLoad(ern, arc, eventId, IE801)
@@ -108,7 +102,7 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
     onPageLoad(ern, arc, eventId, IE881)
 
   private def onPageLoad(ern: String, arc: String, eventId: Int, eventType: EventTypes): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, viewMovementBetaGuard(ern, arc)) { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
       withHistoryEvent(ern, arc, eventType, eventId) { event =>
         getDocumentTypesService.getDocumentTypes().flatMap { documentType =>
           getMovementService.getMovement(ern = ern, arc = arc, sequenceNumber = Some(event.sequenceNumber)).flatMap {

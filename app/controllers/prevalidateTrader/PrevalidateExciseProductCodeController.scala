@@ -16,9 +16,7 @@
 
 package controllers.prevalidateTrader
 
-import config.AppConfig
 import controllers.BaseNavigationController
-import controllers.helpers.BetaChecks
 import controllers.predicates._
 import forms.prevalidate.PrevalidateExciseProductCodeFormProvider
 import models.requests.UserAnswersRequest
@@ -41,20 +39,17 @@ class PrevalidateExciseProductCodeController @Inject()(
                                                         override val userAnswersService: PrevalidateTraderUserAnswersService,
                                                         override val navigator: PrevalidateTraderNavigator,
                                                         override val auth: AuthAction,
-                                                        override val betaAllowList: BetaAllowListAction,
                                                         override val getData: DataRetrievalAction,
                                                         requireData: PrevalidateTraderDataRetrievalAction,
                                                         formProvider: PrevalidateExciseProductCodeFormProvider,
                                                         val controllerComponents: MessagesControllerComponents,
                                                         exciseProductCodesService: GetExciseProductCodesService,
                                                         view: PrevalidateExciseProductCodeView
-                                           )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends BaseNavigationController
-    with AuthActionHelper
-    with BetaChecks {
+                                                      )(implicit val executionContext: ExecutionContext)
+  extends BaseNavigationController with AuthActionHelper {
 
   def onPageLoad(ern: String, idx: Index, mode: Mode): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
+    (auth(ern) andThen getData() andThen requireData).async { implicit request =>
       validateIndexAsync(idx) {
         exciseProductCodesService.getExciseProductCodes().flatMap { exciseProductCodes =>
           renderView(Ok, formProvider(exciseProductCodes), idx, exciseProductCodes, mode)
@@ -63,7 +58,7 @@ class PrevalidateExciseProductCodeController @Inject()(
     }
 
   def onSubmit(ern: String, idx: Index, mode: Mode): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen requireData).async { implicit request =>
+    (auth(ern) andThen getData() andThen requireData).async { implicit request =>
       validateIndexAsync(idx) {
         exciseProductCodesService.getExciseProductCodes().flatMap { exciseProductCodes =>
           formProvider(exciseProductCodes).bindFromRequest().fold(

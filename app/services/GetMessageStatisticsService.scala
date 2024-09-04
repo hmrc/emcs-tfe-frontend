@@ -42,11 +42,7 @@ class GetMessageStatisticsService @Inject()(connector: GetMessageStatisticsConne
       routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).path().split("\\?").head
     )
 
-    if(config.messageStatisticsNotificationEnabled || isOnMessagesPage) {
-      if(isOnMessagesPage) retrieveFromCore(ern) else retrieveFromCache(ern)
-    } else {
-      Future.successful(None)
-    }
+    if(isOnMessagesPage) retrieveFromCore(ern) else retrieveFromCache(ern)
   }
 
   private def retrieveFromCache(ern: String)(implicit hc: HeaderCarrier): Future[Option[GetMessageStatisticsResponse]] =

@@ -19,7 +19,7 @@ package views
 import base.SpecBase
 import config.AppConfig
 import controllers.routes
-import featureswitch.core.config.{AccountHomeBanner, EnableXIPCInCaM, FeatureSwitching}
+import featureswitch.core.config.{AccountHomeBanner, FeatureSwitching}
 import models.MovementFilterUndischargedOption.Undischarged
 import models.MovementListSearchOptions
 import models.common.RoleType._
@@ -62,35 +62,22 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
         def doc = Jsoup.parse(page(ern, roleType).toString())
 
         if (roleType == XIPC) {
-          s"have the correct navigation links for $roleType" when {
-            "EnableXIPCInCaM is enabled" in {
-              enable(EnableXIPCInCaM)
-              val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
-              navigationLinks.get(0).text mustBe "Home"
-              navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
-              navigationLinks.get(2).text mustBe "Drafts"
-              navigationLinks.get(3).text mustBe "Movements"
-              navigationLinks.get(4).text mustBe "Menu"
-              navigationLinks.get(4).hasClass("hidden") mustBe true
-              navigationLinks.get(5).text mustBe "Business tax account"
-            }
-            "EnableXIPCInCaM is disabled" in {
-              disable(EnableXIPCInCaM)
-              val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
-              navigationLinks.get(0).text mustBe "Home"
-              navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
-              navigationLinks.get(2).text mustBe "Movements"
-              navigationLinks.get(3).text mustBe "Menu"
-              navigationLinks.get(3).hasClass("hidden") mustBe true
-              navigationLinks.get(4).text mustBe "Business tax account"
-            }
+          s"have the correct navigation links for $roleType" in {
+            val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
+            navigationLinks.get(0).text mustBe "Home"
+            navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
+            navigationLinks.get(2).text mustBe "Drafts"
+            navigationLinks.get(3).text mustBe "Movements"
+            navigationLinks.get(4).text mustBe "Menu"
+            navigationLinks.get(4).hasClass("hidden") mustBe true
+            navigationLinks.get(5).text mustBe "Business tax account"
           }
         } else {
           s"have the correct navigation links for $roleType" in {
             val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
             navigationLinks.get(0).text mustBe "Home"
             navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
-            if (roleType.canCreateNewMovement(appConfig)) {
+            if (roleType.canCreateNewMovement) {
               navigationLinks.get(2).text mustBe "Drafts"
               navigationLinks.get(3).text mustBe "Movements"
               navigationLinks.get(4).text mustBe "Menu"
@@ -131,13 +118,10 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
             routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions(undischargedMovements = Some(Undischarged))).url
 
           if (roleType == XIPC) {
-            enable(EnableXIPCInCaM)
             movementsLinks.get(2).text mustBe "Draft movements"
             movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
-            disable(EnableXIPCInCaM)
-            movementsLinks.text mustNot contain("Draft movements")
           } else {
-            if (roleType.canCreateNewMovement(appConfig)) {
+            if (roleType.canCreateNewMovement) {
               movementsLinks.get(2).text mustBe "Draft movements"
               movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
             } else {
@@ -145,7 +129,7 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
             }
           }
 
-          if (roleType.canCreateNewMovement(appConfig)) {
+          if (roleType.canCreateNewMovement) {
             doc.getElementsByTag("p").get(3).text mustBe "Create a new movement"
             doc.getElementsByTag("p").get(3).getElementsByTag("a").get(0).attr("href") mustBe appConfig.emcsTfeCreateMovementUrl(ern)
           } else {

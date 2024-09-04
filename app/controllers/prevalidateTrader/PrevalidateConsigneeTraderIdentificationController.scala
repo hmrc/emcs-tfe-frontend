@@ -16,9 +16,7 @@
 
 package controllers.prevalidateTrader
 
-import config.AppConfig
 import controllers.BaseNavigationController
-import controllers.helpers.BetaChecks
 import controllers.predicates._
 import forms.prevalidate.PrevalidateConsigneeTraderIdentificationFormProvider
 import models.NormalMode
@@ -38,25 +36,21 @@ import scala.concurrent.{ExecutionContext, Future}
 class PrevalidateConsigneeTraderIdentificationController @Inject()(override val controllerComponents: MessagesControllerComponents,
                                                                    val auth: AuthAction,
                                                                    val getData: DataRetrievalAction,
-                                                                   val betaAllowList: BetaAllowListAction,
                                                                    val userAnswersAction: PrevalidateTraderDataRetrievalAction,
                                                                    val userAnswersService: PrevalidateTraderUserAnswersService,
                                                                    val navigator: PrevalidateTraderNavigator,
                                                                    formProvider: PrevalidateConsigneeTraderIdentificationFormProvider,
                                                                    view: PrevalidateConsigneeTraderIdentificationView
-                                                       )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends BaseNavigationController
-    with AuthActionHelper
-    with I18nSupport
-    with BetaChecks {
+                                                                  )(implicit val executionContext: ExecutionContext)
+  extends BaseNavigationController with AuthActionHelper with I18nSupport {
 
   def onPageLoad(ern: String): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen userAnswersAction) { implicit request =>
+    (auth(ern) andThen getData() andThen userAnswersAction) { implicit request =>
       Ok(renderView(fillForm(PrevalidateConsigneeTraderIdentificationPage, formProvider())))
     }
 
   def onSubmit(ern: String): Action[AnyContent] =
-    (authorisedWithBetaGuardData(ern, preValidateBetaGuard(ern)) andThen userAnswersAction).async { implicit request =>
+    (auth(ern) andThen getData() andThen userAnswersAction).async { implicit request =>
       formProvider().bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(renderView(formWithErrors))),
         value => saveAndRedirect(PrevalidateConsigneeTraderIdentificationPage, value, NormalMode)

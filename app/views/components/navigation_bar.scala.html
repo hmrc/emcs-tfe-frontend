@@ -49,7 +49,7 @@
         }
     </a>
 
-    @if(roleType.canCreateNewMovement(appConfig)) {
+    @if(roleType.canCreateNewMovement) {
         <a id="navigation-drafts-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Drafts)) { hmrc-account-menu__link--active}"
             @if(navInfo.currentSection.contains(PageSection.Drafts)) {
                 aria-current="page"

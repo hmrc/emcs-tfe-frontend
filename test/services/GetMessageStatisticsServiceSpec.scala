@@ -47,13 +47,12 @@ class GetMessageStatisticsServiceSpec extends SpecBase with BaseFixtures with Sc
 
     "return Some(MessageStatistics)" when {
 
-      "the MessagesStatisticsNotification feature switch is enabled and NOT on the messages page" when {
+      "the request is NOT from the messages page" when {
 
         "the cache returns a value" must {
 
           "return the value from the cache and not call the downstream API" in {
 
-            MockedAppConfig.messageStatisticsNotificationEnabled.returns(true)
             MockMessageStatisticsRepository.get(testErn).returns(Future.successful(Some(MessageStatisticsCache(testErn, testMessageStatistics))))
 
             testService.getMessageStatistics(testErn).futureValue mustBe Some(testMessageStatistics)
@@ -64,7 +63,6 @@ class GetMessageStatisticsServiceSpec extends SpecBase with BaseFixtures with Sc
 
           "return the value from Downstream and store the response in the cache" in {
 
-            MockedAppConfig.messageStatisticsNotificationEnabled.returns(true)
             MockMessageStatisticsRepository.get(testErn).returns(Future.successful(None))
             MockGetMessageStatisticsConnector.getMessageStatistics(testErn).returns(Future.successful(Right(testMessageStatistics)))
             MockMessageStatisticsRepository.set(MessageStatisticsCache(testErn, testMessageStatistics)).returns(Future.successful(true))
@@ -74,7 +72,7 @@ class GetMessageStatisticsServiceSpec extends SpecBase with BaseFixtures with Sc
         }
       }
 
-      "the MessagesStatisticsNotification feature switch is disabled BUT the request is from the Messages page" should {
+      "the request is from the Messages page" should {
 
         "always return the value from Core and not the Cache to ensure up to date" in {
 
@@ -83,7 +81,6 @@ class GetMessageStatisticsServiceSpec extends SpecBase with BaseFixtures with Sc
             path = controllers.messages.routes.ViewAllMessagesController.onPageLoad(testErn, MessagesSearchOptions()).url
           ), testErn)
 
-          MockedAppConfig.messageStatisticsNotificationEnabled.returns(false)
           MockMessageStatisticsRepository.get(testErn).never()
           MockGetMessageStatisticsConnector.getMessageStatistics(testErn).returns(Future.successful(Right(testMessageStatistics)))
           MockMessageStatisticsRepository.set(MessageStatisticsCache(testErn, testMessageStatistics)).returns(Future.successful(true))
@@ -94,16 +91,7 @@ class GetMessageStatisticsServiceSpec extends SpecBase with BaseFixtures with Sc
 
     "return None" when {
 
-      "the MessagesStatisticsNotification feature switch is disabled AND not on the Messages page" in {
-        MockedAppConfig.messageStatisticsNotificationEnabled.returns(false)
-        testService.getMessageStatistics(testErn).futureValue mustBe None
-      }
-    }
-
-    "return None" when {
-
-      "when call to downstream fails, but log a warning message" in {
-        MockedAppConfig.messageStatisticsNotificationEnabled.returns(true)
+      "call to downstream fails, but log a warning message" in {
         MockMessageStatisticsRepository.get(testErn).returns(Future.successful(None))
         MockGetMessageStatisticsConnector.getMessageStatistics(testErn).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 

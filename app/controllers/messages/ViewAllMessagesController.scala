@@ -16,10 +16,9 @@
 
 package controllers.messages
 
+import config.ErrorHandler
 import config.SessionKeys.{DELETED_MESSAGE_DESCRIPTION_KEY, FROM_PAGE}
-import config.{AppConfig, ErrorHandler}
-import controllers.helpers.BetaChecks
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import models.messages.MessagesSearchOptions.DEFAULT_MAX_ROWS
 import models.messages.{MessagesSearchOptions, MessagesSortingSelectOption}
 import models.requests.DataRequest
@@ -37,15 +36,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
                                           val auth: AuthAction,
                                           val getData: DataRetrievalAction,
-                                          val betaAllowList: BetaAllowListAction,
                                           getMessagesService: GetMessagesService,
                                           val view: ViewAllMessagesView,
                                           errorHandler: ErrorHandler)
-                                         (implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with BetaChecks with Logging {
+                                         (implicit val executionContext: ExecutionContext)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with Logging {
 
   def onPageLoad(ern: String, search: MessagesSearchOptions): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, messageInboxBetaGuard(ern)) { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
 
       if (search.index <= 0) {
         Future.successful(

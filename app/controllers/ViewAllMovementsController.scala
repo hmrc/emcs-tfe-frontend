@@ -17,11 +17,10 @@
 package controllers
 
 import cats.data.EitherT
-import config.{AppConfig, ErrorHandler}
+import config.ErrorHandler
 import connectors.emcsTfe.GetMovementListConnector
 import connectors.referenceData.{GetExciseProductCodesConnector, GetMemberStatesConnector}
-import controllers.helpers.BetaChecks
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import forms.ViewAllMovementsFormProvider
 import models.MovementListSearchOptions.DEFAULT_MAX_ROWS
 import models.requests.DataRequest
@@ -48,21 +47,19 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                            errorHandler: ErrorHandler,
                                            val auth: AuthAction,
                                            val getData: DataRetrievalAction,
-                                           val betaAllowList: BetaAllowListAction,
                                            paginationHelper: MovementPaginationHelper,
                                            formProvider: ViewAllMovementsFormProvider
-                                          )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc)
-    with AuthActionHelper with I18nSupport with BetaChecks {
+                                          )(implicit val executionContext: ExecutionContext)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, searchMovementsBetaGuard(ern)) { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
       renderView(Ok, ern, searchOptions)
     }
   }
 
   def onSubmit(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] =
-    authorisedDataRequestAsync(ern, searchMovementsBetaGuard(ern)) { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
       formProvider().bindFromRequest().fold(
         formWithErrors => {
           val modifiedFormWithErrors = formWithErrors.copy(errors = formWithErrors.errors.map {

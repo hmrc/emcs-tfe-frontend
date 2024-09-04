@@ -18,8 +18,7 @@ package controllers.messages
 
 import config.SessionKeys.FROM_PAGE
 import config.{AppConfig, ErrorHandler}
-import controllers.helpers.BetaChecks
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import models.messages.MessagesSearchOptions
 import pages.ViewMessagePage
 import play.api.i18n.I18nSupport
@@ -35,7 +34,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       val auth: AuthAction,
                                       val getData: DataRetrievalAction,
-                                      val betaAllowList: BetaAllowListAction,
                                       getMessagesService: GetMessagesService,
                                       getMovementService: GetMovementService,
                                       draftMovementService: DraftMovementService,
@@ -43,16 +41,12 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
                                       val view: ViewMessageView,
                                       errorHandler: ErrorHandler
                                      )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc)
-    with AuthActionHelper
-    with I18nSupport
-    with Logging
-    with BetaChecks {
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport with Logging {
 
   private val messagesThatNeedMovement = Seq("IE871", "IE802")
 
   def onPageLoad(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] = {
-    authorisedDataRequestAsync(ern, messageInboxBetaGuard(ern)) { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
 
       val sessionWithFromPageSet = request.session + (FROM_PAGE -> ViewMessagePage.toString)
 
@@ -74,7 +68,7 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def removeMessageAndRedirectToDraftMovement(ern: String, uniqueMessageIdentifier: Long): Action[AnyContent] =
-    authorisedDataRequestAsync(ern, messageInboxBetaGuard(ern)) { implicit request =>
+    authorisedDataRequestAsync(ern) { implicit request =>
       getMessagesService.getMessage(ern, uniqueMessageIdentifier).flatMap {
         case Some(msg) =>
           msg.errorMessage match {

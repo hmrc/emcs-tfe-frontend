@@ -16,9 +16,7 @@
 
 package controllers.prevalidateTrader
 
-import config.AppConfig
-import controllers.helpers.BetaChecks
-import controllers.predicates.{AuthAction, AuthActionHelper, BetaAllowListAction, DataRetrievalAction}
+import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import models.UserAnswers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -32,22 +30,18 @@ import scala.concurrent.{ExecutionContext, Future}
 class PrevalidateTraderStartController @Inject()(mcc: MessagesControllerComponents,
                                                  val auth: AuthAction,
                                                  val getData: DataRetrievalAction,
-                                                 val betaAllowList: BetaAllowListAction,
                                                  val userAnswersService: PrevalidateTraderUserAnswersService,
                                                  view: PrevalidateTraderStartView
-                                                )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc)
-    with AuthActionHelper
-    with I18nSupport
-    with BetaChecks {
+                                                )(implicit val executionContext: ExecutionContext)
+  extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(ern: String): Action[AnyContent] =
-    authorisedDataRequest(ern, preValidateBetaGuard(ern)) { implicit request =>
+    authorisedDataRequest(ern) { implicit request =>
       Ok(view(routes.PrevalidateTraderStartController.onSubmit(ern)))
     }
 
   def onSubmit(ern: String): Action[AnyContent] =
-    authorisedDataRequestAsync(ern, preValidateBetaGuard(ern)) { _ =>
+    authorisedDataRequestAsync(ern) { _ =>
       userAnswersService.get(ern).flatMap {
         case Some(_) => Future.successful(nextPage(ern))
         case None =>
@@ -55,7 +49,7 @@ class PrevalidateTraderStartController @Inject()(mcc: MessagesControllerComponen
             nextPage(ern)
           }
       }
-  }
+    }
 
   private def nextPage(ern: String): Result = Redirect(routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(ern))
 

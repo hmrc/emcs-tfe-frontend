@@ -17,9 +17,8 @@
 package controllers.prevalidateTrader
 
 import base.SpecBase
-import controllers.predicates.{BetaAllowListActionImpl, FakeAuthAction, FakeDataRetrievalAction}
+import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import mocks.config.MockAppConfig
-import mocks.connectors.MockBetaAllowListConnector
 import mocks.services.MockPrevalidateUserAnswersService
 import models.UserAnswers
 import play.api.mvc.MessagesControllerComponents
@@ -33,99 +32,58 @@ class PrevalidateTraderStartControllerSpec
   extends SpecBase
     with FakeAuthAction
     with MockPrevalidateUserAnswersService
-    with MockBetaAllowListConnector
     with MockAppConfig {
 
   lazy val view: PrevalidateTraderStartView = app.injector.instanceOf[PrevalidateTraderStartView]
 
-  class Test(navHubEnabled: Boolean = true, preValidateEnabled: Boolean = true) {
-
-    lazy val betaAllowListAction = new BetaAllowListActionImpl(
-      betaAllowListConnector = mockBetaAllowListConnector,
-      errorHandler = errorHandler,
-      config = mockAppConfig
-    )
+  trait Test {
 
     lazy val controller: PrevalidateTraderStartController = new PrevalidateTraderStartController(
       mcc = app.injector.instanceOf[MessagesControllerComponents],
       auth = FakeSuccessAuthAction,
       getData = new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics)),
-      betaAllowList = betaAllowListAction,
       userAnswersService = mockUserAnswersService,
       view = view
-    )(ec, appConfig)
-
-    MockedAppConfig.betaAllowListCheckingEnabled.repeat(2).returns(true)
-    MockBetaAllowListConnector.check(testErn, "tfeNavHub").returns(Future.successful(Right(navHubEnabled)))
-    MockBetaAllowListConnector.check(testErn, "tfePreValidate").returns(Future.successful(Right(preValidateEnabled)))
+    )(ec)
   }
 
   "StartPrevalidateTrader Controller" when {
 
     "calling .onPageLoad()" when {
 
-      "user is on the private beta list" should {
-        "render the view" in new Test {
+      "render the view" in new Test {
 
-          val request = FakeRequest(GET, routes.PrevalidateTraderStartController.onPageLoad(testErn).url)
-          val result = controller.onPageLoad(testErn)(request)
+        val request = FakeRequest(GET, routes.PrevalidateTraderStartController.onPageLoad(testErn).url)
+        val result = controller.onPageLoad(testErn)(request)
 
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(routes.PrevalidateTraderStartController.onSubmit(testErn))(dataRequest(request), messages(request)).toString
-        }
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(routes.PrevalidateTraderStartController.onSubmit(testErn))(dataRequest(request), messages(request)).toString
       }
-
-      "user is NOT on the private beta list" should {
-        "redirect back to legacy" in new Test(preValidateEnabled = false) {
-
-          val request = FakeRequest(GET, routes.PrevalidateTraderStartController.onPageLoad(testErn).url)
-          val result = controller.onPageLoad(testErn)(request)
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual "http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate"
-        }
-      }
-
     }
 
     "calling .onSubmit()" must {
 
-      "user is on the private beta list" should {
+      "redirect when data exists" in new Test {
 
-        "redirect when data exists" in new Test {
+        MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
 
-          MockUserAnswersService.get(testErn).returns(Future.successful(Some(emptyUserAnswers)))
+        val request = FakeRequest(POST, routes.PrevalidateTraderStartController.onSubmit(testErn).url)
+        val result = controller.onSubmit(testErn)(request)
 
-          val request = FakeRequest(POST, routes.PrevalidateTraderStartController.onSubmit(testErn).url)
-          val result = controller.onSubmit(testErn)(request)
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url
-        }
-
-        "redirect when no data exists" in new Test {
-
-          MockUserAnswersService.get(testErn).returns(Future.successful(None))
-          MockUserAnswersService.set(UserAnswers(testErn)).returns(Future.successful(emptyUserAnswers))
-
-          val request = FakeRequest(POST, routes.PrevalidateTraderStartController.onSubmit(testErn).url)
-          val result = controller.onSubmit(testErn)(request)
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url
-        }
-
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url
       }
 
-      "user is NOT on the private beta list" should {
-        "redirect back to legacy" in new Test(preValidateEnabled = false) {
+      "redirect when no data exists" in new Test {
 
-          val request = FakeRequest(POST, routes.PrevalidateTraderStartController.onSubmit(testErn).url)
-          val result = controller.onSubmit(testErn)(request)
+        MockUserAnswersService.get(testErn).returns(Future.successful(None))
+        MockUserAnswersService.set(UserAnswers(testErn)).returns(Future.successful(emptyUserAnswers))
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual "http://localhost:8080/emcs/trader/GBWKTestErn/prevalidate"
-        }
+        val request = FakeRequest(POST, routes.PrevalidateTraderStartController.onSubmit(testErn).url)
+        val result = controller.onSubmit(testErn)(request)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(testErn).url
       }
     }
   }

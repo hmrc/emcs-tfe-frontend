@@ -18,7 +18,7 @@ package views.components
 
 import base.SpecBase
 import config.AppConfig
-import featureswitch.core.config.{EnableXIPCInCaM, FeatureSwitching, MessageStatisticsNotification}
+import featureswitch.core.config.FeatureSwitching
 import fixtures.messages.NavigationBarMessages
 import models.PageSection.Movements
 import models.common.RoleType
@@ -33,172 +33,152 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
 
   def navigationBar: navigation_bar = app.injector.instanceOf[navigation_bar]
 
-  class Test(messageStatisticsNotificationEnabled: Boolean) {
-    if (messageStatisticsNotificationEnabled) enable(MessageStatisticsNotification) else disable(MessageStatisticsNotification)
-  }
-
   "navigation_bar" when {
 
-    Seq(true, false).foreach { messageStatisticsNotificationEnabled =>
+    val newMessageCount = testMessageStatistics.countOfNewMessages
 
-      s"MessageStatisticsNotification enabled is '$messageStatisticsNotificationEnabled'" when {
+    Seq(NavigationBarMessages.English).foreach { messagesForLanguage =>
 
-        val newMessageCount = Option.when(messageStatisticsNotificationEnabled)(testMessageStatistics.countOfNewMessages.toString)
+      implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
 
-        Seq(NavigationBarMessages.English).foreach { messagesForLanguage =>
+      RoleType.values.filterNot(_ == RoleType.XIPC).foreach {
+        roleType =>
+          val ern = {
+            val prefix = roleType.descriptionKey.split('.').last // accountHome.roleType.GBWK -> GBWK etc
 
-          implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
-
-          RoleType.values.filterNot(_ == RoleType.XIPC).foreach {
-            roleType =>
-              val ern = {
-                val prefix = roleType.descriptionKey.split('.').last // accountHome.roleType.GBWK -> GBWK etc
-
-                prefix + "123"
-              }
-
-              val html = navigationBar(NavigationBannerInfo(ern, newMessageCount.map(_.toInt), Some(Movements)))
-              val doc = Jsoup.parse(html.toString())
-
-              s"Role Type is [${msgs(roleType.descriptionKey)}]" must {
-                "render the Home link" in new Test(messageStatisticsNotificationEnabled) {
-                  doc.select("#navigation-home-link").text() mustBe messagesForLanguage.home
-                }
-                "render the Messages link" in new Test(messageStatisticsNotificationEnabled) {
-                  doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(newMessageCount)
-                }
-                if (roleType.canCreateNewMovement(appConfig)) {
-                  "render the Drafts link" in new Test(messageStatisticsNotificationEnabled) {
-                    doc.select("#navigation-drafts-link").text() mustBe messagesForLanguage.drafts
-                  }
-                } else {
-                  "not render the Drafts link" in new Test(messageStatisticsNotificationEnabled) {
-                    doc.select("#navigation-drafts-link").size() mustBe 0
-                  }
-                }
-
-                "render the Movements link" in new Test(messageStatisticsNotificationEnabled) {
-                  doc.select("#navigation-movements-link").text() mustBe messagesForLanguage.movements
-                }
-
-                "render the Business tax account link" in new Test(messageStatisticsNotificationEnabled) {
-                  doc.select("#navigation-bta-link").text() mustBe messagesForLanguage.bta
-                }
-
-                "show the user which page they are currently on" in new Test(messageStatisticsNotificationEnabled) {
-                  doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
-                }
-              }
+            prefix + "123"
           }
 
+          val html = navigationBar(NavigationBannerInfo(ern, Some(newMessageCount), Some(Movements)))
+          val doc = Jsoup.parse(html.toString())
 
-          s"Role Type is [${msgs(RoleType.XIPC.descriptionKey)}]" must {
-            val ern = "XIPC123"
-
-            def html = navigationBar(NavigationBannerInfo(ern, newMessageCount.map(_.toInt), Some(Movements)))
-
-            def doc = Jsoup.parse(html.toString())
-
-            "render the Home link" in new Test(messageStatisticsNotificationEnabled) {
+          s"Role Type is [${msgs(roleType.descriptionKey)}]" must {
+            "render the Home link" in {
               doc.select("#navigation-home-link").text() mustBe messagesForLanguage.home
             }
-            "render the Messages link" in new Test(messageStatisticsNotificationEnabled) {
-              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(newMessageCount)
+            "render the Messages link" in {
+              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some(newMessageCount.toString))
             }
-            "when enableXIPCInCaM is true" must {
-              "render the Drafts link" in new Test(messageStatisticsNotificationEnabled) {
-                enable(EnableXIPCInCaM)
+            if (roleType.canCreateNewMovement) {
+              "render the Drafts link" in {
                 doc.select("#navigation-drafts-link").text() mustBe messagesForLanguage.drafts
               }
-            }
-
-            "when enableXIPCInCaM is false" must {
-              "not render the Drafts link" in new Test(messageStatisticsNotificationEnabled) {
-                disable(EnableXIPCInCaM)
+            } else {
+              "not render the Drafts link" in {
                 doc.select("#navigation-drafts-link").size() mustBe 0
               }
             }
 
-            "render the Movements link" in new Test(messageStatisticsNotificationEnabled) {
+            "render the Movements link" in {
               doc.select("#navigation-movements-link").text() mustBe messagesForLanguage.movements
             }
 
-            "show the user which page they are currently on" in new Test(messageStatisticsNotificationEnabled) {
+            "render the Business tax account link" in {
+              doc.select("#navigation-bta-link").text() mustBe messagesForLanguage.bta
+            }
+
+            "show the user which page they are currently on" in {
               doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
             }
           }
+      }
 
-          PageSection.values.foreach {
-            pageSection =>
-              s"When page section is [$pageSection]" must {
-                "only have one link with an aria-current attribute, where the value is 'page'" in new Test(messageStatisticsNotificationEnabled) {
-                  val html = navigationBar(NavigationBannerInfo(testErn, Some(testMessageStatistics.countOfNewMessages), Some(pageSection)))
-                  val doc = Jsoup.parse(html.toString())
 
-                  doc.select("a[aria-current]").size() mustBe 1
-                  doc.select("a[aria-current]").get(0).attr("aria-current") mustBe "page"
-                }
-              }
-          }
+      s"Role Type is [${msgs(RoleType.XIPC.descriptionKey)}]" must {
+        val ern = "XIPC123"
 
-          "when on a page without an explicit page section" must {
-            "have no links with an aria-current attribute" in new Test(messageStatisticsNotificationEnabled) {
-              val html = navigationBar(NavigationBannerInfo(testErn, Some(testMessageStatistics.countOfNewMessages), None))
+        def html = navigationBar(NavigationBannerInfo(ern, Some(newMessageCount), Some(Movements)))
+
+        def doc = Jsoup.parse(html.toString())
+
+        "render the Home link" in {
+          doc.select("#navigation-home-link").text() mustBe messagesForLanguage.home
+        }
+        "render the Messages link" in {
+          doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some(newMessageCount.toString))
+        }
+        "render the Drafts link" in {
+          doc.select("#navigation-drafts-link").text() mustBe messagesForLanguage.drafts
+        }
+
+        "render the Movements link" in {
+          doc.select("#navigation-movements-link").text() mustBe messagesForLanguage.movements
+        }
+
+        "show the user which page they are currently on" in {
+          doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
+        }
+      }
+
+      PageSection.values.foreach {
+        pageSection =>
+          s"When page section is [$pageSection]" must {
+            "only have one link with an aria-current attribute, where the value is 'page'" in {
+              val html = navigationBar(NavigationBannerInfo(testErn, Some(testMessageStatistics.countOfNewMessages), Some(pageSection)))
               val doc = Jsoup.parse(html.toString())
 
-              doc.select("a[aria-current]").size() mustBe 0
+              doc.select("a[aria-current]").size() mustBe 1
+              doc.select("a[aria-current]").get(0).attr("aria-current") mustBe "page"
             }
           }
+      }
+
+      "when on a page without an explicit page section" must {
+        "have no links with an aria-current attribute" in {
+          val html = navigationBar(NavigationBannerInfo(testErn, Some(testMessageStatistics.countOfNewMessages), None))
+          val doc = Jsoup.parse(html.toString())
+
+          doc.select("a[aria-current]").size() mustBe 0
         }
       }
     }
+  }
 
-    "Notification banner checks" when {
+  "Notification banner checks" when {
 
-      Seq(NavigationBarMessages.English).foreach { messagesForLanguage =>
+    Seq(NavigationBarMessages.English).foreach { messagesForLanguage =>
 
-        implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
+      implicit val msgs: Messages = messages(Seq(messagesForLanguage.lang))
 
-        s"being rendered with lang code of '${messagesForLanguage.lang.code}'" when {
+      s"being rendered with lang code of '${messagesForLanguage.lang.code}'" when {
 
-          "the number of unread messages is `0`" should {
-            "not show notification banner" in new Test(messageStatisticsNotificationEnabled = true) {
+        "the number of unread messages is `0`" should {
+          "not show notification banner" in {
 
-              val html = navigationBar(NavigationBannerInfo(testErn, Some(0), Some(Movements)))
-              val doc = Jsoup.parse(html.toString())
+            val html = navigationBar(NavigationBannerInfo(testErn, Some(0), Some(Movements)))
+            val doc = Jsoup.parse(html.toString())
 
-              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(None)
-            }
+            doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(None)
           }
+        }
 
-          "the number of unread messages is `1`" should {
-            "show notification banner with 1" in new Test(messageStatisticsNotificationEnabled = true) {
+        "the number of unread messages is `1`" should {
+          "show notification banner with 1" in {
 
-              val html = navigationBar(NavigationBannerInfo(testErn, Some(1), Some(Movements)))
-              val doc = Jsoup.parse(html.toString())
+            val html = navigationBar(NavigationBannerInfo(testErn, Some(1), Some(Movements)))
+            val doc = Jsoup.parse(html.toString())
 
-              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some("1"))
-            }
+            doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some("1"))
           }
+        }
 
-          "the number of unread messages is `99`" should {
-            "show notification banner with 99" in new Test(messageStatisticsNotificationEnabled = true) {
+        "the number of unread messages is `99`" should {
+          "show notification banner with 99" in {
 
-              val html = navigationBar(NavigationBannerInfo(testErn, Some(99), Some(Movements)))
-              val doc = Jsoup.parse(html.toString())
+            val html = navigationBar(NavigationBannerInfo(testErn, Some(99), Some(Movements)))
+            val doc = Jsoup.parse(html.toString())
 
-              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some("99"))
-            }
+            doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some("99"))
           }
+        }
 
-          "the number of unread messages is greater than `99`" should {
-            "show notification banner with 99+" in new Test(messageStatisticsNotificationEnabled = true) {
+        "the number of unread messages is greater than `99`" should {
+          "show notification banner with 99+" in {
 
-              val html = navigationBar(NavigationBannerInfo(testErn, Some(100), Some(Movements)))
-              val doc = Jsoup.parse(html.toString())
+            val html = navigationBar(NavigationBannerInfo(testErn, Some(100), Some(Movements)))
+            val doc = Jsoup.parse(html.toString())
 
-              doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some("99+"))
-            }
+            doc.select("#navigation-messages-link").text() mustBe messagesForLanguage.messages(Some("99+"))
           }
         }
       }

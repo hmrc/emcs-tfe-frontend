@@ -183,57 +183,17 @@ class AuthActionSpec extends SpecBase with BaseFixtures with FeatureSwitching {
                 s"the ${EnrolmentKeys.ERN} identifier is present" must {
 
                   s"the ${EnrolmentKeys.ERN} identifier matches the ERN from the URL" when {
-                    "the user is a duty paid user" when {
-                      "the deny duty paid users feature is ENABLED" when {
-                        "deny the user access to the service" in new Harness(testDutyPaidErn) {
-                          enable(DenyDutyPaidUsers)
+                    "allow the User through, returning a 200 (OK)" in new Harness {
+                      override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
+                        Enrolment(
+                          key = EnrolmentKeys.EMCS_ENROLMENT,
+                          identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testErn)),
+                          state = EnrolmentKeys.ACTIVATED
+                        )
+                      ))))
 
-                          override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
-                            Enrolment(
-                              key = EnrolmentKeys.EMCS_ENROLMENT,
-                              identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testDutyPaidErn)),
-                              state = EnrolmentKeys.ACTIVATED
-                            )
-                          ))))
-
-                          status(result) mustBe SEE_OTHER
-                          redirectLocation(result) mustBe Some(controllers.errors.routes.DutyPaidUnauthorisedController.unauthorised().url)
-
-                        }
-                      }
-
-                      "the deny duty paid users feature is DISABLED" when {
-                        "allow the user access to the service" in new Harness(testDutyPaidErn) {
-                          disable(DenyDutyPaidUsers)
-
-                          override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
-                            Enrolment(
-                              key = EnrolmentKeys.EMCS_ENROLMENT,
-                              identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testDutyPaidErn)),
-                              state = EnrolmentKeys.ACTIVATED
-                            )
-                          ))))
-
-                          status(result) mustBe OK
-                        }
-                      }
+                      status(result) mustBe OK
                     }
-
-                    "the user is not a duty paid user" when {
-
-                      "allow the User through, returning a 200 (OK)" in new Harness {
-                        override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
-                          Enrolment(
-                            key = EnrolmentKeys.EMCS_ENROLMENT,
-                            identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testErn)),
-                            state = EnrolmentKeys.ACTIVATED
-                          )
-                        ))))
-
-                        status(result) mustBe OK
-                      }
-                    }
-
                   }
 
                   s"the ${EnrolmentKeys.ERN} identifier DOES NOT match the ERN from the URL" must {
