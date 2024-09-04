@@ -21,12 +21,13 @@ import models.response.emcsTfe.draftMovement.DraftId
 import models.response.emcsTfe.messages.submissionFailure.IE704FunctionalError
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DraftMovementConnector @Inject()(val http: HttpClient,
+class DraftMovementConnector @Inject()(val http: HttpClientV2,
                                        config: AppConfig) extends EmcsTfeHttpParser[DraftId] {
 
   override implicit val reads: Reads[DraftId] = DraftId.reads

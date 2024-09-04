@@ -19,13 +19,14 @@ package connectors.emcsTfe
 import connectors.BaseConnectorUtils
 import models.response._
 import play.api.http.Status.OK
-import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import play.api.libs.json.{Json, Writes}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
-  def http: HttpClient
+  def http: HttpClientV2
 
   implicit object EmcsTfeReads extends HttpReads[Either[ErrorResponse, A]] {
     override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, A] = {
@@ -49,20 +50,17 @@ trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
   }
 
   def get(url: String, queryParams: Seq[(String, String)] = Seq.empty)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
-    http.GET[Either[ErrorResponse, A]](url, queryParams)
+     http.get(url"$url?$queryParams").execute
 
   def putEmpty(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
-    http.PUTString(url, "")
+    http.put(url"$url").execute
 
   def delete(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, A]] =
-    http.DELETE[Either[ErrorResponse, A]](url)(EmcsTfeReads, hc, ec)
+    http.delete(url"$url").execute
 
-  def put[I](url: String, body: I)
-               (implicit hc: HeaderCarrier, ec: ExecutionContext, writes: Writes[I]): Future[Either[ErrorResponse, A]] =
-    http.PUT[I, Either[ErrorResponse, A]](url, body)
+  def put[I](url: String, body: I)(implicit hc: HeaderCarrier, ec: ExecutionContext, writes: Writes[I]): Future[Either[ErrorResponse, A]] =
+    http.put(url"$url").withBody(Json.toJson(body)).execute
 
-  def post[I](url: String, body: I)
-            (implicit hc: HeaderCarrier, ec: ExecutionContext, writes: Writes[I]): Future[Either[ErrorResponse, A]] =
-    http.POST[I, Either[ErrorResponse, A]](url, body)
-
+  def post[I](url: String, body: I)(implicit hc: HeaderCarrier, ec: ExecutionContext, writes: Writes[I]): Future[Either[ErrorResponse, A]] =
+    http.post(url"$url").withBody(Json.toJson(body)).execute
 }

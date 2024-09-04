@@ -20,7 +20,7 @@ import base.SpecBase
 import fixtures.messages.DocumentTypeFixtures
 import mocks.connectors.MockHttpClient
 import models.response.UnexpectedDownstreamResponseError
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,9 +40,8 @@ class GetDocumentTypesConnectorSpec extends SpecBase with MockHttpClient with Do
 
         val expectedResult = Right(Seq(documentTypeJson, documentTypeOtherJson))
 
-        MockHttpClient.get(
-          url = s"${appConfig.referenceDataBaseUrl}/oracle/type-of-document"
-        ).returns(Future.successful(expectedResult))
+        MockHttpClient.get(url"${appConfig.referenceDataBaseUrl}/oracle/type-of-document")
+          .returns(Future.successful(expectedResult))
 
         val actualResult = connector.getDocumentTypes().futureValue
 
@@ -56,9 +55,8 @@ class GetDocumentTypesConnectorSpec extends SpecBase with MockHttpClient with Do
 
         val expectedResult = Left(UnexpectedDownstreamResponseError)
 
-        MockHttpClient.get(
-          url = s"${appConfig.referenceDataBaseUrl}/oracle/type-of-document"
-        ).returns(Future.successful(expectedResult))
+        MockHttpClient.get(url"${appConfig.referenceDataBaseUrl}/oracle/type-of-document")
+          .returns(Future.successful(expectedResult))
 
         val actualResult = connector.getDocumentTypes().futureValue
 

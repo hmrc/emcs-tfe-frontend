@@ -22,7 +22,7 @@ import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
 import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -52,7 +52,7 @@ class DeleteMessageConnectorSpec extends SpecBase
       "downstream call is successful" in new Test {
 
         MockHttpClient
-          .delete(url = s"$baseUrl/message/$testErn/$testUniqueMessageIdentifier")
+          .delete(url"$baseUrl/message/$testErn/$testUniqueMessageIdentifier")
           .returns(Future.successful(Right(deleteMessageResponse)))
 
         val expectedResult = Right(deleteMessageResponse)
@@ -70,7 +70,7 @@ class DeleteMessageConnectorSpec extends SpecBase
 
       "when downstream call fails" in new Test {
         MockHttpClient
-          .delete(url = s"$baseUrl/message/$testErn/$testUniqueMessageIdentifier")
+          .delete(url"$baseUrl/message/$testErn/$testUniqueMessageIdentifier")
           .returns(Future.successful(Left(JsonValidationError)))
 
         val expectedResult = Left(JsonValidationError)

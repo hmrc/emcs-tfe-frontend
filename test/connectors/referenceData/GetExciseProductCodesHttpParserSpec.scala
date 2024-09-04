@@ -22,12 +22,13 @@ import mocks.connectors.MockHttpClient
 import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HttpClient, HttpResponse}
+import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.client.HttpClientV2
 
 class GetExciseProductCodesHttpParserSpec extends SpecBase
   with GetExciseProductCodesHttpParser with MockHttpClient with ExciseProductCodeFixtures {
 
-  override def http: HttpClient = mockHttpClient
+  override def http: HttpClientV2 = mockHttpClient
 
   "GetExciseProductCodesReads" must {
 
@@ -45,7 +46,7 @@ class GetExciseProductCodesHttpParserSpec extends SpecBase
           wineExciseProductCodeJson
         )
 
-        val actualResult = new GetExciseProductCodesReads().read("", "", HttpResponse(Status.OK, jsonResponse.toString()))
+        val actualResult = GetExciseProductCodesReads.read("", "", HttpResponse(Status.OK, jsonResponse.toString()))
 
         actualResult mustBe expectedResult
       }
@@ -62,7 +63,7 @@ class GetExciseProductCodesHttpParserSpec extends SpecBase
           Json.obj("is" -> "incorrect")
         )
 
-        val actualResult = new GetExciseProductCodesReads().read("", "", HttpResponse(Status.OK, jsonResponse.toString()))
+        val actualResult = GetExciseProductCodesReads.read("", "", HttpResponse(Status.OK, jsonResponse.toString()))
 
         actualResult mustBe expectedResult
       }
@@ -74,7 +75,7 @@ class GetExciseProductCodesHttpParserSpec extends SpecBase
 
         val expectedResult = Left(UnexpectedDownstreamResponseError)
 
-        val actualResult = new GetExciseProductCodesReads().read("", "", HttpResponse(Status.INTERNAL_SERVER_ERROR, ""))
+        val actualResult = GetExciseProductCodesReads.read("", "", HttpResponse(Status.INTERNAL_SERVER_ERROR, ""))
 
         actualResult mustBe expectedResult
       }

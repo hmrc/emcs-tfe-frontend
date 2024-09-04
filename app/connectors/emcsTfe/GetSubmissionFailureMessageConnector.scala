@@ -20,13 +20,14 @@ import config.AppConfig
 import models.response.emcsTfe.messages.submissionFailure.GetSubmissionFailureMessageResponse
 import models.response.{ErrorResponse, UnexpectedDownstreamResponseError}
 import play.api.libs.json.Reads
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GetSubmissionFailureMessageConnector @Inject()(val http: HttpClient, config: AppConfig) extends EmcsTfeHttpParser[GetSubmissionFailureMessageResponse] {
+class GetSubmissionFailureMessageConnector @Inject()(val http: HttpClientV2, config: AppConfig) extends EmcsTfeHttpParser[GetSubmissionFailureMessageResponse] {
 
   override implicit val reads: Reads[GetSubmissionFailureMessageResponse] = GetSubmissionFailureMessageResponse.format
 

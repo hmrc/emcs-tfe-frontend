@@ -20,13 +20,14 @@ import config.AppConfig
 import models.response.emcsTfe.GetMovementResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GetMovementConnector @Inject()(val http: HttpClient,
+class GetMovementConnector @Inject()(val http: HttpClientV2,
                                      config: AppConfig) extends EmcsTfeHttpParser[GetMovementResponse] {
 
   override implicit val reads: Reads[GetMovementResponse] = GetMovementResponse.reads
@@ -35,9 +36,9 @@ class GetMovementConnector @Inject()(val http: HttpClient,
   def getMovement(exciseRegistrationNumber: String, arc: String, sequenceNumber: Option[Int] = None)
                  (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Either[ErrorResponse, GetMovementResponse]] = {
 
-    def url: String = s"$baseUrl/movement/$exciseRegistrationNumber/$arc?forceFetchNew=true" + sequenceNumber.fold("")(s"&sequenceNumber=" + _)
+    def url: String = s"$baseUrl/movement/$exciseRegistrationNumber/$arc"
 
-    get(url)
+    get(url, Seq("forceFetchNew" -> "true") ++ sequenceNumber.map("sequenceNumber" -> _.toString))
       .recover {
         case JsResultException(errors) =>
           logger.warn(s"[getMovement][$exciseRegistrationNumber][$arc] Bad JSON response from emcs-tfe: " + errors)

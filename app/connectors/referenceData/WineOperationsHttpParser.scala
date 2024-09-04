@@ -21,8 +21,9 @@ import models.requests.WineOperationsRequest
 import models.response.referenceData.WineOperationsResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.http.Status.OK
-import play.api.libs.json.{Reads, Writes}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import play.api.libs.json.{Json, Reads, Writes}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,7 +32,7 @@ trait WineOperationsHttpParser extends BaseConnectorUtils[WineOperationsResponse
 
   implicit val reads: Reads[WineOperationsResponse] = WineOperationsResponse.reads
 
-  def http: HttpClient
+  def http: HttpClientV2
 
   implicit object WineOperationsReads extends HttpReads[Either[ErrorResponse, WineOperationsResponse]] {
     override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, WineOperationsResponse] = {
@@ -51,5 +52,8 @@ trait WineOperationsHttpParser extends BaseConnectorUtils[WineOperationsResponse
   }
 
   def post(url: String, body: WineOperationsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, writes: Writes[WineOperationsRequest]): Future[Either[ErrorResponse, WineOperationsResponse]] =
-    http.POST[WineOperationsRequest, Either[ErrorResponse, WineOperationsResponse]](url, body)(writes, WineOperationsReads, hc, ec)
+    http
+      .post(url"$url")
+      .withBody(Json.toJson(body))
+      .execute
 }

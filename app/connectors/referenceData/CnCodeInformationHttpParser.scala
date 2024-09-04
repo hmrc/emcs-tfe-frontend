@@ -21,8 +21,9 @@ import models.requests.CnCodeInformationRequest
 import models.response.referenceData.CnCodeInformationResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.http.Status.OK
-import play.api.libs.json.{Reads, Writes}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import play.api.libs.json.{Json, Reads, Writes}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,7 +31,7 @@ trait CnCodeInformationHttpParser extends BaseConnectorUtils[CnCodeInformationRe
 
   implicit val reads: Reads[CnCodeInformationResponse] = CnCodeInformationResponse.reads
 
-  def http: HttpClient
+  def http: HttpClientV2
 
   implicit object CnCodeInformationReads extends HttpReads[Either[ErrorResponse, CnCodeInformationResponse]] {
     override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, CnCodeInformationResponse] = {
@@ -49,6 +50,10 @@ trait CnCodeInformationHttpParser extends BaseConnectorUtils[CnCodeInformationRe
     }
   }
 
-  def post(url: String, body: CnCodeInformationRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, writes: Writes[CnCodeInformationRequest]): Future[Either[ErrorResponse, CnCodeInformationResponse]] =
-    http.POST[CnCodeInformationRequest, Either[ErrorResponse, CnCodeInformationResponse]](url, body)(writes, CnCodeInformationReads, hc, ec)
+  def post(url: String, body: CnCodeInformationRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, writes: Writes[CnCodeInformationRequest]):
+    Future[Either[ErrorResponse, CnCodeInformationResponse]] =
+      http
+        .post(url"$url")
+        .withBody(Json.toJson(body))
+        .execute
 }

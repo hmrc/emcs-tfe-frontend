@@ -23,7 +23,7 @@ import mocks.connectors.MockHttpClient
 import models.response.JsonValidationError
 import models.response.emcsTfe.messages.MarkMessageAsReadResponse
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -48,7 +48,7 @@ class MarkMessageAsReadConnectorSpec extends SpecBase with Status with MimeTypes
         val expectedResult = MarkMessageAsReadResponse(1)
 
         MockHttpClient
-          .putEmpty(s"$baseUrl/message/$testErn/$testMessageId")
+          .putEmpty(url"$baseUrl/message/$testErn/$testMessageId")
           .returns(Future.successful(expectedResult))
 
         val actualResult = connector.markMessageAsRead(ern = testErn, testMessageId)
@@ -64,7 +64,7 @@ class MarkMessageAsReadConnectorSpec extends SpecBase with Status with MimeTypes
         val expectedResult = Left(JsonValidationError)
 
         MockHttpClient
-          .putEmpty(s"$baseUrl/message/$testErn/$testMessageId")
+          .putEmpty(url"$baseUrl/message/$testErn/$testMessageId")
           .returns(Future.successful(expectedResult))
 
         val actualResult = connector.markMessageAsRead(ern = testErn, testMessageId)

@@ -20,7 +20,8 @@ import config.AppConfig
 import models.DocumentType
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.JsResultException
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,8 +33,8 @@ trait GetDocumentTypesConnector {
 }
 
 @Singleton
-class GetDocumentTypesConnectorImpl @Inject()(val http: HttpClient,
-                                          config: AppConfig) extends GetDocumentTypesHttpParser with GetDocumentTypesConnector {
+class GetDocumentTypesConnectorImpl @Inject()(val http: HttpClientV2,
+                                              config: AppConfig) extends GetDocumentTypesHttpParser with GetDocumentTypesConnector {
 
   def baseUrl: String = config.referenceDataBaseUrl
 

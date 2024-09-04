@@ -22,7 +22,7 @@ import mocks.connectors.MockHttpClient
 import models.response.emcsTfe.GetMessageStatisticsResponse
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -48,7 +48,7 @@ class GetMessageStatisticsConnectorSpec extends SpecBase with Status with MimeTy
 
         val response: HttpResponse = HttpResponse(status = Status.OK, json = Json.toJson(model), headers = Map.empty)
 
-        MockHttpClient.get(s"$baseUrl/message-statistics/ern").returns(Future.successful(response))
+        MockHttpClient.get(url"$baseUrl/message-statistics/ern").returns(Future.successful(response))
 
         await(connector.getMessageStatistics(exciseRegistrationNumber = "ern")) mustBe response
       }

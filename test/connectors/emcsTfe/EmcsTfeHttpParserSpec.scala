@@ -23,7 +23,8 @@ import models.response.emcsTfe.GetMovementListResponse
 import models.response.{JsonValidationError, NotFoundError, UnexpectedDownstreamResponseError}
 import play.api.http.Status
 import play.api.libs.json.{Json, Reads}
-import uk.gov.hmrc.http.{HttpClient, HttpResponse}
+import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.client.HttpClientV2
 
 class EmcsTfeHttpParserSpec
   extends SpecBase
@@ -32,7 +33,7 @@ class EmcsTfeHttpParserSpec
 
   lazy val httpParser = new EmcsTfeHttpParser[GetMovementListResponse] {
     override implicit val reads: Reads[GetMovementListResponse] = GetMovementListResponse.reads
-    override def http: HttpClient = mockHttpClient
+    override def http: HttpClientV2 = mockHttpClient
   }
 
   "EmcsTfeReads.read(method: String, url: String, response: HttpResponse)" must {

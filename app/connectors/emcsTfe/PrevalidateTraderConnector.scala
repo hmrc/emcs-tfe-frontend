@@ -21,13 +21,14 @@ import models.requests.PrevalidateTraderRequest
 import models.response.emcsTfe.prevalidateTrader.PreValidateTraderApiResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PrevalidateTraderConnector @Inject()(val http: HttpClient, config: AppConfig) extends EmcsTfeHttpParser[PreValidateTraderApiResponse] {
+class PrevalidateTraderConnector @Inject()(val http: HttpClientV2, config: AppConfig) extends EmcsTfeHttpParser[PreValidateTraderApiResponse] {
 
   override implicit val reads: Reads[PreValidateTraderApiResponse] = PreValidateTraderApiResponse.format
 

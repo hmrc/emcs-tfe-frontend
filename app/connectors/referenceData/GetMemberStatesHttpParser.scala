@@ -16,21 +16,22 @@
 
 package connectors.referenceData
 
-import play.api.http.Status.OK
-import play.api.libs.json.Reads
 import connectors.BaseConnectorUtils
 import models.MemberState
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import play.api.http.Status.OK
+import play.api.libs.json.Reads
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait GetMemberStatesHttpParser extends BaseConnectorUtils[Seq[MemberState]] {
 
   implicit val reads: Reads[Seq[MemberState]] = Reads.seq(MemberState.format)
-  def http: HttpClient
+  def http: HttpClientV2
 
-  class GetMemberStatesReads() extends HttpReads[Either[ErrorResponse, Seq[MemberState]]] {
+  implicit object GetMemberStatesReads extends HttpReads[Either[ErrorResponse, Seq[MemberState]]] {
     override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, Seq[MemberState]] = {
       response.status match {
         case OK =>
@@ -48,6 +49,7 @@ trait GetMemberStatesHttpParser extends BaseConnectorUtils[Seq[MemberState]] {
   }
 
   def get(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Seq[MemberState]]] =
-    http.GET[Either[ErrorResponse, Seq[MemberState]]](url = url)(new GetMemberStatesReads(), hc, ec)
-
+    http
+      .get(url"$url")
+      .execute[Either[ErrorResponse, Seq[MemberState]]]
 }

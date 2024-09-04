@@ -22,7 +22,7 @@ import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
 import models.response.UnexpectedDownstreamResponseError
 import org.scalatest.concurrent.ScalaFutures
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,10 +38,8 @@ class GetTraderKnownFactsConnectorSpec extends SpecBase with BaseFixtures with S
       "downstream call is successful" in {
         MockedAppConfig.traderKnownFactsReferenceDataBaseUrl.returns(baseUrl)
 
-        MockHttpClient.get(
-          url = s"${baseUrl}/oracle/trader-known-facts",
-          parameters = Seq("exciseRegistrationId" -> testErn)
-        ).returns(Future.successful(Right(Some(testMinTraderKnownFacts))))
+        MockHttpClient.get(url"${baseUrl}/oracle/trader-known-facts?exciseRegistrationId=$testErn")
+          .returns(Future.successful(Right(Some(testMinTraderKnownFacts))))
 
         connector.getTraderKnownFacts(testErn).futureValue mustBe Right(Some(testMinTraderKnownFacts))
       }
@@ -51,10 +49,8 @@ class GetTraderKnownFactsConnectorSpec extends SpecBase with BaseFixtures with S
       "downstream call fails" in {
         MockedAppConfig.traderKnownFactsReferenceDataBaseUrl.returns(baseUrl)
 
-        MockHttpClient.get(
-          url = s"${baseUrl}/oracle/trader-known-facts",
-          parameters = Seq("exciseRegistrationId" -> testErn)
-        ).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+        MockHttpClient.get(url"${baseUrl}/oracle/trader-known-facts?exciseRegistrationId=$testErn")
+          .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
         connector.getTraderKnownFacts(testErn).futureValue mustBe Left(UnexpectedDownstreamResponseError)
       }

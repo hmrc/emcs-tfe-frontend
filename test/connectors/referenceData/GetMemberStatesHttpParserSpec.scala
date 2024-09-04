@@ -22,11 +22,12 @@ import mocks.connectors.MockHttpClient
 import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HttpClient, HttpResponse}
+import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.client.HttpClientV2
 
 class GetMemberStatesHttpParserSpec extends SpecBase with GetMemberStatesHttpParser with MockHttpClient with MemberStatesFixtures {
 
-  override def http: HttpClient = mockHttpClient
+  override def http: HttpClientV2 = mockHttpClient
 
   "GetMemberStatesReads" must {
 
@@ -44,7 +45,7 @@ class GetMemberStatesHttpParserSpec extends SpecBase with GetMemberStatesHttpPar
           memberStateJsonBE
         )
 
-        val actualResult = new GetMemberStatesReads().read("", "", HttpResponse(Status.OK, jsonResponse.toString()))
+        val actualResult = GetMemberStatesReads.read("", "", HttpResponse(Status.OK, jsonResponse.toString()))
 
         actualResult mustBe expectedResult
       }
@@ -61,7 +62,7 @@ class GetMemberStatesHttpParserSpec extends SpecBase with GetMemberStatesHttpPar
           Json.obj("is" -> "incorrect")
         )
 
-        val actualResult = new GetMemberStatesReads().read("", "", HttpResponse(Status.OK, jsonResponse.toString()))
+        val actualResult = GetMemberStatesReads.read("", "", HttpResponse(Status.OK, jsonResponse.toString()))
 
         actualResult mustBe expectedResult
       }
@@ -73,7 +74,7 @@ class GetMemberStatesHttpParserSpec extends SpecBase with GetMemberStatesHttpPar
 
         val expectedResult = Left(UnexpectedDownstreamResponseError)
 
-        val actualResult = new GetMemberStatesReads().read("", "", HttpResponse(Status.INTERNAL_SERVER_ERROR, ""))
+        val actualResult = GetMemberStatesReads.read("", "", HttpResponse(Status.INTERNAL_SERVER_ERROR, ""))
 
         actualResult mustBe expectedResult
       }

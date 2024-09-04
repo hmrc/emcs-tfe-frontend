@@ -21,7 +21,8 @@ import models.requests.CnCodeInformationRequest
 import models.response.referenceData.CnCodeInformationResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.JsResultException
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,8 +34,8 @@ trait GetCnCodeInformationConnector {
 }
 
 @Singleton
-class GetCnCodeInformationConnectorImpl @Inject()(val http: HttpClient,
-                                              config: AppConfig) extends CnCodeInformationHttpParser with GetCnCodeInformationConnector {
+class GetCnCodeInformationConnectorImpl @Inject()(val http: HttpClientV2,
+                                                  config: AppConfig) extends CnCodeInformationHttpParser with GetCnCodeInformationConnector {
 
   lazy val baseUrl: String = config.referenceDataBaseUrl
 

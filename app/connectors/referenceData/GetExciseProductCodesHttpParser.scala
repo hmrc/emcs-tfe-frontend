@@ -16,21 +16,23 @@
 
 package connectors.referenceData
 
-import play.api.http.Status.OK
-import play.api.libs.json.Reads
 import connectors.BaseConnectorUtils
 import models.ExciseProductCode
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import play.api.http.Status.OK
+import play.api.libs.json.Reads
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait GetExciseProductCodesHttpParser extends BaseConnectorUtils[Seq[ExciseProductCode]] {
 
   implicit val reads: Reads[Seq[ExciseProductCode]] = Reads.seq(ExciseProductCode.format)
-  def http: HttpClient
 
-  class GetExciseProductCodesReads extends HttpReads[Either[ErrorResponse, Seq[ExciseProductCode]]] {
+  def http: HttpClientV2
+
+  implicit object GetExciseProductCodesReads extends HttpReads[Either[ErrorResponse, Seq[ExciseProductCode]]] {
     override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, Seq[ExciseProductCode]] = {
       response.status match {
         case OK =>
@@ -48,6 +50,7 @@ trait GetExciseProductCodesHttpParser extends BaseConnectorUtils[Seq[ExciseProdu
   }
 
   def get(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Seq[ExciseProductCode]]] =
-    http.GET[Either[ErrorResponse, Seq[ExciseProductCode]]](url = url)(new GetExciseProductCodesReads, hc, ec)
-
+    http
+      .get(url"$url")
+      .execute[Either[ErrorResponse, Seq[ExciseProductCode]]]
 }

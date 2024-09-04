@@ -16,17 +16,18 @@
 
 package connectors.emcsTfe
 
-import play.api.libs.json.{JsResultException, Reads}
 import config.AppConfig
-import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import models.response.emcsTfe.GetMessageStatisticsResponse
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
+import play.api.libs.json.{JsResultException, Reads}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GetMessageStatisticsConnector @Inject()(val http: HttpClient,
+class GetMessageStatisticsConnector @Inject()(val http: HttpClientV2,
                                               config: AppConfig) extends EmcsTfeHttpParser[GetMessageStatisticsResponse] {
   override implicit val reads: Reads[GetMessageStatisticsResponse] = GetMessageStatisticsResponse.fmt
 
