@@ -51,6 +51,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def emcsTfeListMovementsUrl(ern: String): String = routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()).url
 
+  def emcsTfeViewAllTemplatesUrl(ern: String): String = controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(ern).url
+
   def emcsTfeDraftMovementsUrl(ern: String): String = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
 
   def emcsTfeMessagesUrl(ern: String): String = controllers.messages.routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).url
@@ -103,9 +105,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def emcsTfeCreateMovementTaskListUrl(ern: String, draftId: String): String =
     servicesConfig.getString("urls.emcsTfeCreateMovement") + s"/trader/$ern/draft/$draftId/draft-movement"
 
-  def emcsLegacyMessageInboxUrl(ern: String): String =
-    servicesConfig.getString("urls.legacy.rootContext") + s"/emcs/trader/$ern/messages"
-
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")
 
@@ -134,4 +133,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def prevalidateTraderUserAnswersReplaceIndexes: Boolean = configuration.get[Boolean]("mongodb.prevalidateTraderUserAnswers.replaceIndexes")
 
   def accountHomeBanner: Boolean = isEnabled(AccountHomeBanner)
+
+  def templatesLinkVisible: Boolean = isEnabled(TemplatesLink)
 }

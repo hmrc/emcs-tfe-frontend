@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,37 +14,30 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.draftTemplates
 
 import base.SpecBase
-import config.AppConfig
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
-import mocks.config.MockAppConfig
-import models.common.RoleType.GBWK
 import models.requests.DataRequest
-import org.scalamock.scalatest.MockFactory
-import play.api.http.Status
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.AccountHomeView
+import views.html.ViewAllTemplatesView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFactory with MockAppConfig {
-
+class ViewAllTemplatesControllerSpec extends SpecBase with FakeAuthAction {
   trait Test {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
     implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"))
     implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest)
 
-    lazy val view: AccountHomeView = app.injector.instanceOf[AccountHomeView]
-    lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+    lazy val view: ViewAllTemplatesView = app.injector.instanceOf[ViewAllTemplatesView]
 
-    val controller: AccountHomeController = new AccountHomeController(
+    val controller: ViewAllTemplatesController = new ViewAllTemplatesController(
       app.injector.instanceOf[MessagesControllerComponents],
       view,
       FakeSuccessAuthAction,
@@ -52,18 +45,23 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
     )(ec)
   }
 
-  "GET /trader/:exciseRegistrationNumber/account" must {
+  "GET" when {
+    "user can't view draft templates" should {
+      "redirect" in new Test {
+        val result: Future[Result] = controller.onPageLoad("XI00123")(fakeRequest)
 
-    "return 200" in new Test {
-      val result: Future[Result] = controller.viewAccountHome(testErn)(fakeRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.AccountHomeController.viewAccountHome("XI00123").url)
+      }
+    }
 
-      val expectedView = view(
-        ern = testErn,
-        roleType = GBWK
-      )
+    "user can view draft templates" should {
+      "return 200" in new Test {
+        val result: Future[Result] = controller.onPageLoad(testErn)(fakeRequest)
 
-      status(result) mustBe Status.OK
-      contentAsString(result) mustBe expectedView.toString()
+        status(result) mustBe OK
+        contentAsString(result) mustBe view(Seq()).toString()
+      }
     }
   }
 }

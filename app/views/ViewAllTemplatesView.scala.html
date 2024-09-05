@@ -1,0 +1,52 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models.requests.DataRequest
+@import views.html._
+@import views.html.components._
+@import models.draftTemplates.Template
+
+@this(
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        h1: h1,
+        h2: h2,
+        hidden: hidden,
+        p: p,
+        link: link
+)
+
+@(listOfTemplates: Seq[Template])(implicit request: DataRequest[_], messages: Messages)
+
+@layout(
+    pageTitle = titleNoForm(messages("viewAllTemplates.title")),
+    maybeShowActiveTrader = maybeShowActiveTrader(request),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Templates))),
+    fullWidthContent = true
+) {
+    @h1()(Html(messages("viewAllTemplates.title")))
+
+    @defining(listOfTemplates.nonEmpty) { templatesExist =>
+        @if(templatesExist) {} else {
+            @p()(Html(messages("viewAllTemplates.noTemplates.p1")))
+            @p()(Html(messages("viewAllTemplates.noTemplates.p2")))
+        }
+    }
+}
+
+@{
+    //$COVERAGE-OFF$
+}

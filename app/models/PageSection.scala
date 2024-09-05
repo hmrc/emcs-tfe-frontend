@@ -30,7 +30,9 @@ object PageSection extends Enumerable.Implicits {
 
   case object Movements extends WithName("Movements") with PageSection
 
+  case object Templates extends WithName("Templates") with PageSection
+
   val values: Seq[PageSection] = Seq(
-    Home, Messages, Drafts, Movements
+    Home, Messages, Drafts, Movements, Templates
   )
 }

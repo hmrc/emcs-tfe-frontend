@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package mocks.config
+package fixtures.messages
 
-import config.AppConfig
-import org.scalamock.handlers.{CallHandler, CallHandler0}
-import org.scalamock.scalatest.MockFactory
+object ViewAllTemplatesMessages {
 
-trait MockAppConfig extends MockFactory {
+  sealed trait ViewMessages extends BaseEnglish { _: i18n =>
+    val heading = "Templates"
+    val title = titleHelper(heading)
 
-  lazy val mockAppConfig: AppConfig = mock[AppConfig]
-
-  object MockedAppConfig {
-    def emcsTfeBaseUrl: CallHandler[String] = (() => mockAppConfig.emcsTfeBaseUrl).expects()
-    def traderKnownFactsReferenceDataBaseUrl: CallHandler[String] = (() => mockAppConfig.traderKnownFactsReferenceDataBaseUrl).expects()
+    val noTemplatesP1 = "You have not created any templates."
+    val noTemplatesP2 = "You can create a template by submitting a draft movement. Templates allow you to edit and reuse most of the movement information."
   }
 
+  object English extends ViewMessages
 }

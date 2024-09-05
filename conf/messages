@@ -713,6 +713,7 @@ navigation.home = Home
 navigation.messages = Messages
 navigation.drafts = Drafts
 navigation.movements = Movements
+navigation.templates = Templates
 navigation.bta = Business tax account
 navigation.menu = Menu
 
@@ -751,6 +752,10 @@ activeTrader.link = Change trader type
 site.govuk = GOV.UK
 site.back = Back
 site.confirm = Confirm
+
+viewAllTemplates.title = Templates
+viewAllTemplates.noTemplates.p1 = You have not created any templates.
+viewAllTemplates.noTemplates.p2 = You can create a template by submitting a draft movement. Templates allow you to edit and reuse most of the movement information.
 
 viewAllMovements.heading = Movements
 viewAllMovements.filtered = ' filtered'

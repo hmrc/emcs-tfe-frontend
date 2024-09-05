@@ -17,28 +17,36 @@
 package controllers.predicates
 
 import base.SpecBase
-import config.EnrolmentKeys
+import config.{AppConfig, EnrolmentKeys}
 import featureswitch.core.config._
 import fixtures.BaseFixtures
-import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, BodyParsers, Results}
+import mocks.services.{MockGetMessageStatisticsService, MockGetTraderKnownFactsService}
+import models.common.RoleType
+import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Organisation}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-class AuthActionSpec extends SpecBase with BaseFixtures with FeatureSwitching {
+class AuthActionSpec extends SpecBase
+  with BaseFixtures
+  with FeatureSwitching
+  with MockGetTraderKnownFactsService
+  with MockGetMessageStatisticsService {
 
-  lazy val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
+  lazy val bodyParsers: BodyParsers.Default = app.injector.instanceOf[BodyParsers.Default]
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+
+  lazy val dataRetrievalAction: DataRetrievalAction = new DataRetrievalActionImpl(mockGetTraderKnownFactsService, mockGetMessageStatisticsService)
 
   type AuthRetrieval = ~[~[~[Option[AffinityGroup], Enrolments], Option[String]], Option[Credentials]]
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  lazy val config = appConfig
+  lazy val config: AppConfig = appConfig
 
   abstract class Harness(ern: String = testErn) {
 
@@ -46,7 +54,7 @@ class AuthActionSpec extends SpecBase with BaseFixtures with FeatureSwitching {
     lazy val authAction = new AuthActionImpl(authConnector, appConfig, bodyParsers)
     def onPageLoad(): Action[AnyContent] = authAction(ern) { _ => Results.Ok }
 
-    lazy val result = onPageLoad()(fakeRequest)
+    lazy val result: Future[Result] = onPageLoad()(fakeRequest)
   }
 
   def authResponse(affinityGroup: Option[AffinityGroup] = Some(Organisation),
@@ -217,6 +225,64 @@ class AuthActionSpec extends SpecBase with BaseFixtures with FeatureSwitching {
             }
           }
         }
+      }
+    }
+  }
+
+  "AuthActionHelper.ifCanAccessDraftTemplates" must {
+    "return the block" when {
+      RoleType.values.filter(_.canCreateNewMovement).foreach {
+        roleType =>
+          val ernPrefix = roleType.descriptionKey.split('.').last
+          val ern = s"${ernPrefix}123"
+          s"passed in ERN starting with $ernPrefix" in new Harness {
+            override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
+              Enrolment(
+                key = EnrolmentKeys.EMCS_ENROLMENT,
+                identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, ern)),
+                state = EnrolmentKeys.ACTIVATED
+              )
+            ))))
+
+            val helper: AuthActionHelper = new AuthActionHelper {
+              override val auth: AuthAction = authAction
+              override val getData: DataRetrievalAction = dataRetrievalAction
+            }
+
+            val block: Future[Result] = Future.successful(Results.Ok)
+
+            val res: Future[Result] = helper.ifCanAccessDraftTemplates(ern)(block)
+
+            status(res) mustBe OK
+          }
+      }
+    }
+    "redirect to account home" when {
+      RoleType.values.filterNot(_.canCreateNewMovement).foreach {
+        roleType =>
+          val ernPrefix = roleType.descriptionKey.split('.').last
+          val ern = s"${ernPrefix}123"
+          s"passed in ERN starting with $ernPrefix" in new Harness {
+            override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
+              Enrolment(
+                key = EnrolmentKeys.EMCS_ENROLMENT,
+                identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, ern)),
+                state = EnrolmentKeys.ACTIVATED
+              )
+            ))))
+
+            val helper: AuthActionHelper = new AuthActionHelper {
+              override val auth: AuthAction = authAction
+              override val getData: DataRetrievalAction = dataRetrievalAction
+            }
+
+            val block: Future[Result] = Future.successful(Results.Ok)
+
+            val res: Future[Result] = helper.ifCanAccessDraftTemplates(ern)(block)
+
+            status(res) mustBe SEE_OTHER
+            redirectLocation(res) mustBe Some(controllers.routes.AccountHomeController.viewAccountHome(ern).url)
+          }
       }
     }
   }

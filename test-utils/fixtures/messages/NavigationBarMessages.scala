@@ -26,6 +26,7 @@ object NavigationBarMessages {
     }
     val drafts = "Drafts"
     val movements = "Movements"
+    val templates = "Templates"
     val bta = "Business tax account"
   }
 

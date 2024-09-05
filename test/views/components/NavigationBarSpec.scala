@@ -18,9 +18,9 @@ package views.components
 
 import base.SpecBase
 import config.AppConfig
-import featureswitch.core.config.FeatureSwitching
+import featureswitch.core.config.{FeatureSwitching, TemplatesLink}
 import fixtures.messages.NavigationBarMessages
-import models.PageSection.Movements
+import models.PageSection.{Movements, Templates}
 import models.common.RoleType
 import models.{NavigationBannerInfo, PageSection}
 import org.jsoup.Jsoup
@@ -80,6 +80,38 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
             "show the user which page they are currently on" in {
               doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
             }
+
+            if(roleType.canCreateNewMovement) {
+              "render the Templates link" when {
+                "appConfig is enabled and the user is allowed to view templates" in {
+                  enable(TemplatesLink)
+                  val html = navigationBar(NavigationBannerInfo(ern, Some(newMessageCount), Some(Templates)))
+                  val doc = Jsoup.parse(html.toString())
+
+                  doc.select("#navigation-templates-link").text() mustBe messagesForLanguage.templates
+                }
+              }
+            }
+
+            "not render the Templates link" when {
+              "appConfig is disabled" in {
+                disable(TemplatesLink)
+                val html = navigationBar(NavigationBannerInfo(ern, Some(newMessageCount), Some(Templates)))
+                val doc = Jsoup.parse(html.toString())
+
+                doc.select("#navigation-templates-link").size() mustBe 0
+              }
+
+              if(!roleType.canCreateNewMovement) {
+                "appConfig is enabled but the user is not allowed to view templates" in {
+                  enable(TemplatesLink)
+                  val html = navigationBar(NavigationBannerInfo(ern, Some(newMessageCount), Some(Templates)))
+                  val doc = Jsoup.parse(html.toString())
+
+                  doc.select("#navigation-templates-link").size() mustBe 0
+                }
+              }
+            }
           }
       }
 
@@ -107,6 +139,34 @@ class NavigationBarSpec extends SpecBase with FeatureSwitching {
 
         "show the user which page they are currently on" in {
           doc.select("#navigation-movements-link").attr("aria-current") mustBe "page"
+        }
+
+        "render the Templates link" when {
+          "appConfig is enabled and the user is allowed to view templates" in {
+            enable(TemplatesLink)
+            val html = navigationBar(NavigationBannerInfo(ern, Some(newMessageCount), Some(Templates)))
+            val doc = Jsoup.parse(html.toString())
+
+            doc.select("#navigation-templates-link").text() mustBe messagesForLanguage.templates
+          }
+        }
+
+        "not render the Templates link" when {
+          "appConfig is disabled" in {
+            disable(TemplatesLink)
+            val html = navigationBar(NavigationBannerInfo(ern, Some(newMessageCount), Some(Templates)))
+            val doc = Jsoup.parse(html.toString())
+
+            doc.select("#navigation-templates-link").size() mustBe 0
+          }
+
+          "appConfig is enabled but the user is not allowed to view templates" in {
+            enable(TemplatesLink)
+            val html = navigationBar(NavigationBannerInfo("XI00123", Some(newMessageCount), Some(Templates)))
+            val doc = Jsoup.parse(html.toString())
+
+            doc.select("#navigation-templates-link").size() mustBe 0
+          }
         }
       }
 
