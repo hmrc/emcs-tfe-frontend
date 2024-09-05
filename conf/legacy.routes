@@ -1,0 +1,3 @@
+# microservice specific routes
+
+GET         /*legacy        controllers.proxyRedirect.ProxyRedirectController.redirect(legacy)
