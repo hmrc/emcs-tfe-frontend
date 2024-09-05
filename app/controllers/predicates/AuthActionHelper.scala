@@ -16,6 +16,7 @@
 
 package controllers.predicates
 
+import config.AppConfig
 import models.common.RoleType
 import models.requests.DataRequest
 import play.api.mvc.Results.Redirect
@@ -35,8 +36,8 @@ trait AuthActionHelper extends Logging {
   def authorisedDataRequestAsync(ern: String)(block: DataRequest[_] => Future[Result]): Action[AnyContent] =
     (auth(ern) andThen getData()).async(block)
 
-  def ifCanAccessDraftTemplates(ern: String)(block: Future[Result]): Future[Result] =
-    if(RoleType.fromExciseRegistrationNumber(ern).canCreateNewMovement) {
+  def ifCanAccessDraftTemplates(ern: String)(block: Future[Result])(implicit appConfig: AppConfig): Future[Result] =
+    if(appConfig.templatesLinkVisible && RoleType.fromExciseRegistrationNumber(ern).canCreateNewMovement) {
       block
     } else {
       logger.warn(s"[ifCanAccessDraftTemplates] User with ERN: $ern is not allowed to view draft templates")

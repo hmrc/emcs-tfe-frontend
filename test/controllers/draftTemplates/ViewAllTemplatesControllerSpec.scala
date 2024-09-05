@@ -17,37 +17,39 @@
 package controllers.draftTemplates
 
 import base.SpecBase
+import config.AppConfig
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
+import featureswitch.core.config.{FeatureSwitching, TemplatesLink}
 import models.requests.DataRequest
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.ViewAllTemplatesView
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class ViewAllTemplatesControllerSpec extends SpecBase with FakeAuthAction {
-  trait Test {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
-    implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"))
-    implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest)
+class ViewAllTemplatesControllerSpec extends SpecBase with FakeAuthAction with FeatureSwitching {
 
-    lazy val view: ViewAllTemplatesView = app.injector.instanceOf[ViewAllTemplatesView]
+  implicit lazy val config: AppConfig = appConfig
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val fakeRequest: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest("GET", "/"))
+  implicit val msgs: Messages = messages(fakeRequest)
+  lazy val view: ViewAllTemplatesView = app.injector.instanceOf[ViewAllTemplatesView]
 
-    val controller: ViewAllTemplatesController = new ViewAllTemplatesController(
-      app.injector.instanceOf[MessagesControllerComponents],
-      view,
-      FakeSuccessAuthAction,
-      new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics))
-    )(ec)
-  }
+  val controller: ViewAllTemplatesController = new ViewAllTemplatesController(
+    app.injector.instanceOf[MessagesControllerComponents],
+    view,
+    FakeSuccessAuthAction,
+    new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics))
+  )
+
+  enable(TemplatesLink)
 
   "GET" when {
     "user can't view draft templates" should {
-      "redirect" in new Test {
+      "redirect" in {
         val result: Future[Result] = controller.onPageLoad("XI00123")(fakeRequest)
 
         status(result) mustBe SEE_OTHER
@@ -56,7 +58,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase with FakeAuthAction {
     }
 
     "user can view draft templates" should {
-      "return 200" in new Test {
+      "return 200" in {
         val result: Future[Result] = controller.onPageLoad(testErn)(fakeRequest)
 
         status(result) mustBe OK

@@ -46,12 +46,13 @@ class AuthActionSpec extends SpecBase
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  lazy val config: AppConfig = appConfig
+  implicit lazy val config: AppConfig = appConfig
 
   abstract class Harness(ern: String = testErn) {
 
     val authConnector: AuthConnector
     lazy val authAction = new AuthActionImpl(authConnector, appConfig, bodyParsers)
+
     def onPageLoad(): Action[AnyContent] = authAction(ern) { _ => Results.Ok }
 
     lazy val result: Future[Result] = onPageLoad()(fakeRequest)
@@ -61,7 +62,7 @@ class AuthActionSpec extends SpecBase
                    enrolments: Enrolments = Enrolments(Set.empty),
                    internalId: Option[String] = Some(testInternalId),
                    credId: Option[Credentials] = Some(Credentials(testCredId, "gg"))): AuthRetrieval =
-    new ~(new ~(new ~(affinityGroup, enrolments), internalId), credId)
+    new~(new~(new~(affinityGroup, enrolments), internalId), credId)
 
   "AuthAction" when {
 
@@ -236,6 +237,8 @@ class AuthActionSpec extends SpecBase
           val ernPrefix = roleType.descriptionKey.split('.').last
           val ern = s"${ernPrefix}123"
           s"passed in ERN starting with $ernPrefix" in new Harness {
+            enable(TemplatesLink)
+
             override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
               Enrolment(
                 key = EnrolmentKeys.EMCS_ENROLMENT,
@@ -258,11 +261,36 @@ class AuthActionSpec extends SpecBase
       }
     }
     "redirect to account home" when {
+      "appConfig.templatesLinkVisible is false" in new Harness {
+        disable(TemplatesLink)
+
+        override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
+          Enrolment(
+            key = EnrolmentKeys.EMCS_ENROLMENT,
+            identifiers = Seq(EnrolmentIdentifier(EnrolmentKeys.ERN, testErn)),
+            state = EnrolmentKeys.ACTIVATED
+          )
+        ))))
+
+        val helper: AuthActionHelper = new AuthActionHelper {
+          override val auth: AuthAction = authAction
+          override val getData: DataRetrievalAction = dataRetrievalAction
+        }
+
+        val block: Future[Result] = Future.successful(Results.Ok)
+
+        val res: Future[Result] = helper.ifCanAccessDraftTemplates(testErn)(block)
+
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) mustBe Some(controllers.routes.AccountHomeController.viewAccountHome(testErn).url)
+      }
       RoleType.values.filterNot(_.canCreateNewMovement).foreach {
         roleType =>
           val ernPrefix = roleType.descriptionKey.split('.').last
           val ern = s"${ernPrefix}123"
           s"passed in ERN starting with $ernPrefix" in new Harness {
+            enable(TemplatesLink)
+
             override val authConnector = new FakeSuccessAuthConnector(authResponse(enrolments = Enrolments(Set(
               Enrolment(
                 key = EnrolmentKeys.EMCS_ENROLMENT,

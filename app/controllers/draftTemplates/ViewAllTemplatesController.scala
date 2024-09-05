@@ -16,6 +16,7 @@
 
 package controllers.draftTemplates
 
+import config.AppConfig
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import models.draftTemplates.Template
 import play.api.i18n.I18nSupport
@@ -30,7 +31,7 @@ class ViewAllTemplatesController @Inject()(mcc: MessagesControllerComponents,
                                            view: ViewAllTemplatesView,
                                            val auth: AuthAction,
                                            val getData: DataRetrievalAction)
-                                          (implicit val executionContext: ExecutionContext)
+                                          (implicit val executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(exciseRegistrationNumber: String): Action[AnyContent] = {
