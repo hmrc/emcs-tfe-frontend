@@ -20,13 +20,14 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
+import scala.annotation.unused
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class ProxyRedirectController @Inject()(mcc: MessagesControllerComponents)
                                        (implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
 
-  def redirect(): Action[AnyContent] = Action {
+  def redirect(@unused legacy: String): Action[AnyContent] = Action {
     Redirect(controllers.routes.IndexController.exciseNumber())
   }
 }
