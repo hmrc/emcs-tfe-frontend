@@ -82,10 +82,10 @@ class ViewAllMessagesController @Inject()(mcc: MessagesControllerComponents,
           )
         ).withSession(session)
       }
-    } recover {
+    } recoverWith {
       case e =>
         logger.warn(s"[onPageLoad][$ern] Unexpected exception thrown of type ${e.getClass.getSimpleName.stripSuffix("$")}. Message: ${e.getMessage}")
-        InternalServerError(errorHandler.standardErrorTemplate())
+        errorHandler.standardErrorTemplate().map(html => InternalServerError(html))
     }
   }
 

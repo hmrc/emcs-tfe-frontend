@@ -118,9 +118,10 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
       }
     }
 
-    result.leftMap {
-      _ => InternalServerError(errorHandler.internalServerErrorTemplate)
-    }.merge
+    result.value.flatMap {
+      case Right(value) => Future.successful(value)
+      case Left(_) => errorHandler.internalServerErrorTemplate.map(InternalServerError(_))
+    }
   }
 
   private def calculatePageCount(movementList: GetMovementListResponse): Int = movementList.count match {

@@ -16,8 +16,8 @@
 
 package controllers.errors
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import config.ErrorHandler
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
@@ -28,12 +28,12 @@ class UnauthorisedController @Inject()(mcc: MessagesControllerComponents,
                                        errorHandler: ErrorHandler,
                                        implicit val executionContext: ExecutionContext) extends FrontendController(mcc) {
 
-  def unauthorised(): Action[AnyContent] = Action { implicit request =>
-    Unauthorized(errorHandler.standardErrorTemplate(
+  def unauthorised(): Action[AnyContent] = Action.async { implicit request =>
+    errorHandler.standardErrorTemplate(
       pageTitle = "errors.unauthorised.title",
       heading = "errors.unauthorised.heading",
       message = "errors.unauthorised.message"
-    ))
+    ).map(Unauthorized(_))
   }
 
 }

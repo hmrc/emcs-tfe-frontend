@@ -14,13 +14,12 @@
  * limitations under the License.
  *@
 
-@import views.html.helper.CSPNonce
 @import config.AppConfig
 @import viewmodels.TraderInfo
-@import views.html.components.activeTrader
-@import views.html.components.navigation_bar
-@import views.html.templates.FullWidthMainContentTemplate
 @import viewmodels.govuk.all._
+@import views.html.components.{activeTrader, navigation_bar}
+@import views.html.helper.CSPNonce
+@import views.html.templates.FullWidthMainContentTemplate
 
 @this(
         appConfig: AppConfig,
@@ -52,7 +51,7 @@
         additionalCss: Html = Html(""),
         additionalScripts: Html = Html(""),
         beforeContentBlock: Option[Html] = None
-)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @head = {
 

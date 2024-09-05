@@ -74,16 +74,16 @@ class ViewMessageController @Inject()(mcc: MessagesControllerComponents,
           msg.errorMessage match {
             case Some(errorMessageResponse) if errorMessageResponse.relatedMessageType.contains("IE815") =>
               deleteMessageService.deleteMessage(ern, uniqueMessageIdentifier).flatMap(response => {
-                draftMovementService.putErrorMessagesAndMarkMovementAsDraft(ern, errorMessageResponse).map {
-                  case Some(draftId) => Redirect(appConfig.emcsTfeCreateMovementTaskListUrl(ern, draftId))
-                  case None => InternalServerError(errorHandler.internalServerErrorTemplate)
+                draftMovementService.putErrorMessagesAndMarkMovementAsDraft(ern, errorMessageResponse).flatMap {
+                  case Some(draftId) => Future(Redirect(appConfig.emcsTfeCreateMovementTaskListUrl(ern, draftId)))
+                  case None => errorHandler.internalServerErrorTemplate.map(InternalServerError(_))
                 }
               })
             case _ =>
               logger.warn(s"[removeMessageAndRedirectToDraftMovement] - Message type was not IE815 or LRN did not exist for ERN: $ern and message ID: $uniqueMessageIdentifier - showing not found page")
-              Future(NotFound(errorHandler.notFoundTemplate))
+              errorHandler.notFoundTemplate.map(NotFound(_))
           }
-        case _ => Future(NotFound(errorHandler.notFoundTemplate))
+        case _ => errorHandler.notFoundTemplate.map(NotFound(_))
       }
     }
 }
