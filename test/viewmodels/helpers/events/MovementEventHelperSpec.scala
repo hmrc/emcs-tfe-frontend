@@ -154,14 +154,14 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
         helper.getDestinationTypeForMovementInformationCard mustBe "Tax warehouse in Great Britain"
       }
     }
-    "return inXI text" when {
+    "return inUK text" when {
       "TaxWarehouse and consignee is XI" in {
         implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
           headerEadEsad = getMovementResponseModel.headerEadEsad.copy(destinationType = TaxWarehouse),
           consigneeTrader = Some(TraderModel(traderExciseNumber = Some("XIRC123"), None, None, None, None))
         )
 
-        helper.getDestinationTypeForMovementInformationCard mustBe "Tax warehouse in Northern Ireland"
+        helper.getDestinationTypeForMovementInformationCard mustBe "Tax warehouse in United Kingdom"
       }
     }
     "return inEU text" when {
