@@ -117,7 +117,7 @@ class MovementEventHelper @Inject()(
       case DestinationType.TaxWarehouse if consigneeIsGB =>
         messages(s"movementCreatedView.section.movement.destinationType.${DestinationType.TaxWarehouse}.inGB")
       case DestinationType.TaxWarehouse if consigneeIsXI =>
-        messages(s"movementCreatedView.section.movement.destinationType.${DestinationType.TaxWarehouse}.inXI")
+        messages(s"movementCreatedView.section.movement.destinationType.${DestinationType.TaxWarehouse}.inUK")
       case DestinationType.TaxWarehouse if consigneeIsNotGBOrXI =>
         messages(s"movementCreatedView.section.movement.destinationType.${DestinationType.TaxWarehouse}.inEU")
       case _ =>
