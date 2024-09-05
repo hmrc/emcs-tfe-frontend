@@ -37,7 +37,7 @@ trait AuthActionHelper extends Logging {
     (auth(ern) andThen getData()).async(block)
 
   def ifCanAccessDraftTemplates(ern: String)(block: Future[Result])(implicit appConfig: AppConfig): Future[Result] =
-    if(appConfig.templatesLinkVisible && RoleType.fromExciseRegistrationNumber(ern).canCreateNewMovement) {
+    if (appConfig.templatesLinkVisible && RoleType.fromExciseRegistrationNumber(ern).canCreateNewMovement) {
       block
     } else {
       logger.warn(s"[ifCanAccessDraftTemplates] User with ERN: $ern is not allowed to view draft templates")
