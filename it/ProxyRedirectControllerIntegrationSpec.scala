@@ -20,11 +20,33 @@ import support.IntegrationBaseSpec
 
 class ProxyRedirectControllerIntegrationSpec extends IntegrationBaseSpec {
 
-  "Calling /emcs" should {
+  "Calling /emcs/trader/GBWK123456789" should {
 
-    "redirect to /emcs/account" in {
+    "redirect to /emcs/account/GBWK123456789/account" in {
 
-      val response: WSResponse = await(client.url(s"http://localhost:$port/emcs").withFollowRedirects(false).get())
+      val response: WSResponse = await(client.url(s"http://localhost:$port/emcs/trader/GBWK123456789").withFollowRedirects(false).get())
+
+      response.status mustBe Status.SEE_OTHER
+      response.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.exciseNumber().url)
+    }
+  }
+
+  "Calling /emcs/trader/GBWK123456789/message/415797604?messagetype=IE801&date=23062023&movement=11GB00111000074521730&localReferenceNumber=8100001617&readStatus=false&version=1&tradersubmission=true" should {
+
+    "redirect to /emcs/account/GBWK123456789/account" in {
+
+      val response: WSResponse = await(client.url(s"http://localhost:$port/emcs/trader/GBWK123456789/message/415797604?messagetype=IE801&date=23062023&movement=11GB00111000074521730&localReferenceNumber=8100001617&readStatus=false&version=1&tradersubmission=true").withFollowRedirects(false).get())
+
+      response.status mustBe Status.SEE_OTHER
+      response.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.exciseNumber().url)
+    }
+  }
+
+  "Calling /emcs/trader/GBWK123456789/movements" should {
+
+    "redirect to /emcs/account/GBWK123456789/account" in {
+
+      val response: WSResponse = await(client.url(s"http://localhost:$port/emcs/trader/GBWK123456789/movments").withFollowRedirects(false).get())
 
       response.status mustBe Status.SEE_OTHER
       response.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.exciseNumber().url)
