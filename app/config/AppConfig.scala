@@ -51,7 +51,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def emcsTfeListMovementsUrl(ern: String): String = routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions()).url
 
-  def emcsTfeViewAllTemplatesUrl(ern: String): String = controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(ern).url
+  def emcsTfeViewAllTemplatesUrl(ern: String): String = controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(ern, None).url
 
   def emcsTfeDraftMovementsUrl(ern: String): String = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
 

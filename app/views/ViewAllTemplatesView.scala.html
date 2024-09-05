@@ -19,6 +19,7 @@
 @import models.requests.DataRequest
 @import views.html._
 @import views.html.components._
+@import viewmodels.helpers.ViewAllTemplatesHelper
 
 @this(
         layout: templates.Layout,
@@ -27,10 +28,13 @@
         h2: h2,
         hidden: hidden,
         p: p,
-        link: link
+        govukPagination: GovukPagination,
+        link: link,
+        table: table,
+        helper: ViewAllTemplatesHelper
 )
 
-@(listOfTemplates: Seq[Template])(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
+@(listOfTemplates: Seq[Template], pagination: Option[Pagination])(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
     pageTitle = titleNoForm(messages("viewAllTemplates.title")),
@@ -41,7 +45,13 @@
     @h1()(Html(messages("viewAllTemplates.title")))
 
     @defining(listOfTemplates.nonEmpty) { templatesExist =>
-        @if(templatesExist) {} else {
+        @if(templatesExist) {
+            @p()(Html(messages("viewAllTemplates.p1")))
+
+            @table(helper.constructTable(request.ern, listOfTemplates))
+
+            @pagination.map(p => govukPagination(p))
+        } else {
             @p()(Html(messages("viewAllTemplates.noTemplates.p1")))
             @p()(Html(messages("viewAllTemplates.noTemplates.p2")))
             @link(

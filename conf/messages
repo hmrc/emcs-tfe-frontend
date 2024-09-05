@@ -755,6 +755,14 @@ site.back = Back
 site.confirm = Confirm
 
 viewAllTemplates.title = Templates
+viewAllTemplates.p1 = Draft movements can be saved as a template when submitting. Templates allow you to edit and reuse most of the movement information.
+viewAllTemplates.table.templateDetails = Template details
+viewAllTemplates.table.actions = Actions
+viewAllTemplates.table.destination = Destination: {0}
+viewAllTemplates.table.consignee = Consignee: {0}
+viewAllTemplates.table.startDraft = Create a draft movement with this template
+viewAllTemplates.table.rename = Rename template
+viewAllTemplates.table.delete = Delete template
 viewAllTemplates.noTemplates.p1 = You have not created any templates.
 viewAllTemplates.noTemplates.p2 = You can create a template by submitting a draft movement. Templates allow you to edit and reuse most of the movement information.
 viewAllTemplates.createANewMovement = Create a new movement

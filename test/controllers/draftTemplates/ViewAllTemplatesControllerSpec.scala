@@ -26,6 +26,7 @@ import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
+import viewmodels.PaginationHelper
 import views.html.ViewAllTemplatesView
 
 import scala.concurrent.Future
@@ -38,11 +39,14 @@ class ViewAllTemplatesControllerSpec extends SpecBase with FakeAuthAction with F
   implicit val msgs: Messages = messages(fakeRequest)
   lazy val view: ViewAllTemplatesView = app.injector.instanceOf[ViewAllTemplatesView]
 
+  lazy val paginationHelper: PaginationHelper = app.injector.instanceOf[PaginationHelper]
+
   val controller: ViewAllTemplatesController = new ViewAllTemplatesController(
     app.injector.instanceOf[MessagesControllerComponents],
     view,
     FakeSuccessAuthAction,
-    new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics))
+    new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics)),
+    paginationHelper
   )
 
   enable(TemplatesLink)
@@ -50,7 +54,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase with FakeAuthAction with F
   "GET" when {
     "user can't view draft templates" should {
       "redirect" in {
-        val result: Future[Result] = controller.onPageLoad("XI00123")(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad("XI00123", None)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.AccountHomeController.viewAccountHome("XI00123").url)
@@ -59,10 +63,13 @@ class ViewAllTemplatesControllerSpec extends SpecBase with FakeAuthAction with F
 
     "user can view draft templates" should {
       "return 200" in {
-        val result: Future[Result] = controller.onPageLoad(testErn)(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(testErn, None)(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe view(Seq()).toString()
+        contentAsString(result) mustBe view(
+          controller.dummyTemplates,
+          paginationHelper.constructPaginationForDraftTemplates(testErn, 1, controller.totalNumberOfTemplates)
+        ).toString()
       }
     }
   }

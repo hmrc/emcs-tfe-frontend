@@ -108,12 +108,13 @@ class MovementEventHelper @Inject()(
     }
   }
 
-  private[events] def getDestinationTypeForMovementInformationCard()(implicit movement: GetMovementResponse, messages: Messages): String = {
-    lazy val consigneeIsGB = movement.consigneeTrader.exists(_.traderExciseNumber.exists(RoleType.isGB))
-    lazy val consigneeIsXI = movement.consigneeTrader.exists(_.traderExciseNumber.exists(RoleType.isXI))
+  private[helpers] def getDestinationTypeTextFromDestinationTypeAndConsigneeErn(destinationType: DestinationType, consigneeErn: Option[String])
+                                                                               (implicit messages: Messages): String = {
+    lazy val consigneeIsGB = consigneeErn.exists(RoleType.isGB)
+    lazy val consigneeIsXI = consigneeErn.exists(RoleType.isXI)
     lazy val consigneeIsNotGBOrXI = !consigneeIsGB && !consigneeIsXI
 
-    movement.headerEadEsad.destinationType match {
+    destinationType match {
       case DestinationType.TaxWarehouse if consigneeIsGB =>
         messages(s"movementCreatedView.section.movement.destinationType.${DestinationType.TaxWarehouse}.inGB")
       case DestinationType.TaxWarehouse if consigneeIsXI =>
@@ -121,9 +122,12 @@ class MovementEventHelper @Inject()(
       case DestinationType.TaxWarehouse if consigneeIsNotGBOrXI =>
         messages(s"movementCreatedView.section.movement.destinationType.${DestinationType.TaxWarehouse}.inEU")
       case _ =>
-        messages(s"movementCreatedView.section.movement.destinationType.${movement.headerEadEsad.destinationType}")
+        messages(s"movementCreatedView.section.movement.destinationType.$destinationType")
     }
   }
+
+  private[events] def getDestinationTypeForMovementInformationCard()(implicit movement: GetMovementResponse, messages: Messages): String =
+    getDestinationTypeTextFromDestinationTypeAndConsigneeErn(movement.headerEadEsad.destinationType, movement.consigneeTrader.flatMap(_.traderExciseNumber))
 
   def movementInformationCard()(implicit movement: GetMovementResponse, messages: Messages): Html = {
     val upstreamArc = movement.eadEsad.upstreamArc.map(summaryListRowBuilder("movementCreatedView.section.movement.replacedArc", _))

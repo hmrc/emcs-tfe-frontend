@@ -16,12 +16,14 @@
 
 package models.draftTemplates
 
+import models.common.DestinationType
 import play.api.libs.json.{Json, OFormat}
 
 case class Template(
                      templateId: String,
                      templateName: String,
-                     consigneeErn: String
+                     destinationType: DestinationType,
+                     consigneeErn: Option[String]
                    )
 
 object Template {

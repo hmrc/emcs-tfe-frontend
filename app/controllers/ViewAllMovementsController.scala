@@ -31,7 +31,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import viewmodels.MovementPaginationHelper
+import viewmodels.PaginationHelper
 import viewmodels.helpers.SelectItemHelper
 import views.html.viewAllMovements.ViewAllMovementsView
 
@@ -47,7 +47,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                                            errorHandler: ErrorHandler,
                                            val auth: AuthAction,
                                            val getData: DataRetrievalAction,
-                                           paginationHelper: MovementPaginationHelper,
+                                           paginationHelper: PaginationHelper,
                                            formProvider: ViewAllMovementsFormProvider
                                           )(implicit val executionContext: ExecutionContext)
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
@@ -91,7 +91,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
       selectCountryOptions = MovementListSearchOptions.CHOOSE_COUNTRY +: countries.sortBy(_.displayName)
     } yield {
 
-      val pageCount: Int = calculatePageCount(movementList)
+      val pageCount: Int = paginationHelper.calculatePageCount(movementList.count, DEFAULT_MAX_ROWS)
 
       if (searchOptions.index <= 0 || searchOptions.index > pageCount) {
         // if page number is invalid - lower than '1' or higher than the calculated max page count
@@ -110,7 +110,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
           movementStatusItems = movementStatusItems,
           exciseProductCodeSelectItems = SelectItemHelper.constructSelectItems(exciseProductCodeOptions, None, searchOptions.exciseProductCode),
           countrySelectItems = SelectItemHelper.constructSelectItems(selectCountryOptions, None, searchOptions.countryOfOrigin),
-          pagination = paginationHelper.constructPagination(pageCount, ern, searchOptions),
+          pagination = paginationHelper.constructPaginationForAllMovements(pageCount, ern, searchOptions),
           directionFilterOption = searchOptions.traderRole.getOrElse(MovementFilterDirectionOption.All),
           totalMovements = movementList.count,
           currentFilters = searchOptions
@@ -122,11 +122,5 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
       case Right(value) => Future.successful(value)
       case Left(_) => errorHandler.internalServerErrorTemplate.map(InternalServerError(_))
     }
-  }
-
-  private def calculatePageCount(movementList: GetMovementListResponse): Int = movementList.count match {
-    case 0 => 1
-    case count if count % DEFAULT_MAX_ROWS != 0 => (movementList.count / DEFAULT_MAX_ROWS) + 1
-    case _ => movementList.count / DEFAULT_MAX_ROWS
   }
 }
