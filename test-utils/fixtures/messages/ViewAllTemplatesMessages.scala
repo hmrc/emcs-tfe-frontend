@@ -24,6 +24,8 @@ object ViewAllTemplatesMessages {
 
     val noTemplatesP1 = "You have not created any templates."
     val noTemplatesP2 = "You can create a template by submitting a draft movement. Templates allow you to edit and reuse most of the movement information."
+
+    val createNewMovementButton = "Create a new movement"
   }
 
   object English extends ViewMessages
