@@ -85,7 +85,7 @@ trait MockHttpClient extends MockFactory {
         .returns(mockRequestBuilder)
 
       (mockRequestBuilder.execute[T](_: HttpReads[T], _: ExecutionContext))
-      expects(*, *)
+      .expects(*, *)
     }
 
   }
