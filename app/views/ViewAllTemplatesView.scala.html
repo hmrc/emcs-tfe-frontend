@@ -14,10 +14,11 @@
  * limitations under the License.
  *@
 
+@import config.AppConfig
+@import models.draftTemplates.Template
 @import models.requests.DataRequest
 @import views.html._
 @import views.html.components._
-@import models.draftTemplates.Template
 
 @this(
         layout: templates.Layout,
@@ -29,13 +30,13 @@
         link: link
 )
 
-@(listOfTemplates: Seq[Template])(implicit request: DataRequest[_], messages: Messages)
+@(listOfTemplates: Seq[Template])(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
     pageTitle = titleNoForm(messages("viewAllTemplates.title")),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Templates))),
-    fullWidthContent = true
+    fullWidthContent = false
 ) {
     @h1()(Html(messages("viewAllTemplates.title")))
 
@@ -43,6 +44,13 @@
         @if(templatesExist) {} else {
             @p()(Html(messages("viewAllTemplates.noTemplates.p1")))
             @p()(Html(messages("viewAllTemplates.noTemplates.p2")))
+            @link(
+                link = appConfig.emcsTfeCreateMovementUrl(request.ern),
+                messageKey = "viewAllTemplates.createANewMovement",
+                id = Some("createNewMovementButton"),
+                button = true,
+                classes = "govuk-button"
+            )
         }
     }
 }

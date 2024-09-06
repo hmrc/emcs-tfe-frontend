@@ -17,6 +17,7 @@
 package views
 
 import base.ViewSpecBase
+import config.AppConfig
 import fixtures.messages.ViewAllTemplatesMessages.English
 import models.requests.DataRequest
 import play.api.mvc.AnyContentAsEmpty
@@ -36,6 +37,7 @@ class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours {
     Seq(English) foreach { messagesForLanguage =>
 
       implicit val msgs = messages(Seq(messagesForLanguage.lang))
+      implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
       s"render the view when being rendered in lang code of '${messagesForLanguage.lang.code}'" when {
         "list of templates is empty" when {
@@ -45,7 +47,8 @@ class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours {
             Selectors.title -> messagesForLanguage.title,
             Selectors.h1 -> messagesForLanguage.heading,
             Selectors.noTemplates(1) -> messagesForLanguage.noTemplatesP1,
-            Selectors.noTemplates(2) -> messagesForLanguage.noTemplatesP2
+            Selectors.noTemplates(2) -> messagesForLanguage.noTemplatesP2,
+            Selectors.button -> messagesForLanguage.createNewMovementButton
           ))
         }
       }
