@@ -52,7 +52,7 @@ class AccountHomeControllerSpec extends SpecBase with FakeAuthAction with MockFa
     )(ec)
   }
 
-  "GET /trader/:exciseRegistrationNumber/account" when {
+  "GET /trader/:exciseRegistrationNumber/account" must {
 
     "return 200" in new Test {
       val result: Future[Result] = controller.viewAccountHome(testErn)(fakeRequest)

@@ -88,6 +88,9 @@
         link(appConfig.emcsTfeUndischargedMovementsUrl(ern), "accountHome.undischargedMovementsLink", id = Some("undischarged-movements-link")),
         if(roleType.canCreateNewMovement) {
             link(appConfig.emcsTfeDraftMovementsUrl(ern), "accountHome.draftMovementsLink", id = Some("draft-movements-link"))
+        } else Html(""),
+        if(appConfig.templatesLinkVisible && roleType.canCreateNewMovement) {
+            link(appConfig.emcsTfeViewAllTemplatesUrl(ern), "navigation.templates", id = Some("templates-link"))
         } else Html("")
     ))
 

@@ -27,7 +27,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
   val switches: Seq[FeatureSwitch] = Seq(
     StubGetTraderKnownFacts,
-    AccountHomeBanner
+    AccountHomeBanner,
+    TemplatesLink
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -45,4 +46,9 @@ case object StubGetTraderKnownFacts extends FeatureSwitch {
 case object AccountHomeBanner extends FeatureSwitch {
   override val configName: String = "features.accountHomeBanner"
   override val displayName: String = "Enables the account home page banner"
+}
+
+case object TemplatesLink extends FeatureSwitch {
+  override val configName: String = "features.templatesLink"
+  override val displayName: String = "Enables the templates link in the page banner"
 }

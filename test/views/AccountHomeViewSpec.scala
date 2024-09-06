@@ -68,9 +68,10 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
             navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
             navigationLinks.get(2).text mustBe "Drafts"
             navigationLinks.get(3).text mustBe "Movements"
-            navigationLinks.get(4).text mustBe "Menu"
-            navigationLinks.get(4).hasClass("hidden") mustBe true
-            navigationLinks.get(5).text mustBe "Business tax account"
+            navigationLinks.get(4).text mustBe "Templates"
+            navigationLinks.get(5).text mustBe "Menu"
+            navigationLinks.get(5).hasClass("hidden") mustBe true
+            navigationLinks.get(6).text mustBe "Business tax account"
           }
         } else {
           s"have the correct navigation links for $roleType" in {
@@ -80,9 +81,10 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
             if (roleType.canCreateNewMovement) {
               navigationLinks.get(2).text mustBe "Drafts"
               navigationLinks.get(3).text mustBe "Movements"
-              navigationLinks.get(4).text mustBe "Menu"
-              navigationLinks.get(4).hasClass("hidden") mustBe true
-              navigationLinks.get(5).text mustBe "Business tax account"
+              navigationLinks.get(4).text mustBe "Templates"
+              navigationLinks.get(5).text mustBe "Menu"
+              navigationLinks.get(5).hasClass("hidden") mustBe true
+              navigationLinks.get(6).text mustBe "Business tax account"
             } else {
               navigationLinks.get(2).text mustBe "Movements"
               navigationLinks.get(3).text mustBe "Menu"
@@ -120,12 +122,15 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
           if (roleType == XIPC) {
             movementsLinks.get(2).text mustBe "Draft movements"
             movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
+            movementsLinks.get(3).text mustBe "Templates"
           } else {
             if (roleType.canCreateNewMovement) {
               movementsLinks.get(2).text mustBe "Draft movements"
               movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
+              movementsLinks.get(3).text mustBe "Templates"
             } else {
               movementsLinks.text mustNot contain("Draft movements")
+              movementsLinks.text mustNot contain("Templates")
             }
           }
 

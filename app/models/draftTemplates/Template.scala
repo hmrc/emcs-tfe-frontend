@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package mocks.config
+package models.draftTemplates
 
-import config.AppConfig
-import org.scalamock.handlers.{CallHandler, CallHandler0}
-import org.scalamock.scalatest.MockFactory
+import play.api.libs.json.{Json, OFormat}
 
-trait MockAppConfig extends MockFactory {
+case class Template(
+                     templateId: String,
+                     templateName: String,
+                     consigneeErn: String
+                   )
 
-  lazy val mockAppConfig: AppConfig = mock[AppConfig]
-
-  object MockedAppConfig {
-    def emcsTfeBaseUrl: CallHandler[String] = (() => mockAppConfig.emcsTfeBaseUrl).expects()
-    def traderKnownFactsReferenceDataBaseUrl: CallHandler[String] = (() => mockAppConfig.traderKnownFactsReferenceDataBaseUrl).expects()
-  }
-
+object Template {
+  implicit val format: OFormat[Template] = Json.format[Template]
 }
