@@ -737,6 +737,7 @@ accountHome.yourMovements = Your movements
 accountHome.allMovementsLink = All movements
 accountHome.undischargedMovementsLink = Undischarged movements
 accountHome.draftMovementsLink = Draft movements
+accountHome.templates = Templates
 accountHome.createMovementLink = Create a new movement
 accountHome.prevalidate = Prevalidate
 accountHome.bta = Business tax account

@@ -122,12 +122,15 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
           if (roleType == XIPC) {
             movementsLinks.get(2).text mustBe "Draft movements"
             movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
+            movementsLinks.get(3).text mustBe "Templates"
           } else {
             if (roleType.canCreateNewMovement) {
               movementsLinks.get(2).text mustBe "Draft movements"
               movementsLinks.get(2).getElementsByTag("a").attr("href") mustBe controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions()).url
+              movementsLinks.get(3).text mustBe "Templates"
             } else {
               movementsLinks.text mustNot contain("Draft movements")
+              movementsLinks.text mustNot contain("Templates")
             }
           }
 
