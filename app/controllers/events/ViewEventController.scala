@@ -177,12 +177,12 @@ class ViewEventController @Inject()(mcc: MessagesControllerComponents,
             f(matchedEvent)
           case None =>
             logger.warn(s"[withHistoryEvent] - Unable to find the movement history for event id $eventId")
-            Future.successful(NotFound(errorHandler.notFoundTemplate))
+            errorHandler.notFoundTemplate.map(NotFound(_))
         }
 
       case _ =>
         logger.warn(s"[withHistoryEvent] - There are no movement history events for ERN:$ern, ARC:$arc")
-        Future.successful(NotFound(errorHandler.notFoundTemplate))
-    }
+        errorHandler.notFoundTemplate.map(NotFound(_))
+      }
 
 }

@@ -21,13 +21,14 @@ import models.MovementListSearchOptions
 import models.response.ErrorResponse
 import models.response.emcsTfe.GetMovementListResponse
 import play.api.libs.json.Reads
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GetMovementListConnector @Inject()(val http: HttpClient,
+class GetMovementListConnector @Inject()(val http: HttpClientV2,
                                          config: AppConfig) extends EmcsTfeHttpParser[GetMovementListResponse] {
 
   override implicit val reads: Reads[GetMovementListResponse] = GetMovementListResponse.reads

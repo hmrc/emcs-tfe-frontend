@@ -20,7 +20,7 @@ import base.SpecBase
 import fixtures.ExciseProductCodeFixtures
 import mocks.connectors.MockHttpClient
 import models.response.UnexpectedDownstreamResponseError
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,9 +40,8 @@ class GetExciseProductCodesConnectorSpec extends SpecBase with MockHttpClient wi
 
         val expectedResult = Right(Seq(beerExciseProductCodeJson, wineExciseProductCodeJson))
 
-        MockHttpClient.get(
-          url = s"${appConfig.referenceDataBaseUrl}/oracle/epc-codes"
-        ).returns(Future.successful(expectedResult))
+        MockHttpClient.get(url"${appConfig.referenceDataBaseUrl}/oracle/epc-codes")
+          .returns(Future.successful(expectedResult))
 
         val actualResult = connector.getExciseProductCodes().futureValue
 
@@ -56,9 +55,8 @@ class GetExciseProductCodesConnectorSpec extends SpecBase with MockHttpClient wi
 
         val expectedResult = Left(UnexpectedDownstreamResponseError)
 
-        MockHttpClient.get(
-          url = s"${appConfig.referenceDataBaseUrl}/oracle/epc-codes"
-        ).returns(Future.successful(expectedResult))
+        MockHttpClient.get(url"${appConfig.referenceDataBaseUrl}/oracle/epc-codes")
+          .returns(Future.successful(expectedResult))
 
         val actualResult = connector.getExciseProductCodes().futureValue
 

@@ -23,7 +23,7 @@ import mocks.connectors.MockHttpClient
 import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -52,7 +52,7 @@ class GetSubmissionFailureMessageConnectorSpec extends SpecBase
         val response: HttpResponse = HttpResponse(status = Status.OK,
           json = Json.toJson(GetSubmissionFailureMessageResponseFixtures.getSubmissionFailureMessageResponseModel), headers = Map.empty)
 
-        MockHttpClient.get(s"$baseUrl/submission-failure-message/ern/1234").returns(Future.successful(response))
+        MockHttpClient.get(url"$baseUrl/submission-failure-message/ern/1234").returns(Future.successful(response))
 
         await(connector.getSubmissionFailureMessage(exciseRegistrationNumber = "ern", uniqueMessageIdentifier = 1234)) mustBe response
       }
@@ -62,14 +62,14 @@ class GetSubmissionFailureMessageConnectorSpec extends SpecBase
 
       "when downstream call fails (due to a JSON validation error)" in new Test {
 
-        MockHttpClient.get(s"$baseUrl/submission-failure-message/ern/1234").returns(Future.successful(Left(JsonValidationError)))
+        MockHttpClient.get(url"$baseUrl/submission-failure-message/ern/1234").returns(Future.successful(Left(JsonValidationError)))
 
         await(connector.getSubmissionFailureMessage(exciseRegistrationNumber = "ern", uniqueMessageIdentifier = 1234)) mustBe Left(JsonValidationError)
       }
 
       "when downstream call fails (due to a non-200 status code being returned)" in new Test {
 
-        MockHttpClient.get(s"$baseUrl/submission-failure-message/ern/1234").returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+        MockHttpClient.get(url"$baseUrl/submission-failure-message/ern/1234").returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
         await(connector.getSubmissionFailureMessage(exciseRegistrationNumber = "ern", uniqueMessageIdentifier = 1234)) mustBe Left(UnexpectedDownstreamResponseError)
       }

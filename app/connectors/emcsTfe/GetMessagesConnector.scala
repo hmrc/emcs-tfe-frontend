@@ -21,13 +21,14 @@ import models.messages.MessagesSearchOptions
 import models.response.emcsTfe.messages.GetMessagesResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GetMessagesConnector @Inject()(val http: HttpClient, config: AppConfig) extends EmcsTfeHttpParser[GetMessagesResponse] {
+class GetMessagesConnector @Inject()(val http: HttpClientV2, config: AppConfig) extends EmcsTfeHttpParser[GetMessagesResponse] {
 
   override implicit val reads: Reads[GetMessagesResponse] = GetMessagesResponse.format
 

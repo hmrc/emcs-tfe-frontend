@@ -22,7 +22,7 @@ import mocks.connectors.MockHttpClient
 import models.draftMovements.GetDraftMovementsSearchOptions
 import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -45,7 +45,7 @@ class GetDraftMovementsConnectorSpec extends SpecBase
           val expectedResult = Right(getMovementResponseModel)
 
           MockHttpClient
-            .get(s"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/drafts/search/$testErn")
+            .get(url"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/drafts/search/$testErn")
             .returns(Future.successful(Right(getMovementResponseModel)))
 
           val actualResult = connector.getDraftMovements(
@@ -64,10 +64,8 @@ class GetDraftMovementsConnectorSpec extends SpecBase
           val expectedResult = Right(getMovementResponseModel)
 
           MockHttpClient
-            .get(
-              s"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/drafts/search/$testErn",
-              Seq(("search.sortField", "lastUpdated"), ("search.sortOrder", "D"), ("search.startPosition", "10"), ("search.maxRows", "10"))
-            ).returns(Future.successful(Right(getMovementResponseModel)))
+            .get(url"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/drafts/search/$testErn?search.sortField=lastUpdated&search.sortOrder=D&search.startPosition=10&search.maxRows=10")
+            .returns(Future.successful(Right(getMovementResponseModel)))
 
           val actualResult = connector.getDraftMovements(
             ern = testErn,
@@ -86,7 +84,7 @@ class GetDraftMovementsConnectorSpec extends SpecBase
         val expectedResult = Left(JsonValidationError)
 
         MockHttpClient
-          .get(s"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/drafts/search/$testErn")
+          .get(url"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/drafts/search/$testErn")
           .returns(Future.successful(Left(JsonValidationError)))
 
         val actualResult = connector.getDraftMovements(ern = testErn).futureValue

@@ -21,12 +21,13 @@ import models.draftMovements.GetDraftMovementsSearchOptions
 import models.response.emcsTfe.draftMovement.GetDraftMovementsResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetDraftMovementsConnector @Inject()(val http: HttpClient,
+class GetDraftMovementsConnector @Inject()(val http: HttpClientV2,
                                            config: AppConfig) extends EmcsTfeHttpParser[GetDraftMovementsResponse] {
 
   override implicit val reads: Reads[GetDraftMovementsResponse] = GetDraftMovementsResponse.reads

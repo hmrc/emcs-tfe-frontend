@@ -21,15 +21,15 @@ import models.common.TraderKnownFacts
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.Reads
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait GetTraderKnownFactsHttpParser extends BaseConnectorUtils[TraderKnownFacts] {
 
-
   implicit val reads: Reads[TraderKnownFacts] = TraderKnownFacts.format
-  def http: HttpClient
+  def http: HttpClientV2
 
   implicit class GetTraderKnownFactsReads(exciseRegistrationId: String) extends HttpReads[Either[ErrorResponse, Option[TraderKnownFacts]]] {
     override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, Option[TraderKnownFacts]] = {
@@ -53,8 +53,7 @@ trait GetTraderKnownFactsHttpParser extends BaseConnectorUtils[TraderKnownFacts]
 
   def get(url: String, exciseRegistrationId: String)
          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Option[TraderKnownFacts]]] =
-    http.GET[Either[ErrorResponse, Option[TraderKnownFacts]]](
-      url = url,
-      queryParams = Seq("exciseRegistrationId" -> exciseRegistrationId)
-    )(GetTraderKnownFactsReads(exciseRegistrationId), hc, ec)
+    http
+      .get(url"$url?exciseRegistrationId=$exciseRegistrationId")
+      .execute[Either[ErrorResponse, Option[TraderKnownFacts]]](new GetTraderKnownFactsReads(exciseRegistrationId), ec)
 }

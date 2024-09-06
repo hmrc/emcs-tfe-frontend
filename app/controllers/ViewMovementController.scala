@@ -87,28 +87,29 @@ class ViewMovementController @Inject()(mcc: MessagesControllerComponents,
               .getOrElse(Seq.empty[TimelineEvent])
           ))
         }
-      } recover {
+      } recoverWith {
         case e =>
           logger.warn(s"[onPageLoad][$exciseRegistrationNumber][$arc][$currentSubNavigationTab] Unexpected exception thrown of type ${e.getClass.getSimpleName.stripSuffix("$")}. Message: ${e.getMessage}")
-          InternalServerError(errorHandler.standardErrorTemplate())
+          errorHandler.standardErrorTemplate().map(html => (InternalServerError(html)))
       }
     }
 
   def printMovement(exciseRegistrationNumber: String, arc: String): Action[AnyContent] =
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
+
       getMovementService.getLatestMovementForLoggedInUser(exciseRegistrationNumber, arc).flatMap { movement =>
         helper.movementCard(None, movement).map { movementCard =>
-          Ok(printMovementView(
-            ern = exciseRegistrationNumber,
-            arc = arc,
-            movement = movement,
-            movementBody = movementCard
-          ))
+            Ok(printMovementView(
+              ern = exciseRegistrationNumber,
+              arc = arc,
+              movement = movement,
+              movementBody = movementCard
+            ))
         }
-      } recover {
+      } recoverWith {
         case e =>
           logger.warn(s"[onPageLoad][$exciseRegistrationNumber][$arc][Overview] Unexpected exception thrown of type ${e.getClass.getSimpleName.stripSuffix("$")}. Message: ${e.getMessage}")
-          InternalServerError(errorHandler.standardErrorTemplate())
+          errorHandler.standardErrorTemplate().map(html => (InternalServerError(html)))
       }
     }
 }

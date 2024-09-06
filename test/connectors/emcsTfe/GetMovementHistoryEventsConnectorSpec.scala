@@ -21,7 +21,7 @@ import fixtures.GetMovementHistoryEventsResponseFixtures
 import mocks.connectors.MockHttpClient
 import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,7 +39,7 @@ class GetMovementHistoryEventsConnectorSpec extends SpecBase
 
       "downstream call is successful" in {
 
-        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement-history/ern/arc").returns(Future.successful(Right(getMovementHistoryEventsModel)))
+        MockHttpClient.get(url"${appConfig.emcsTfeBaseUrl}/movement-history/ern/arc").returns(Future.successful(Right(getMovementHistoryEventsModel)))
 
         connector.getMovementHistoryEvents(exciseRegistrationNumber = "ern", arc = "arc").futureValue mustBe Right(getMovementHistoryEventsModel)
       }
@@ -49,7 +49,7 @@ class GetMovementHistoryEventsConnectorSpec extends SpecBase
 
       "when downstream call fails" in {
 
-        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement-history/ern/arc").returns(Future.successful(Left(JsonValidationError)))
+        MockHttpClient.get(url"${appConfig.emcsTfeBaseUrl}/movement-history/ern/arc").returns(Future.successful(Left(JsonValidationError)))
 
         connector.getMovementHistoryEvents(exciseRegistrationNumber = "ern", arc = "arc").futureValue mustBe Left(JsonValidationError)
       }

@@ -21,12 +21,13 @@ import models.requests.WineOperationsRequest
 import models.response.referenceData.WineOperationsResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.JsResultException
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetWineOperationsConnector @Inject()(val http: HttpClient,
+class GetWineOperationsConnector @Inject()(val http: HttpClientV2,
                                            config: AppConfig) extends WineOperationsHttpParser {
 
   lazy val baseUrl: String = config.referenceDataBaseUrl

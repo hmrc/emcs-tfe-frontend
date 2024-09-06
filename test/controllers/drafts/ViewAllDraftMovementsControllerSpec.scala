@@ -320,7 +320,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+        contentAsString(result) shouldBe await(errorHandler.internalServerErrorTemplate(fakeRequest).map(_.toString))
       }
     }
 
@@ -339,7 +339,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+        contentAsString(result) shouldBe await(errorHandler.internalServerErrorTemplate(fakeRequest).map(_.toString))
       }
     }
   }
@@ -545,7 +545,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onSubmit(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
 
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+          contentAsString(result) shouldBe await(errorHandler.internalServerErrorTemplate(fakeRequest).map(_.toString))
         }
       }
 
@@ -564,7 +564,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onSubmit(testErn, GetDraftMovementsSearchOptions(index = 1))(fakeRequest)
 
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+          contentAsString(result) shouldBe await(errorHandler.internalServerErrorTemplate(fakeRequest).map(_.toString))
         }
       }
     }

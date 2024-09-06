@@ -100,9 +100,10 @@ class ViewAllDraftMovementsController @Inject()(mcc: MessagesControllerComponent
       }
     }
 
-    result.leftMap {
-      _ => InternalServerError(errorHandler.internalServerErrorTemplate)
-    }.merge
+    result.value.flatMap {
+      case Right(value) => Future.successful(value)
+      case Left(_) => errorHandler.internalServerErrorTemplate.map(InternalServerError(_))
+    }
   }
 
   private def calculatePageCount(movementList: GetDraftMovementsResponse): Int = movementList.count match {

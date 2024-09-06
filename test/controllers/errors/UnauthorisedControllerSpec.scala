@@ -22,7 +22,6 @@ import fixtures.messages.UnauthorisedMessages
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext
@@ -54,10 +53,13 @@ class UnauthorisedControllerSpec extends SpecBase {
           val result = controller.unauthorised()(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
-          Html(contentAsString(result)) mustBe errorHandler.standardErrorTemplate(
-            pageTitle = viewMessages.title,
-            heading = viewMessages.heading,
-            message = viewMessages.message
+
+          contentAsString(result) mustBe await(
+            errorHandler.standardErrorTemplate(
+              pageTitle = viewMessages.title,
+              heading = viewMessages.heading,
+              message = viewMessages.message
+            ).map(_.toString)
           )
         }
       }

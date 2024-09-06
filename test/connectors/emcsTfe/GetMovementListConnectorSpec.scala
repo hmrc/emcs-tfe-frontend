@@ -22,7 +22,7 @@ import mocks.config.MockAppConfig
 import mocks.connectors.MockHttpClient
 import models.MovementListSearchOptions
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -45,7 +45,7 @@ class GetMovementListConnectorSpec extends SpecBase with Status with MimeTypes w
       "no search options are given" in new Test {
 
         MockHttpClient
-          .get(s"$baseUrl/movements/$testErn", Seq.empty)
+          .get(url"$baseUrl/movements/$testErn")
           .returns(Future.successful(getMovementListResponse))
 
         val expectedResult = getMovementListResponse
@@ -63,7 +63,7 @@ class GetMovementListConnectorSpec extends SpecBase with Status with MimeTypes w
         val searchOptions = MovementListSearchOptions()
 
         MockHttpClient
-          .get(s"$baseUrl/movements/$testErn", searchOptions.queryParams)
+          .get(url"$baseUrl/movements/$testErn?${searchOptions.queryParams}")
           .returns(Future.successful(getMovementListResponse))
 
         val expectedResult = getMovementListResponse

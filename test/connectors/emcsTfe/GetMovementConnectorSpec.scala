@@ -21,7 +21,7 @@ import fixtures.GetMovementResponseFixtures
 import mocks.connectors.MockHttpClient
 import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,14 +39,14 @@ class GetMovementConnectorSpec extends SpecBase
 
       "when downstream call is successful for the latest movement" in {
 
-        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true").returns(Future.successful(Right(getMovementResponseModel)))
+        MockHttpClient.get(url"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true").returns(Future.successful(Right(getMovementResponseModel)))
 
         connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc").futureValue mustBe Right(getMovementResponseModel)
       }
 
       "when downstream call is successful for a particular movement sequence" in {
 
-        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true&sequenceNumber=2")
+        MockHttpClient.get(url"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true&sequenceNumber=2")
           .returns(Future.successful(Right(getMovementResponseModel)))
 
         connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc", Some(2)).futureValue mustBe Right(getMovementResponseModel)
@@ -58,14 +58,14 @@ class GetMovementConnectorSpec extends SpecBase
 
       "when downstream call fails for the latest movement" in {
 
-        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true").returns(Future.successful(Left(JsonValidationError)))
+        MockHttpClient.get(url"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true").returns(Future.successful(Left(JsonValidationError)))
 
         connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc").futureValue mustBe Left(JsonValidationError)
       }
 
       "when downstream call fails for a particular movement sequence" in {
 
-        MockHttpClient.get(s"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true&sequenceNumber=2").returns(Future.successful(Left(JsonValidationError)))
+        MockHttpClient.get(url"${appConfig.emcsTfeBaseUrl}/movement/ern/arc?forceFetchNew=true&sequenceNumber=2").returns(Future.successful(Left(JsonValidationError)))
 
         connector.getMovement(exciseRegistrationNumber = "ern", arc = "arc", Some(2)).futureValue mustBe Left(JsonValidationError)
       }

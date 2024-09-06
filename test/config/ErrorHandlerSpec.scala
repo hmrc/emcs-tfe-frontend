@@ -38,7 +38,7 @@ class ErrorHandlerSpec extends SpecBase {
   "standardErrorTemplate" must {
     "render HTML" in {
       val html = handler.standardErrorTemplate("title", "heading", "message")(fakeRequest)
-      html.contentType mustBe "text/html"
+      await(html).contentType mustBe "text/html"
     }
   }
 

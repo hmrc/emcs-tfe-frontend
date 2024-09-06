@@ -17,16 +17,17 @@
 package connectors.emcsTfe
 
 import config.AppConfig
-import models.response.emcsTfe.messages.{DeleteMessageResponse}
+import models.response.emcsTfe.messages.DeleteMessageResponse
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteMessageConnector @Inject()(val http: HttpClient, config: AppConfig) extends EmcsTfeHttpParser[DeleteMessageResponse] {
+class DeleteMessageConnector @Inject()(val http: HttpClientV2, config: AppConfig) extends EmcsTfeHttpParser[DeleteMessageResponse] {
 
   override implicit val reads: Reads[DeleteMessageResponse] = DeleteMessageResponse.fmt
 

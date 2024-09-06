@@ -23,7 +23,7 @@ import mocks.connectors.MockHttpClient
 import models.messages.MessagesSearchOptions
 import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -48,7 +48,7 @@ class GetMessagesConnectorSpec extends SpecBase with Status with MimeTypes with 
         val searchOptions = MessagesSearchOptions()
 
         MockHttpClient
-          .get(s"$baseUrl/messages/$testErn", searchOptions.queryParams)
+          .get(url"$baseUrl/messages/$testErn?${searchOptions.queryParams}")
           .returns(Future.successful(getMessageResponse))
 
         val expectedResult = getMessageResponse
@@ -68,7 +68,7 @@ class GetMessagesConnectorSpec extends SpecBase with Status with MimeTypes with 
         val searchOptions = MessagesSearchOptions()
 
         MockHttpClient
-          .get(s"$baseUrl/messages/$testErn", searchOptions.queryParams)
+          .get(url"$baseUrl/messages/$testErn?${searchOptions.queryParams}")
           .returns(Future.successful(Left(JsonValidationError)))
 
         val expectedResult = Left(JsonValidationError)

@@ -16,11 +16,12 @@
 
 package connectors.referenceData
 
-import play.api.libs.json.JsResultException
 import config.AppConfig
 import models.MemberState
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import play.api.libs.json.JsResultException
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,8 +33,8 @@ trait GetMemberStatesConnector {
 }
 
 @Singleton
-class GetMemberStatesConnectorImpl @Inject()(val http: HttpClient,
-                                         config: AppConfig) extends GetMemberStatesHttpParser with GetMemberStatesConnector {
+class GetMemberStatesConnectorImpl @Inject()(val http: HttpClientV2,
+                                             config: AppConfig) extends GetMemberStatesHttpParser with GetMemberStatesConnector {
 
   def baseUrl: String = config.referenceDataBaseUrl
 

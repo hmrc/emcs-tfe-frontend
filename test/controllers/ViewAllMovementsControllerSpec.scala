@@ -378,7 +378,8 @@ class ViewAllMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
 
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+
+          contentAsString(result) shouldBe await(errorHandler.internalServerErrorTemplate(fakeRequest).map(_.toString))
         }
       }
     }
@@ -398,7 +399,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+        contentAsString(result) shouldBe await(errorHandler.internalServerErrorTemplate(fakeRequest).map(_.toString))
       }
     }
 
@@ -421,7 +422,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-        Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+        contentAsString(result) shouldBe await(errorHandler.internalServerErrorTemplate(fakeRequest).map(_.toString))
       }
     }
   }
@@ -717,7 +718,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
 
             status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-            Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+            contentAsString(result) shouldBe await(errorHandler.internalServerErrorTemplate(fakeRequest).map(_.toString))
           }
         }
       }
@@ -737,7 +738,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
 
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+          contentAsString(result) shouldBe await(errorHandler.internalServerErrorTemplate(fakeRequest).map(_.toString))
         }
       }
 
@@ -760,7 +761,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           val result: Future[Result] = controller.onSubmit(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
 
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-          Html(contentAsString(result)) shouldBe errorHandler.internalServerErrorTemplate(fakeRequest)
+          contentAsString(result) shouldBe await(errorHandler.internalServerErrorTemplate(fakeRequest).map(_.toString))
         }
       }
     }

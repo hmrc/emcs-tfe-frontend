@@ -21,14 +21,15 @@ import models.response.referenceData.ItemPackaging
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.http.Status.OK
 import play.api.libs.json.Reads
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait GetItemPackagingTypesHttpParser extends BaseConnectorUtils[Seq[ItemPackaging]] {
 
   implicit val reads: Reads[Seq[ItemPackaging]] = ItemPackaging.seqReads
-  def http: HttpClient
+  def http: HttpClientV2
 
   class GetItemPackagingTypesReads extends HttpReads[Either[ErrorResponse, Seq[ItemPackaging]]] {
     override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, Seq[ItemPackaging]] = {
@@ -48,6 +49,8 @@ trait GetItemPackagingTypesHttpParser extends BaseConnectorUtils[Seq[ItemPackagi
   }
 
   def get(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Seq[ItemPackaging]]] =
-    http.GET[Either[ErrorResponse, Seq[ItemPackaging]]](url)(new GetItemPackagingTypesReads, hc, ec)
-
+    http
+      .get(url"$url")
+      .execute[Seq[ItemPackaging]]
+      .map(Right(_))
 }
