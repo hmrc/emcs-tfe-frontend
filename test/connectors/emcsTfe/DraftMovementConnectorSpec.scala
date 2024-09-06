@@ -23,6 +23,7 @@ import models.response.JsonValidationError
 import models.response.emcsTfe.draftMovement.DraftId
 import models.response.emcsTfe.messages.submissionFailure.IE704FunctionalError
 import play.api.http.{HeaderNames, MimeTypes, Status}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -71,7 +72,7 @@ class DraftMovementConnectorSpec extends SpecBase
       "downstream call is successful" in {
 
         MockHttpClient
-          .put(url"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/$testErn/$testDraftId/error-messages", errorMessages)
+          .put(url"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/$testErn/$testDraftId/error-messages", Json.toJson(errorMessages))
           .returns(Future.successful(Right(DraftId(testDraftId))))
 
         connector.putErrorMessagesAndReturnDraftId(testErn, testDraftId, errorMessages).futureValue mustBe Right(DraftId(testDraftId))
@@ -83,7 +84,7 @@ class DraftMovementConnectorSpec extends SpecBase
       "when downstream call fails" in {
 
         MockHttpClient
-          .put(url"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/$testErn/$testDraftId/error-messages", errorMessages)
+          .put(url"${appConfig.emcsTfeBaseUrl}/user-answers/create-movement/$testErn/$testDraftId/error-messages", Json.toJson(errorMessages))
           .returns(Future.successful(Left(JsonValidationError)))
 
         connector.putErrorMessagesAndReturnDraftId(testErn, testDraftId, errorMessages).futureValue mustBe Left(JsonValidationError)

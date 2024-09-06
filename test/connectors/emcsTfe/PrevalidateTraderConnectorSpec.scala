@@ -22,6 +22,7 @@ import mocks.connectors.MockHttpClient
 import models.requests.PrevalidateTraderRequest
 import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,7 +48,7 @@ class PrevalidateTraderConnectorSpec extends SpecBase
 
       "downstream call is successful" in {
 
-        MockHttpClient.post(url"${appConfig.emcsTfeBaseUrl}/pre-validate-trader/$testErn", requestModel).returns(Future.successful(Right(preValidateApiResponseModel)))
+        MockHttpClient.post(url"${appConfig.emcsTfeBaseUrl}/pre-validate-trader/$testErn", Json.toJson(requestModel)).returns(Future.successful(Right(preValidateApiResponseModel)))
 
         connector.prevalidateTrader(testErn, requestModel).futureValue mustBe Right(preValidateApiResponseModel)
       }
@@ -57,7 +58,7 @@ class PrevalidateTraderConnectorSpec extends SpecBase
 
       "when downstream call fails" in {
 
-        MockHttpClient.post(url"${appConfig.emcsTfeBaseUrl}/pre-validate-trader/$testErn", requestModel).returns(Future.successful(Left(JsonValidationError)))
+        MockHttpClient.post(url"${appConfig.emcsTfeBaseUrl}/pre-validate-trader/$testErn", Json.toJson(requestModel)).returns(Future.successful(Left(JsonValidationError)))
 
         connector.prevalidateTrader(testErn,requestModel).futureValue mustBe Left(JsonValidationError)
       }
