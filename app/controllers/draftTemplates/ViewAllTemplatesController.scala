@@ -37,6 +37,8 @@ class ViewAllTemplatesController @Inject()(mcc: MessagesControllerComponents,
                                           )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
+  val DEFAULT_MAX_ROWS = 10
+
   val dummyTemplates: Seq[Template] = Seq(
     Template("1", "Template 1", DestinationType.TaxWarehouse, Some("GB001234567890")),
     Template("2", "Template 2", DestinationType.TaxWarehouse, Some("GB001234567890")),
@@ -50,18 +52,27 @@ class ViewAllTemplatesController @Inject()(mcc: MessagesControllerComponents,
     Template("10", "Template 10", DestinationType.Export, None)
   )
 
-  val totalNumberOfTemplates = 45
+  val totalNumberOfTemplates = 30
 
   def onPageLoad(exciseRegistrationNumber: String, page: Option[Int]): Action[AnyContent] = {
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       ifCanAccessDraftTemplates(exciseRegistrationNumber) {
-        val pagination = paginationHelper.constructPaginationForDraftTemplates(exciseRegistrationNumber, page.getOrElse(1), totalNumberOfTemplates)
+        val pageCount: Int = paginationHelper.calculatePageCount(totalNumberOfTemplates, DEFAULT_MAX_ROWS)
 
-        Future.successful(
-          Ok(view(dummyTemplates, pagination))
-        )
+        val currentPage = page.getOrElse(1)
+
+        if (currentPage <= 0 || currentPage > pageCount) {
+          // if page number is invalid - lower than '1' or higher than the calculated max page count
+          Future.successful(Redirect(controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(exciseRegistrationNumber, None)))
+        } else {
+          val pagination = paginationHelper.constructPaginationForDraftTemplates(exciseRegistrationNumber, page.getOrElse(1), pageCount)
+
+          Future.successful(
+            Ok(view(dummyTemplates, pagination))
+          )
+        }
       }
     }
-  }
 
+  }
 }

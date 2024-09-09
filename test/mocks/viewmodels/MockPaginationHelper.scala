@@ -25,26 +25,32 @@ import viewmodels.PaginationHelper
 
 trait MockPaginationHelper extends MockFactory with GuiceOneAppPerSuite {
 
-  lazy val mockMovementPaginationHelper: PaginationHelper = mock[PaginationHelper]
-  lazy val actualMovementPaginationHelper: PaginationHelper = app.injector.instanceOf[PaginationHelper]
+  lazy val mockPaginationHelper: PaginationHelper = mock[PaginationHelper]
+  lazy val actualPaginationHelper: PaginationHelper = app.injector.instanceOf[PaginationHelper]
 
-  object MockMovementPaginationHelper {
+  object MockPaginationHelper {
 
     def constructPaginationForAllMovements(index: Int, pageCount: Int)
                                           (returns: Option[Pagination] = None): CallHandler3[Int, String, MovementListSearchOptions, Option[Pagination]] =
-      (mockMovementPaginationHelper.constructPaginationForAllMovements(_: Int, _: String, _: MovementListSearchOptions))
+      (mockPaginationHelper.constructPaginationForAllMovements(_: Int, _: String, _: MovementListSearchOptions))
         .expects(pageCount, *, MovementListSearchOptions(index = index))
+        .returns(returns)
+
+    def constructPaginationForDraftTemplates(index: Int, pageCount: Int)
+                                          (returns: Option[Pagination] = None): CallHandler3[String, Int, Int, Option[Pagination]] =
+      (mockPaginationHelper.constructPaginationForDraftTemplates(_: String, _: Int, _: Int))
+        .expects(*, index, pageCount)
         .returns(returns)
 
     def constructPaginationForAllMovementsWithSearch(searchOptions: MovementListSearchOptions, pageCount: Int)
                                                     (returns: Option[Pagination] = None): CallHandler3[Int, String, MovementListSearchOptions, Option[Pagination]] =
-      (mockMovementPaginationHelper.constructPaginationForAllMovements(_: Int, _: String, _: MovementListSearchOptions))
+      (mockPaginationHelper.constructPaginationForAllMovements(_: Int, _: String, _: MovementListSearchOptions))
         .expects(pageCount, *, searchOptions)
         .returns(returns)
 
     def calculatePageCount(numberOfItems: Int, maxNumberOfItemsPerPage: Int): CallHandler2[Int, Int, Int] =
-      (mockMovementPaginationHelper.calculatePageCount(_: Int, _: Int))
+      (mockPaginationHelper.calculatePageCount(_: Int, _: Int))
         .expects(numberOfItems, maxNumberOfItemsPerPage)
-        .returns(actualMovementPaginationHelper.calculatePageCount(numberOfItems, maxNumberOfItemsPerPage))
+        .returns(actualPaginationHelper.calculatePageCount(numberOfItems, maxNumberOfItemsPerPage))
   }
 }

@@ -36,15 +36,15 @@
 
 @(listOfTemplates: Seq[Template], pagination: Option[Pagination])(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(
-    pageTitle = titleNoForm(messages("viewAllTemplates.title")),
-    maybeShowActiveTrader = maybeShowActiveTrader(request),
-    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Templates))),
-    fullWidthContent = false
-) {
-    @h1()(Html(messages("viewAllTemplates.title")))
+@defining(listOfTemplates.nonEmpty) { templatesExist =>
+    @layout(
+        pageTitle = titleNoForm(messages("viewAllTemplates.title")),
+        maybeShowActiveTrader = maybeShowActiveTrader(request),
+        maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Templates))),
+        fullWidthContent = templatesExist
+    ) {
+        @h1()(Html(messages("viewAllTemplates.title")))
 
-    @defining(listOfTemplates.nonEmpty) { templatesExist =>
         @if(templatesExist) {
             @p()(Html(messages("viewAllTemplates.p1")))
 

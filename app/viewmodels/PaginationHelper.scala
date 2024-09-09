@@ -42,15 +42,13 @@ class PaginationHelper @Inject()() extends DateUtils {
     case _ => numberOfItems / maxNumberOfItemsPerPage
   }
 
-  def constructPaginationForDraftTemplates(ern: String, page: Int, numberOfItems: Int): Option[Pagination] = {
-    val maxNumberOfItemsPerPage = 10
-
+  def constructPaginationForDraftTemplates(ern: String, page: Int, pageCount: Int): Option[Pagination] = {
     val paginationHelper = new PaginationUtil {
       override val link: Int => String =
         (index: Int) => controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(ern, Some(index)).url
 
       override val currentPage: Int = page
-      override val pages: Int = calculatePageCount(numberOfItems, maxNumberOfItemsPerPage)
+      override val pages: Int = pageCount
     }
 
     paginationHelper.constructPagination()

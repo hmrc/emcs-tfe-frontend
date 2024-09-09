@@ -85,7 +85,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
       errorHandler = errorHandler,
       auth = FakeSuccessAuthAction,
       getData = new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics)),
-      paginationHelper = mockMovementPaginationHelper,
+      paginationHelper = mockPaginationHelper,
       formProvider = formProvider
     )(ec)
   }
@@ -145,7 +145,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getMemberStates()
           .returns(Future.successful(Right(countryListConnectorResult)))
 
-        MockMovementPaginationHelper.calculatePageCount(30, 10)
+        MockPaginationHelper.calculatePageCount(30, 10)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -169,9 +169,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getMemberStates()
           .returns(Future.successful(Right(countryListConnectorResult)))
 
-        MockMovementPaginationHelper.constructPaginationForAllMovements(index = 1, pageCount = 3)(None)
+        MockPaginationHelper.constructPaginationForAllMovements(index = 1, pageCount = 3)(None)
 
-        MockMovementPaginationHelper.calculatePageCount(30, 10)
+        MockPaginationHelper.calculatePageCount(30, 10)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -195,9 +195,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getMemberStates()
           .returns(Future.successful(Right(countryListConnectorResult)))
 
-        MockMovementPaginationHelper.constructPaginationForAllMovements(index = 2, pageCount = 3)(None)
+        MockPaginationHelper.constructPaginationForAllMovements(index = 2, pageCount = 3)(None)
 
-        MockMovementPaginationHelper.calculatePageCount(30, 10)
+        MockPaginationHelper.calculatePageCount(30, 10)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -221,9 +221,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getMemberStates()
           .returns(Future.successful(Right(countryListConnectorResult)))
 
-        MockMovementPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 3)(None)
+        MockPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 3)(None)
 
-        MockMovementPaginationHelper.calculatePageCount(30, 10)
+        MockPaginationHelper.calculatePageCount(30, 10)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -247,7 +247,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getMemberStates()
           .returns(Future.successful(Right(countryListConnectorResult)))
 
-        MockMovementPaginationHelper.calculatePageCount(30, 10)
+        MockPaginationHelper.calculatePageCount(30, 10)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -272,9 +272,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getMemberStates()
           .returns(Future.successful(Right(countryListConnectorResult)))
 
-        MockMovementPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 4)(None)
+        MockPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 4)(None)
 
-        MockMovementPaginationHelper.calculatePageCount(31, 10)
+        MockPaginationHelper.calculatePageCount(31, 10)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -299,9 +299,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getMemberStates()
           .returns(Future.successful(Right(countryListConnectorResult)))
 
-        MockMovementPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 4)(None)
+        MockPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 4)(None)
 
-        MockMovementPaginationHelper.calculatePageCount(39, 10)
+        MockPaginationHelper.calculatePageCount(39, 10)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -325,9 +325,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getMemberStates()
           .returns(Future.successful(Right(countryListConnectorResult)))
 
-        MockMovementPaginationHelper.constructPaginationForAllMovementsWithSearch(searchOptions = searchOptions, pageCount = 3)(None)
+        MockPaginationHelper.constructPaginationForAllMovementsWithSearch(searchOptions = searchOptions, pageCount = 3)(None)
 
-        MockMovementPaginationHelper.calculatePageCount(30, 10)
+        MockPaginationHelper.calculatePageCount(30, 10)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -351,9 +351,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
           .getMemberStates()
           .returns(Future.successful(Right(countryListConnectorResult)))
 
-        MockMovementPaginationHelper.constructPaginationForAllMovementsWithSearch(searchOptions = searchOptions, pageCount = 3)(None)
+        MockPaginationHelper.constructPaginationForAllMovementsWithSearch(searchOptions = searchOptions, pageCount = 3)(None)
 
-        MockMovementPaginationHelper.calculatePageCount(30, 10)
+        MockPaginationHelper.calculatePageCount(30, 10)
 
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
@@ -378,9 +378,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getMemberStates()
             .returns(Future.successful(Right(countryListConnectorResult)))
 
-          MockMovementPaginationHelper.constructPaginationForAllMovements(index = 1, pageCount = 1)(None)
+          MockPaginationHelper.constructPaginationForAllMovements(index = 1, pageCount = 1)(None)
 
-          MockMovementPaginationHelper.calculatePageCount(0, 10)
+          MockPaginationHelper.calculatePageCount(0, 10)
 
           val result: Future[Result] = controller.onPageLoad(testErn, MovementListSearchOptions(index = 1))(fakeRequest)
 
@@ -472,7 +472,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getMemberStates()
             .returns(Future.successful(Right(countryListConnectorResult)))
 
-          MockMovementPaginationHelper.calculatePageCount(30, 10)
+          MockPaginationHelper.calculatePageCount(30, 10)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
             fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
@@ -499,9 +499,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
               .getMemberStates()
               .returns(Future.successful(Right(countryListConnectorResult)))
 
-            MockMovementPaginationHelper.constructPaginationForAllMovementsWithSearch(searchOptions, pageCount = 3)(None)
+            MockPaginationHelper.constructPaginationForAllMovementsWithSearch(searchOptions, pageCount = 3)(None)
 
-            MockMovementPaginationHelper.calculatePageCount(30, 10)
+            MockPaginationHelper.calculatePageCount(30, 10)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
               fakeRequest.withFormUrlEncodedBody(ViewAllMovementsFormProvider.sortBy -> Newest.code, ViewAllMovementsFormProvider.searchValue -> "beans")
@@ -529,9 +529,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
               .getMemberStates()
               .returns(Future.successful(Right(countryListConnectorResult)))
 
-            MockMovementPaginationHelper.constructPaginationForAllMovementsWithSearch(searchOptions, pageCount = 3)(None)
+            MockPaginationHelper.constructPaginationForAllMovementsWithSearch(searchOptions, pageCount = 3)(None)
 
-            MockMovementPaginationHelper.calculatePageCount(30, 10)
+            MockPaginationHelper.calculatePageCount(30, 10)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
               fakeRequest.withFormUrlEncodedBody(
@@ -563,9 +563,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
               .getMemberStates()
               .returns(Future.successful(Right(countryListConnectorResult)))
 
-            MockMovementPaginationHelper.constructPaginationForAllMovements(index = 1, pageCount = 3)(None)
+            MockPaginationHelper.constructPaginationForAllMovements(index = 1, pageCount = 3)(None)
 
-            MockMovementPaginationHelper.calculatePageCount(30, 10)
+            MockPaginationHelper.calculatePageCount(30, 10)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
               fakeRequest.withFormUrlEncodedBody("value" -> "invalid")
@@ -592,9 +592,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getMemberStates()
             .returns(Future.successful(Right(countryListConnectorResult)))
 
-          MockMovementPaginationHelper.constructPaginationForAllMovements(index = 2, pageCount = 3)(None)
+          MockPaginationHelper.constructPaginationForAllMovements(index = 2, pageCount = 3)(None)
 
-          MockMovementPaginationHelper.calculatePageCount(30, 10)
+          MockPaginationHelper.calculatePageCount(30, 10)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
             fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
@@ -620,9 +620,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getMemberStates()
             .returns(Future.successful(Right(countryListConnectorResult)))
 
-          MockMovementPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 3)(None)
+          MockPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 3)(None)
 
-          MockMovementPaginationHelper.calculatePageCount(30, 10)
+          MockPaginationHelper.calculatePageCount(30, 10)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
             fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
@@ -648,7 +648,7 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getMemberStates()
             .returns(Future.successful(Right(countryListConnectorResult)))
 
-          MockMovementPaginationHelper.calculatePageCount(30, 10)
+          MockPaginationHelper.calculatePageCount(30, 10)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
             fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
@@ -675,9 +675,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getMemberStates()
             .returns(Future.successful(Right(countryListConnectorResult)))
 
-          MockMovementPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 4)(None)
+          MockPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 4)(None)
 
-          MockMovementPaginationHelper.calculatePageCount(31, 10)
+          MockPaginationHelper.calculatePageCount(31, 10)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
             fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
@@ -704,9 +704,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
             .getMemberStates()
             .returns(Future.successful(Right(countryListConnectorResult)))
 
-          MockMovementPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 4)(None)
+          MockPaginationHelper.constructPaginationForAllMovements(index = 3, pageCount = 4)(None)
 
-          MockMovementPaginationHelper.calculatePageCount(39, 10)
+          MockPaginationHelper.calculatePageCount(39, 10)
 
           val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
             fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
@@ -735,9 +735,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
               .getMemberStates()
               .returns(Future.successful(Right(countryListConnectorResult)))
 
-            MockMovementPaginationHelper.constructPaginationForAllMovements(index = 1, pageCount = 1)(None)
+            MockPaginationHelper.constructPaginationForAllMovements(index = 1, pageCount = 1)(None)
 
-            MockMovementPaginationHelper.calculatePageCount(0, 10)
+            MockPaginationHelper.calculatePageCount(0, 10)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
               fakeRequest.withFormUrlEncodedBody(("value", "invalid"))
