@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package services
+package mocks.services
 
-import connectors.emcsTfe.DraftTemplatesConnector
 import models.draftTemplates.TemplateList
-import models.response.DraftTemplatesListException
+import org.scalamock.handlers.CallHandler4
+import org.scalamock.scalatest.MockFactory
+import services.DraftTemplatesService
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Logging
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DraftTemplatesService @Inject()(connector: DraftTemplatesConnector) extends Logging {
-  def list(ern: String, page: Int)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[TemplateList] = connector.list(ern, page).map {
-    case Right(templateList) => templateList
-    case Left(errorResponse) => throw DraftTemplatesListException(s"Failed to retrieve list of templates for $ern: $errorResponse")
+trait MockDraftTemplatesService extends MockFactory {
+
+  lazy val mockDraftTemplatesService: DraftTemplatesService = mock[DraftTemplatesService]
+
+  object MockDraftMovementService {
+    def list(ern: String, page: Int): CallHandler4[String, Int, HeaderCarrier, ExecutionContext, Future[TemplateList]] =
+      (mockDraftTemplatesService.list(_: String, _: Int)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(ern, page, *, *)
   }
+
 }

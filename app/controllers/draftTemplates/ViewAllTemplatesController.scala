@@ -18,6 +18,7 @@ package controllers.draftTemplates
 
 import config.AppConfig
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
+import models.draftTemplates.TemplateList
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.DraftTemplatesService
@@ -39,13 +40,11 @@ class ViewAllTemplatesController @Inject()(mcc: MessagesControllerComponents,
 
   val DEFAULT_MAX_ROWS = 10
 
-  val totalNumberOfTemplates = 30
-
   def onPageLoad(exciseRegistrationNumber: String, page: Option[Int]): Action[AnyContent] = {
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       ifCanAccessDraftTemplates(exciseRegistrationNumber) {
         service.list(exciseRegistrationNumber, page.getOrElse(1)).map {
-          templates =>
+          case TemplateList(templates, totalNumberOfTemplates) =>
             val pageCount: Int = paginationHelper.calculatePageCount(totalNumberOfTemplates, DEFAULT_MAX_ROWS)
 
             val currentPage = page.getOrElse(1)

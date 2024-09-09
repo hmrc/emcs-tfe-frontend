@@ -18,16 +18,15 @@ package views
 
 import base.ViewSpecBase
 import config.AppConfig
+import fixtures.DraftTemplatesFixtures
 import fixtures.messages.ViewAllTemplatesMessages.English
-import models.common.DestinationType
-import models.draftTemplates.Template
 import models.requests.DataRequest
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.PaginationUtil
 import views.html.ViewAllTemplatesView
 
-class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours {
+class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours with DraftTemplatesFixtures {
   lazy val view: ViewAllTemplatesView = app.injector.instanceOf[ViewAllTemplatesView]
   implicit lazy val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
 
@@ -65,19 +64,6 @@ class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours {
         }
 
         "list of templates is not empty" when {
-          val templates: Seq[Template] = Seq(
-            Template("1", "Template 1", DestinationType.TaxWarehouse, Some("GB001234567890")),
-            Template("2", "Template 2", DestinationType.TaxWarehouse, Some("GB001234567890")),
-            Template("3", "Template 3", DestinationType.TaxWarehouse, Some("XI001234567890")),
-            Template("4", "Template 4", DestinationType.TaxWarehouse, Some("IE001234567890")),
-            Template("5", "Template 5", DestinationType.TaxWarehouse, None),
-            Template("6", "Template 6", DestinationType.Export, Some("GB001234567890")),
-            Template("7", "Template 7", DestinationType.Export, Some("GB001234567890")),
-            Template("8", "Template 8", DestinationType.Export, Some("XI001234567890")),
-            Template("9", "Template 9", DestinationType.Export, Some("IE001234567890")),
-            Template("10", "Template 10", DestinationType.Export, None)
-          )
-
           val paginationHelper = new PaginationUtil {
             override val link: Int => String =
               (index: Int) => controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(testErn, Some(index)).url
@@ -86,7 +72,7 @@ class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours {
             override val pages: Int = 5
           }
 
-          implicit val doc = asDocument(view(templates, paginationHelper.constructPagination()))
+          implicit val doc = asDocument(view(templateList, paginationHelper.constructPagination()))
 
           behave like pageWithExpectedElementsAndMessages(Seq(
             Selectors.title -> messagesForLanguage.title,

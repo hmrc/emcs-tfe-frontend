@@ -18,8 +18,8 @@ package viewmodels.helpers
 
 import base.SpecBase
 import fixtures.messages.ViewAllTemplatesMessages.English
-import models.common.DestinationType
 import models.draftTemplates.Template
+import models.movementScenario.MovementScenario
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{HeadCell, TableRow}
@@ -29,8 +29,8 @@ import views.html.components._
 class ViewAllTemplatesHelperSpec extends SpecBase {
 
   val templates: Seq[Template] = Seq(
-    Template("1", "Template 1", DestinationType.TaxWarehouse, Some("GB001234567890")),
-    Template("2", "Template 2", DestinationType.TaxWarehouse, Some("GB001234567890")),
+    Template("1", "Template 1", MovementScenario.UkTaxWarehouse.GB, Some("GB001234567890")),
+    Template("2", "Template 2", MovementScenario.UkTaxWarehouse.GB, Some("GB001234567890")),
   )
 
   lazy val list: list = app.injector.instanceOf[list]
@@ -39,10 +39,12 @@ class ViewAllTemplatesHelperSpec extends SpecBase {
   lazy val p: p = app.injector.instanceOf[p]
   lazy val movementEventHelper: MovementEventHelper = app.injector.instanceOf[MovementEventHelper]
 
-  val helper: ViewAllTemplatesHelper = new ViewAllTemplatesHelper(list, link, h2, p, movementEventHelper)
+  val helper: ViewAllTemplatesHelper = new ViewAllTemplatesHelper(list, link, h2, p)
 
   def createLink(ern: String, templateId: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+
   def renameLink(ern: String, templateId: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+
   def deleteLink(ern: String, templateId: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
 
   "ViewAllTemplatesHelper" when {
@@ -79,7 +81,7 @@ class ViewAllTemplatesHelperSpec extends SpecBase {
                   TableRow(
                     content = HtmlContent(HtmlFormat.fill(Seq(
                       h2(template.templateName),
-                      p()(Html(messagesForLanguage.destination("Tax warehouse in Great Britain"))),
+                      p()(Html(messagesForLanguage.destination("Tax warehouse in Great Britain (England, Scotland or Wales)"))),
                       p()(Html(messagesForLanguage.consignee(template.consigneeErn.getOrElse(""))))
                     )))
                   ),

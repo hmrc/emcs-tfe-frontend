@@ -26,8 +26,8 @@ case object UnexpectedDownstreamResponseError extends ErrorResponse {
   val message = "Unexpected downstream response status"
 }
 
-case object NoContentError extends Exception("No content found") with NoStackTrace with ErrorResponse {
-  val message: String = this.getMessage
+case object NoContentError extends ErrorResponse {
+  val message: String = "No content found"
 }
 
 case object NotFoundError extends ErrorResponse {

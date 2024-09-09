@@ -20,8 +20,9 @@ import base.SpecBase
 import fixtures.MovementListFixtures
 import mocks.connectors.MockHttpClient
 import models.response.emcsTfe.GetMovementListResponse
-import models.response.{JsonValidationError, NotFoundError, UnexpectedDownstreamResponseError}
+import models.response.{JsonValidationError, NoContentError, NotFoundError, UnexpectedDownstreamResponseError}
 import play.api.http.Status
+import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -45,6 +46,20 @@ class EmcsTfeHttpParserSpec
         val httpResponse = HttpResponse(Status.OK, getMovementListJson, Map())
 
         httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) mustBe Right(getMovementListResponse)
+      }
+    }
+
+    "return NoContentError" when {
+
+      s"status is NO_CONTENT ($NO_CONTENT)" in {
+
+        val httpResponse = HttpResponse(
+          Status.NO_CONTENT,
+          "",
+          Map()
+        )
+
+        httpParser.EmcsTfeReads.read("POST", "/movement/ern/arc", httpResponse) mustBe Left(NoContentError)
       }
     }
 

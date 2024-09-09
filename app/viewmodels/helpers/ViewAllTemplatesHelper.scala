@@ -23,10 +23,9 @@ import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{HeadCell, Table, TableRow}
-import viewmodels.helpers.events.MovementEventHelper
 import views.html.components._
 
-class ViewAllTemplatesHelper @Inject()(list: list, link: link, h2: h2, p: p, movementEventHelper: MovementEventHelper) {
+class ViewAllTemplatesHelper @Inject()(list: list, link: link, h2: h2, p: p) {
 
   private[viewmodels] def dataRows(ern: String, listOfTemplates: Seq[Template])
                                   (implicit messages: Messages): Seq[Seq[TableRow]] =
@@ -38,7 +37,7 @@ class ViewAllTemplatesHelper @Inject()(list: list, link: link, h2: h2, p: p, mov
           TableRow(
             content = HtmlContent(HtmlFormat.fill(Seq(
               h2(template.templateName),
-              p()(Html(messages("viewAllTemplates.table.destination", movementEventHelper.getDestinationTypeTextFromDestinationTypeAndConsigneeErn(template.destinationType, template.consigneeErn)))),
+              p()(Html(messages("viewAllTemplates.table.destination", messages(s"viewAllTemplates.table.destination.${template.destinationType}")))),
               p()(Html(messages("viewAllTemplates.table.consignee", template.consigneeErn.getOrElse(""))))
             )))
           ),

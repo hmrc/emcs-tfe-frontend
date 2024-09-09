@@ -16,14 +16,14 @@
 
 package models.draftTemplates
 
-import models.common.DestinationType
+import models.movementScenario.MovementScenario
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class Template(
                      templateId: String,
                      templateName: String,
-                     destinationType: DestinationType,
+                     destinationType: MovementScenario,
                      consigneeErn: Option[String]
                    )
 
@@ -31,14 +31,12 @@ object Template {
   implicit val reads: Reads[Template] = (
     (JsPath \ "templateId").read[String] and
       (JsPath \ "templateName").read[String] and
-      (JsPath \ "data" \ "info" \ "destinationType").read[MovementScenario].map(_.destinationType) and
+      (JsPath \ "data" \ "info" \ "destinationType").read[MovementScenario] and
       (
         (JsPath \ "data" \ "consignee" \ "exciseRegistrationNumber").read[String].map(Some(_)) or
           (JsPath \ "data" \ "consignee" \ "consigneeExportVat").readNullable[String]
         )
     )(Template.apply _)
-
-  implicit val readsSeq: Reads[Seq[Template]] = Reads.seq(reads)
 
   implicit val writes: OWrites[Template] = Json.writes[Template]
 }

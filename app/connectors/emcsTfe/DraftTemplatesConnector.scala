@@ -17,7 +17,7 @@
 package connectors.emcsTfe
 
 import config.AppConfig
-import models.draftTemplates.Template
+import models.draftTemplates.TemplateList
 import models.response.{ErrorResponse, JsonValidationError, NoContentError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,21 +27,21 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DraftTemplatesConnector @Inject()(val http: HttpClientV2,
-                                        config: AppConfig) extends EmcsTfeHttpParser[Seq[Template]] {
+                                        config: AppConfig) extends EmcsTfeHttpParser[TemplateList] {
 
-  override implicit val reads: Reads[Seq[Template]] = Template.readsSeq
+  override implicit val reads: Reads[TemplateList] = TemplateList.reads
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 
-  def list(ern: String, page: Int)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Seq[Template]]] = {
+  def list(ern: String, page: Int)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, TemplateList]] = {
     def url: String = s"$baseUrl/templates/$ern"
 
     get(url, Seq("page" -> page.toString))
       .map {
-        case Right(templates) => Right(templates)
+        case Right(templateList) => Right(templateList)
         case Left(NoContentError) =>
           logger.debug(s"[list][$ern] No content from emcs-tfe")
-          Right(Seq.empty)
+          Right(TemplateList.empty)
         case Left(errorResponse) => Left(errorResponse)
       }
       .recover {
