@@ -18,58 +18,46 @@ package controllers.draftTemplates
 
 import config.AppConfig
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
-import models.common.DestinationType
-import models.draftTemplates.Template
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.DraftTemplatesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels.PaginationHelper
 import views.html.ViewAllTemplatesView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class ViewAllTemplatesController @Inject()(mcc: MessagesControllerComponents,
                                            view: ViewAllTemplatesView,
                                            val auth: AuthAction,
                                            val getData: DataRetrievalAction,
+                                           service: DraftTemplatesService,
                                            paginationHelper: PaginationHelper
                                           )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   val DEFAULT_MAX_ROWS = 10
 
-  val dummyTemplates: Seq[Template] = Seq(
-    Template("1", "Template 1", DestinationType.TaxWarehouse, Some("GB001234567890")),
-    Template("2", "Template 2", DestinationType.TaxWarehouse, Some("GB001234567890")),
-    Template("3", "Template 3", DestinationType.TaxWarehouse, Some("XI001234567890")),
-    Template("4", "Template 4", DestinationType.TaxWarehouse, Some("IE001234567890")),
-    Template("5", "Template 5", DestinationType.TaxWarehouse, None),
-    Template("6", "Template 6", DestinationType.Export, Some("GB001234567890")),
-    Template("7", "Template 7", DestinationType.Export, Some("GB001234567890")),
-    Template("8", "Template 8", DestinationType.Export, Some("XI001234567890")),
-    Template("9", "Template 9", DestinationType.Export, Some("IE001234567890")),
-    Template("10", "Template 10", DestinationType.Export, None)
-  )
-
   val totalNumberOfTemplates = 30
 
   def onPageLoad(exciseRegistrationNumber: String, page: Option[Int]): Action[AnyContent] = {
     authorisedDataRequestAsync(exciseRegistrationNumber) { implicit request =>
       ifCanAccessDraftTemplates(exciseRegistrationNumber) {
-        val pageCount: Int = paginationHelper.calculatePageCount(totalNumberOfTemplates, DEFAULT_MAX_ROWS)
+        service.list(exciseRegistrationNumber, page.getOrElse(1)).map {
+          templates =>
+            val pageCount: Int = paginationHelper.calculatePageCount(totalNumberOfTemplates, DEFAULT_MAX_ROWS)
 
-        val currentPage = page.getOrElse(1)
+            val currentPage = page.getOrElse(1)
 
-        if (currentPage <= 0 || currentPage > pageCount) {
-          // if page number is invalid - lower than '1' or higher than the calculated max page count
-          Future.successful(Redirect(controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(exciseRegistrationNumber, None)))
-        } else {
-          val pagination = paginationHelper.constructPaginationForDraftTemplates(exciseRegistrationNumber, page.getOrElse(1), pageCount)
+            if (currentPage <= 0 || currentPage > pageCount) {
+              // if page number is invalid - lower than '1' or higher than the calculated max page count
+              Redirect(controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(exciseRegistrationNumber, None))
+            } else {
+              val pagination = paginationHelper.constructPaginationForDraftTemplates(exciseRegistrationNumber, page.getOrElse(1), pageCount)
 
-          Future.successful(
-            Ok(view(dummyTemplates, pagination))
-          )
+              Ok(view(templates, pagination))
+            }
         }
       }
     }
