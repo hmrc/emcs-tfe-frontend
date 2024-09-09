@@ -17,6 +17,7 @@
 package viewmodels.helpers
 
 import com.google.inject.Inject
+import models.Index
 import models.draftTemplates.Template
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
@@ -31,6 +32,7 @@ class ViewAllTemplatesHelper @Inject()(list: list, link: link, h2: h2, p: p, mov
                                   (implicit messages: Messages): Seq[Seq[TableRow]] =
     listOfTemplates.zipWithIndex.map {
       case (template, idx) =>
+        val index = Index(idx)
         Seq(
           // Content
           TableRow(
@@ -47,17 +49,17 @@ class ViewAllTemplatesHelper @Inject()(list: list, link: link, h2: h2, p: p, mov
                 p()(link(
                   link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
                   messageKey = "viewAllTemplates.table.startDraft",
-                  id = Some(s"start-draft-$idx")
+                  id = Some(s"start-draft-${index.displayIndex}")
                 )),
                 p()(link(
                   link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
                   messageKey = "viewAllTemplates.table.rename",
-                  id = Some(s"rename-$idx")
+                  id = Some(s"rename-${index.displayIndex}")
                 )),
                 p()(link(
                   link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
                   messageKey = "viewAllTemplates.table.delete",
-                  id = Some(s"delete-$idx")
+                  id = Some(s"delete-${index.displayIndex}")
                 ))
               )
             )),

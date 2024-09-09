@@ -86,9 +86,9 @@ class ViewAllTemplatesHelperSpec extends SpecBase {
                   TableRow(
                     content = HtmlContent(list(
                       Seq(
-                        p()(link(createLink(testErn, template.templateId), messagesForLanguage.actionCreate, Some(s"start-draft-$idx"))),
-                        p()(link(renameLink(testErn, template.templateId), messagesForLanguage.actionRename, Some(s"rename-$idx"))),
-                        p()(link(deleteLink(testErn, template.templateId), messagesForLanguage.actionDelete, Some(s"delete-$idx")))
+                        p()(link(createLink(testErn, template.templateId), messagesForLanguage.actionCreate, Some(s"start-draft-${idx + 1}"))),
+                        p()(link(renameLink(testErn, template.templateId), messagesForLanguage.actionRename, Some(s"rename-${idx + 1}"))),
+                        p()(link(deleteLink(testErn, template.templateId), messagesForLanguage.actionDelete, Some(s"delete-${idx + 1}")))
                       )
                     ))
                   )
