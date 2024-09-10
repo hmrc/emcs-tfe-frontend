@@ -94,11 +94,7 @@ class PrevalidateTraderResultsControllerSpec extends SpecBase
         exciseTraderResponse.copy(
           exciseId = ernToCheck,
           validationResult = "Fail",
-          failDetails = Some(
-            FailDetails(
-              validTrader = false
-            )
-          )
+          failDetails = None
         )
       ))
 
