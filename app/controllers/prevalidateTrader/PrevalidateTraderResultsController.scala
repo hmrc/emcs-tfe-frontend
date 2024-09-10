@@ -63,7 +63,11 @@ class PrevalidateTraderResultsController @Inject()(
           prevalidateTraderService.prevalidateTrader(ern, prevalidateTraderUserAnswers.ern, Some(prevalidateTraderUserAnswers.entityGroup), Some(enteredEPCs))
             .map { prevalidateTraderResult =>
 
-            val validTraderErn:Boolean = prevalidateTraderResult.failDetails.forall(_.validTrader)
+            val validTraderErn:Boolean = (prevalidateTraderResult.validationResult, prevalidateTraderResult.failDetails) match {
+              case ("Pass", _) => true
+              case ("Fail", Some(failDetails)) if failDetails.validTrader => true
+              case _ => false
+            }
 
             val ineligibleEPCs: Seq[String] = prevalidateTraderResult.failDetails
               .flatMap(_.validateProductAuthorisationResponse)
