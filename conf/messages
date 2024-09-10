@@ -11,6 +11,9 @@ site.remove = Remove
 site.results.found.plural = {0} results found
 site.results.found.singular = 1 result found
 site.results.notFound = No results found
+site.templates.found.plural = {0} templates found
+site.templates.found.singular = 1 template found
+site.templates.notFound = No templates found
 site.skip.to.results = Skip to results
 
 errorPage.title = Sorry, we’re experiencing technical difficulties

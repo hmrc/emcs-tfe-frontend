@@ -19,7 +19,7 @@ class DraftTemplatesConnectorISpec extends IntegrationBaseSpec {
 
   ".list()" must {
 
-    val url = s"/emcs-tfe/templates/$testErn?page=1"
+    val url = s"/emcs-tfe/templates/$testErn?page=1&pageSize=10"
 
     "return a non-empty Seq[Template] when the server responds OK" in {
 
@@ -38,12 +38,13 @@ class DraftTemplatesConnectorISpec extends IntegrationBaseSpec {
               |        }
               |      }
               |    }
-              |  ]
+              |  ],
+              |  "count": 1
               |}
               |""".stripMargin).toString()))
       )
 
-      connector.list(testErn, 1).futureValue mustBe Right(TemplateList(Seq(Template(testDraftId, "template name", UnknownDestination, None)), 30))
+      connector.list(testErn, 1).futureValue mustBe Right(TemplateList(Seq(Template(testDraftId, "template name", UnknownDestination, None)), 1))
     }
 
     "return an empty Seq when the server responds NO_CONTENT" in {

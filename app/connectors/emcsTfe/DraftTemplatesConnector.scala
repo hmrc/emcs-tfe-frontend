@@ -36,7 +36,7 @@ class DraftTemplatesConnector @Inject()(val http: HttpClientV2,
   def list(ern: String, page: Int)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, TemplateList]] = {
     def url: String = s"$baseUrl/templates/$ern"
 
-    get(url, Seq("page" -> page.toString))
+    get(url, Seq("page" -> page.toString, "pageSize" -> TemplateList.DEFAULT_MAX_ROWS.toString))
       .map {
         case Right(templateList) => Right(templateList)
         case Left(NoContentError) =>

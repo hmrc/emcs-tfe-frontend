@@ -24,14 +24,13 @@ case class TemplateList(templates: Seq[Template], count: Int)
 
 object TemplateList {
   implicit val reads: Reads[TemplateList] = (
-    (
-      (JsPath).read[Seq[Template]] or // TODO: remove when pagination is implemented
-        (JsPath \ "templates").read[Seq[Template]]
-      ) and
-      Reads.pure(30) // TODO: fix when pagination is implemented
+    (JsPath \ "templates").read[Seq[Template]] and
+      (JsPath \ "count").read[Int]
     )(TemplateList.apply _)
 
   implicit val writes: OWrites[TemplateList] = Json.writes[TemplateList]
 
   def empty: TemplateList = TemplateList(Seq.empty, 0)
+
+  val DEFAULT_MAX_ROWS: Int = 10
 }

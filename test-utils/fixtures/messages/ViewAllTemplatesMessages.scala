@@ -34,6 +34,9 @@ object ViewAllTemplatesMessages {
     val actionRename = "Rename template"
     val actionDelete = "Delete template"
 
+    val oneTemplateH2 = "1 template found"
+    val multipleTemplatesH2: Int => String = count => s"$count templates found"
+
     val noTemplatesP1 = "You have not created any templates."
     val noTemplatesP2 = "You can create a template by submitting a draft movement. Templates allow you to edit and reuse most of the movement information."
 

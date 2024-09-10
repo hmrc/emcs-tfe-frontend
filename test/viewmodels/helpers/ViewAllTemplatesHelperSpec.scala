@@ -35,11 +35,11 @@ class ViewAllTemplatesHelperSpec extends SpecBase {
 
   lazy val list: list = app.injector.instanceOf[list]
   lazy val link: link = app.injector.instanceOf[link]
-  lazy val h2: h2 = app.injector.instanceOf[h2]
+  lazy val h3: h3 = app.injector.instanceOf[h3]
   lazy val p: p = app.injector.instanceOf[p]
   lazy val movementEventHelper: MovementEventHelper = app.injector.instanceOf[MovementEventHelper]
 
-  val helper: ViewAllTemplatesHelper = new ViewAllTemplatesHelper(list, link, h2, p)
+  val helper: ViewAllTemplatesHelper = new ViewAllTemplatesHelper(list, link, h3, p)
 
   def createLink(ern: String, templateId: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
 
@@ -80,7 +80,7 @@ class ViewAllTemplatesHelperSpec extends SpecBase {
                 Seq(
                   TableRow(
                     content = HtmlContent(HtmlFormat.fill(Seq(
-                      h2(template.templateName),
+                      h3(template.templateName),
                       p()(Html(messagesForLanguage.destination("Tax warehouse in Great Britain (England, Scotland or Wales)"))),
                       p()(Html(messagesForLanguage.consignee(template.consigneeErn.getOrElse(""))))
                     )))

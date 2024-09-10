@@ -45,7 +45,7 @@ class ViewAllTemplatesController @Inject()(mcc: MessagesControllerComponents,
       ifCanAccessDraftTemplates(exciseRegistrationNumber) {
         service.list(exciseRegistrationNumber, page.getOrElse(1)).map {
           case TemplateList(templates, totalNumberOfTemplates) =>
-            val pageCount: Int = paginationHelper.calculatePageCount(totalNumberOfTemplates, DEFAULT_MAX_ROWS)
+            val pageCount: Int = paginationHelper.calculatePageCount(totalNumberOfTemplates, TemplateList.DEFAULT_MAX_ROWS)
 
             val currentPage = page.getOrElse(1)
 
@@ -55,7 +55,7 @@ class ViewAllTemplatesController @Inject()(mcc: MessagesControllerComponents,
             } else {
               val pagination = paginationHelper.constructPaginationForDraftTemplates(exciseRegistrationNumber, page.getOrElse(1), pageCount)
 
-              Ok(view(templates, pagination))
+              Ok(view(templates, pagination, totalNumberOfTemplates))
             }
         }
       }

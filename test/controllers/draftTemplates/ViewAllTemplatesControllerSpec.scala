@@ -99,7 +99,8 @@ class ViewAllTemplatesControllerSpec extends SpecBase
         status(result) mustBe OK
         contentAsString(result) mustBe view(
           templateList,
-          None
+          None,
+          30
         ).toString()
       }
 
@@ -117,7 +118,8 @@ class ViewAllTemplatesControllerSpec extends SpecBase
         status(result) mustBe OK
         contentAsString(result) mustBe view(
           templateList,
-          None
+          None,
+          30
         ).toString()
       }
 
@@ -135,7 +137,8 @@ class ViewAllTemplatesControllerSpec extends SpecBase
         status(result) mustBe OK
         contentAsString(result) mustBe view(
           templateList,
-          None
+          None,
+          30
         ).toString()
       }
 
@@ -153,7 +156,8 @@ class ViewAllTemplatesControllerSpec extends SpecBase
         status(result) mustBe OK
         contentAsString(result) mustBe view(
           templateList,
-          None
+          None,
+          30
         ).toString()
       }
 
@@ -184,7 +188,8 @@ class ViewAllTemplatesControllerSpec extends SpecBase
         status(result) mustBe OK
         contentAsString(result) mustBe view(
           templateList,
-          None
+          None,
+          31
         ).toString()
       }
 
@@ -202,7 +207,8 @@ class ViewAllTemplatesControllerSpec extends SpecBase
         status(result) mustBe OK
         contentAsString(result) mustBe view(
           templateList,
-          None
+          None,
+          39
         ).toString()
       }
     }

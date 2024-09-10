@@ -19,16 +19,16 @@
 
 @this(h2: h2)
 
-@(count: Int)(implicit messages: Messages)
+@(count: Int, key: String = "results")(implicit messages: Messages)
 
 @if(count == 0) {
     <div id="search-results" role="status">
-        @h2("site.results.notFound", classes = "govuk-heading-m", id = Some("number-of-results-found"))
+        @h2(s"site.$key.notFound", classes = "govuk-heading-m", id = Some("number-of-results-found"))
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
     </div>
 } else {
     <div id="search-results" role="status">
-        @h2(ViewUtils.pluralSingular("site.results.found", count), classes = "govuk-heading-m", id = Some("number-of-results-found"))
+        @h2(ViewUtils.pluralSingular(s"site.$key.found", count), classes = "govuk-heading-m", id = Some("number-of-results-found"))
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
     </div>
 }

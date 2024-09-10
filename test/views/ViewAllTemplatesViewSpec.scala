@@ -44,7 +44,7 @@ class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours with Dra
 
       s"render the view when being rendered in lang code of '${messagesForLanguage.lang.code}'" when {
         "list of templates is empty" when {
-          implicit val doc = asDocument(view(Seq.empty, None))
+          implicit val doc = asDocument(view(Seq.empty, None, 0))
 
           behave like pageWithExpectedElementsAndMessages(Seq(
             Selectors.title -> messagesForLanguage.title,
@@ -72,11 +72,12 @@ class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours with Dra
             override val pages: Int = 5
           }
 
-          implicit val doc = asDocument(view(templateList, paginationHelper.constructPagination()))
+          implicit val doc = asDocument(view(templateList, paginationHelper.constructPagination(), 3))
 
           behave like pageWithExpectedElementsAndMessages(Seq(
             Selectors.title -> messagesForLanguage.title,
             Selectors.h1 -> messagesForLanguage.heading,
+            Selectors.h2(1) -> messagesForLanguage.multipleTemplatesH2(3),
             Selectors.p(1) -> messagesForLanguage.p1,
           ))
 
@@ -86,6 +87,22 @@ class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours with Dra
 
           "display pagination" in {
             doc.select(Selectors.pagination).size() mustBe 1
+          }
+
+          "only one result is found" must {
+            val paginationHelper = new PaginationUtil {
+              override val link: Int => String =
+                (index: Int) => controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(testErn, Some(index)).url
+
+              override val currentPage: Int = 1
+              override val pages: Int = 5
+            }
+
+            implicit val doc = asDocument(view(templateList, paginationHelper.constructPagination(), 1))
+
+            behave like pageWithExpectedElementsAndMessages(Seq(
+              Selectors.h2(1) -> messagesForLanguage.oneTemplateH2
+            ))
           }
         }
       }
