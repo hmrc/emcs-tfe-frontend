@@ -19,7 +19,7 @@ package mocks.connectors
 import connectors.emcsTfe.PrevalidateTraderConnector
 import models.requests.PrevalidateTraderRequest
 import models.response.ErrorResponse
-import models.response.emcsTfe.prevalidateTrader.PreValidateTraderApiResponse
+import models.response.emcsTfe.prevalidateTrader.PreValidateTraderResponse
 import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,7 +32,7 @@ trait MockPrevalidateTraderConnector extends MockFactory {
 
   object MockPrevalidateTraderConnector {
 
-    def prevalidateTrader(ern: String, requestModel: PrevalidateTraderRequest): CallHandler4[String, PrevalidateTraderRequest, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, PreValidateTraderApiResponse]]] =
+    def prevalidateTrader(ern: String, requestModel: PrevalidateTraderRequest): CallHandler4[String, PrevalidateTraderRequest, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, PreValidateTraderResponse]]] =
       (mockPrevalidateTraderConnector.prevalidateTrader(_: String, _: PrevalidateTraderRequest)(_: HeaderCarrier, _: ExecutionContext))
         .expects(ern, requestModel, *, *)
   }

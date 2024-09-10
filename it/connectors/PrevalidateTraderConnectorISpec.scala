@@ -44,11 +44,11 @@ class PrevalidateTraderConnectorISpec extends IntegrationBaseSpec
   val ernToCheck = "GBWK002281023"
   val entityGroupToCheck = testEntityGroup
 
-  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, entityGroupToCheck, Seq(testEpcWine, testEpcBeer))
+  val requestModel: PrevalidateTraderRequest = PrevalidateTraderRequest(ernToCheck, Some(entityGroupToCheck), Some(Seq(testEpcWine, testEpcBeer)))
 
   ".markMessageAsRead" must {
 
-    "must return Right(PreValidateTraderApiResponse) when the server responds OK" in {
+    "must return Right(PreValidateTraderResponse) when the server responds OK" in {
       wireMockServer.stubFor(
         post(urlEqualTo(url()))
           .withRequestBody(equalToJson(Json.stringify(Json.toJson(requestModel))))

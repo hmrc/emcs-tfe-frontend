@@ -19,7 +19,7 @@ package models.requests
 import models.prevalidate.EntityGroup
 import play.api.libs.json.{Format, Json}
 
-case class PrevalidateTraderRequest(ern: String, entityGroup: EntityGroup, productCodes: Seq[String])
+case class PrevalidateTraderRequest(ern: String, entityGroup: Option[EntityGroup], productCodes: Option[Seq[String]])
 
 object PrevalidateTraderRequest {
 

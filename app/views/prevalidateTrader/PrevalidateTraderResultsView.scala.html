@@ -29,37 +29,27 @@
 )
 
 @(
-        ernOpt: Option[String],
+        requestedErn: String,
+        validTraderErn: Boolean,
         addCodeCall: Call,
         approved: Seq[ExciseProductCode] = Seq.empty,
         notApproved: Seq[ExciseProductCode] = Seq.empty
 )(implicit request: UserAnswersRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
-    pageTitle = titleNoForm(ernOpt.fold(messages("prevalidateTrader.results.invalidErn.heading"))(_ => messages("prevalidateTrader.results.validErn.heading"))),
+    pageTitle = titleNoForm(if (validTraderErn) messages("prevalidateTrader.results.validErn.heading") else messages("prevalidateTrader.results.invalidErn.heading")),
     maybeShowActiveTrader = maybeShowActiveTrader(request.request),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), None))
 ) {
 
     @h2(messages("prevalidateTrader.caption"), "govuk-caption-xl")
 
-    @ernOpt.fold {
-        @h1(classes = "govuk-heading-l") {
-            @messages("prevalidateTrader.results.invalidErn.heading")
-        }
-        @p() {
-            @link(
-                link = routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(request.ern).url,
-                messageKey = "prevalidateTrader.results.invalidErn.link",
-                id = Some("no-ern-link")
-            )
-        }
-    } { ern =>
+    @if(validTraderErn) {
         @h1(classes = "govuk-heading-l") {
             @messages("prevalidateTrader.results.validErn.heading")
         }
         @p() {
-            @messages("prevalidateTrader.results.p1", ern)
+            @messages("prevalidateTrader.results.p1", requestedErn)
         }
 
         @if(approved.nonEmpty) {
@@ -93,7 +83,19 @@
                 id = Some("different-trader-link")
             )
         }
+    } else {
+        @h1(classes = "govuk-heading-l") {
+            @messages("prevalidateTrader.results.invalidErn.heading")
+        }
+        @p() {
+            @link(
+                link = routes.PrevalidateConsigneeTraderIdentificationController.onPageLoad(request.ern).url,
+                messageKey = "prevalidateTrader.results.invalidErn.link",
+                id = Some("no-ern-link")
+            )
+        }
     }
+
 
     @p() {
         @link(
