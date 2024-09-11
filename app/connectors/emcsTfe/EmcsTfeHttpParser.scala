@@ -39,7 +39,7 @@ trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
         }
         case NO_CONTENT =>
           logger.debug(s"[read] No content from emcs-tfe")
-          Left(NoContentError)
+          Left(NoContentError) // to be handled upstream
         case status =>
           logger.warn(s"[read] Unexpected status from emcs-tfe: $status")
           logger.debug(s"[read] error body from emcs-tfe: ${response.body}")
