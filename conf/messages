@@ -24,10 +24,12 @@ error.browser.title.prefix = Error:
 error.invalidCharacter = Search term contains invalid characters
 
 base.saveAndContinue = Save and continue
+base.confirmAndSave = Confirm and save
 base.continue = Continue
 base.saveMovement    = Save and return to movement
 base.opensInNewTab   = (opens in new tab)
 base.captionHiddenText = This section is
+base.captionHiddenTextThisIs = This is
 
 common.arc = Administrative reference code
 
@@ -757,6 +759,15 @@ site.govuk = GOV.UK
 site.back = Back
 site.confirm = Confirm
 
+renameTemplate.title = Enter a new name for this template
+renameTemplate.caption = Enter a new name for this template
+renameTemplate.h1 = Enter a new name for this template
+renameTemplate.label = Label
+renameTemplate.hint = This is for your reference only, to help you identify this movement for future use.
+renameTemplate.error.required = Enter a name to save this template
+renameTemplate.error.length = Name must be 22 characters or less
+renameTemplate.error.notUnique = Enter a name that has not been used before
+
 viewAllTemplates.title = Templates
 viewAllTemplates.p1 = Draft movements can be saved as a template when submitting. Templates allow you to edit and reuse most of the movement information.
 viewAllTemplates.table.templateDetails = Template details
@@ -781,6 +792,8 @@ viewAllTemplates.table.delete = Delete template
 viewAllTemplates.noTemplates.p1 = You have not created any templates.
 viewAllTemplates.noTemplates.p2 = You can create a template by submitting a draft movement. Templates allow you to edit and reuse most of the movement information.
 viewAllTemplates.createANewMovement = Create a new movement
+viewAllTemplates.renamedNotification.title = Success
+viewAllTemplates.renamedNotification.content = Draft template "{0}" renamed to "{1}".
 
 viewAllMovements.heading = Movements
 viewAllMovements.filtered = ' filtered'

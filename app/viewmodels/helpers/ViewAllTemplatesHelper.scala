@@ -51,7 +51,7 @@ class ViewAllTemplatesHelper @Inject()(list: list, link: link, h3: h3, p: p) {
                   id = Some(s"start-draft-${index.displayIndex}")
                 )),
                 p()(link(
-                  link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                  link = controllers.draftTemplates.routes.RenameTemplateController.onSubmit(ern,template.templateId).url,
                   messageKey = "viewAllTemplates.table.rename",
                   id = Some(s"rename-${index.displayIndex}")
                 )),

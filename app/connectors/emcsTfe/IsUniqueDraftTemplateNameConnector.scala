@@ -17,8 +17,8 @@
 package connectors.emcsTfe
 
 import config.AppConfig
-import models.draftTemplates.{FullTemplate, Template, TemplateList}
-import models.response.{ErrorResponse, JsonValidationError, NoContentError, UnexpectedDownstreamResponseError}
+import models.draftTemplates.DoesExist
+import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -26,22 +26,19 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DraftTemplatesConnector @Inject()(val http: HttpClientV2,
-                                        config: AppConfig) extends EmcsTfeHttpParser[TemplateList] {
+class IsUniqueDraftTemplateNameConnector @Inject()(val http: HttpClientV2,
+                                                   config: AppConfig) extends EmcsTfeHttpParser[DoesExist] {
 
-  override implicit val reads: Reads[TemplateList] = TemplateList.reads
+  override implicit val reads: Reads[DoesExist] = DoesExist.reads
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 
-  def list(ern: String, page: Int)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, TemplateList]] = {
-    def url: String = s"$baseUrl/templates/$ern"
+  def doesExist(ern: String, templateName: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Boolean]] = {
+    def url: String = s"$baseUrl/template/name-already-exists"
 
-    get(url, Seq("page" -> page.toString, "pageSize" -> TemplateList.DEFAULT_MAX_ROWS.toString))
+    get(url,  Seq("ern" -> ern, "templateName" -> templateName))
       .map {
-        case Right(templateList) => Right(templateList)
-        case Left(NoContentError) =>
-          logger.debug(s"[list][$ern] No content from emcs-tfe")
-          Right(TemplateList.empty)
+        case Right(doesExist) => Right(doesExist.doesExist)
         case Left(errorResponse) => Left(errorResponse)
       }
       .recover {
@@ -49,7 +46,7 @@ class DraftTemplatesConnector @Inject()(val http: HttpClientV2,
           logger.warn(s"[list][$ern] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[markMovementAsDraft][$ern] Unexpected error: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[DraftTemplateError][$ern] Unexpected error: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }

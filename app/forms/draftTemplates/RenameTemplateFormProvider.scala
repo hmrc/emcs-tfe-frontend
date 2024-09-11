@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-package config
+package forms.draftTemplates
 
-object Constants {
-  val TFE_DELETED_DRAFT_LRN = "tfeDeletedDraftLrn"
-  val TFE_UPDATED_DRAFT_TEMPLATE_NAME = "tfeUpdatedDraftTemplateName"
-  val TFE_OLD_DRAFT_TEMPLATE_NAME = "tfeOldDraftTemplateName"
+import forms.mappings.Mappings
+import play.api.data.Form
+
+import javax.inject.Inject
+
+class RenameTemplateFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("renameTemplate.error.required")
+        .verifying(
+          firstError(
+            maxLength(30, "renameTemplate.error.length"),
+          )
+        )
+    )
 }

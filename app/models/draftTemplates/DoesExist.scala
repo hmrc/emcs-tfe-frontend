@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-package config
+package models.draftTemplates
 
-object Constants {
-  val TFE_DELETED_DRAFT_LRN = "tfeDeletedDraftLrn"
-  val TFE_UPDATED_DRAFT_TEMPLATE_NAME = "tfeUpdatedDraftTemplateName"
-  val TFE_OLD_DRAFT_TEMPLATE_NAME = "tfeOldDraftTemplateName"
+import models.movementScenario.MovementScenario
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+
+case class DoesExist(
+                     doesExist: Boolean
+                   )
+
+object DoesExist {
+  implicit val reads: Reads[DoesExist] = Json.reads
+
+  implicit val writes: OWrites[DoesExist] = Json.writes[DoesExist]
 }
