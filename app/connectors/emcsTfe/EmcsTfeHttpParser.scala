@@ -18,7 +18,7 @@ package connectors.emcsTfe
 
 import connectors.BaseConnectorUtils
 import models.response._
-import play.api.http.Status.OK
+import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
@@ -37,6 +37,9 @@ trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
             logger.warn(s"[read] Bad JSON response from emcs-tfe")
             Left(JsonValidationError)
         }
+        case NO_CONTENT =>
+          logger.debug(s"[read] No content from emcs-tfe")
+          Left(NoContentError) // to be handled upstream
         case status =>
           logger.warn(s"[read] Unexpected status from emcs-tfe: $status")
           logger.debug(s"[read] error body from emcs-tfe: ${response.body}")

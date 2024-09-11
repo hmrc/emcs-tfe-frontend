@@ -20,6 +20,10 @@ import base.SpecBase
 import config.AppConfig
 import controllers.predicates.{FakeAuthAction, FakeDataRetrievalAction}
 import featureswitch.core.config.{FeatureSwitching, TemplatesLink}
+import fixtures.DraftTemplatesFixtures
+import mocks.services.MockDraftTemplatesService
+import mocks.viewmodels.MockPaginationHelper
+import models.draftTemplates.TemplateList
 import models.requests.DataRequest
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
@@ -30,7 +34,13 @@ import views.html.ViewAllTemplatesView
 
 import scala.concurrent.Future
 
-class ViewAllTemplatesControllerSpec extends SpecBase with FakeAuthAction with FeatureSwitching {
+// scalastyle:off magic.number
+class ViewAllTemplatesControllerSpec extends SpecBase
+  with FakeAuthAction
+  with FeatureSwitching
+  with MockPaginationHelper
+  with MockDraftTemplatesService
+  with DraftTemplatesFixtures {
 
   implicit lazy val config: AppConfig = appConfig
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -42,7 +52,9 @@ class ViewAllTemplatesControllerSpec extends SpecBase with FakeAuthAction with F
     app.injector.instanceOf[MessagesControllerComponents],
     view,
     FakeSuccessAuthAction,
-    new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics))
+    new FakeDataRetrievalAction(Some(testMinTraderKnownFacts), Some(testMessageStatistics)),
+    mockDraftTemplatesService,
+    mockPaginationHelper
   )
 
   enable(TemplatesLink)
@@ -50,19 +62,154 @@ class ViewAllTemplatesControllerSpec extends SpecBase with FakeAuthAction with F
   "GET" when {
     "user can't view draft templates" should {
       "redirect" in {
-        val result: Future[Result] = controller.onPageLoad("XI00123")(fakeRequest)
+        disable(TemplatesLink)
+
+        MockDraftMovementService.list(testErn, 1).returns(Future.successful(TemplateList(templateList, 30)))
+        val result: Future[Result] = controller.onPageLoad(testErn, None)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.AccountHomeController.viewAccountHome("XI00123").url)
+        redirectLocation(result) mustBe Some(controllers.routes.AccountHomeController.viewAccountHome(testErn).url)
       }
     }
 
     "user can view draft templates" should {
-      "return 200" in {
-        val result: Future[Result] = controller.onPageLoad(testErn)(fakeRequest)
+      "redirect to the index 1 when current index is below the minimum" in {
+        enable(TemplatesLink)
+
+        MockDraftMovementService.list(testErn, 0).returns(Future.successful(TemplateList(templateList, 30)))
+        MockPaginationHelper.calculatePageCount(30, 10)
+
+        val result: Future[Result] = controller.onPageLoad(testErn, Some(0))(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(testErn, None).url)
+      }
+
+      "show the correct view and pagination with an index missing" in {
+        enable(TemplatesLink)
+
+        MockDraftMovementService.list(testErn, 1).returns(Future.successful(TemplateList(templateList, 30)))
+
+        MockPaginationHelper.constructPaginationForDraftTemplates(index = 1, pageCount = 3)(None)
+
+        MockPaginationHelper.calculatePageCount(30, 10)
+
+        val result: Future[Result] = controller.onPageLoad(testErn, None)(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe view(Seq()).toString()
+        contentAsString(result) mustBe view(
+          templateList,
+          None,
+          30
+        ).toString()
+      }
+
+      "show the correct view and pagination with an index of 1" in {
+        enable(TemplatesLink)
+
+        MockDraftMovementService.list(testErn, 1).returns(Future.successful(TemplateList(templateList, 30)))
+
+        MockPaginationHelper.constructPaginationForDraftTemplates(index = 1, pageCount = 3)(None)
+
+        MockPaginationHelper.calculatePageCount(30, 10)
+
+        val result: Future[Result] = controller.onPageLoad(testErn, Some(1))(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe view(
+          templateList,
+          None,
+          30
+        ).toString()
+      }
+
+      "show the correct view and pagination with an index of 2" in {
+        enable(TemplatesLink)
+
+        MockDraftMovementService.list(testErn, 2).returns(Future.successful(TemplateList(templateList, 30)))
+
+        MockPaginationHelper.constructPaginationForDraftTemplates(index = 2, pageCount = 3)(None)
+
+        MockPaginationHelper.calculatePageCount(30, 10)
+
+        val result: Future[Result] = controller.onPageLoad(testErn, Some(2))(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe view(
+          templateList,
+          None,
+          30
+        ).toString()
+      }
+
+      "show the correct view and pagination with an index of 3" in {
+        enable(TemplatesLink)
+
+        MockDraftMovementService.list(testErn, 3).returns(Future.successful(TemplateList(templateList, 30)))
+
+        MockPaginationHelper.constructPaginationForDraftTemplates(index = 3, pageCount = 3)(None)
+
+        MockPaginationHelper.calculatePageCount(30, 10)
+
+        val result: Future[Result] = controller.onPageLoad(testErn, Some(3))(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe view(
+          templateList,
+          None,
+          30
+        ).toString()
+      }
+
+      "redirect to the index 1 when current index is above the maximum" in {
+        enable(TemplatesLink)
+
+        MockDraftMovementService.list(testErn, 4).returns(Future.successful(TemplateList(templateList, 30)))
+
+        MockPaginationHelper.calculatePageCount(30, 10)
+
+        val result: Future[Result] = controller.onPageLoad(testErn, Some(4))(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(testErn, None).url)
+      }
+
+      "show the correct view and pagination when movement count is 1 above a multiple of the pageCount" in {
+        enable(TemplatesLink)
+
+        MockDraftMovementService.list(testErn, 3).returns(Future.successful(TemplateList(templateList, 31)))
+
+        MockPaginationHelper.constructPaginationForDraftTemplates(index = 3, pageCount = 4)(None)
+
+        MockPaginationHelper.calculatePageCount(31, 10)
+
+        val result: Future[Result] = controller.onPageLoad(testErn, Some(3))(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe view(
+          templateList,
+          None,
+          31
+        ).toString()
+      }
+
+      "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in {
+        enable(TemplatesLink)
+
+        MockDraftMovementService.list(testErn, 3).returns(Future.successful(TemplateList(templateList, 39)))
+
+        MockPaginationHelper.constructPaginationForDraftTemplates(index = 3, pageCount = 4)(None)
+
+        MockPaginationHelper.calculatePageCount(39, 10)
+
+        val result: Future[Result] = controller.onPageLoad(testErn, Some(3))(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe view(
+          templateList,
+          None,
+          39
+        ).toString()
       }
     }
   }

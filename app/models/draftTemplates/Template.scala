@@ -16,14 +16,27 @@
 
 package models.draftTemplates
 
-import play.api.libs.json.{Json, OFormat}
+import models.movementScenario.MovementScenario
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 case class Template(
                      templateId: String,
                      templateName: String,
-                     consigneeErn: String
+                     destinationType: MovementScenario,
+                     consigneeErn: Option[String]
                    )
 
 object Template {
-  implicit val format: OFormat[Template] = Json.format[Template]
+  implicit val reads: Reads[Template] = (
+    (JsPath \ "templateId").read[String] and
+      (JsPath \ "templateName").read[String] and
+      (JsPath \ "data" \ "info" \ "destinationType").read[MovementScenario] and
+      (
+        (JsPath \ "data" \ "consignee" \ "exciseRegistrationNumber").read[String].map(Some(_)) or
+          (JsPath \ "data" \ "consignee" \ "consigneeExportVat").readNullable[String]
+        )
+    )(Template.apply _)
+
+  implicit val writes: OWrites[Template] = Json.writes[Template]
 }

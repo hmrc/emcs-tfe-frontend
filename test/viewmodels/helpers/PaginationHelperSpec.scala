@@ -17,20 +17,23 @@
 package viewmodels.helpers
 
 import base.SpecBase
-import controllers.routes.ViewAllMovementsController.onPageLoad
 import fixtures.MovementListFixtures
 import models.MovementListSearchOptions
 import models.MovementSearchSelectOption.ARC
 import models.MovementSortingSelectOption.ArcAscending
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import play.api.mvc.Call
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination._
-import viewmodels.MovementPaginationHelper
+import viewmodels.PaginationHelper
 
-class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
+// scalastyle:off magic.number
+class PaginationHelperSpec extends SpecBase with MovementListFixtures {
+  
+  val onPageLoad: (String, MovementListSearchOptions) => Call = controllers.routes.ViewAllMovementsController.onPageLoad
 
-  object Helper extends MovementPaginationHelper()
+  object Helper extends PaginationHelper()
 
-  def baseOptions(index: Int) =
+  def baseOptions(index: Int): MovementListSearchOptions =
     MovementListSearchOptions(Some(ARC), Some("ARC123456"), ArcAscending, None, None, None, None, None, None, None, None, None, index, 10)
 
   def createPageItem(index: Int): PaginationItem = PaginationItem(
@@ -53,7 +56,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
     href = onPageLoad(testErn, baseOptions(index)).url
   )
 
-  ".constructPagination" when {
+  ".constructPaginationForAllMovements" when {
 
     "1 page of movements is given" must {
 
@@ -61,7 +64,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
 
         val expectedResult: Option[Pagination] = None
 
-        val actualResult: Option[Pagination] = Helper.constructPagination(
+        val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
           pageCount = 1,
           ern = testErn,
           search = baseOptions(1)
@@ -86,7 +89,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(2))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 2,
             ern = testErn,
             search = baseOptions(1)
@@ -109,7 +112,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = None
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 2,
             ern = testErn,
             search = baseOptions(2)
@@ -136,7 +139,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(2))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 3,
             ern = testErn,
             search = baseOptions(1)
@@ -160,7 +163,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(3))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 3,
             ern = testErn,
             search = baseOptions(2)
@@ -183,7 +186,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
               next = None
             ))
 
-            val actualResult: Option[Pagination] = Helper.constructPagination(
+            val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
               pageCount = 3,
               ern = testErn,
               search = baseOptions(3)
@@ -212,7 +215,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(2))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 4,
             ern = testErn,
             search = baseOptions(1)
@@ -237,7 +240,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(3))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 4,
             ern = testErn,
             search = baseOptions(2)
@@ -262,7 +265,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(4))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 4,
             ern = testErn,
             search = baseOptions(3)
@@ -287,7 +290,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = None
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 4,
             ern = testErn,
             search = baseOptions(4)
@@ -315,7 +318,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(2))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 10,
             ern = testErn,
             search = baseOptions(1)
@@ -341,7 +344,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(3))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 10,
             ern = testErn,
             search = baseOptions(2)
@@ -368,7 +371,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(4))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 10,
             ern = testErn,
             search = baseOptions(3)
@@ -396,7 +399,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(5))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 10,
             ern = testErn,
             search = baseOptions(4)
@@ -424,7 +427,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(6))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 10,
             ern = testErn,
             search = baseOptions(5)
@@ -452,7 +455,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(7))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 10,
             ern = testErn,
             search = baseOptions(6)
@@ -480,7 +483,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(8))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 10,
             ern = testErn,
             search = baseOptions(7)
@@ -507,7 +510,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(9))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 10,
             ern = testErn,
             search = baseOptions(8)
@@ -533,7 +536,7 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = Some(createPageLink(10))
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 10,
             ern = testErn,
             search = baseOptions(9)
@@ -558,13 +561,44 @@ class MovementPaginationHelperSpec extends SpecBase with MovementListFixtures {
             next = None
           ))
 
-          val actualResult: Option[Pagination] = Helper.constructPagination(
+          val actualResult: Option[Pagination] = Helper.constructPaginationForAllMovements(
             pageCount = 10,
             ern = testErn,
             search = baseOptions(10)
           )
 
           actualResult shouldBe expectedResult
+        }
+      }
+    }
+  }
+
+  ".calculatePageCount" must {
+    "return 1" when {
+      "the number of items is 0" in {
+        Helper.calculatePageCount(0, 10) mustBe 1
+      }
+      "the number of items is less than or equal to the max number of items per page" in {
+        Helper.calculatePageCount(9, 10) mustBe 1
+        Helper.calculatePageCount(10, 10) mustBe 1
+        Helper.calculatePageCount(11, 10) must not be 1
+      }
+    }
+    "return the number of pages" when {
+      "the number of items is greater than the max number of items per page" in {
+        Map(
+          11 -> 2,
+          20 -> 2,
+          21 -> 3,
+          30 -> 3,
+          31 -> 4,
+          40 -> 4,
+          41 -> 5,
+          50 -> 5,
+          51 -> 6,
+          60 -> 6
+        ).foreach { case (numberOfItems, expectedPageCount) =>
+          Helper.calculatePageCount(numberOfItems, 10) mustBe expectedPageCount
         }
       }
     }

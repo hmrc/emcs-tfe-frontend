@@ -23,13 +23,31 @@ import utils.{DateUtils, PaginationUtil}
 
 import javax.inject.Inject
 
-class MovementPaginationHelper @Inject()() extends DateUtils {
+class PaginationHelper @Inject()() extends DateUtils {
 
-  def constructPagination(pageCount: Int, ern: String, search: MovementListSearchOptions): Option[Pagination] = {
+  def constructPaginationForAllMovements(pageCount: Int, ern: String, search: MovementListSearchOptions): Option[Pagination] = {
 
     val paginationHelper = new PaginationUtil {
       override val link: Int => String = (index: Int) => routes.ViewAllMovementsController.onPageLoad(ern, search.copy(index = index)).url
       override val currentPage: Int = search.index
+      override val pages: Int = pageCount
+    }
+
+    paginationHelper.constructPagination()
+  }
+
+  def calculatePageCount(numberOfItems: Int, maxNumberOfItemsPerPage: Int): Int = numberOfItems match {
+    case 0 => 1
+    case count if count % maxNumberOfItemsPerPage != 0 => (numberOfItems / maxNumberOfItemsPerPage) + 1
+    case _ => numberOfItems / maxNumberOfItemsPerPage
+  }
+
+  def constructPaginationForDraftTemplates(ern: String, page: Int, pageCount: Int): Option[Pagination] = {
+    val paginationHelper = new PaginationUtil {
+      override val link: Int => String =
+        (index: Int) => controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(ern, Some(index)).url
+
+      override val currentPage: Int = page
       override val pages: Int = pageCount
     }
 

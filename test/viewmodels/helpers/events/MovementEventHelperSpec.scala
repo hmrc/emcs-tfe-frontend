@@ -90,7 +90,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
       "TaxWarehouse and consignor is XIWK and dispatchPlace is GB" in {
         implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
           eadEsad = getMovementResponseModel.eadEsad.copy(originTypeCode = OriginType.TaxWarehouse),
-          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GBWK123")),
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("XIWK123")),
           placeOfDispatchTrader = Some(TraderModel(traderExciseNumber = Some("GB00123"), None, None, None, None))
         )
 

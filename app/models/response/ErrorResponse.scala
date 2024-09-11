@@ -26,6 +26,10 @@ case object UnexpectedDownstreamResponseError extends ErrorResponse {
   val message = "Unexpected downstream response status"
 }
 
+case object NoContentError extends ErrorResponse {
+  val message: String = "No content found"
+}
+
 case object NotFoundError extends ErrorResponse {
   val message = "No data found"
 }
@@ -67,3 +71,5 @@ case class MessageRetrievalException(message: String) extends Exception(message)
 case class DeleteMessageException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class PrevalidateTraderException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class DraftTemplatesListException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse

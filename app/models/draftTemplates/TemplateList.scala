@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package mocks.config
+package models.draftTemplates
 
-import config.AppConfig
-import org.scalamock.handlers.CallHandler
-import org.scalamock.scalatest.MockFactory
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-trait MockAppConfig extends MockFactory {
 
-  lazy val mockAppConfig: AppConfig = mock[AppConfig]
+case class TemplateList(templates: Seq[Template], count: Int)
 
-  object MockedAppConfig {
-    def emcsTfeBaseUrl: CallHandler[String] = (() => mockAppConfig.emcsTfeBaseUrl).expects()
-    def traderKnownFactsReferenceDataBaseUrl: CallHandler[String] = (() => mockAppConfig.traderKnownFactsReferenceDataBaseUrl).expects()
-  }
+object TemplateList {
+  implicit val reads: Reads[TemplateList] = (
+    (JsPath \ "templates").read[Seq[Template]] and
+      (JsPath \ "count").read[Int]
+    )(TemplateList.apply _)
 
+  implicit val writes: OWrites[TemplateList] = Json.writes[TemplateList]
+
+  def empty: TemplateList = TemplateList(Seq.empty, 0)
+
+  val DEFAULT_MAX_ROWS: Int = 10
 }
