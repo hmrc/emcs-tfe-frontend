@@ -71,7 +71,7 @@ class RenameTemplateControllerSpec
         "redirect" in {
           disable(TemplatesLink)
 
-          MockDraftTemplatesService.getFullTemplate(testErn, "1").returns(Future.successful(Some(fullTemplate)))
+          MockDraftTemplatesService.getTemplate(testErn, "1").returns(Future.successful(Some(fullTemplate)))
           val result: Future[Result] = controller.onPageLoad(testErn, "1")(fakeRequest)
 
           status(result) mustBe SEE_OTHER
@@ -84,7 +84,7 @@ class RenameTemplateControllerSpec
         "show the correct view" in {
           enable(TemplatesLink)
 
-          MockDraftTemplatesService.getFullTemplate(testErn, "1").returns(Future.successful(Some(fullTemplate)))
+          MockDraftTemplatesService.getTemplate(testErn, "1").returns(Future.successful(Some(fullTemplate)))
 
           val result: Future[Result] = controller.onPageLoad(testErn, "1")(fakeRequest)
 
@@ -106,7 +106,7 @@ class RenameTemplateControllerSpec
         "render a BadRequest with errors" when {
 
           "new name is not unique" in {
-            MockDraftTemplatesService.getFullTemplate(testErn, "1").returns(Future.successful(Some(fullTemplate)))
+            MockDraftTemplatesService.getTemplate(testErn, "1").returns(Future.successful(Some(fullTemplate)))
             MockDraftTemplatesService
               .doesExist(testErn, "my name")
               .returns(Future.successful(true))

@@ -36,9 +36,11 @@ POST        /trader/:ern/movements                                            co
 
 GET         /trader/:ern/templates                                            controllers.draftTemplates.ViewAllTemplatesController.onPageLoad(ern, page: Option[Int])
 
-GET         /trader/:ern/template/:id/new-name-template                               controllers.draftTemplates.RenameTemplateController.onPageLoad(ern, id)
-POST        /trader/:ern/template/:id/new-name-template                               controllers.draftTemplates.RenameTemplateController.onSubmit(ern, id)
+GET         /trader/:ern/template/:id/new-name-template                       controllers.draftTemplates.RenameTemplateController.onPageLoad(ern, id)
+POST        /trader/:ern/template/:id/new-name-template                       controllers.draftTemplates.RenameTemplateController.onSubmit(ern, id)
 
+GET         /trader/:ern/template/:id/delete-template                         controllers.draftTemplates.DeleteTemplateController.onPageLoad(ern, id: String)
+POST        /trader/:ern/template/:id/delete-template                         controllers.draftTemplates.DeleteTemplateController.onSubmit(ern, id: String)
 
 ->          /                                                                 message.Routes
 ->          /                                                                 prevalidateTrader.Routes

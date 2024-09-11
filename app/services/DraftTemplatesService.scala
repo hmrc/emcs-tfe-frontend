@@ -16,9 +16,9 @@
 
 package services
 
-import connectors.emcsTfe.{DraftTemplatesConnector, GetDraftTemplateConnector, IsUniqueDraftTemplateNameConnector}
-import models.draftTemplates.{Template, TemplateList}
-import models.response.{DraftTemplateCheckNameException, DraftTemplateGetException, DraftTemplateSetException, DraftTemplatesListException}
+import connectors.emcsTfe._
+import models.draftTemplates._
+import models.response._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 
@@ -28,7 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class DraftTemplatesService @Inject()(
                                        templateListConnector: DraftTemplatesConnector,
                                        templateExistsConnector: IsUniqueDraftTemplateNameConnector,
-                                       templateConnector: GetDraftTemplateConnector) extends Logging {
+                                       templateConnector: GetDraftTemplateConnector,
+                                       templateDeleteConnector: DeleteDraftTemplateConnector) extends Logging {
 
   def list(ern: String, page: Int)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[TemplateList] =
     templateListConnector.list(ern, page).map {
@@ -56,4 +57,12 @@ class DraftTemplatesService @Inject()(
       case Right(template) => template
       case Left(errorResponse) => throw DraftTemplateSetException(s"Failed to update template ID: $templateId for ERN: $ern - $errorResponse")
     }
+
+  def delete(ern: String, templateId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    templateDeleteConnector.deleteTemplate(ern, templateId) map {
+      case Right(value)        => value
+      case Left(errorResponse) => throw DeleteTemplateException(s"Failed to delete template with ID: $templateId for ERN: $ern - $errorResponse")
+    }
+  }
+
 }

@@ -1,0 +1,65 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import models.draftTemplates.Template
+@import models.requests.DataRequest
+@import views.html._
+@import views.html.components._
+
+@this(
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        h1: h1,
+        h2: h2,
+        govukRadios: GovukRadios,
+        govukButton: GovukButton,
+        govukErrorSummary: GovukErrorSummary
+)
+
+
+@(form: Form[_], template: Template)(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
+
+@layout(
+    pageTitle = titleNoForm(messages("deleteTemplate.heading")),
+    maybeShowActiveTrader = maybeShowActiveTrader(request),
+    maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Templates))),
+    fullWidthContent = false
+) {
+
+    @formHelper(action = controllers.draftTemplates.routes.DeleteTemplateController.onSubmit(request.ern, template.templateId)) {
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
+        @h2(msg = template.templateName, classes = "govuk-caption-xl")
+
+        @govukRadios(
+            RadiosViewModel.yesNo(
+                field = form("value"),
+                legend = LegendViewModel(Text(messages("deleteTemplate.heading"))).asPageHeading(LegendSize.Large)
+            )
+        )
+
+        @govukButton(
+            ButtonViewModel(messages("deleteTemplate.confirm"))
+        )
+    }
+}
+
+@{
+    //$COVERAGE-OFF$
+}

@@ -33,7 +33,7 @@ trait MockDraftTemplatesService extends MockFactory {
       (mockDraftTemplatesService.list(_: String, _: Int)(_: HeaderCarrier, _: ExecutionContext))
         .expects(ern, page, *, *)
 
-    def getFullTemplate(ern: String, templateId: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Option[Template]]] =
+    def getTemplate(ern: String, templateId: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Option[Template]]] =
       (mockDraftTemplatesService.getTemplate(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(ern, templateId, *, *)
 
@@ -44,6 +44,10 @@ trait MockDraftTemplatesService extends MockFactory {
     def set(ern: String, templateId: String, template: Template): CallHandler5[String, String, Template, HeaderCarrier, ExecutionContext, Future[Template]] =
       (mockDraftTemplatesService.set(_: String, _: String, _: Template)(_: HeaderCarrier, _: ExecutionContext))
         .expects(ern, templateId, template, *, *)
+
+    def delete(ern: String, templateId: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Boolean]] =
+      (mockDraftTemplatesService.delete(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(ern, templateId, *, *)
   }
 
 }
