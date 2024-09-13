@@ -29,7 +29,7 @@ base.continue = Continue
 base.saveMovement    = Save and return to movement
 base.opensInNewTab   = (opens in new tab)
 base.captionHiddenText = This section is
-base.captionHiddenTextThisIs = This is
+base.captionHiddenTextThisIs = This is:
 
 common.arc = Administrative reference code
 

@@ -30,8 +30,8 @@ trait MockGetDraftTemplateConnector extends MockFactory {
 
   lazy val mockGetDraftTemplatesConnector: GetDraftTemplateConnector = mock[GetDraftTemplateConnector]
 
-  object MockGetFullDraftTemplateConnector {
-    def getFullTemplate(ern: String, templateId: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, Option[Template]]]] =
+  object MockGetDraftTemplateConnector {
+    def getTemplate(ern: String, templateId: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Either[ErrorResponse, Option[Template]]]] =
       (mockGetDraftTemplatesConnector.getTemplate(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(ern, templateId, *, *)
 

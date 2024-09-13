@@ -70,7 +70,28 @@ trait DraftTemplatesFixtures {
     createTemplate("ern", "9", "Template 9", MovementScenario.ExportWithCustomsDeclarationLodgedInTheUk, Some("IE001234567890")),
     createTemplate("ern", "x10", "Template 10", MovementScenario.ExportWithCustomsDeclarationLodgedInTheUk, None)
   )
+
+  val fullTemplate: Template = Template(
+    ern = "GBRC123456789",
+    templateId = "1",
+    templateName = "my name",
+    data = Json.obj(
+      "info" -> Json.obj(
+        "destinationType" -> MovementScenario.UkTaxWarehouse.GB.toString
+      )
+    ),
+    lastUpdated = Instant.parse("2024-09-12T20:58:10.997176Z")
+  )
+
+  val updateFullTemplate: Template = Template(
+    ern = "GBRC123456789",
+    templateId = "1",
+    templateName = "my name2",
+    data = Json.obj(
+      "info" -> Json.obj(
+        "destinationType" -> MovementScenario.UkTaxWarehouse.GB.toString
+      )
+    ),
+    lastUpdated = Instant.parse("2024-09-12T20:58:10.997176Z")
+  )
 }
-
-
-

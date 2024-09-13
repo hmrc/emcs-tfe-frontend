@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package forms.draftTemplates
+package fixtures.messages
 
-import forms.mappings.Mappings
-import play.api.data.Form
+object RenameTemplateMessages {
 
-import javax.inject.Inject
+  sealed trait ViewMessages extends BaseEnglish { _: i18n =>
+    val heading = "Enter a new name for this template"
+    val title = titleHelper(heading)
+    def h2(text: String) = s"This is: $text"
+    val hint = "This is for your reference only, to help you identify this movement for future use."
+    val confirmAndSave = "Confirm and save"
+  }
 
-class RenameTemplateFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("renameTemplate.error.required")
-        .verifying(
-          firstError(
-            maxLength(22, "renameTemplate.error.length"),
-          )
-        )
-    )
+  object English extends ViewMessages
 }
