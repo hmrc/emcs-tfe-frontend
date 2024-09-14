@@ -17,8 +17,8 @@
 package connectors.emcsTfe
 
 import config.AppConfig
-import models.draftTemplates.DoesExist
 import models.response.{ErrorResponse, JsonValidationError, UnexpectedDownstreamResponseError}
+import play.api.libs.json.Reads.BooleanReads
 import play.api.libs.json.{JsResultException, Reads}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -27,9 +27,9 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IsUniqueDraftTemplateNameConnector @Inject()(val http: HttpClientV2,
-                                                   config: AppConfig) extends EmcsTfeHttpParser[DoesExist] {
+                                                   config: AppConfig) extends EmcsTfeHttpParser[Boolean] {
 
-  override implicit val reads: Reads[DoesExist] = DoesExist.reads
+  override implicit val reads: Reads[Boolean] = BooleanReads.reads
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 
@@ -38,7 +38,7 @@ class IsUniqueDraftTemplateNameConnector @Inject()(val http: HttpClientV2,
 
     get(url,  Seq("ern" -> ern, "templateName" -> templateName))
       .map {
-        case Right(doesExist) => Right(doesExist.doesExist)
+        case Right(maybeExists) => Right(maybeExists)
         case Left(errorResponse) => Left(errorResponse)
       }
       .recover {
