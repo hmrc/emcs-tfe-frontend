@@ -17,12 +17,14 @@
 package models.draftTemplates
 
 import base.SpecBase
+import fixtures.DraftTemplatesFixtures
 import models.movementScenario.MovementScenario
 import play.api.libs.json.Json
 
-class TemplateSpec extends SpecBase {
+class TemplateSpec extends SpecBase with DraftTemplatesFixtures {
   val downstreamJsonWithExciseRegistrationNumber: String =
     s"""{
+       |  "ern": "$testErn",
        |  "templateId": "1",
        |  "templateName": "my name",
        |  "data": {
@@ -32,11 +34,13 @@ class TemplateSpec extends SpecBase {
        |    "consignee": {
        |      "exciseRegistrationNumber": "ern123"
        |    }
-       |  }
+       |  },
+       |  "lastUpdated": "2020-01-01T00:00:00Z"
        |}""".stripMargin
 
   val downstreamJsonWithConsigneeExportVat: String =
     s"""{
+       |  "ern": "$testErn",
        |  "templateId": "1",
        |  "templateName": "my name",
        |  "data": {
@@ -46,11 +50,13 @@ class TemplateSpec extends SpecBase {
        |    "consignee": {
        |      "consigneeExportVat": "vat123"
        |    }
-       |  }
+       |  },
+       |  "lastUpdated": "2020-01-01T00:00:00Z"
        |}""".stripMargin
 
   val downstreamJsonWithNoErn: String =
     s"""{
+       |  "ern": "$testErn",
        |  "templateId": "1",
        |  "templateName": "my name",
        |  "data": {
@@ -59,53 +65,100 @@ class TemplateSpec extends SpecBase {
        |    },
        |    "consignee": {
        |    }
-       |  }
+       |  },
+       |  "lastUpdated": "2020-01-01T00:00:00Z"
        |}""".stripMargin
 
   val downstreamJsonWithNoConsignee: String =
     s"""{
+       |  "ern": "$testErn",
        |  "templateId": "1",
        |  "templateName": "my name",
        |  "data": {
        |    "info": {
        |      "destinationType": "${MovementScenario.UkTaxWarehouse.GB}"
-       |    },
-       |    "consignee": {
        |    }
-       |  }
+       |  },
+       |  "lastUpdated": "2020-01-01T00:00:00Z"
        |}""".stripMargin
 
-  def model(consigneeErn: Option[String]): Template = Template(
-    templateId = "1",
-    templateName = "my name",
-    destinationType = MovementScenario.UkTaxWarehouse.GB,
-    consigneeErn = consigneeErn
-  )
+  def model(consigneeErn: Option[String], consigneeVat: Option[String]): Template =
+    createTemplate(
+      ern = testErn,
+      templateId = "1",
+      templateName = "my name",
+      movementScenario = MovementScenario.UkTaxWarehouse.GB,
+      consigneeErn = consigneeErn,
+      consigneeVat = consigneeVat
+    )
 
   "reads" must {
     "read JSON to a model" when {
       "consignee ERN is present" in {
-        Json.parse(downstreamJsonWithExciseRegistrationNumber).as[Template] mustBe model(Some("ern123"))
+        Json.parse(downstreamJsonWithExciseRegistrationNumber).as[Template] mustBe model(Some("ern123"), None)
       }
       "consignee export VAT is present" in {
-        Json.parse(downstreamJsonWithConsigneeExportVat).as[Template] mustBe model(Some("vat123"))
+        Json.parse(downstreamJsonWithConsigneeExportVat).as[Template] mustBe model(None, Some("vat123"))
       }
-      "consignee ERN is not present" in {
-        Json.parse(downstreamJsonWithNoErn).as[Template] mustBe model(None)
+      "consignee ERN or export VAT is not present" in {
+        val parsed = Json.parse(downstreamJsonWithNoErn).as[Template]
+        parsed.ern mustBe testErn
+        parsed.templateId mustBe "1"
+        parsed.templateName mustBe "my name"
+        parsed.data mustBe Json.obj(
+          "info" -> Json.obj(
+            "destinationType" -> MovementScenario.UkTaxWarehouse.GB.toString
+          ),
+          "consignee" -> Json.obj()
+        )
+        parsed.destinationType mustBe MovementScenario.UkTaxWarehouse.GB
+        parsed.consignee mustBe None
       }
       "consignee is not present" in {
-        Json.parse(downstreamJsonWithNoConsignee).as[Template] mustBe model(None)
+        val parsed = Json.parse(downstreamJsonWithNoConsignee).as[Template]
+        parsed.ern mustBe testErn
+        parsed.templateId mustBe "1"
+        parsed.templateName mustBe "my name"
+        parsed.data mustBe Json.obj(
+          "info" -> Json.obj(
+            "destinationType" -> MovementScenario.UkTaxWarehouse.GB.toString
+          )
+        )
+        parsed.destinationType mustBe MovementScenario.UkTaxWarehouse.GB
+        parsed.consignee mustBe None
       }
     }
   }
 
   "writes" must {
-    "convert a model to JSON" in {
-      Json.toJson(model(Some("ern123"))) mustBe Json.obj(
+
+    "convert a model to JSON with a consignee ERN" in {
+      Json.toJson(model(Some("ern123"), None)) mustBe Json.obj(
+        "ern" -> testErn,
         "templateId" -> "1",
         "templateName" -> "my name",
-        "destinationType" -> MovementScenario.UkTaxWarehouse.GB.toString,
-        "consigneeErn" -> "ern123"
+        "data" -> Json.obj(
+          "info" -> Json.obj(
+            "destinationType" -> MovementScenario.UkTaxWarehouse.GB.toString
+          ),
+          "consignee" -> Json.obj("exciseRegistrationNumber" -> "ern123")
+        ),
+        "lastUpdated" -> "2020-01-01T00:00:00Z"
+      )
+    }
+
+    "convert a model to JSON with a consignee VAT" in {
+      Json.toJson(model(None, Some("vat123"))) mustBe Json.obj(
+        "ern" -> testErn,
+        "templateId" -> "1",
+        "templateName" -> "my name",
+        "data" -> Json.obj(
+          "info" -> Json.obj(
+            "destinationType" -> MovementScenario.UkTaxWarehouse.GB.toString
+          ),
+          "consignee" -> Json.obj("consigneeExportVat" -> "vat123")
+        ),
+        "lastUpdated" -> "2020-01-01T00:00:00Z"
       )
     }
   }

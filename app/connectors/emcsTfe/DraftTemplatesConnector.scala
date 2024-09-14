@@ -17,7 +17,7 @@
 package connectors.emcsTfe
 
 import config.AppConfig
-import models.draftTemplates.{FullTemplate, Template, TemplateList}
+import models.draftTemplates.TemplateList
 import models.response.{ErrorResponse, JsonValidationError, NoContentError, UnexpectedDownstreamResponseError}
 import play.api.libs.json.{JsResultException, Reads}
 import uk.gov.hmrc.http.HeaderCarrier

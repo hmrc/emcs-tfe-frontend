@@ -3,7 +3,8 @@ package connectors
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.http.Fault
 import connectors.emcsTfe.DraftTemplatesConnector
-import models.draftTemplates.{Template, TemplateList}
+import fixtures.DraftTemplatesFixtures
+import models.draftTemplates.TemplateList
 import models.movementScenario.MovementScenario.UnknownDestination
 import models.response.{JsonValidationError, UnexpectedDownstreamResponseError}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
@@ -11,7 +12,7 @@ import play.api.libs.json.Json
 import support.IntegrationBaseSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
-class DraftTemplatesConnectorISpec extends IntegrationBaseSpec {
+class DraftTemplatesConnectorISpec extends IntegrationBaseSpec with DraftTemplatesFixtures {
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
@@ -30,13 +31,15 @@ class DraftTemplatesConnectorISpec extends IntegrationBaseSpec {
               |{
               |  "templates": [
               |    {
+              |      "ern": "$testErn",
               |      "templateId": "$testDraftId",
               |      "templateName": "template name",
               |      "data": {
               |        "info": {
               |          "destinationType": "unknownDestination"
               |        }
-              |      }
+              |      },
+              |      "lastUpdated": "2020-01-01T00:00:00Z"
               |    }
               |  ],
               |  "count": 1
@@ -44,7 +47,8 @@ class DraftTemplatesConnectorISpec extends IntegrationBaseSpec {
               |""".stripMargin).toString()))
       )
 
-      connector.list(testErn, 1).futureValue mustBe Right(TemplateList(Seq(Template(testDraftId, "template name", UnknownDestination, None)), 1))
+      connector.list(testErn, 1).futureValue mustBe Right(
+        TemplateList(Seq(createTemplate(testErn, testDraftId, "template name", UnknownDestination, None)), 1))
     }
 
     "return an empty Seq when the server responds NO_CONTENT" in {

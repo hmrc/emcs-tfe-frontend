@@ -17,26 +17,30 @@
 package models.draftTemplates
 
 import models.movementScenario.MovementScenario
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
+import java.time.Instant
+
 case class Template(
+                     ern: String,
                      templateId: String,
                      templateName: String,
-                     destinationType: MovementScenario,
-                     consigneeErn: Option[String]
-                   )
+                     data: JsObject,
+                     lastUpdated: Instant
+                   ) {
+
+  def destinationType: MovementScenario =
+    (data \ "info" \ "destinationType")
+      .as[MovementScenario]
+
+  def consignee: Option[String] =
+    (data \ "consignee" \ "exciseRegistrationNumber")
+      .asOpt[String]
+      .orElse((data \ "consignee" \ "consigneeExportVat")
+        .asOpt[String])
+}
 
 object Template {
-  implicit val reads: Reads[Template] = (
-    (JsPath \ "templateId").read[String] and
-      (JsPath \ "templateName").read[String] and
-      (JsPath \ "data" \ "info" \ "destinationType").read[MovementScenario] and
-      (
-        (JsPath \ "data" \ "consignee" \ "exciseRegistrationNumber").read[String].map(Some(_)) or
-          (JsPath \ "data" \ "consignee" \ "consigneeExportVat").readNullable[String]
-        )
-    )(Template.apply _)
-
-  implicit val writes: OWrites[Template] = Json.writes[Template]
+  implicit val format: Format[Template] = Json.format
 }
+

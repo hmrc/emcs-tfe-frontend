@@ -18,19 +18,24 @@ package services
 
 import base.SpecBase
 import fixtures.DraftTemplatesFixtures
-import mocks.connectors.MockDraftTemplatesConnector
+import mocks.connectors.{MockDraftTemplatesConnector, MockGetDraftTemplateConnector, MockIsUniqueDraftTemplateNameConnector}
 import models.draftTemplates.TemplateList
 import models.response.{DraftTemplatesListException, JsonValidationError}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DraftTemplatesServiceSpec extends SpecBase with MockDraftTemplatesConnector with DraftTemplatesFixtures {
+class DraftTemplatesServiceSpec
+  extends SpecBase
+    with MockDraftTemplatesConnector
+    with MockIsUniqueDraftTemplateNameConnector
+    with MockGetDraftTemplateConnector
+    with DraftTemplatesFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.global
 
-  lazy val testService = new DraftTemplatesService(mockDraftTemplatesConnector)
+  lazy val testService = new DraftTemplatesService(mockDraftTemplatesConnector, mockIsUniqueDraftTemplateNameConnector, mockGetDraftTemplatesConnector)
 
   ".list" should {
     "return a Seq of templates" when {

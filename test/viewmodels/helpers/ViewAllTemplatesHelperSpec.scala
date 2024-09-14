@@ -17,6 +17,7 @@
 package viewmodels.helpers
 
 import base.SpecBase
+import fixtures.DraftTemplatesFixtures
 import fixtures.messages.ViewAllTemplatesMessages.English
 import models.draftTemplates.Template
 import models.movementScenario.MovementScenario
@@ -26,11 +27,11 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{HeadCell, TableRow}
 import viewmodels.helpers.events.MovementEventHelper
 import views.html.components._
 
-class ViewAllTemplatesHelperSpec extends SpecBase {
+class ViewAllTemplatesHelperSpec extends SpecBase with DraftTemplatesFixtures {
 
   val templates: Seq[Template] = Seq(
-    Template("1", "Template 1", MovementScenario.UkTaxWarehouse.GB, Some("GB001234567890")),
-    Template("2", "Template 2", MovementScenario.UkTaxWarehouse.GB, Some("GB001234567890")),
+    createTemplate(testErn, "Template1ID", "Template 1", MovementScenario.UkTaxWarehouse.GB, Some("GB001234567890")),
+    createTemplate(testErn, "Template2ID", "Template 2", MovementScenario.UkTaxWarehouse.GB, Some("GB001234567890"))
   )
 
   lazy val list: list = app.injector.instanceOf[list]
@@ -43,7 +44,7 @@ class ViewAllTemplatesHelperSpec extends SpecBase {
 
   def createLink(ern: String, templateId: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
 
-  def renameLink(ern: String, templateId: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+  def renameLink(ern: String, templateId: String): String = controllers.draftTemplates.routes.RenameTemplateController.onPageLoad(ern, templateId).url
 
   def deleteLink(ern: String, templateId: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
 
@@ -56,7 +57,7 @@ class ViewAllTemplatesHelperSpec extends SpecBase {
 
         ".constructTable" must {
           "have the correct head cell content" in {
-            val result = helper.constructTable("testErn", templates)
+            val result = helper.constructTable(testErn, templates)
 
             result.head.get mustBe Seq(
               HeadCell(HtmlContent(messagesForLanguage.tableHeadingDetails)),
@@ -65,7 +66,7 @@ class ViewAllTemplatesHelperSpec extends SpecBase {
           }
 
           "construct rows" in {
-            val result = helper.constructTable("testErn", templates)
+            val result = helper.constructTable(testErn, templates)
 
             result.rows.length mustBe templates.length
           }
@@ -73,7 +74,7 @@ class ViewAllTemplatesHelperSpec extends SpecBase {
 
         ".dataRows" must {
           "construct the correct rows" in {
-            val result = helper.dataRows("testErn", templates)
+            val result = helper.dataRows(testErn, templates)
 
             result mustBe templates.zipWithIndex.map {
               case (template, idx) =>
@@ -82,7 +83,7 @@ class ViewAllTemplatesHelperSpec extends SpecBase {
                     content = HtmlContent(HtmlFormat.fill(Seq(
                       h3(template.templateName),
                       p()(Html(messagesForLanguage.destination("Tax warehouse in Great Britain (England, Scotland or Wales)"))),
-                      p()(Html(messagesForLanguage.consignee(template.consigneeErn.getOrElse(""))))
+                      p()(Html(messagesForLanguage.consignee(template.consignee.getOrElse(""))))
                     )))
                   ),
                   TableRow(
