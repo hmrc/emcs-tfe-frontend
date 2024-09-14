@@ -16,8 +16,6 @@
 
 package models.draftTemplates
 
-import models.movementScenario.MovementScenario
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class DoesExist(

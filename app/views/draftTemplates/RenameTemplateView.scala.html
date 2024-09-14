@@ -14,10 +14,10 @@
  * limitations under the License.
  *@
 
+@import models.draftTemplates.Template
 @import models.requests.DataRequest
 @import views.html.components._
 @import views.html.templates.Layout
-@import models.draftTemplates.FullTemplate
 
 @this(
         layout: Layout,
@@ -32,7 +32,7 @@
         govukButton: GovukButton
 )
 
-@(form: Form[_], action: Call, template: FullTemplate)(implicit request: DataRequest[_], messages: Messages)
+@(form: Form[_], action: Call, template: Template)(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
     pageTitle = title(form, messages("renameTemplate.title")),

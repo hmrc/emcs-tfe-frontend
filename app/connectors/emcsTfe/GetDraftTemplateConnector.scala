@@ -17,44 +17,42 @@
 package connectors.emcsTfe
 
 import config.AppConfig
-import models.draftTemplates.{FullTemplate, Template}
+import models.draftTemplates.Template
 import models.response.{ErrorResponse, JsonValidationError, NoContentError, UnexpectedDownstreamResponseError}
-import play.api.libs.json.{JsResultException, Reads}
+import play.api.libs.json.{Format, JsResultException}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetFullDraftTemplateConnector @Inject()(val http: HttpClientV2,
-                                              config: AppConfig) extends EmcsTfeHttpParser[FullTemplate] {
+class GetDraftTemplateConnector @Inject()(val http: HttpClientV2,
+                                              config: AppConfig) extends EmcsTfeHttpParser[Template] {
 
-  override implicit val reads: Reads[FullTemplate] = FullTemplate.reads
+  override implicit val reads: Format[Template] = Template.format
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 
-  def getFullTemplate(ern: String, templateId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Option[FullTemplate]]] = {
+  def getTemplate(ern: String, templateId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Option[Template]]] = {
     def url: String = s"$baseUrl/template/$ern/$templateId"
 
     get(url)
       .map {
-        case Right(template) => Right(Some(template))
-        case Left(NoContentError) =>
-          logger.debug(s"[getFull][$ern] No content from emcs-tfe")
-          Right(None)
-        case Left(errorResponse) => Left(errorResponse)
+        case Right(template)      => Right(Some(template))
+        case Left(NoContentError) => Right(None)
+        case Left(errorResponse)  => Left(errorResponse)
       }
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[getFull][$ern] Bad JSON response from emcs-tfe: " + errors)
+          logger.warn(s"[getTemplate][$ern] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[GetDraftTemplateError][$ern] Unexpected error: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[getTemplate][$ern] Unexpected error: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }
 
-  def set(ern: String, templateId: String, template: FullTemplate)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, FullTemplate]] = {
+  def set(ern: String, templateId: String, template: Template)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Template]] = {
     def url: String = s"$baseUrl/template/$ern/$templateId"
 
     put(url, template)
@@ -63,7 +61,7 @@ class GetFullDraftTemplateConnector @Inject()(val http: HttpClientV2,
           logger.warn(s"[set][$ern] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[SetDraftTemplateError][$ern] Unexpected error: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[set][$ern] Unexpected error: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
   }
