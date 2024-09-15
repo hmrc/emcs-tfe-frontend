@@ -28,7 +28,7 @@ trait MockDraftTemplatesService extends MockFactory {
 
   lazy val mockDraftTemplatesService: DraftTemplatesService = mock[DraftTemplatesService]
 
-  object MockDraftMovementService {
+  object MockDraftTemplatesService {
     def list(ern: String, page: Int): CallHandler4[String, Int, HeaderCarrier, ExecutionContext, Future[TemplateList]] =
       (mockDraftTemplatesService.list(_: String, _: Int)(_: HeaderCarrier, _: ExecutionContext))
         .expects(ern, page, *, *)

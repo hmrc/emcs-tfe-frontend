@@ -64,7 +64,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase
       "redirect" in {
         disable(TemplatesLink)
 
-        MockDraftMovementService.list(testErn, 1).returns(Future.successful(TemplateList(templateList, 30)))
+        MockDraftTemplatesService.list(testErn, 1).returns(Future.successful(TemplateList(templateList, 30)))
         val result: Future[Result] = controller.onPageLoad(testErn, None)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
@@ -76,7 +76,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase
       "redirect to the index 1 when current index is below the minimum" in {
         enable(TemplatesLink)
 
-        MockDraftMovementService.list(testErn, 0).returns(Future.successful(TemplateList(templateList, 30)))
+        MockDraftTemplatesService.list(testErn, 0).returns(Future.successful(TemplateList(templateList, 30)))
         MockPaginationHelper.calculatePageCount(30, 10)
 
         val result: Future[Result] = controller.onPageLoad(testErn, Some(0))(fakeRequest)
@@ -88,7 +88,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase
       "show the correct view and pagination with an index missing" in {
         enable(TemplatesLink)
 
-        MockDraftMovementService.list(testErn, 1).returns(Future.successful(TemplateList(templateList, 30)))
+        MockDraftTemplatesService.list(testErn, 1).returns(Future.successful(TemplateList(templateList, 30)))
 
         MockPaginationHelper.constructPaginationForDraftTemplates(index = 1, pageCount = 3)(None)
 
@@ -107,7 +107,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase
       "show the correct view and pagination with an index of 1" in {
         enable(TemplatesLink)
 
-        MockDraftMovementService.list(testErn, 1).returns(Future.successful(TemplateList(templateList, 30)))
+        MockDraftTemplatesService.list(testErn, 1).returns(Future.successful(TemplateList(templateList, 30)))
 
         MockPaginationHelper.constructPaginationForDraftTemplates(index = 1, pageCount = 3)(None)
 
@@ -126,7 +126,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase
       "show the correct view and pagination with an index of 2" in {
         enable(TemplatesLink)
 
-        MockDraftMovementService.list(testErn, 2).returns(Future.successful(TemplateList(templateList, 30)))
+        MockDraftTemplatesService.list(testErn, 2).returns(Future.successful(TemplateList(templateList, 30)))
 
         MockPaginationHelper.constructPaginationForDraftTemplates(index = 2, pageCount = 3)(None)
 
@@ -145,7 +145,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase
       "show the correct view and pagination with an index of 3" in {
         enable(TemplatesLink)
 
-        MockDraftMovementService.list(testErn, 3).returns(Future.successful(TemplateList(templateList, 30)))
+        MockDraftTemplatesService.list(testErn, 3).returns(Future.successful(TemplateList(templateList, 30)))
 
         MockPaginationHelper.constructPaginationForDraftTemplates(index = 3, pageCount = 3)(None)
 
@@ -164,7 +164,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase
       "redirect to the index 1 when current index is above the maximum" in {
         enable(TemplatesLink)
 
-        MockDraftMovementService.list(testErn, 4).returns(Future.successful(TemplateList(templateList, 30)))
+        MockDraftTemplatesService.list(testErn, 4).returns(Future.successful(TemplateList(templateList, 30)))
 
         MockPaginationHelper.calculatePageCount(30, 10)
 
@@ -177,7 +177,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase
       "show the correct view and pagination when movement count is 1 above a multiple of the pageCount" in {
         enable(TemplatesLink)
 
-        MockDraftMovementService.list(testErn, 3).returns(Future.successful(TemplateList(templateList, 31)))
+        MockDraftTemplatesService.list(testErn, 3).returns(Future.successful(TemplateList(templateList, 31)))
 
         MockPaginationHelper.constructPaginationForDraftTemplates(index = 3, pageCount = 4)(None)
 
@@ -196,7 +196,7 @@ class ViewAllTemplatesControllerSpec extends SpecBase
       "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in {
         enable(TemplatesLink)
 
-        MockDraftMovementService.list(testErn, 3).returns(Future.successful(TemplateList(templateList, 39)))
+        MockDraftTemplatesService.list(testErn, 3).returns(Future.successful(TemplateList(templateList, 39)))
 
         MockPaginationHelper.constructPaginationForDraftTemplates(index = 3, pageCount = 4)(None)
 
