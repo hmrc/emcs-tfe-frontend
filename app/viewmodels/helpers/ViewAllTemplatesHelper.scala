@@ -38,7 +38,7 @@ class ViewAllTemplatesHelper @Inject()(list: list, link: link, h3: h3, p: p) {
             content = HtmlContent(HtmlFormat.fill(Seq(
               h3(template.templateName),
               p()(Html(messages("viewAllTemplates.table.destination", messages(s"viewAllTemplates.table.destination.${template.destinationType}")))),
-              p()(Html(messages("viewAllTemplates.table.consignee", template.consigneeErn.getOrElse(""))))
+              p()(Html(messages("viewAllTemplates.table.consignee", template.consignee.getOrElse(""))))
             )))
           ),
           // Action links
@@ -51,7 +51,7 @@ class ViewAllTemplatesHelper @Inject()(list: list, link: link, h3: h3, p: p) {
                   id = Some(s"start-draft-${index.displayIndex}")
                 )),
                 p()(link(
-                  link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                  link = controllers.draftTemplates.routes.RenameTemplateController.onSubmit(ern,template.templateId).url,
                   messageKey = "viewAllTemplates.table.rename",
                   id = Some(s"rename-${index.displayIndex}")
                 )),

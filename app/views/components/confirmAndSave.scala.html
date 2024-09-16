@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package config
+@import config.AppConfig
 
-object Constants {
-  val TFE_DELETED_DRAFT_LRN = "tfeDeletedDraftLrn"
-  val TFE_UPDATED_DRAFT_TEMPLATE_NAME = "tfeUpdatedDraftTemplateName"
-  val TFE_OLD_DRAFT_TEMPLATE_NAME = "tfeOldDraftTemplateName"
+@this(
+        govukButton: GovukButton,
+        appConfig: AppConfig
+)
+
+@(primaryKey: String = "base.confirmAndSave")(implicit messages: Messages)
+
+<div class="govuk-button-group">
+
+  @govukButton(
+      ButtonViewModel(messages(primaryKey)).preventingDoubleClick().withId("submit")
+  )
+
+</div>
+
+@{
+    //$COVERAGE-OFF$
 }

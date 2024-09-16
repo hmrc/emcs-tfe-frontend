@@ -18,19 +18,24 @@ package services
 
 import base.SpecBase
 import fixtures.DraftTemplatesFixtures
-import mocks.connectors.MockDraftTemplatesConnector
+import mocks.connectors.{MockDraftTemplatesConnector, MockGetDraftTemplateConnector, MockIsUniqueDraftTemplateNameConnector}
 import models.draftTemplates.TemplateList
-import models.response.{DraftTemplatesListException, JsonValidationError}
+import models.response._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DraftTemplatesServiceSpec extends SpecBase with MockDraftTemplatesConnector with DraftTemplatesFixtures {
+class DraftTemplatesServiceSpec
+  extends SpecBase
+    with MockDraftTemplatesConnector
+    with MockIsUniqueDraftTemplateNameConnector
+    with MockGetDraftTemplateConnector
+    with DraftTemplatesFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.global
 
-  lazy val testService = new DraftTemplatesService(mockDraftTemplatesConnector)
+  lazy val testService = new DraftTemplatesService(mockDraftTemplatesConnector, mockIsUniqueDraftTemplateNameConnector, mockGetDraftTemplatesConnector)
 
   ".list" should {
     "return a Seq of templates" when {
@@ -52,6 +57,79 @@ class DraftTemplatesServiceSpec extends SpecBase with MockDraftTemplatesConnecto
         val result = intercept[DraftTemplatesListException](await(testService.list(testErn, 1)))
 
         result.message mustBe s"Failed to retrieve list of templates for $testErn: $JsonValidationError"
+      }
+    }
+  }
+
+  ".getTemplate" should {
+    "return a template" when {
+      "connector returns Right(_)" in {
+
+        MockGetDraftTemplateConnector.getTemplate("GBRC123456789", "1").returns(Future.successful(Right(Some(fullTemplate))))
+
+        val result = testService.getTemplate("GBRC123456789", "1").futureValue
+
+        result mustBe Some(fullTemplate)
+      }
+    }
+
+    "throw an exception" when {
+      "connector returns Left(_)" in {
+
+        MockGetDraftTemplateConnector.getTemplate("GBRC123456789", "1").returns(Future.successful(Left(JsonValidationError)))
+
+        val result = intercept[DraftTemplateGetException](await(testService.getTemplate("GBRC123456789", "1")))
+
+        result.message mustBe s"Failed to retrieve template for GBRC123456789: $JsonValidationError"
+      }
+    }
+  }
+
+  ".doesExist" should {
+    "return a boolean" when {
+      "connector returns Right(_)" in {
+
+        MockIsUniquelDraftTemplateNameConnector.doesExist("GBRC123456789", "1").returns(Future.successful(Right(true)))
+
+        val result = testService.doesExist("GBRC123456789", "1").futureValue
+
+        result mustBe true
+      }
+    }
+
+    "throw an exception" when {
+      "connector returns Left(_)" in {
+
+        MockIsUniquelDraftTemplateNameConnector.doesExist("GBRC123456789", "1").returns(Future.successful(Left(JsonValidationError)))
+
+        val result = intercept[DraftTemplateCheckNameException](await(testService.doesExist("GBRC123456789", "1")))
+
+        result.message mustBe s"Failed to check template name: 1 for ERN: GBRC123456789 - $JsonValidationError"
+      }
+    }
+
+  }
+
+  ".set" should {
+    "return a template" when {
+      "connector returns Right(_)" in {
+
+        MockGetDraftTemplateConnector.set("GBRC123456789", "1", updateFullTemplate).returns(Future.successful(Right(updateFullTemplate)))
+
+        val result = testService.set("GBRC123456789", "1", updateFullTemplate).futureValue
+
+        result mustBe updateFullTemplate
+      }
+    }
+
+    "throw an exception" when {
+      "connector returns Left(_)" in {
+
+        MockGetDraftTemplateConnector.set("GBRC123456789", "1", updateFullTemplate).returns(Future.successful(Left(JsonValidationError)))
+
+        val result = intercept[DraftTemplateSetException](await(testService.set("GBRC123456789", "1", updateFullTemplate)))
+
+        result.message mustBe s"Failed to update template ID: 1 for ERN: GBRC123456789 - $JsonValidationError"
       }
     }
   }

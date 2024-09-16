@@ -32,7 +32,8 @@ trait EmcsTfeHttpParser[A] extends BaseConnectorUtils[A] {
     override def read(method: String, url: String, response: HttpResponse): Either[ErrorResponse, A] = {
       response.status match {
         case OK => response.validateJson match {
-          case Some(valid) => Right(valid)
+          case Some(valid) =>
+            Right(valid)
           case None =>
             logger.warn(s"[read] Bad JSON response from emcs-tfe")
             Left(JsonValidationError)

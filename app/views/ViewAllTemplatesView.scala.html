@@ -21,6 +21,8 @@
 @import views.html.components._
 @import viewmodels.helpers.ViewAllTemplatesHelper
 @import views.ViewUtils
+@import config.Constants.TFE_UPDATED_DRAFT_TEMPLATE_NAME
+@import config.Constants.TFE_OLD_DRAFT_TEMPLATE_NAME
 
 @this(
         layout: templates.Layout,
@@ -32,7 +34,8 @@
         govukPagination: GovukPagination,
         link: link,
         table: table,
-        helper: ViewAllTemplatesHelper
+        helper: ViewAllTemplatesHelper,
+        notificationBanner: GovukNotificationBanner
 )
 
 @(listOfTemplates: Seq[Template], pagination: Option[Pagination], totalNumberOfTemplates: Int)(implicit request: DataRequest[_], messages: Messages, appConfig: AppConfig)
@@ -44,6 +47,23 @@
         maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Templates))),
         fullWidthContent = templatesExist
     ) {
+
+        @request.flash.get(TFE_UPDATED_DRAFT_TEMPLATE_NAME).map { newName =>
+        @request.flash.get(TFE_OLD_DRAFT_TEMPLATE_NAME).map { oldName =>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @notificationBanner(
+                NotificationBanner(
+                title = messages("viewAllTemplates.renamedNotification.title"),
+                content = messages("viewAllTemplates.renamedNotification.content", oldName, newName),
+                classes = "govuk-notification-banner--success"
+                )
+                )
+            </div>
+        </div>
+        }
+        }
+
         @h1()(Html(messages("viewAllTemplates.title")))
 
         @if(templatesExist) {

@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package config
+package fixtures.messages
 
-object Constants {
-  val TFE_DELETED_DRAFT_LRN = "tfeDeletedDraftLrn"
-  val TFE_UPDATED_DRAFT_TEMPLATE_NAME = "tfeUpdatedDraftTemplateName"
-  val TFE_OLD_DRAFT_TEMPLATE_NAME = "tfeOldDraftTemplateName"
+object RenameTemplateMessages {
+
+  sealed trait ViewMessages extends BaseEnglish { _: i18n =>
+    val heading = "Enter a new name for this template"
+    val title = titleHelper(heading)
+    def h2(text: String) = s"This is: $text"
+    val hint = "This is for your reference only, to help you identify this movement for future use."
+    val confirmAndSave = "Confirm and save"
+  }
+
+  object English extends ViewMessages
 }

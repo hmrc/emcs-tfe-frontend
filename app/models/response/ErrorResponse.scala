@@ -73,3 +73,9 @@ case class DeleteMessageException(message: String) extends Exception(message) wi
 case class PrevalidateTraderException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class DraftTemplatesListException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class DraftTemplateGetException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class DraftTemplateCheckNameException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class DraftTemplateSetException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
