@@ -16,6 +16,7 @@
 
 package controllers.draftTemplates
 
+import config.AppConfig
 import config.Constants.{TFE_OLD_DRAFT_TEMPLATE_NAME, TFE_UPDATED_DRAFT_TEMPLATE_NAME}
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import forms.draftTemplates.RenameTemplateFormProvider
@@ -36,12 +37,14 @@ class RenameTemplateController @Inject()(mcc: MessagesControllerComponents,
                                          val getData: DataRetrievalAction,
                                          service: DraftTemplatesService,
                                          formProvider: RenameTemplateFormProvider
-                                          )(implicit val executionContext: ExecutionContext)
+                                          )(implicit val executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with AuthActionHelper with I18nSupport {
 
   def onPageLoad(ern: String, id: String): Action[AnyContent] = {
     authorisedDataRequestAsync(ern) { implicit request =>
-      renderView(Ok, ern, id, formProvider())
+      ifCanAccessDraftTemplates(ern) {
+        renderView(Ok, ern, id, formProvider())
+      }
     }
   }
 
@@ -53,7 +56,7 @@ class RenameTemplateController @Inject()(mcc: MessagesControllerComponents,
         },
         newTemplateName => {
           service.doesExist(ern, newTemplateName).flatMap {
-            case true => renderView(BadRequest, ern, id, formProvider().withError(FormError("value","renameTemplate.error.notUnique")))
+            case true => renderView(BadRequest, ern, id, formProvider().fill(newTemplateName).withError(FormError("value","renameTemplate.error.notUnique")))
             case false => service.getTemplate(ern, id).flatMap {
               case Some(existingTemplate) =>
                 service.set(ern, id, existingTemplate.copy(templateName = newTemplateName)).map { newTemplate =>

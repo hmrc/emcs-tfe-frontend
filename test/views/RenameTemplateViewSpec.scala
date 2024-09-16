@@ -29,9 +29,7 @@ class RenameTemplateViewSpec extends ViewSpecBase with ViewBehaviours with Draft
   lazy val view: RenameTemplateView = app.injector.instanceOf[RenameTemplateView]
   implicit lazy val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(FakeRequest())
 
-  object Selectors extends BaseSelectors {
-    val tableSelector = "#main-content table"
-  }
+  object Selectors extends BaseSelectors
 
   "view" must {
 
