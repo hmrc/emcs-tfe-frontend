@@ -19,7 +19,6 @@ package controllers.draftTemplates
 import config.Constants.{TFE_OLD_DRAFT_TEMPLATE_NAME, TFE_UPDATED_DRAFT_TEMPLATE_NAME}
 import controllers.predicates.{AuthAction, AuthActionHelper, DataRetrievalAction}
 import forms.draftTemplates.RenameTemplateFormProvider
-import models.draftTemplates.Template
 import models.requests.DataRequest
 import play.api.data.{Form, FormError}
 import play.api.i18n.I18nSupport
@@ -28,7 +27,6 @@ import services.DraftTemplatesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.draftTemplates.RenameTemplateView
 
-import java.time.Instant
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -56,12 +54,14 @@ class RenameTemplateController @Inject()(mcc: MessagesControllerComponents,
         newTemplateName => {
           service.doesExist(ern, newTemplateName).flatMap {
             case true => renderView(BadRequest, ern, id, formProvider().withError(FormError("value","renameTemplate.error.notUnique")))
-            case false => service.getTemplate(ern, id).flatMap{
-              case Some(template) =>
-                val updatedTemplate = Template(template.ern, templateId = template.templateId, templateName = newTemplateName, data = template.data, lastUpdated = Instant.now())
-                service.set(ern, id, updatedTemplate).map{
-                  case newTemplate => Redirect(controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(ern, None)).flashing(TFE_UPDATED_DRAFT_TEMPLATE_NAME -> newTemplate.templateName, TFE_OLD_DRAFT_TEMPLATE_NAME -> template.templateName)
-                  case _ => Redirect(routes.ViewAllTemplatesController.onPageLoad(ern, None))
+            case false => service.getTemplate(ern, id).flatMap {
+              case Some(existingTemplate) =>
+                service.set(ern, id, existingTemplate.copy(templateName = newTemplateName)).map { newTemplate =>
+                    Redirect(controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(ern, None))
+                      .flashing(
+                        TFE_UPDATED_DRAFT_TEMPLATE_NAME -> newTemplate.templateName,
+                        TFE_OLD_DRAFT_TEMPLATE_NAME -> existingTemplate.templateName
+                      )
                 }
               case _ => Future(Redirect(routes.ViewAllTemplatesController.onPageLoad(ern, None)))
               }
