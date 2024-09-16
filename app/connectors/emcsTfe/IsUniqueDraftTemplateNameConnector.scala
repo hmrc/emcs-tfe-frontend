@@ -29,14 +29,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class IsUniqueDraftTemplateNameConnector @Inject()(val http: HttpClientV2,
                                                    config: AppConfig) extends EmcsTfeHttpParser[Boolean] {
 
-  override implicit val reads: Reads[Boolean] = BooleanReads.reads
+  override implicit val reads: Reads[Boolean] = BooleanReads.reads(_)
 
   lazy val baseUrl: String = config.emcsTfeBaseUrl
 
   def doesExist(ern: String, templateName: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorResponse, Boolean]] = {
     def url: String = s"$baseUrl/template/name-already-exists"
 
-    get(url,  Seq("ern" -> ern, "templateName" -> templateName))
+    get(url, Seq("ern" -> ern, "templateName" -> templateName))
       .map {
         case Right(maybeExists) => Right(maybeExists)
         case Left(errorResponse) => Left(errorResponse)
