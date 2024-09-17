@@ -78,6 +78,42 @@ trait DraftTemplatesFixtures {
     data = Json.obj(
       "info" -> Json.obj(
         "destinationType" -> MovementScenario.UkTaxWarehouse.GB.toString
+      ),
+      "consignee" -> Json.obj(
+        "exciseRegistrationNumber" -> "GBWK000000000000",
+        "consigneeAddress" -> Json.obj(
+          "businessName" -> "consignee business name"
+        )
+      ),
+      "exportOffice" -> Json.obj(
+        "customsOffice" -> "GB000000"
+      ),
+      "importOffice" -> Json.obj(
+        "customsOffice" -> "GB000001"
+      ),
+      "exemptedOrganisationOffice" -> Json.obj(
+        "memberState" -> "IE"
+      ),
+      "guarantor" -> Json.obj(
+        "guarantorEori" -> "GB123456789000"
+      ),
+      "journeyType" -> Json.obj(
+        "journeyType" -> "1"
+      ),
+      "transportArranger" -> Json.obj(
+        "transportArrangerEori" -> "GB123456789000"
+      ),
+      "firstTransporter" -> Json.obj(
+        "firstTransporterEori" -> "GB123456789000"
+      ),
+      "items" -> Json.obj(
+        "addedItems" -> Json.arr(
+          Json.obj(
+            "itemExciseProductCode" -> "B000",
+            "itemCommodityCode" -> "22060059",
+            "itemQuantity" -> 7
+          )
+        )
       )
     ),
     lastUpdated = Instant.parse("2024-09-12T20:58:10.997176Z")

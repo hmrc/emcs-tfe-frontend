@@ -112,7 +112,7 @@ class TemplateSpec extends SpecBase with DraftTemplatesFixtures {
           "consignee" -> Json.obj()
         )
         parsed.destinationType mustBe MovementScenario.UkTaxWarehouse.GB
-        parsed.consignee mustBe None
+        parsed.consigneeIdentifier mustBe None
       }
       "consignee is not present" in {
         val parsed = Json.parse(downstreamJsonWithNoConsignee).as[Template]
@@ -125,7 +125,7 @@ class TemplateSpec extends SpecBase with DraftTemplatesFixtures {
           )
         )
         parsed.destinationType mustBe MovementScenario.UkTaxWarehouse.GB
-        parsed.consignee mustBe None
+        parsed.consigneeIdentifier mustBe None
       }
     }
   }

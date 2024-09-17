@@ -17,6 +17,7 @@
 package mocks.services
 
 import models.draftTemplates.{Template, TemplateList}
+import models.response.emcsTfe.draftTemplate.DraftMovementCreatedResponse
 import org.scalamock.handlers.{CallHandler4, CallHandler5}
 import org.scalamock.scalatest.MockFactory
 import services.DraftTemplatesService
@@ -47,6 +48,10 @@ trait MockDraftTemplatesService extends MockFactory {
 
     def delete(ern: String, templateId: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[Boolean]] =
       (mockDraftTemplatesService.delete(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(ern, templateId, *, *)
+
+    def createDraftMovement(ern: String, templateId: String): CallHandler4[String, String, HeaderCarrier, ExecutionContext, Future[DraftMovementCreatedResponse]] =
+      (mockDraftTemplatesService.createDraftMovement(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(ern, templateId, *, *)
   }
 

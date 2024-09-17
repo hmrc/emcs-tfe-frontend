@@ -42,6 +42,9 @@ POST        /trader/:ern/template/:id/new-name-template                       co
 GET         /trader/:ern/template/:id/delete-template                         controllers.draftTemplates.DeleteTemplateController.onPageLoad(ern, id: String)
 POST        /trader/:ern/template/:id/delete-template                         controllers.draftTemplates.DeleteTemplateController.onSubmit(ern, id: String)
 
+GET         /trader/:ern/template/:id/confirm-template                        controllers.draftTemplates.ConfirmTemplateController.onPageLoad(ern, id: String)
+POST        /trader/:ern/template/:id/confirm-template                        controllers.draftTemplates.ConfirmTemplateController.onSubmit(ern, id: String)
+
 ->          /                                                                 message.Routes
 ->          /                                                                 prevalidateTrader.Routes
 ->          /                                                                 events.Routes
