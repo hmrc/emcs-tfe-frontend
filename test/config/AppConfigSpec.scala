@@ -17,7 +17,7 @@
 package config
 
 import base.SpecBase
-import featureswitch.core.config.{FeatureSwitching, StubGetTraderKnownFacts}
+import featureswitch.core.config.FeatureSwitching
 import fixtures.BaseFixtures
 
 class AppConfigSpec
@@ -48,22 +48,9 @@ class AppConfigSpec
       }
     }
 
-    ".traderKnownFactsReferenceDataBaseUrl" when {
-
-      "StubGetTraderKnownFacts is enabled" must {
-
-        "return to the legacy URL" in {
-          enable(StubGetTraderKnownFacts)
-          config.traderKnownFactsReferenceDataBaseUrl mustBe s"http://localhost:8309/emcs-tfe-reference-data"
-        }
-      }
-
-      "StubGetTraderKnownFacts is disabled" must {
-
-        "return to the new URL" in {
-          disable(StubGetTraderKnownFacts)
-          config.traderKnownFactsReferenceDataBaseUrl mustBe s"http://localhost:8312/emcs-tfe-reference-data"
-        }
+    ".traderKnownFactsBaseUrl" must {
+        "return to the correct URL" in {
+          config.traderKnownFactsBaseUrl mustBe s"http://localhost:8311/emcs-tfe/trader-known-facts"
       }
     }
   }

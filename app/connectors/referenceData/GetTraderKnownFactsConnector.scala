@@ -30,18 +30,18 @@ import scala.concurrent.{ExecutionContext, Future}
 class GetTraderKnownFactsConnector @Inject()(val http: HttpClientV2,
                                              config: AppConfig) extends GetTraderKnownFactsHttpParser {
 
-  def baseUrl: String = config.traderKnownFactsReferenceDataBaseUrl
+  def baseUrl: String = config.traderKnownFactsBaseUrl
 
   def getTraderKnownFacts(ern: String)
                          (implicit headerCarrier: HeaderCarrier,
                           executionContext: ExecutionContext): Future[Either[ErrorResponse, Option[TraderKnownFacts]]] =
-    get(baseUrl + "/oracle/trader-known-facts", ern)
+    get(baseUrl, ern)
       .recover {
         case JsResultException(errors) =>
-          logger.warn(s"[getTraderKnownFacts][$ern] Bad JSON response from emcs-tfe-reference-data: " + errors)
+          logger.warn(s"[getTraderKnownFacts][$ern] Bad JSON response from emcs-tfe: " + errors)
           Left(JsonValidationError)
         case error =>
-          logger.warn(s"[getTraderKnownFacts][$ern] Unexpected error from reference-data: ${error.getClass} ${error.getMessage}")
+          logger.warn(s"[getTraderKnownFacts][$ern] Unexpected error from emcs-tfe: ${error.getClass} ${error.getMessage}")
           Left(UnexpectedDownstreamResponseError)
       }
 }

@@ -26,7 +26,6 @@ import javax.inject.Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
   val switches: Seq[FeatureSwitch] = Seq(
-    StubGetTraderKnownFacts,
     AccountHomeBanner,
     TemplatesLink
   )
@@ -36,11 +35,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
       bind[FeatureSwitchRegistry].to(this).eagerly()
     )
   }
-}
-
-case object StubGetTraderKnownFacts extends FeatureSwitch {
-  override val configName: String = "features.stub-get-trader-known-facts"
-  override val displayName: String = "Use stub to get trader known facts"
 }
 
 case object AccountHomeBanner extends FeatureSwitch {

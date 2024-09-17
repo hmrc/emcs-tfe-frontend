@@ -38,7 +38,7 @@ class GetTraderKnownFactsConnectorSpec extends SpecBase with BaseFixtures with S
       "downstream call is successful" in {
         MockedAppConfig.traderKnownFactsReferenceDataBaseUrl.returns(baseUrl)
 
-        MockHttpClient.get(url"${baseUrl}/oracle/trader-known-facts?exciseRegistrationId=$testErn")
+        MockHttpClient.get(url"$baseUrl?exciseRegistrationId=$testErn")
           .returns(Future.successful(Right(Some(testMinTraderKnownFacts))))
 
         connector.getTraderKnownFacts(testErn).futureValue mustBe Right(Some(testMinTraderKnownFacts))
@@ -49,7 +49,7 @@ class GetTraderKnownFactsConnectorSpec extends SpecBase with BaseFixtures with S
       "downstream call fails" in {
         MockedAppConfig.traderKnownFactsReferenceDataBaseUrl.returns(baseUrl)
 
-        MockHttpClient.get(url"${baseUrl}/oracle/trader-known-facts?exciseRegistrationId=$testErn")
+        MockHttpClient.get(url"$baseUrl?exciseRegistrationId=$testErn")
           .returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
         connector.getTraderKnownFacts(testErn).futureValue mustBe Left(UnexpectedDownstreamResponseError)
