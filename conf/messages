@@ -799,7 +799,7 @@ viewAllTemplates.createANewMovement = Create a new movement
 viewAllTemplates.renamedNotification.title = Success
 viewAllTemplates.renamedNotification.content = Draft template "{0}" renamed to "{1}".
 viewAllTemplates.deletedNotification.title = Success
-viewAllTemplates.deletedNotification.content = Template ''{0}'' deleted.
+viewAllTemplates.deletedNotification.content = Template "{0}" deleted.
 
 viewAllMovements.heading = Movements
 viewAllMovements.filtered = ' filtered'
