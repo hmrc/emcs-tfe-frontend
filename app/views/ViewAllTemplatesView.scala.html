@@ -44,7 +44,7 @@
         pageTitle = titleNoForm(messages("viewAllTemplates.title")),
         maybeShowActiveTrader = maybeShowActiveTrader(request),
         maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Templates))),
-        fullWidthContent = templatesExist
+        fullWidthContent = true
     ) {
 
         @request.flash.get(TFE_UPDATED_DRAFT_TEMPLATE_NAME).map { newName =>
