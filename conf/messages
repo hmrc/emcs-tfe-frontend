@@ -797,7 +797,7 @@ viewAllTemplates.noTemplates.p1 = You have not created any templates.
 viewAllTemplates.noTemplates.p2 = You can create a template by submitting a draft movement. Templates allow you to edit and reuse most of the movement information.
 viewAllTemplates.createANewMovement = Create a new movement
 viewAllTemplates.renamedNotification.title = Success
-viewAllTemplates.renamedNotification.content = Draft template "{0}" renamed to "{1}".
+viewAllTemplates.renamedNotification.content = Template "{0}" renamed to "{1}".
 viewAllTemplates.deletedNotification.title = Success
 viewAllTemplates.deletedNotification.content = Template "{0}" deleted.
 
