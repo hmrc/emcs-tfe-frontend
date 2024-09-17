@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package config
+package fixtures.messages.draftTemplates
 
-object Constants {
-  val TFE_DELETED_DRAFT_LRN = "tfeDeletedDraftLrn"
-  val TFE_UPDATED_DRAFT_TEMPLATE_NAME = "tfeUpdatedDraftTemplateName"
-  val TFE_OLD_DRAFT_TEMPLATE_NAME = "tfeOldDraftTemplateName"
-  val TFE_DELETED_DRAFT_TEMPLATE_ID = "tfeDeletedDraftTemplateId"
+import fixtures.messages.{BaseEnglish, i18n}
+
+object DeleteTemplateMessages {
+
+  sealed trait DeleteTemplateMessages extends BaseEnglish { _: i18n =>
+    val heading = "Are you sure you want to delete this template?"
+    val title = titleHelper(heading)
+    val h1 = heading
+    val radioButton1 = "Yes"
+    val radioButton2 = "No"
+    val button = "Confirm"
+  }
+
+  object English extends DeleteTemplateMessages
 }

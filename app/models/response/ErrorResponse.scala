@@ -79,3 +79,5 @@ case class DraftTemplateGetException(message: String) extends Exception(message)
 case class DraftTemplateCheckNameException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
 
 case class DraftTemplateSetException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse
+
+case class DeleteTemplateException(message: String) extends Exception(message) with NoStackTrace with ErrorResponse

@@ -56,7 +56,7 @@ class ViewAllTemplatesHelper @Inject()(list: list, link: link, h3: h3, p: p) {
                   id = Some(s"rename-${index.displayIndex}")
                 )),
                 p()(link(
-                  link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                  link = controllers.draftTemplates.routes.DeleteTemplateController.onPageLoad(ern, template.templateId).url,
                   messageKey = "viewAllTemplates.table.delete",
                   id = Some(s"delete-${index.displayIndex}")
                 ))

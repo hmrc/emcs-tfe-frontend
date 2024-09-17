@@ -18,7 +18,7 @@ package services
 
 import base.SpecBase
 import fixtures.DraftTemplatesFixtures
-import mocks.connectors.{MockDraftTemplatesConnector, MockGetDraftTemplateConnector, MockIsUniqueDraftTemplateNameConnector}
+import mocks.connectors._
 import models.draftTemplates.TemplateList
 import models.response._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,12 +30,13 @@ class DraftTemplatesServiceSpec
     with MockDraftTemplatesConnector
     with MockIsUniqueDraftTemplateNameConnector
     with MockGetDraftTemplateConnector
+    with MockDeleteDraftTemplateConnector
     with DraftTemplatesFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.global
 
-  lazy val testService = new DraftTemplatesService(mockDraftTemplatesConnector, mockIsUniqueDraftTemplateNameConnector, mockGetDraftTemplatesConnector)
+  lazy val testService = new DraftTemplatesService(mockDraftTemplatesConnector, mockIsUniqueDraftTemplateNameConnector, mockGetDraftTemplatesConnector, mockDeleteDraftTemplateConnector)
 
   ".list" should {
     "return a Seq of templates" when {
@@ -130,6 +131,34 @@ class DraftTemplatesServiceSpec
         val result = intercept[DraftTemplateSetException](await(testService.set("GBRC123456789", "1", updateFullTemplate)))
 
         result.message mustBe s"Failed to update template ID: 1 for ERN: GBRC123456789 - $JsonValidationError"
+      }
+    }
+  }
+
+  ".delete" should {
+    "return true" when {
+
+      "the connector returns success" in {
+
+        MockDeleteDraftTemplateConnector.delete(testErn, testTemplateId).returns(Future.successful(Right(true)))
+
+        val result = await(testService.delete(testErn, testTemplateId))
+
+        result mustBe true
+      }
+    }
+
+    "throw an exception" when {
+
+      "the connector returns an error" in {
+
+        MockDeleteDraftTemplateConnector.delete(testErn, testTemplateId).returns(Future.successful(Left(NotFoundError)))
+
+        val result = intercept[Exception] {
+          await(testService.delete(testErn, testTemplateId))
+        }
+
+        result mustBe a[DeleteTemplateException]
       }
     }
   }

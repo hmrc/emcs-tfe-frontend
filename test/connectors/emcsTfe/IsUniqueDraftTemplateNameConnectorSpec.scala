@@ -21,7 +21,6 @@ import fixtures.DraftTemplatesFixtures
 import mocks.connectors.MockHttpClient
 import models.response.JsonValidationError
 import play.api.http.{HeaderNames, MimeTypes, Status}
-import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}

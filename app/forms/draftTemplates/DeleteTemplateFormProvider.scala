@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package config
+package forms.draftTemplates
 
-object Constants {
-  val TFE_DELETED_DRAFT_LRN = "tfeDeletedDraftLrn"
-  val TFE_UPDATED_DRAFT_TEMPLATE_NAME = "tfeUpdatedDraftTemplateName"
-  val TFE_OLD_DRAFT_TEMPLATE_NAME = "tfeOldDraftTemplateName"
-  val TFE_DELETED_DRAFT_TEMPLATE_ID = "tfeDeletedDraftTemplateId"
+import forms.mappings.Mappings
+import play.api.data.Form
+
+import javax.inject.Inject
+
+class DeleteTemplateFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("deleteTemplate.error.required")
+    )
 }

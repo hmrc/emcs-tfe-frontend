@@ -46,7 +46,7 @@ class ViewAllTemplatesHelperSpec extends SpecBase with DraftTemplatesFixtures {
 
   def renameLink(ern: String, templateId: String): String = controllers.draftTemplates.routes.RenameTemplateController.onPageLoad(ern, templateId).url
 
-  def deleteLink(ern: String, templateId: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+  def deleteLink(ern: String, templateId: String): String = controllers.draftTemplates.routes.DeleteTemplateController.onPageLoad(ern, templateId).url
 
   "ViewAllTemplatesHelper" when {
     Seq(English) foreach { messagesForLanguage =>

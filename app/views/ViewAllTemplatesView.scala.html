@@ -15,14 +15,13 @@
  *@
 
 @import config.AppConfig
+@import config.Constants.{TFE_DELETED_DRAFT_TEMPLATE_ID, TFE_OLD_DRAFT_TEMPLATE_NAME, TFE_UPDATED_DRAFT_TEMPLATE_NAME}
 @import models.draftTemplates.Template
 @import models.requests.DataRequest
-@import views.html._
-@import views.html.components._
 @import viewmodels.helpers.ViewAllTemplatesHelper
 @import views.ViewUtils
-@import config.Constants.TFE_UPDATED_DRAFT_TEMPLATE_NAME
-@import config.Constants.TFE_OLD_DRAFT_TEMPLATE_NAME
+@import views.html._
+@import views.html.components._
 
 @this(
         layout: templates.Layout,
@@ -45,7 +44,7 @@
         pageTitle = titleNoForm(messages("viewAllTemplates.title")),
         maybeShowActiveTrader = maybeShowActiveTrader(request),
         maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), Some(Templates))),
-        fullWidthContent = templatesExist
+        fullWidthContent = true
     ) {
 
         @request.flash.get(TFE_UPDATED_DRAFT_TEMPLATE_NAME).map { newName =>
@@ -62,6 +61,20 @@
             </div>
         </div>
         }
+        }
+
+        @request.flash.get(TFE_DELETED_DRAFT_TEMPLATE_ID).map { templateName =>
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    @notificationBanner(
+                        NotificationBanner(
+                            title = messages("viewAllTemplates.deletedNotification.title"),
+                            content = messages("viewAllTemplates.deletedNotification.content", templateName),
+                            classes = "govuk-notification-banner--success"
+                        )
+                    )
+                </div>
+            </div>
         }
 
         @h1()(Html(messages("viewAllTemplates.title")))
