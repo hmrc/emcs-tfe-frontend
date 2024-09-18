@@ -26,7 +26,7 @@ trait MockAppConfig extends MockFactory {
 
   object MockedAppConfig {
     def emcsTfeBaseUrl: CallHandler[String] = (() => mockAppConfig.emcsTfeBaseUrl).expects()
-    def traderKnownFactsReferenceDataBaseUrl: CallHandler[String] = (() => mockAppConfig.traderKnownFactsReferenceDataBaseUrl).expects()
+    def traderKnownFactsReferenceDataBaseUrl: CallHandler[String] = (() => mockAppConfig.traderKnownFactsBaseUrl).expects()
   }
 
 }

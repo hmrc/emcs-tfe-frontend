@@ -58,7 +58,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def emcsTfeMessagesUrl(ern: String): String = controllers.messages.routes.ViewAllMessagesController.onPageLoad(ern, MessagesSearchOptions()).url
 
   def emcsTfeUndischargedMovementsUrl(ern: String): String =
-    routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions( undischargedMovements = Some(Undischarged) )).url
+    routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions(undischargedMovements = Some(Undischarged))).url
 
   private lazy val contactHost = configuration.get[String]("contact-frontend.host")
 
@@ -112,24 +112,23 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
 
   def businessTaxAccountUrl: String = configuration.get[String]("urls.businessTaxAccount")
 
-  private def traderKnownFactsReferenceDataService: String =
-    if (isEnabled(StubGetTraderKnownFacts)) {
-      servicesConfig.baseUrl("emcs-tfe-reference-data-stub")
-    } else {
-      servicesConfig.baseUrl("emcs-tfe-reference-data")
-    }
-
-  def traderKnownFactsReferenceDataBaseUrl: String = s"$traderKnownFactsReferenceDataService/emcs-tfe-reference-data"
+  def traderKnownFactsBaseUrl: String =
+    servicesConfig.baseUrl("emcs-tfe") + "/emcs-tfe/trader-known-facts"
 
   lazy val tradeTariffCommoditiesUrl: String = configuration.get[String]("urls.tradeTariffCommodities")
+
   def getUrlForCommodityCode(code: String): String = s"$tradeTariffCommoditiesUrl/${code}00"
 
   def messageStatisticsCacheTtl: Duration = Duration(configuration.get[String]("mongodb.messageStatistics.TTL"))
+
   def messageStatisticsReplaceIndexes(): Boolean = configuration.get[Boolean]("mongodb.messageStatistics.replaceIndexes")
+
   def messagesCacheTtl: Duration = Duration(configuration.get[String]("mongodb.messages.TTL"))
+
   def messagesReplaceIndexes(): Boolean = configuration.get[Boolean]("mongodb.messages.replaceIndexes")
 
   def prevalidateTraderUserAnswersCacheTtl: Duration = Duration(configuration.get[String]("mongodb.prevalidateTraderUserAnswers.TTL"))
+
   def prevalidateTraderUserAnswersReplaceIndexes: Boolean = configuration.get[Boolean]("mongodb.prevalidateTraderUserAnswers.replaceIndexes")
 
   def accountHomeBanner: Boolean = isEnabled(AccountHomeBanner)
