@@ -479,7 +479,7 @@ class ViewMessageViewSpec extends ViewSpecBase
 
       behave like pageWithExpectedElementsAndMessages(
         Seq(
-          Selectors.p(1) -> "This movement requires a change of destination."
+          Selectors.p(1) -> "You need to submit a change of destination for this movement because the consignee has either rejected, refused or partially refused the goods."
         )
       )
     }

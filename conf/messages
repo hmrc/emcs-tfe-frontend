@@ -916,7 +916,7 @@ messages.IE801.false.0.paragraph = There is a new movement on its way to you.
 messages.IE801.true.0.description = New movement submitted successfully
 
 messages.IE802.false.1.description = Reminder to change destination
-messages.IE802.false.1.paragraph = This movement requires a change of destination.
+messages.IE802.false.1.paragraph = You need to submit a change of destination for this movement because the consignee has either rejected, refused or partially refused the goods.
 messages.IE802.false.2.description = Reminder for report of receipt
 messages.IE802.false.2.paragraph = You have received a movement but we have not yet received your Report of Receipt. However if you have sent a Report of Receipt within the last 7 days, please ignore this reminder.
 messages.IE802.false.2.paragraph.consignor = The consignee has not yet submitted a report of receipt for this movement.
