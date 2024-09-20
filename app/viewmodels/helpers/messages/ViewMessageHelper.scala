@@ -72,7 +72,7 @@ class ViewMessageHelper @Inject()(
     messagesHelper.additionalInformationKey(message) -> message.messageType match {
       case Some(_) -> "IE871" if movement.exists(!_.isBeingViewedByConsignee) =>
         Empty.asHtml
-      case Some(key) -> "IE802" if movement.exists(_.isBeingViewedByConsignor) =>
+      case Some(key) -> "IE802" if (movement.exists(_.isBeingViewedByConsignor) && message.messageRole == 2) =>
         p() { Html(messages(key + ".consignor")) }
       case Some(key) -> _ =>
         p() { Html(messages(key)) }
