@@ -465,19 +465,27 @@ class ViewMessageViewSpec extends ViewSpecBase
     }
   }
 
-  s"when an IE802 reminder to change destination" should {
+  // Only consignors get an IE802 with a message role of 1, consignees will never get this reminder
+  s"when an IE802 reminder to change destination is viewed by the consignor" should {
     "contain other information" when {
-      implicit val doc: Document = asDocument(ie802ReminderToChangeDestination.message)
+      val movementWithLoggedInUserAsConsignor = Some(getMovementResponseModel
+        .copy(
+          consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some(testErn)),
+          consigneeTrader = getMovementResponseModel.consigneeTrader.map(_.copy(traderExciseNumber = Some("GB00000000000")))
+        )
+      )
+
+      implicit val doc: Document = asDocument(ie802ReminderToChangeDestination.message, optMovement = movementWithLoggedInUserAsConsignor)
 
       behave like pageWithExpectedElementsAndMessages(
         Seq(
-          Selectors.p(1) -> "This movement requires a change of destination."
+          Selectors.p(1) -> "You need to submit a change of destination for this movement because the consignee has either rejected, refused or partially refused the goods."
         )
       )
     }
   }
 
-  s"when an IE802 reminder to receipt" should {
+  s"when an IE802 reminder to receipt is viewed by consignee" should {
     "contain other information" when {
       implicit val doc: Document = asDocument(ie802ReminderToReportReceipt.message)
 
