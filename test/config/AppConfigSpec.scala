@@ -53,5 +53,12 @@ class AppConfigSpec
           config.traderKnownFactsBaseUrl mustBe s"http://localhost:8311/emcs-tfe/trader-known-facts"
       }
     }
+
+    ".emcsTfeCreateMovementChangeDeferredMovementUrl" must {
+      "return to the correct URL" in {
+        config.emcsTfeChangeDraftDeferredMovementUrl(testErn, testDraftId) mustBe
+          s"http://localhost:8314/emcs/create-movement/trader/$testErn/draft/$testDraftId/info/deferred-movement/change"
+      }
+    }
   }
 }

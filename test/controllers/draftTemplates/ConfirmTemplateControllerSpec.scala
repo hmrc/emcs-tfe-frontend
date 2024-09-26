@@ -157,7 +157,7 @@ class ConfirmTemplateControllerSpec extends SpecBase
         }
       }
 
-      "redirect to CAM" when {
+      "redirect to CAM deferred movement change page" when {
         "The user has said yes to confirm" in new Test {
           enable(TemplatesLink)
 
@@ -170,7 +170,7 @@ class ConfirmTemplateControllerSpec extends SpecBase
           val request = FakeRequest("POST", "/").withFormUrlEncodedBody("value" -> "true")
           val result = controller.onSubmit(testErn, testTemplateId)(request)
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(appConfig.emcsTfeCreateMovementTaskListUrl(testErn, testDraftId))
+          redirectLocation(result) mustBe Some(appConfig.emcsTfeChangeDraftDeferredMovementUrl(testErn, testDraftId))
         }
       }
     }

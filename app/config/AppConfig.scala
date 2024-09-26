@@ -105,6 +105,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def emcsTfeCreateMovementTaskListUrl(ern: String, draftId: String): String =
     servicesConfig.getString("urls.emcsTfeCreateMovement") + s"/trader/$ern/draft/$draftId/draft-movement"
 
+  def emcsTfeChangeDraftDeferredMovementUrl(ern: String, draftId: String): String =
+    servicesConfig.getString("urls.emcsTfeCreateMovement") + s"/trader/$ern/draft/$draftId/info/deferred-movement/change"
+
   def europaCheckLink: String =
     servicesConfig.getString("urls.europaCheckLink")
 

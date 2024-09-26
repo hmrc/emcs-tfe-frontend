@@ -94,7 +94,7 @@ class ConfirmTemplateController @Inject()(mcc: MessagesControllerComponents,
 
   private def createDraftEntryAndRedirect(ern: String, template: Template)(implicit request: DataRequest[_]): Future[Result] =
     service.createDraftMovement(ern, template.templateId).map { response =>
-      Redirect(appConfig.emcsTfeCreateMovementTaskListUrl(ern, response.createdDraftId))
+      Redirect(appConfig.emcsTfeChangeDraftDeferredMovementUrl(ern, response.createdDraftId))
     }
   
 }
