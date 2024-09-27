@@ -21,6 +21,7 @@ import fixtures.DraftTemplatesFixtures
 import mocks.connectors._
 import models.draftTemplates.TemplateList
 import models.response._
+import models.response.emcsTfe.draftTemplate.DraftMovementCreatedResponse
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,12 +32,19 @@ class DraftTemplatesServiceSpec
     with MockIsUniqueDraftTemplateNameConnector
     with MockGetDraftTemplateConnector
     with MockDeleteDraftTemplateConnector
+    with MockCreateDraftMovementConnector
     with DraftTemplatesFixtures {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = ExecutionContext.global
 
-  lazy val testService = new DraftTemplatesService(mockDraftTemplatesConnector, mockIsUniqueDraftTemplateNameConnector, mockGetDraftTemplatesConnector, mockDeleteDraftTemplateConnector)
+  lazy val testService = new DraftTemplatesService(
+    mockDraftTemplatesConnector,
+    mockIsUniqueDraftTemplateNameConnector,
+    mockGetDraftTemplatesConnector,
+    mockDeleteDraftTemplateConnector,
+    mockCreateDraftMovementConnector
+  )
 
   ".list" should {
     "return a Seq of templates" when {
@@ -159,6 +167,34 @@ class DraftTemplatesServiceSpec
         }
 
         result mustBe a[DeleteTemplateException]
+      }
+    }
+  }
+
+  ".createDraftMovement" should {
+    "return a DraftMovementCreatedResponse" when {
+      "connector returns Right(_)" in {
+
+        val draftMovementResponse = DraftMovementCreatedResponse(createdDraftId = testDraftId)
+
+        MockCreateDraftMovementConnector.createDraftMovement(testErn, testTemplateId).returns(Future.successful(Right(draftMovementResponse)))
+
+        val result = testService.createDraftMovement(testErn, testTemplateId).futureValue
+
+        result mustBe draftMovementResponse
+      }
+    }
+
+    "throw an exception" when {
+      "connector returns Left(_)" in {
+
+        MockCreateDraftMovementConnector.createDraftMovement(testErn, testTemplateId).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
+
+        val result = intercept[Exception] {
+          await(testService.createDraftMovement(testErn, testTemplateId))
+        }
+
+        result mustBe a[CreateDraftMovementException]
       }
     }
   }

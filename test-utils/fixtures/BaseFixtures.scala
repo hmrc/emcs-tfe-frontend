@@ -16,7 +16,7 @@
 
 package fixtures
 
-import models.common.TraderKnownFacts
+import models.common._
 import models.prevalidate.EntityGroup
 import models.response.emcsTfe.GetMessageStatisticsResponse
 import models.{Index, UserAnswers}
@@ -76,6 +76,19 @@ trait BaseFixtures {
     ern = testErn,
     data = Json.obj(),
     lastUpdated = Instant.now().truncatedTo(ChronoUnit.MILLIS)
+  )
+
+  val testPlaceOfDispatchTrader: TraderModel = TraderModel(
+    traderExciseNumber = Some("GBRC345GTR145"),
+    traderName = Some("Dispatch your goods Ltd"),
+    address = Some(AddressModel(
+      streetNumber = None,
+      street = Some("Dispatch Street"),
+      postcode = Some("AA1 1AA"),
+      city = Some("United Kingdom"),
+    )),
+    vatNumber = None,
+    eoriNumber = None
   )
 
 }

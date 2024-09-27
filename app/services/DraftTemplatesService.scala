@@ -19,6 +19,7 @@ package services
 import connectors.emcsTfe._
 import models.draftTemplates._
 import models.response._
+import models.response.emcsTfe.draftTemplate.DraftMovementCreatedResponse
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 
@@ -29,7 +30,8 @@ class DraftTemplatesService @Inject()(
                                        templateListConnector: DraftTemplatesConnector,
                                        templateExistsConnector: IsUniqueDraftTemplateNameConnector,
                                        templateConnector: GetDraftTemplateConnector,
-                                       templateDeleteConnector: DeleteDraftTemplateConnector) extends Logging {
+                                       templateDeleteConnector: DeleteDraftTemplateConnector,
+                                       draftMovementConnector: CreateDraftMovementConnector) extends Logging {
 
   def list(ern: String, page: Int)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[TemplateList] =
     templateListConnector.list(ern, page).map {
@@ -64,5 +66,12 @@ class DraftTemplatesService @Inject()(
       case Left(errorResponse) => throw DeleteTemplateException(s"Failed to delete template with ID: $templateId for ERN: $ern - $errorResponse")
     }
   }
+
+  def createDraftMovement(ern: String, templateId: String)
+                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[DraftMovementCreatedResponse] =
+    draftMovementConnector.createDraftMovement(ern, templateId) map {
+      case Right(response) => response
+      case Left(errorResponse) => throw CreateDraftMovementException(s"Failed to create draft movement from template: $templateId for ERN: $ern - $errorResponse")
+    }
 
 }

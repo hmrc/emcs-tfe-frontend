@@ -38,7 +38,7 @@ class ViewAllTemplatesHelper @Inject()(list: list, link: link, h3: h3, p: p) {
             content = HtmlContent(HtmlFormat.fill(Seq(
               h3(template.templateName),
               p()(Html(messages("viewAllTemplates.table.destination", messages(s"viewAllTemplates.table.destination.${template.destinationType}")))),
-              p()(Html(messages("viewAllTemplates.table.consignee", template.consignee.getOrElse(""))))
+              p()(Html(messages("viewAllTemplates.table.consignee", template.consigneeIdentifier.getOrElse(""))))
             )))
           ),
           // Action links
@@ -46,7 +46,7 @@ class ViewAllTemplatesHelper @Inject()(list: list, link: link, h3: h3, p: p) {
             content = HtmlContent(list(
               Seq(
                 p()(link(
-                  link = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url,
+                  link = controllers.draftTemplates.routes.ConfirmTemplateController.onPageLoad(ern, template.templateId).url,
                   messageKey = "viewAllTemplates.table.startDraft",
                   id = Some(s"start-draft-${index.displayIndex}")
                 )),

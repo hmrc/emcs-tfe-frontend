@@ -16,6 +16,7 @@
 
 package mocks.services
 
+import models.draftTemplates.TemplateItem
 import models.response.emcsTfe.MovementItem
 import models.response.referenceData.CnCodeInformation
 import org.scalamock.handlers.CallHandler2
@@ -32,6 +33,10 @@ trait MockGetCnCodeInformationService extends MockFactory {
   object MockGetCnCodeInformationService {
     def getCnCodeInformation(items: Seq[MovementItem]): CallHandler2[Seq[MovementItem], HeaderCarrier, Future[Seq[(MovementItem, CnCodeInformation)]]] =
       (mockGetCnCodeInformationService.getCnCodeInformation(_: Seq[MovementItem])(_: HeaderCarrier))
+        .expects(items, *)
+
+    def getCnCodeInformationForTemplateItems(items: Seq[TemplateItem]): CallHandler2[Seq[TemplateItem], HeaderCarrier, Future[Seq[(TemplateItem, CnCodeInformation)]]] =
+      (mockGetCnCodeInformationService.getCnCodeInformationForTemplateItems(_: Seq[TemplateItem])(_: HeaderCarrier))
         .expects(items, *)
   }
 }

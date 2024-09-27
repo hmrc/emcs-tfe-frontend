@@ -16,7 +16,9 @@
 
 package models.common
 
-sealed trait GuarantorType
+sealed trait GuarantorType {
+  val messageKey: String = s"guarantorType.${this.toString}"
+}
 
 object GuarantorType extends Enumerable.Implicits {
 

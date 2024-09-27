@@ -16,6 +16,7 @@
 
 package models.draftTemplates
 
+import models.common._
 import models.movementScenario.MovementScenario
 import play.api.libs.json._
 
@@ -33,11 +34,59 @@ case class Template(
     (data \ "info" \ "destinationType")
       .as[MovementScenario]
 
-  def consignee: Option[String] =
+  def consigneeIdentifier: Option[String] =
     (data \ "consignee" \ "exciseRegistrationNumber")
       .asOpt[String]
       .orElse((data \ "consignee" \ "consigneeExportVat")
         .asOpt[String])
+
+  def placeOfDispatch: Option[TraderModel] =
+    (data \ "dispatch" \ "dispatchAddress")
+      .asOpt[TraderModel]
+
+  def consigneeBusinessName: Option[String] =
+    (data \ "consignee" \ "consigneeAddress" \ "businessName")
+      .asOpt[String]
+
+  def exportCustomsOfficeCode: Option[String] =
+    (data \ "exportInformation" \ "exportCustomsOffice")
+      .asOpt[String]
+
+  def importCustomsOfficeCode: Option[String] =
+    (data \ "importInformation" \ "importCustomsOfficeCode")
+      .asOpt[String]
+
+  def memberState: Option[String] =
+    (data \ "consignee" \ "exemptOrganisation" \ "memberState")
+      .asOpt[String]
+
+  def guarantorArranger: Option[GuarantorType] =
+    (data \ "guarantor" \ "guarantorArranger")
+      .asOpt[GuarantorType]
+
+  def guarantorBusinessName: Option[String] =
+    (data \ "guarantor" \ "guarantorAddress" \ "businessName")
+      .asOpt[String]
+
+  def journeyType: Option[TransportMode] =
+    (data \ "journeyType" \ "howMovementTransported")
+      .asOpt[TransportMode]
+
+  def transportArranger: Option[TransportArrangement] =
+    (data \ "transportArranger" \ "transportArranger")
+      .asOpt[TransportArrangement]
+
+  def transportArrangerBusinessName: Option[String] =
+    (data \ "transportArranger" \ "transportArrangerAddress" \ "businessName")
+      .asOpt[String]
+
+  def firstTransporterBusinessName: Option[String] =
+    (data \ "firstTransporter" \ "firstTransporterAddress" \ "businessName")
+      .asOpt[String]
+
+  def items: Seq[TemplateItem] =
+    (data \ "items" \ "addedItems")
+      .as[Seq[TemplateItem]]
 }
 
 object Template {

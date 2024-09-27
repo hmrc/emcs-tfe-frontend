@@ -42,7 +42,7 @@ class ViewAllTemplatesHelperSpec extends SpecBase with DraftTemplatesFixtures {
 
   val helper: ViewAllTemplatesHelper = new ViewAllTemplatesHelper(list, link, h3, p)
 
-  def createLink(ern: String, templateId: String): String = testOnly.controllers.routes.UnderConstructionController.onPageLoad().url
+  def createLink(ern: String, templateId: String): String = controllers.draftTemplates.routes.ConfirmTemplateController.onPageLoad(ern, templateId).url
 
   def renameLink(ern: String, templateId: String): String = controllers.draftTemplates.routes.RenameTemplateController.onPageLoad(ern, templateId).url
 
@@ -83,7 +83,7 @@ class ViewAllTemplatesHelperSpec extends SpecBase with DraftTemplatesFixtures {
                     content = HtmlContent(HtmlFormat.fill(Seq(
                       h3(template.templateName),
                       p()(Html(messagesForLanguage.destination("Tax warehouse in Great Britain (England, Scotland or Wales)"))),
-                      p()(Html(messagesForLanguage.consignee(template.consignee.getOrElse(""))))
+                      p()(Html(messagesForLanguage.consignee(template.consigneeIdentifier.getOrElse(""))))
                     )))
                   ),
                   TableRow(

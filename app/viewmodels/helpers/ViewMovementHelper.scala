@@ -17,9 +17,7 @@
 package viewmodels.helpers
 
 import config.AppConfig
-import models.common.RoleType._
 import models.movementScenario.MovementScenario
-import models.movementScenario.MovementScenario._
 import models.requests.DataRequest
 import models.response.emcsTfe.GetMovementResponse
 import play.api.i18n.Messages
@@ -42,6 +40,7 @@ class ViewMovementHelper @Inject()(
                                     p: p,
                                     h2: h2,
                                     overviewPartial: overview_partial,
+                                    movementTypeHelper: MovementTypeHelper,
                                     viewMovementItemsHelper: ViewMovementItemsHelper,
                                     viewMovementTransportHelper: ViewMovementTransportHelper,
                                     viewMovementGuarantorHelper: ViewMovementGuarantorHelper,
@@ -95,7 +94,13 @@ class ViewMovementHelper @Inject()(
   private[helpers] def constructMovementView(movementResponse: GetMovementResponse)
                                             (implicit request: DataRequest[_], messages: Messages): Html = {
 
-    val movementTypeValue = getMovementTypeForMovementView(movementResponse)
+    val movementTypeValue = movementTypeHelper.getMovementType(
+      request.userTypeFromErn,
+      MovementScenario.getMovementScenarioFromMovement(movementResponse),
+      movementResponse.placeOfDispatchTrader,
+      movementResponse.isBeingViewedByConsignor,
+      movementResponse.isBeingViewedByConsignee
+    )
 
     lazy val eadStatusExplanation = messages(s"viewMovement.movement.summary.eADStatus.explanation.${movementResponse.eadStatus.toString.toLowerCase}")
 
@@ -179,66 +184,6 @@ class ViewMovementHelper @Inject()(
       dateOfArrival => summaryListRowBuilder("viewMovement.movement.timeAndDate.dateOfArrival", dateOfArrival)
     }.getOrElse(summaryListRowBuilder("viewMovement.movement.timeAndDate.predictedArrival", movementResponse.formattedExpectedDateOfArrival))
   }
-
-  //scalastyle:off cyclomatic.complexity line.size.limit
-  private[helpers] def getMovementTypeForMovementView(movementResponse: GetMovementResponse)(implicit request: DataRequest[_], messages: Messages): String = {
-    (request.userTypeFromErn, MovementScenario.getMovementScenarioFromMovement(movementResponse)) match {
-      case (_, ReturnToThePlaceOfDispatchOfTheConsignor) =>
-        messages("viewMovement.movement.summary.type.returnToThePlaceOfDispatchOfTheConsignor")
-
-      case (XIWK, destinationType@(UkTaxWarehouse.GB | UkTaxWarehouse.NI | EuTaxWarehouse | DirectDelivery | RegisteredConsignee | TemporaryRegisteredConsignee | ExemptedOrganisation | UnknownDestination)) =>
-        movementResponse.placeOfDispatchTrader match {
-          case Some(placeOfDispatch) => placeOfDispatch.traderExciseNumber match {
-            case Some(dispatchErn) =>
-              if (isGB(dispatchErn)) {
-                messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-              } else if (isXI(dispatchErn)) {
-                messages("viewMovement.movement.summary.type.niTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-              } else {
-                messages("viewMovement.movement.summary.type.nonUkMovementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-              }
-            case None =>
-              logger.info(s"[constructMovementView] Missing place of dispatch ERN for $XIWK")
-              messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-          }
-          case None =>
-            logger.info(s"[constructMovementView] Missing place of dispatch trader for $XIWK")
-            messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-        }
-
-      case (GBRC | XIRC, destinationType) =>
-        messages("viewMovement.movement.summary.type.importFor", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-
-      case (GBWK | XIWK, destinationType@(ExportWithCustomsDeclarationLodgedInTheUk | ExportWithCustomsDeclarationLodgedInTheEu)) =>
-        messages(s"viewMovement.movement.summary.type.$destinationType")
-
-      case (GBWK, destinationType) if movementResponse.isBeingViewedByConsignor =>
-        messages("viewMovement.movement.summary.type.gbTaxWarehouseTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-
-      case (GBWK, _) if movementResponse.isBeingViewedByConsignee =>
-        messages("viewMovement.movement.summary.type.movementToGbTaxWarehouse")
-
-      case (XIPA, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
-        messages(s"viewMovement.movement.summary.type.XIPA", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-
-      case (XIPC, destinationType@(CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
-        messages(s"viewMovement.movement.summary.type.XIPC", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-
-      case (XIPB, (CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
-        messages(s"viewMovement.movement.summary.type.XIPB")
-
-      case (XIPD, (CertifiedConsignee | TemporaryCertifiedConsignee | ReturnToThePlaceOfDispatchOfTheConsignor)) =>
-        messages(s"viewMovement.movement.summary.type.XIPD")
-
-      case (XITC, _) =>
-        messages("viewMovement.movement.summary.type.XITC")
-
-      case (userType, destinationType) =>
-        logger.warn(s"[constructMovementView] catch-all UserType and movement scenario combination for MOV journey: $userType | $destinationType")
-        messages("viewMovement.movement.summary.type.movementTo", messages(s"viewMovement.movement.summary.type.2.$destinationType"))
-    }
-  }
-  //scalastyle:on
 
   private[helpers] def constructDetailedItems(movement: GetMovementResponse)(implicit messages: Messages): Html = {
     HtmlFormat.fill(Seq(

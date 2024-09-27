@@ -152,7 +152,7 @@ class ViewMovementGuarantorHelper @Inject()(h2: h2,
   }
 
   private def guarantorTypeSummaryListRows(movement: GetMovementResponse)(implicit messages: Messages): Seq[SummaryListRow] = {
-    Seq(summaryListRowBuilder("viewMovement.guarantor.summary.type", s"viewMovement.guarantor.summary.type.${movement.movementGuarantee.guarantorTypeCode}"))
+    Seq(summaryListRowBuilder("viewMovement.guarantor.summary.type", s"guarantorType.${movement.movementGuarantee.guarantorTypeCode}"))
   }
 
 }

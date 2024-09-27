@@ -17,6 +17,7 @@
 package services
 
 import connectors.referenceData.GetCnCodeInformationConnector
+import models.draftTemplates.TemplateItem
 import models.requests.{CnCodeInformationItem, CnCodeInformationRequest}
 import models.response.CnCodeInformationException
 import models.response.emcsTfe.MovementItem
@@ -30,20 +31,47 @@ import scala.concurrent.{ExecutionContext, Future}
 class GetCnCodeInformationService @Inject()(connector: GetCnCodeInformationConnector)
                                            (implicit ec: ExecutionContext) {
 
-  def getCnCodeInformation(items: Seq[MovementItem])(implicit hc: HeaderCarrier): Future[Seq[(MovementItem, CnCodeInformation)]] =
+  def getCnCodeInformation(items: Seq[MovementItem])(implicit hc: HeaderCarrier): Future[Seq[(MovementItem, CnCodeInformation)]] = {
+
+    def matchMovementItemsWithReferenceDataValues(response: CnCodeInformationResponse,
+                                                          items: Seq[MovementItem]): Seq[(MovementItem, CnCodeInformation)] = {
+      items.collect {
+        case item if response.data.contains(item.cnCode) =>
+          item -> response.data(item.cnCode)
+        case item =>
+          throw CnCodeInformationException(s"Failed to match item with CN Code information: $item")
+      }
+    }
+
     connector.getCnCodeInformation(CnCodeInformationRequest(CnCodeInformationItem(items))).map {
       case Right(response) =>
         matchMovementItemsWithReferenceDataValues(response, items)
       case Left(errorResponse) =>
         throw CnCodeInformationException(s"Failed to retrieve CN Code information: $errorResponse")
     }
+  }
 
-  private def matchMovementItemsWithReferenceDataValues(response: CnCodeInformationResponse,
-                                                        items: Seq[MovementItem]): Seq[(MovementItem, CnCodeInformation)] =
-    items.collect {
-      case item if response.data.contains(item.cnCode) =>
-        item -> response.data(item.cnCode)
-      case item =>
-        throw CnCodeInformationException(s"Failed to match item with CN Code information: $item")
-    }
+
+  def getCnCodeInformationForTemplateItems(items: Seq[TemplateItem])(implicit hc: HeaderCarrier): Future[Seq[(TemplateItem, CnCodeInformation)]] = {
+
+    val cnCodeItems = items
+      .map(item => CnCodeInformationItem(item.itemExciseProductCode, item.itemCommodityCode))
+      .distinct
+
+    connector
+      .getCnCodeInformation(CnCodeInformationRequest(cnCodeItems))
+      .map {
+        case Right(response) =>
+          items.collect {
+            case item if response.data.contains(item.itemCommodityCode) =>
+              item -> response.data(item.itemCommodityCode)
+            case item =>
+              throw CnCodeInformationException(s"Failed to match CN Code information with template item : $item")
+          }
+        case Left(errorResponse) =>
+          throw CnCodeInformationException(s"Failed to retrieve CN Code information: $errorResponse")
+      }
+
+  }
+
 }
