@@ -81,9 +81,6 @@ class ConfirmTemplateControllerSpec extends SpecBase
         "the templates feature is disabled" in new Test {
           disable(TemplatesLink)
 
-          MockDraftTemplatesService.getTemplate(testErn, testTemplateId)
-            .returns(Future.successful(Some(testTemplate)))
-
           val result = controller.onPageLoad(testErn, testTemplateId)(fakeRequest)
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(controllers.routes.AccountHomeController.viewAccountHome(testErn).url)
@@ -111,9 +108,6 @@ class ConfirmTemplateControllerSpec extends SpecBase
 
       "redirect to the account home page" in new Test {
         disable(TemplatesLink)
-
-        MockDraftTemplatesService.getTemplate(testErn, testTemplateId)
-          .returns(Future.successful(Some(testTemplate)))
 
         val result = controller.onSubmit(testErn, testTemplateId)(fakeRequest)
         status(result) mustBe SEE_OTHER

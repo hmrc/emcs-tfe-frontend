@@ -26,7 +26,7 @@ object ConfirmTemplateMessages {
     val h1 = heading
     val summaryRowKeyMovementType = "Movement type"
     val summaryRowKeyConsignee = "Consignee"
-    val summaryRowKeyConsigneeIdentifier = "Consignee identifier"
+    val summaryRowKeyConsigneeERN = "Consignee excise registration number (ERN)"
     val summaryRowKeyExportOffice = "Export office"
     val summaryRowKeyImportOffice = "Import office"
     val summaryRowKeyExemptedOrganisationOffice = "Exempted organisation office"

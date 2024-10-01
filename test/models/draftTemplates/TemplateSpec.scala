@@ -97,10 +97,7 @@ class TemplateSpec extends SpecBase with DraftTemplatesFixtures {
       "consignee ERN is present" in {
         Json.parse(downstreamJsonWithExciseRegistrationNumber).as[Template] mustBe model(Some("ern123"), None)
       }
-      "consignee export VAT is present" in {
-        Json.parse(downstreamJsonWithConsigneeExportVat).as[Template] mustBe model(None, Some("vat123"))
-      }
-      "consignee ERN or export VAT is not present" in {
+      "consignee ERN is not present" in {
         val parsed = Json.parse(downstreamJsonWithNoErn).as[Template]
         parsed.ern mustBe testErn
         parsed.templateId mustBe "1"
@@ -112,7 +109,7 @@ class TemplateSpec extends SpecBase with DraftTemplatesFixtures {
           "consignee" -> Json.obj()
         )
         parsed.destinationType mustBe MovementScenario.UkTaxWarehouse.GB
-        parsed.consigneeIdentifier mustBe None
+        parsed.consigneeERN mustBe None
       }
       "consignee is not present" in {
         val parsed = Json.parse(downstreamJsonWithNoConsignee).as[Template]
@@ -125,7 +122,7 @@ class TemplateSpec extends SpecBase with DraftTemplatesFixtures {
           )
         )
         parsed.destinationType mustBe MovementScenario.UkTaxWarehouse.GB
-        parsed.consigneeIdentifier mustBe None
+        parsed.consigneeERN mustBe None
       }
     }
   }

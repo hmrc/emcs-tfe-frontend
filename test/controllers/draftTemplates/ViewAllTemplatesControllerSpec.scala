@@ -57,14 +57,11 @@ class ViewAllTemplatesControllerSpec extends SpecBase
     mockPaginationHelper
   )
 
-  enable(TemplatesLink)
-
   "GET" when {
     "user can't view draft templates" should {
       "redirect" in {
         disable(TemplatesLink)
 
-        MockDraftTemplatesService.list(testErn, 1).returns(Future.successful(TemplateList(templateList, 30)))
         val result: Future[Result] = controller.onPageLoad(testErn, None)(fakeRequest)
 
         status(result) mustBe SEE_OTHER

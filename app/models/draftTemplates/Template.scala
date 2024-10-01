@@ -34,11 +34,8 @@ case class Template(
     (data \ "info" \ "destinationType")
       .as[MovementScenario]
 
-  def consigneeIdentifier: Option[String] =
-    (data \ "consignee" \ "exciseRegistrationNumber")
-      .asOpt[String]
-      .orElse((data \ "consignee" \ "consigneeExportVat")
-        .asOpt[String])
+  def consigneeERN: Option[String] =
+    (data \ "consignee" \ "exciseRegistrationNumber").asOpt[String]
 
   def placeOfDispatch: Option[TraderModel] =
     (data \ "dispatch" \ "dispatchAddress")

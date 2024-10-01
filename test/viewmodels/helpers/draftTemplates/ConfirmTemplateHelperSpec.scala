@@ -108,15 +108,15 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
         }
       }
 
-      ".consigneeIdentifier" must {
+      ".consigneeERN" must {
         "return a summary list row when a consignee identifier is present and the destination type is not UnknownDestination or ExemptedOrganisation" in {
           implicit val _template = template.copy(data = Json.obj(
             "info" -> Json.obj("destinationType" -> MovementScenario.DirectDelivery.toString),
             "consignee" -> Json.obj("exciseRegistrationNumber" -> "GBWK000000000000")
           ))
 
-          val result = helper.consigneeIdentifier
-          result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.consigneeIdentifier", "GBWK000000000000"))
+          val result = helper.consigneeERN
+          result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.consigneeERN", "GBWK000000000000"))
         }
 
         "return None when the destination type is UnknownDestination" in {
@@ -125,7 +125,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "consignee" -> Json.obj("exciseRegistrationNumber" -> "GBWK000000000000")
           ))
 
-          val result = helper.consigneeIdentifier
+          val result = helper.consigneeERN
           result mustBe None
         }
 
@@ -135,16 +135,16 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "consignee" -> Json.obj("exciseRegistrationNumber" -> "GBWK000000000000")
           ))
 
-          val result = helper.consigneeIdentifier
+          val result = helper.consigneeERN
           result mustBe None
         }
 
-        "return None when there is no consignee identifier" in {
+        "return None when there is no consignee ERN" in {
           implicit val _template = template.copy(data = Json.obj(
             "info" -> Json.obj("destinationType" -> MovementScenario.DirectDelivery.toString)
           ))
 
-          val result = helper.consigneeIdentifier
+          val result = helper.consigneeERN
           result mustBe None
         }
       }
