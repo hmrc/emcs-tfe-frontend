@@ -51,7 +51,7 @@ class ConfirmTemplateHelper @Inject()(
       summaryListRows = Seq(
         Some(movementType),
         consignee,
-        consigneeIdentifier,
+        consigneeERN,
         exportOffice,
         importOffice,
         exemptedOrganisationOffice,
@@ -81,10 +81,10 @@ class ConfirmTemplateHelper @Inject()(
       .map(summaryListRowBuilder("confirmTemplate.movement.summary.consigneeBusinessName", _))
 
 
-  private[draftTemplates] def consigneeIdentifier()(implicit template: Template, messages: Messages): Option[SummaryListRow] =
-    template.consigneeIdentifier
+  private[draftTemplates] def consigneeERN()(implicit template: Template, messages: Messages): Option[SummaryListRow] =
+    template.consigneeERN
       .filter(_ => !Seq(UnknownDestination, ExemptedOrganisation).contains(template.destinationType))
-      .map(summaryListRowBuilder("confirmTemplate.movement.summary.consigneeIdentifier", _))
+      .map(summaryListRowBuilder("confirmTemplate.movement.summary.consigneeERN", _))
 
 
   private[draftTemplates] def exportOffice()(implicit template: Template, messages: Messages): Option[SummaryListRow] =

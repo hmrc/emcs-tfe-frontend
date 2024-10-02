@@ -71,7 +71,6 @@ class RenameTemplateControllerSpec
         "redirect" in {
           disable(TemplatesLink)
 
-          MockDraftTemplatesService.getTemplate(testErn, "1").returns(Future.successful(Some(fullTemplate)))
           val result: Future[Result] = controller.onPageLoad(testErn, "1")(fakeRequest)
 
           status(result) mustBe SEE_OTHER

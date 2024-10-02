@@ -28,9 +28,10 @@ object ViewAllTemplatesMessages {
     val tableHeadingActions = "Actions"
 
     def destination(text: String) = s"Destination: $text"
-    def consignee(text: String) = s"Consignee: $text"
+    def businessName(text: String) = s"Consignee business name: $text"
+    def consignee(text: String) = s"Consignee excise registration number (ERN): $text"
 
-    val actionCreate = "Create a draft movement with this template"
+    val actionCreate = "Start a draft movement with this template"
     val actionRename = "Rename template"
     val actionDelete = "Delete template"
 

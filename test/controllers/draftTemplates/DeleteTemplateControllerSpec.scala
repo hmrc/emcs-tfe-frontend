@@ -61,8 +61,6 @@ class DeleteTemplateControllerSpec extends SpecBase
       view,
       formProvider
     )
-
-    MockDraftTemplatesService.getTemplate(testErn, testTemplateId).returns(Future.successful(Some(testTemplate)))
   }
 
   "GET onPageLoad" should {
@@ -78,6 +76,8 @@ class DeleteTemplateControllerSpec extends SpecBase
 
       "return OK and the correct view for a GET" in new Test {
         enable(TemplatesLink)
+
+        MockDraftTemplatesService.getTemplate(testErn, testTemplateId).returns(Future.successful(Some(testTemplate)))
 
         val result = controller.onPageLoad(testErn, testTemplateId)(fakeRequest)
         status(result) mustBe OK
@@ -106,6 +106,8 @@ class DeleteTemplateControllerSpec extends SpecBase
         "the user has not selected an option" in new Test {
           enable(TemplatesLink)
 
+          MockDraftTemplatesService.getTemplate(testErn, testTemplateId).returns(Future.successful(Some(testTemplate)))
+
           val request = FakeRequest("POST", "/")
           val result = controller.onSubmit(testErn, testTemplateId)(request)
           status(result) mustBe BAD_REQUEST
@@ -119,6 +121,7 @@ class DeleteTemplateControllerSpec extends SpecBase
         "the user has said yes to delete" in new Test {
           enable(TemplatesLink)
 
+          MockDraftTemplatesService.getTemplate(testErn, testTemplateId).returns(Future.successful(Some(testTemplate)))
           MockDraftTemplatesService.delete(testErn, testTemplateId).returns(Future.successful(true))
 
           val request = FakeRequest("POST", "/").withFormUrlEncodedBody("value" -> "true")
@@ -130,6 +133,7 @@ class DeleteTemplateControllerSpec extends SpecBase
         "the user has said no to delete" in new Test {
           enable(TemplatesLink)
 
+          MockDraftTemplatesService.getTemplate(testErn, testTemplateId).returns(Future.successful(Some(testTemplate)))
           MockDraftTemplatesService.delete(testErn, testTemplateId).never()
 
           val request = FakeRequest("POST", "/").withFormUrlEncodedBody("value" -> "false")

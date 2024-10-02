@@ -37,8 +37,16 @@ class ViewAllTemplatesHelper @Inject()(list: list, link: link, h3: h3, p: p) {
           TableRow(
             content = HtmlContent(HtmlFormat.fill(Seq(
               h3(template.templateName),
-              p()(Html(messages("viewAllTemplates.table.destination", messages(s"viewAllTemplates.table.destination.${template.destinationType}")))),
-              p()(Html(messages("viewAllTemplates.table.consignee", template.consigneeIdentifier.getOrElse(""))))
+              list(
+                Seq(
+                  Some(Html(messages("viewAllTemplates.table.destination", messages(s"viewAllTemplates.table.destination.${template.destinationType}")))),
+                  template.consigneeBusinessName.map(name =>
+                    Html(messages("viewAllTemplates.table.businessName", name))
+                  ),
+                  template.consigneeERN.map(ern =>
+                    Html(messages("viewAllTemplates.table.consignee", ern))
+                  )).flatten
+              )
             )))
           ),
           // Action links

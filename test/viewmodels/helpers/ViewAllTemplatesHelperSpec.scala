@@ -82,8 +82,13 @@ class ViewAllTemplatesHelperSpec extends SpecBase with DraftTemplatesFixtures {
                   TableRow(
                     content = HtmlContent(HtmlFormat.fill(Seq(
                       h3(template.templateName),
-                      p()(Html(messagesForLanguage.destination("Tax warehouse in Great Britain (England, Scotland or Wales)"))),
-                      p()(Html(messagesForLanguage.consignee(template.consigneeIdentifier.getOrElse(""))))
+                      list(
+                        Seq(
+                          Some(Html(messagesForLanguage.destination("Tax warehouse in Great Britain (England, Scotland or Wales)"))),
+                          template.consigneeBusinessName.map(name => Html(messagesForLanguage.businessName(name))),
+                          template.consigneeERN.map(ern => Html(messagesForLanguage.consignee(ern)))
+                        ).flatten
+                      )
                     )))
                   ),
                   TableRow(

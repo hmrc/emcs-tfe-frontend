@@ -108,7 +108,7 @@ class ConfirmTemplateViewSpec extends ViewSpecBase with ViewBehaviours with Draf
           Selectors.summaryRowValue(1) -> "Great Britain tax warehouse to tax warehouse in Great Britain",
           Selectors.summaryRowKey(2) -> messagesForLanguage.summaryRowKeyConsignee,
           Selectors.summaryRowValue(2) -> "Consignee Business Name",
-          Selectors.summaryRowKey(3) -> messagesForLanguage.summaryRowKeyConsigneeIdentifier,
+          Selectors.summaryRowKey(3) -> messagesForLanguage.summaryRowKeyConsigneeERN,
           Selectors.summaryRowValue(3) -> testErn,
           Selectors.summaryRowKey(4) -> messagesForLanguage.summaryRowKeyGuarantor,
           Selectors.summaryRowValue(4) -> "Owner of goods Guarantor Business Name",
