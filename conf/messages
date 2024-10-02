@@ -794,6 +794,8 @@ confirmTemplate.movement.summary.item.description = Item {0}: {1} {2} of {3}
 
 viewAllTemplates.title = Templates
 viewAllTemplates.p1 = Draft movements can be saved as a template when submitting. Templates allow you to edit and reuse most of the movement information.
+viewAllTemplates.p2 = You can save a maximum of {0} templates.
+viewAllTemplates.inset.maxWarning = You have reached the maximum limit of {0} templates. If you wish to save a new template you must delete an existing template.
 viewAllTemplates.table.templateDetails = Template details
 viewAllTemplates.table.actions = Actions
 viewAllTemplates.table.destination = Destination: {0}

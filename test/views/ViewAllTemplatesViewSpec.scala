@@ -35,6 +35,14 @@ class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours with Dra
     val pagination = "#main-content .govuk-pagination"
   }
 
+  lazy val paginationHelper = new PaginationUtil {
+    override val link: Int => String =
+      (index: Int) => controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(testErn, Some(index)).url
+
+    override val currentPage: Int = 1
+    override val pages: Int = 5
+  }
+
   "view" must {
 
     Seq(English) foreach { messagesForLanguage =>
@@ -64,44 +72,51 @@ class ViewAllTemplatesViewSpec extends ViewSpecBase with ViewBehaviours with Dra
         }
 
         "list of templates is not empty" when {
-          val paginationHelper = new PaginationUtil {
-            override val link: Int => String =
-              (index: Int) => controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(testErn, Some(index)).url
 
-            override val currentPage: Int = 1
-            override val pages: Int = 5
-          }
+          "max templates has NOT been reached" when {
 
-          implicit val doc = asDocument(view(templateList, paginationHelper.constructPagination(), 3))
-
-          behave like pageWithExpectedElementsAndMessages(Seq(
-            Selectors.title -> messagesForLanguage.title,
-            Selectors.h1 -> messagesForLanguage.heading,
-            Selectors.h2(1) -> messagesForLanguage.multipleTemplatesH2(3),
-            Selectors.p(1) -> messagesForLanguage.p1,
-          ))
-
-          "display a table" in {
-            doc.select(Selectors.tableSelector).size() mustBe 1
-          }
-
-          "display pagination" in {
-            doc.select(Selectors.pagination).size() mustBe 1
-          }
-
-          "only one result is found" must {
-            val paginationHelper = new PaginationUtil {
-              override val link: Int => String =
-                (index: Int) => controllers.draftTemplates.routes.ViewAllTemplatesController.onPageLoad(testErn, Some(index)).url
-
-              override val currentPage: Int = 1
-              override val pages: Int = 5
-            }
-
-            implicit val doc = asDocument(view(templateList, paginationHelper.constructPagination(), 1))
+            implicit val doc = asDocument(view(templateList, paginationHelper.constructPagination(), 3))
 
             behave like pageWithExpectedElementsAndMessages(Seq(
-              Selectors.h2(1) -> messagesForLanguage.oneTemplateH2
+              Selectors.title -> messagesForLanguage.title,
+              Selectors.h1 -> messagesForLanguage.heading,
+              Selectors.h2(1) -> messagesForLanguage.multipleTemplatesH2(3),
+              Selectors.p(1) -> messagesForLanguage.p1,
+            ))
+
+            "display a table" in {
+              doc.select(Selectors.tableSelector).size() mustBe 1
+            }
+
+            "display pagination" in {
+              doc.select(Selectors.pagination).size() mustBe 1
+            }
+
+            "only one result is found" must {
+
+              implicit val doc = asDocument(view(templateList, paginationHelper.constructPagination(), 1))
+
+              behave like pageWithExpectedElementsAndMessages(Seq(
+                Selectors.h2(1) -> messagesForLanguage.oneTemplateH2
+              ))
+            }
+          }
+
+          "max templates has not been reached" when {
+
+            implicit val doc = asDocument(view(
+              listOfTemplates = templateList,
+              pagination = paginationHelper.constructPagination(),
+              totalNumberOfTemplates = appConfig.maxTemplates
+            ))
+
+            behave like pageWithExpectedElementsAndMessages(Seq(
+              Selectors.title -> messagesForLanguage.title,
+              Selectors.h1 -> messagesForLanguage.heading,
+              Selectors.h2(1) -> messagesForLanguage.multipleTemplatesH2(appConfig.maxTemplates),
+              Selectors.p(1) -> messagesForLanguage.p1,
+              Selectors.p(2) -> messagesForLanguage.p2(appConfig.maxTemplates),
+              Selectors.inset(1) -> messagesForLanguage.maxWarning(appConfig.maxTemplates)
             ))
           }
         }

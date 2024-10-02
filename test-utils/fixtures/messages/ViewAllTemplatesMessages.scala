@@ -23,6 +23,8 @@ object ViewAllTemplatesMessages {
     val title = titleHelper(heading)
 
     val p1 = "Draft movements can be saved as a template when submitting. Templates allow you to edit and reuse most of the movement information."
+    val p2: Int => String = max => s"You can save a maximum of $max templates."
+    val maxWarning: Int => String = max => s"You have reached the maximum limit of $max templates. If you wish to save a new template you must delete an existing template."
 
     val tableHeadingDetails = "Template details"
     val tableHeadingActions = "Actions"
