@@ -1,4 +1,4 @@
-service.name = Excise Movement and Control System
+service.name = Create and manage excise goods movements with EMCS
 service.text = This is your new service
 
 site.warning = Warning:

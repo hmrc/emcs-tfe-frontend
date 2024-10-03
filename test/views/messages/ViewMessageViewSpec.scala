@@ -106,7 +106,7 @@ class ViewMessageViewSpec extends ViewSpecBase
       "show the correct title and H1" when {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
-            Selectors.title -> s"${msg.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.title -> s"${msg.messageTitle} - Create and manage excise goods movements with EMCS - GOV.UK",
             Selectors.h1 -> msg.messageTitle
           )
         )
@@ -193,7 +193,7 @@ class ViewMessageViewSpec extends ViewSpecBase
       "show the correct title and H1" when {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
-            Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.title -> s"${testMessage.messageTitle} - Create and manage excise goods movements with EMCS - GOV.UK",
             Selectors.h1 -> testMessage.messageTitle
           )
         )
@@ -253,7 +253,7 @@ class ViewMessageViewSpec extends ViewSpecBase
       "show the correct title and H1" when {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
-            Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.title -> s"${testMessage.messageTitle} - Create and manage excise goods movements with EMCS - GOV.UK",
             Selectors.h1 -> testMessage.messageTitle
           )
         )
@@ -330,7 +330,7 @@ class ViewMessageViewSpec extends ViewSpecBase
       "show the correct title and H1" when {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
-            Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.title -> s"${testMessage.messageTitle} - Create and manage excise goods movements with EMCS - GOV.UK",
             Selectors.h1 -> testMessage.messageTitle
           )
         )
@@ -404,7 +404,7 @@ class ViewMessageViewSpec extends ViewSpecBase
       "show the correct title and H1" when {
         behave like pageWithExpectedElementsAndMessages(
           Seq(
-            Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
+            Selectors.title -> s"${testMessage.messageTitle} - Create and manage excise goods movements with EMCS - GOV.UK",
             Selectors.h1 -> testMessage.messageTitle
           )
         )
@@ -584,7 +584,7 @@ class ViewMessageViewSpec extends ViewSpecBase
     def movementInformationTest(testMessage: TestMessage, withArc: Boolean = true)(implicit doc: Document): Unit = {
       behave like pageWithExpectedElementsAndMessages(
         Seq(
-          Selectors.title -> s"${testMessage.messageTitle} - Excise Movement and Control System - GOV.UK",
+          Selectors.title -> s"${testMessage.messageTitle} - Create and manage excise goods movements with EMCS - GOV.UK",
           Selectors.h1 -> testMessage.messageTitle,
           Selectors.summaryRowKey(if(withArc) 2 else 1) -> English.labelLrn,
           Selectors.summaryRowValue(if(withArc) 2 else 1) -> testMessage.message.lrn.get
