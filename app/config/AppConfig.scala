@@ -137,4 +137,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def accountHomeBanner: Boolean = isEnabled(AccountHomeBanner)
 
   def templatesLinkVisible: Boolean = isEnabled(TemplatesLink)
+
+  def maxTemplates: Int = configuration.get[String]("constants.maxTemplates").toInt
 }

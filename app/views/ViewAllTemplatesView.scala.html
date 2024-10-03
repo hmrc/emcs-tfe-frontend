@@ -34,6 +34,7 @@
         link: link,
         table: table,
         helper: ViewAllTemplatesHelper,
+        inset: components.inset,
         notificationBanner: GovukNotificationBanner
 )
 
@@ -81,6 +82,11 @@
 
         @if(templatesExist) {
             @p()(Html(messages("viewAllTemplates.p1")))
+            @p()(Html(messages("viewAllTemplates.p2", appConfig.maxTemplates)))
+
+            @if(totalNumberOfTemplates >= appConfig.maxTemplates) {
+                @inset(Html(messages("viewAllTemplates.inset.maxWarning", appConfig.maxTemplates)))
+            }
 
             <div class="govuk-!-padding-top-1" id="search-results" role="status">
                 @h2(ViewUtils.pluralSingular(s"site.templates.found", totalNumberOfTemplates), classes = "govuk-heading-s")
