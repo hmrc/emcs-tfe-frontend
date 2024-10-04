@@ -400,7 +400,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
         "return a summary list row with item descriptions when items with CN code information are present" in {
           val itemsWithCnCodeInfo = Seq(
             (TemplateItem("epc1", "cn1", 10), CnCodeInformation("cn1", "Description", "epc1", "Beer", Litres20)),
-            (TemplateItem("epc2", "cn2", 20), CnCodeInformation("cn2", "Description", "epc2", "Wine", Litres20))
+            (TemplateItem("epc2", "cn2", 20.5), CnCodeInformation("cn2", "Description", "epc2", "Wine", Litres20))
           )
 
           val result = helper.items(itemsWithCnCodeInfo)
@@ -410,7 +410,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
               "confirmTemplate.movement.summary.items",
               list(Seq(
                 Html("Item 1: 10 litres of Beer"),
-                Html("Item 2: 20 litres of Wine")
+                Html("Item 2: 20.5 litres of Wine")
               ), extraClasses = Some("govuk-list--bullet"))
             )
           )

@@ -19,7 +19,7 @@ package models.draftTemplates
 case class TemplateItem(
                          itemExciseProductCode: String,
                          itemCommodityCode: String,
-                         itemQuantity: Int
+                         itemQuantity: BigDecimal
                        )
 
 object TemplateItem {
