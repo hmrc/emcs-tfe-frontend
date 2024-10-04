@@ -51,7 +51,7 @@ class ViewUtilsSpec extends SpecBase with BaseFixtures {
 
     implicit val msgs: Messages = messages(app)
 
-    ViewUtils.title(userForm, "TITLE") mustBe " TITLE - Excise Movement and Control System - GOV.UK"
+    ViewUtils.title(userForm, "TITLE") mustBe " TITLE - Create and manage excise goods movements with EMCS - GOV.UK"
   }
 
   ".title" when {
@@ -66,18 +66,18 @@ class ViewUtilsSpec extends SpecBase with BaseFixtures {
     )
 
     "without form errors" in {
-      ViewUtils.title(userForm, "TITLE") mustBe " TITLE - Excise Movement and Control System - GOV.UK"
+      ViewUtils.title(userForm, "TITLE") mustBe " TITLE - Create and manage excise goods movements with EMCS - GOV.UK"
     }
 
     "with form errors" in {
       val formError = FormError("testKey", "testMessage")
-      ViewUtils.title(userForm.withError(formError), "TITLE") mustBe "Error: TITLE - Excise Movement and Control System - GOV.UK"
+      ViewUtils.title(userForm.withError(formError), "TITLE") mustBe "Error: TITLE - Create and manage excise goods movements with EMCS - GOV.UK"
     }
   }
 
   ".titleNoForm" in {
     implicit val msgs: Messages = messages(app)
-    ViewUtils.titleNoForm("TITLE") mustBe "TITLE - Excise Movement and Control System - GOV.UK"
+    ViewUtils.titleNoForm("TITLE") mustBe "TITLE - Create and manage excise goods movements with EMCS - GOV.UK"
   }
 
   ".maybeShowActiveTrader" when {
