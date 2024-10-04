@@ -28,7 +28,12 @@ class AuthController @Inject()(val controllerComponents: MessagesControllerCompo
                                config: AppConfig
                               ) extends FrontendBaseController with I18nSupport {
 
-  def signOut(): Action[AnyContent] = Action {
-    Redirect(config.signOutUrl, Map("continue" -> Seq(config.feedbackFrontendSurveyUrl)))
+  def signOut(becauseOfTimeout: Boolean = false): Action[AnyContent] = Action {
+    val continueUrl = if(becauseOfTimeout) {
+      config.host + routes.TimeoutController.onPageLoad().url
+    } else {
+      config.feedbackFrontendSurveyUrl
+    }
+    Redirect(config.signOutUrl, Map("continue" -> Seq(continueUrl)))
   }
 }
