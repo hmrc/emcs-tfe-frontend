@@ -85,14 +85,6 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
   display: inline-block;
 }
 
-.govuk-header__content {
-  width: 80%;
-}
-
-.govuk-header__logo {
-  width: 20%;
-}
-
 @media (min-width: 48.0625em) {
   .govuk-header__content {
     width: 80%;
