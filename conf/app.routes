@@ -9,7 +9,7 @@ GET         /assets/*file                                                     co
 GET         /refresh-session                                                  controllers.KeepAliveController.keepAlive()
 
 GET         /timeout                                                          controllers.auth.TimeoutController.onPageLoad()
-GET         /sign-out                                                         controllers.auth.AuthController.signOut()
+GET         /sign-out                                                         controllers.auth.AuthController.signOut(becauseOfTimeout: Boolean ?= false)
 
 GET         /                                                                 controllers.IndexController.exciseNumber()
 

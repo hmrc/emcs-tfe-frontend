@@ -25,20 +25,40 @@ import java.net.URLEncoder
 
 class AuthControllerSpec extends SpecBase {
 
-  "signOut" must {
+  "signOut" when {
 
-    "redirect to sign out, specifying the exit survey as the continue URL" in {
+    "NOT triggered by timeout" must {
 
-      val appConfig = app.injector.instanceOf[AppConfig]
-      val request   = FakeRequest(GET, routes.AuthController.signOut().url)
+      "redirect to sign out, specifying the exit survey as the continue URL" in {
 
-      val result = route(app, request).value
+        val appConfig = app.injector.instanceOf[AppConfig]
+        val request = FakeRequest(GET, routes.AuthController.signOut().url)
 
-      val encodedContinueUrl  = URLEncoder.encode(appConfig.feedbackFrontendSurveyUrl, "UTF-8")
-      val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
+        val result = route(app, request).value
 
-      status(result) mustEqual SEE_OTHER
-      redirectLocation(result).value mustEqual expectedRedirectUrl
+        val encodedContinueUrl = URLEncoder.encode(appConfig.feedbackFrontendSurveyUrl, "UTF-8")
+        val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual expectedRedirectUrl
+      }
+    }
+
+    "triggered by timeout" must {
+
+      "redirect to sign out, specifying the exit survey as the continue URL" in {
+
+        val appConfig = app.injector.instanceOf[AppConfig]
+        val request = FakeRequest(GET, routes.AuthController.signOut(becauseOfTimeout = true).url)
+
+        val result = route(app, request).value
+
+        val encodedContinueUrl = URLEncoder.encode(appConfig.host + routes.TimeoutController.onPageLoad().url, "UTF-8")
+        val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual expectedRedirectUrl
+      }
     }
   }
 }
