@@ -71,7 +71,7 @@ object ItemDetailsMessages {
     override val netWeightKey = "Net weight"
     override val netWeightValue: BigDecimal => String = value => s"$value kg"
     override val densityKey = "Density"
-    override val densityValue: BigDecimal => String = value => s"${value}kg/m<sup>3</sup> (temperature of 15&deg;C)"
+    override val densityValue: BigDecimal => String = value => s"${value}kg/m<sup>3</sup>"
     override val alcoholicStrengthKey = "Alcoholic strength by volume"
     override val alcoholicStrengthValue: BigDecimal => String = value => s"$value%"
     override val maturationAgeKey = "Maturation age"

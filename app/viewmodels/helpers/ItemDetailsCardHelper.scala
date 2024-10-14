@@ -187,13 +187,11 @@ class ItemDetailsCardHelper @Inject()(list: list, link: link, appConfig: AppConf
     }
 
   private[viewmodels] def densityRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
-    item.density.flatMap { density =>
-      item.unitOfMeasure.map { unitOfMeasure =>
-        summaryListRowBuilder(
-          messages("itemDetails.key.density"),
-          Html(messages("itemDetails.value.density", density.toString(), messages(s"itemDetails.value.density.$unitOfMeasure")))
-        )
-      }
+    item.density.map { density =>
+      summaryListRowBuilder(
+        messages("itemDetails.key.density"),
+        Html(messages("itemDetails.value.density", density.toString()))
+      )
     }
 
   private[viewmodels] def netWeightRow()(implicit item: MovementItem, messages: Messages): Option[SummaryListRow] =
