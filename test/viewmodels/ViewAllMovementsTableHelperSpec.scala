@@ -19,6 +19,7 @@ package viewmodels
 import base.SpecBase
 import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
+import fixtures.messages.ViewAllMovementsMessages.English.tableCaption
 import models.MovementFilterDirectionOption._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
@@ -48,6 +49,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
             "construct the expected data rows" in {
 
               helper.constructTable(testErn, movements, direction) mustBe Table(
+                caption = Some(tableCaption),
+                captionClasses = "govuk-visually-hidden",
                 firstCellIsHeader = false,
                 rows = Seq(
                   Seq(

@@ -40,6 +40,8 @@ class ViewMovementItemsHelper @Inject()(list: list,
     HtmlFormat.fill(Seq(
       h2(messages("viewMovement.items.h2"), "govuk-heading-l"),
       govukTable(Table(
+        caption = Some(messages("viewMovement.items.table.caption")),
+        captionClasses = "govuk-visually-hidden",
         firstCellIsHeader = true,
         rows = dataRows(movement),
         head = headerRow

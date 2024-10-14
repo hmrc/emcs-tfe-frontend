@@ -21,6 +21,7 @@ object ViewAllMessagesMessages {
   sealed trait ViewMessages { _: i18n =>
     val title: String = "Messages"
     val heading: String = "Messages"
+    val tableCaption = "Messages"
 
     val sortByLabel = "Sort by"
     val sortMessageTypeA = "Message (A - Z)"

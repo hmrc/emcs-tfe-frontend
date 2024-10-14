@@ -52,6 +52,8 @@ class ViewAllMessagesTableHelperSpec extends SpecBase with MessagesFixtures with
           Seq(
             govukTable(
               Table(
+                caption = Some(ViewAllMessagesMessages.English.tableCaption),
+                captionClasses = "govuk-visually-hidden",
                 firstCellIsHeader = true,
                 head = Some(Seq(
                   HeadCell(Text(ViewAllMessagesMessages.English.tableMessageHeading)),

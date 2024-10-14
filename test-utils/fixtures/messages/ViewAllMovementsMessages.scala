@@ -28,6 +28,8 @@ object ViewAllMovementsMessages extends BaseEnglish {
     def headingWithCount(count: Int): String = s"$count results for beans sorted by Dispatched (newest) - Movements"
     def titleWithCount(count: Int): String = titleHelper(headingWithCount(count))
 
+    val tableCaption = "Movements"
+
     def dateOfDispatch(string: String): String = s"Date of dispatch: $string"
     val sortByLabel = "Sort by"
     val sortByButton = "Sort movements"

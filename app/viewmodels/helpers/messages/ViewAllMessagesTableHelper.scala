@@ -72,6 +72,8 @@ class ViewAllMessagesTableHelper @Inject()(
   def constructTable(allMessages: Seq[Message])(implicit request: DataRequest[_], messages: Messages): Html = {
     govukTable(
       Table(
+        caption = Some(messages("viewAllMessages.table.caption")),
+        captionClasses = "govuk-visually-hidden",
         firstCellIsHeader = true,
         head = Some(Seq(
           HeadCell(content = Text(messages("viewAllMessages.table.column.message.label"))),

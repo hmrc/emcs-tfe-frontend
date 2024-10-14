@@ -62,6 +62,8 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
               result mustBe HtmlFormat.fill(Seq(
                 h2(messagesForLang.itemsH2, "govuk-heading-l"),
                 govukTable(Table(
+                  caption = Some(messagesForLang.itemsTableCaption),
+                  captionClasses = "govuk-visually-hidden",
                   firstCellIsHeader = true,
                   head = Some(Seq(
                     HeadCell(Text(messagesForLang.itemsTableItemHeading)),
@@ -144,6 +146,8 @@ class ViewMovementItemsHelperSpec extends SpecBase with GetMovementResponseFixtu
               result mustBe HtmlFormat.fill(Seq(
                 h2(messagesForLang.itemsH2, "govuk-heading-l"),
                 govukTable(Table(
+                  caption = Some(messagesForLang.itemsTableCaption),
+                  captionClasses = "govuk-visually-hidden",
                   firstCellIsHeader = true,
                   head = Some(Seq(
                     HeadCell(Text(messagesForLang.itemsTableItemHeading)),
