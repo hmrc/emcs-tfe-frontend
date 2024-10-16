@@ -203,6 +203,7 @@ viewMovement.delivery.placeOfDestination.address = Address
 
 # MOV02 - Items
 viewMovement.items.h2 = Item details
+viewMovement.items.table.caption = Item details
 viewMovement.items.table.heading.item = Item
 viewMovement.items.table.heading.description = Commercial description
 viewMovement.items.table.heading.quantity = Quantity
@@ -823,6 +824,7 @@ viewAllTemplates.deletedNotification.title = Success
 viewAllTemplates.deletedNotification.content = Template "{0}" deleted.
 
 viewAllMovements.heading = Movements
+viewAllMovements.table.caption = Movements
 viewAllMovements.filtered = ' filtered'
 viewAllMovements.searchTerm = ' for '{0}
 viewAllMovements.noResultsFound = No{1} results{2} -
@@ -899,6 +901,7 @@ viewAllMovements.error.searchValue.maxLength.transporter = The transporter name 
 
 viewAllMessages.title = Messages ({0})
 viewAllMessages.heading = Messages ({0})
+viewAllMessages.table.caption = Messages
 viewAllMessages.totalNumberOfMessages = You have {0} unread messages.
 viewAllMessages.noMessages = You have no messages.
 viewAllMessages.sort.label = Sort by

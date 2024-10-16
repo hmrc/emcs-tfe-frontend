@@ -16,9 +16,9 @@
 
 package viewmodels
 
-import models.{MovementFilterDirectionOption, MovementListSearchOptions}
 import models.draftMovements.GetDraftMovementsSearchOptions
 import models.response.emcsTfe.GetMovementListItem
+import models.{MovementFilterDirectionOption, MovementListSearchOptions}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -48,6 +48,8 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
   def constructTable(ern: String, movements: Seq[GetMovementListItem], directionFilterOption: MovementFilterDirectionOption)
                     (implicit messages: Messages): Table =
     Table(
+      caption = Some(messages("viewAllMovements.table.caption")),
+      captionClasses = "govuk-visually-hidden",
       rows = dataRows(ern, movements, directionFilterOption)(messages)
     )
 
