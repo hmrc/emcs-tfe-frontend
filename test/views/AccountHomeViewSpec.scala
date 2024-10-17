@@ -65,30 +65,28 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
           s"have the correct navigation links for $roleType" in {
             val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
             navigationLinks.get(0).text mustBe "Home"
-            navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
-            navigationLinks.get(2).text mustBe "Drafts"
-            navigationLinks.get(3).text mustBe "Movements"
-            navigationLinks.get(4).text mustBe "Templates"
-            navigationLinks.get(5).text mustBe "Menu"
-            navigationLinks.get(5).hasClass("hidden") mustBe true
+            navigationLinks.get(1).text mustBe "Menu"
+            navigationLinks.get(1).hasClass("js-hidden") mustBe true
+            navigationLinks.get(2).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
+            navigationLinks.get(3).text mustBe "Drafts"
+            navigationLinks.get(4).text mustBe "Movements"
+            navigationLinks.get(5).text mustBe "Templates"
             navigationLinks.get(6).text mustBe "Business tax account"
           }
         } else {
           s"have the correct navigation links for $roleType" in {
             val navigationLinks = doc.getElementsByClass("hmrc-account-menu__link")
             navigationLinks.get(0).text mustBe "Home"
-            navigationLinks.get(1).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
+            navigationLinks.get(1).text mustBe "Menu"
+            navigationLinks.get(1).hasClass("js-hidden") mustBe true
+            navigationLinks.get(2).text mustBe s"Messages ${testMessageStatistics.countOfNewMessages}"
             if (roleType.canCreateNewMovement) {
-              navigationLinks.get(2).text mustBe "Drafts"
-              navigationLinks.get(3).text mustBe "Movements"
-              navigationLinks.get(4).text mustBe "Templates"
-              navigationLinks.get(5).text mustBe "Menu"
-              navigationLinks.get(5).hasClass("hidden") mustBe true
+              navigationLinks.get(3).text mustBe "Drafts"
+              navigationLinks.get(4).text mustBe "Movements"
+              navigationLinks.get(5).text mustBe "Templates"
               navigationLinks.get(6).text mustBe "Business tax account"
             } else {
-              navigationLinks.get(2).text mustBe "Movements"
-              navigationLinks.get(3).text mustBe "Menu"
-              navigationLinks.get(3).hasClass("hidden") mustBe true
+              navigationLinks.get(3).text mustBe "Movements"
               navigationLinks.get(4).text mustBe "Business tax account"
             }
           }

@@ -34,50 +34,61 @@
         @messages("navigation.home")
     </a>
 
-    <a id="navigation-messages-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Messages)) { hmrc-account-menu__link--active}"
-        @if(navInfo.currentSection.contains(PageSection.Messages)) { aria-current="page" }
-        href="@appConfig.host@appConfig.emcsTfeMessagesUrl(navInfo.ern)">
-        @messages("navigation.messages")
-        @navInfo.countOfNewMessages.map { count =>
-            @if(count > 99 ) {
-                <span class="hmrc-notification-badge govuk-!-margin-left-1">99+</span>
-            } else {
-                @if(count > 0) {
-                    <span class="hmrc-notification-badge govuk-!-margin-left-1">@count</span>
-                }
-            }
-        }
+    <a href="#" class="hmrc-account-menu__link hmrc-account-menu__link--menu js-hidden" tabindex="-1" aria-hidden="true" aria-expanded="false">
+        @messages("navigation.menu")
     </a>
 
-    @if(roleType.canCreateNewMovement) {
-        <a id="navigation-drafts-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Drafts)) { hmrc-account-menu__link--active}"
-            @if(navInfo.currentSection.contains(PageSection.Drafts)) {
-                aria-current="page"
-            }
-        href="@appConfig.host@appConfig.emcsTfeDraftMovementsUrl(navInfo.ern)">
-        @messages("navigation.drafts")
-        </a>
-    }
+    <ul class="hmrc-account-menu__main js-hidden">
 
-    <a id="navigation-movements-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Movements)) { hmrc-account-menu__link--active}"
-        @if(navInfo.currentSection.contains(PageSection.Movements)) { aria-current="page" }
-        href="@appConfig.host@appConfig.emcsTfeListMovementsUrl(navInfo.ern)">
-        @messages("navigation.movements")
-    </a>
-
-    @if(appConfig.templatesLinkVisible && roleType.canCreateNewMovement) {
-        <a id="navigation-templates-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Templates)) { hmrc-account-menu__link--active}"
-            @if(navInfo.currentSection.contains(PageSection.Templates)) { aria-current="page" }
-            href="@appConfig.host@appConfig.emcsTfeViewAllTemplatesUrl(navInfo.ern)">
-            @messages("navigation.templates")
-        </a>
-    }
-
-    <a href="#" class="hmrc-account-menu__link hmrc-account-menu__link--menu hidden" tabindex="-1" aria-hidden="true">@messages("navigation.menu")</a>
-
-    <ul id="navigation-bta-link" class="hmrc-account-menu__main">
         <li>
-            <a href="@appConfig.businessTaxAccountUrl" class="hmrc-account-menu__link">
+            <a id="navigation-messages-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Messages)) { hmrc-account-menu__link--active}"
+                @if(navInfo.currentSection.contains(PageSection.Messages)) { aria-current="page" }
+            href="@appConfig.host@appConfig.emcsTfeMessagesUrl(navInfo.ern)">
+                @messages("navigation.messages")
+                @navInfo.countOfNewMessages.map { count =>
+                    @if(count > 99 ) {
+                        <span class="hmrc-notification-badge govuk-!-margin-left-1">99+</span>
+                    } else {
+                        @if(count > 0) {
+                            <span class="hmrc-notification-badge govuk-!-margin-left-1">@count</span>
+                        }
+                    }
+                }
+            </a>
+        </li>
+
+        @if(roleType.canCreateNewMovement) {
+            <li>
+                <a id="navigation-drafts-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Drafts)) { hmrc-account-menu__link--active}"
+                    @if(navInfo.currentSection.contains(PageSection.Drafts)) {
+                        aria-current="page"
+                    }
+                href="@appConfig.host@appConfig.emcsTfeDraftMovementsUrl(navInfo.ern)">
+                @messages("navigation.drafts")
+                </a>
+            </li>
+        }
+
+        <li>
+            <a id="navigation-movements-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Movements)) { hmrc-account-menu__link--active}"
+                @if(navInfo.currentSection.contains(PageSection.Movements)) { aria-current="page" }
+            href="@appConfig.host@appConfig.emcsTfeListMovementsUrl(navInfo.ern)">
+            @messages("navigation.movements")
+            </a>
+        </li>
+
+        @if(appConfig.templatesLinkVisible && roleType.canCreateNewMovement) {
+            <li>
+                <a id="navigation-templates-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Templates)) { hmrc-account-menu__link--active}"
+                    @if(navInfo.currentSection.contains(PageSection.Templates)) { aria-current="page" }
+                href="@appConfig.host@appConfig.emcsTfeViewAllTemplatesUrl(navInfo.ern)">
+                @messages("navigation.templates")
+                </a>
+            </li>
+        }
+
+        <li>
+            <a href="@appConfig.businessTaxAccountUrl" class="hmrc-account-menu__link" id="navigation-bta-link">
                 @messages("navigation.bta")
             </a>
         </li>
