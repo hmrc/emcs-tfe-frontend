@@ -54,7 +54,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
 
   def onPageLoad(ern: String, searchOptions: MovementListSearchOptions): Action[AnyContent] = {
     authorisedDataRequestAsync(ern) { implicit request =>
-      renderView(Ok, ern, searchOptions)
+      renderView(Ok, ern, searchOptions, isInitialView)
     }
   }
 
@@ -67,7 +67,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
             case fe if fe.message.contains("searchKey") => fe.copy(key = "searchKey")
             case fe => fe
           })
-          renderView(BadRequest, ern, searchOptions, modifiedFormWithErrors)
+          renderView(BadRequest, ern, searchOptions, false, modifiedFormWithErrors)
         },
         value => Future(Redirect(routes.ViewAllMovementsController.onPageLoad(ern, value)))
       )
@@ -77,6 +77,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
                           status: Status,
                           ern: String,
                           searchOptions: MovementListSearchOptions,
+                          isInitialView: Boolean,
                           form: Form[MovementListSearchOptions] = formProvider()
                         )(implicit request: DataRequest[_]): Future[Result] = {
 
@@ -123,4 +124,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
       case Left(_) => errorHandler.internalServerErrorTemplate.map(InternalServerError(_))
     }
   }
+
+  private def isInitialView(implicit request: DataRequest[_]): Boolean =
+    request.headers.get("referer").exists(!_.contains("/movements"))
 }
