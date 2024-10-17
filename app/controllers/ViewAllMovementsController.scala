@@ -67,7 +67,7 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
             case fe if fe.message.contains("searchKey") => fe.copy(key = "searchKey")
             case fe => fe
           })
-          renderView(BadRequest, ern, searchOptions, false, modifiedFormWithErrors)
+          renderView(BadRequest, ern, searchOptions, isInitialView = false, modifiedFormWithErrors)
         },
         value => Future(Redirect(routes.ViewAllMovementsController.onPageLoad(ern, value)))
       )
@@ -114,7 +114,8 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
           pagination = paginationHelper.constructPaginationForAllMovements(pageCount, ern, searchOptions),
           directionFilterOption = searchOptions.traderRole.getOrElse(MovementFilterDirectionOption.All),
           totalMovements = movementList.count,
-          currentFilters = searchOptions
+          currentFilters = searchOptions,
+          isInitialView = isInitialView
         ))
       }
     }
@@ -125,6 +126,9 @@ class ViewAllMovementsController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  private def isInitialView(implicit request: DataRequest[_]): Boolean =
-    request.headers.get("referer").exists(!_.contains("/movements"))
+  private[controllers] def isInitialView(implicit request: DataRequest[_]): Boolean = {
+    val url = routes.ViewAllMovementsController.onPageLoad(request.ern, MovementListSearchOptions()).url.split("\\?")(0)
+    request.headers.get("referer").forall(!_.contains(url))
+  }
+
 }

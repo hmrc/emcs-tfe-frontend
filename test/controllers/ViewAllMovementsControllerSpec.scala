@@ -107,7 +107,8 @@ class ViewAllMovementsControllerSpec extends SpecBase
       pagination = None,
       directionFilterOption = All,
       totalMovements = movementListResponse.count,
-      currentFilters = searchOptions
+      currentFilters = searchOptions,
+      isInitialView = false
     )
 
   private def successView(searchOptions: MovementListSearchOptions,
@@ -125,6 +126,8 @@ class ViewAllMovementsControllerSpec extends SpecBase
   "GET /" when {
 
     implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+      .withHeaders("referer" -> routes.ViewAllMovementsController.onPageLoad(testErn, MovementListSearchOptions(index = 1)).url)
+
     implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
 
     "connector call is successful" should {
@@ -822,6 +825,34 @@ class ViewAllMovementsControllerSpec extends SpecBase
           sortBy = Newest
         )).url)
       }
+    }
+  }
+
+  ".isInitialView" when {
+    "return true when referer header does not contain '/emcs/account/trader/.*/movements'" in new Test {
+      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+        .withHeaders("referer" -> s"https://www.tax.service.gov.uk/emcs/account/trader/$testErn/otherpage")
+      implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
+
+      val result = controller.isInitialView
+      result shouldBe true
+    }
+
+    "return false when referer header contains '/emcs/account/trader/.*/movements'" in new Test {
+      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+        .withHeaders("referer" -> s"https://www.tax.service.gov.uk/emcs/account/trader/$testErn/movements?a=1&b=2")
+      implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
+
+      val result = controller.isInitialView
+      result mustBe false
+    }
+
+    "return false when referer header is not present" in new Test {
+      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+      implicit val dr: DataRequest[_] = dataRequest(fakeRequest)
+
+      val result = controller.isInitialView
+      result mustBe true
     }
   }
 }
