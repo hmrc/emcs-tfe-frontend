@@ -52,8 +52,7 @@ lazy val microservice = Project(appName, file("."))
     Concat.groups := Seq(
       "javascripts/application.js" ->
         group(Seq(
-          "javascripts/app.js",
-          "javascripts/allMovements.js"
+          "javascripts/app.js"
         ))
     ),
     // prevent removal of unused code which generates warning errors due to use of third-party libs
