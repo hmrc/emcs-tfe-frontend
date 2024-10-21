@@ -64,8 +64,10 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
 
     private val filtersSection = "aside >"
     val filtersHeading: String = s"$filtersSection h2"
-    val filtersButton: String = s"$filtersSection .govuk-button-group button"
-    val clearFiltersLink: String = s"$filtersSection .govuk-button-group a"
+    val applyFiltersButtonTop: String = "#filtersButton-top"
+    val clearFiltersLinkTop: String = "#clearFiltersButton-top"
+    val applyFiltersButton: String = "#filtersButton"
+    val clearFiltersLink: String = "#clearFiltersButton"
     val filtersDirection: String = s"$filtersSection .govuk-form-group:nth-of-type(2) legend"
     val filtersDirectionOption1: String = s"$filtersSection .govuk-form-group:nth-of-type(2) .govuk-checkboxes__item:nth-of-type(1) label"
     val filtersDirectionOption2: String = s"$filtersSection .govuk-form-group:nth-of-type(2) .govuk-checkboxes__item:nth-of-type(2) label"
@@ -169,7 +171,9 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         Selectors.numberOfResultsFound -> English.resultsFound(getMovementListResponse.movements.size),
 
         Selectors.filtersHeading -> English.filtersHeading,
-        Selectors.filtersButton -> English.filtersButton,
+        Selectors.applyFiltersButtonTop -> English.filtersButton,
+        Selectors.clearFiltersLinkTop -> English.clearFiltersLink,
+        Selectors.applyFiltersButton -> English.filtersButton,
         Selectors.clearFiltersLink -> English.clearFiltersLink,
         Selectors.filtersDirection -> English.filtersDirection,
         Selectors.filtersDirectionOption1 -> English.filtersDirectionOption1,

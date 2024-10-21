@@ -156,23 +156,7 @@
             <div class="govuk-grid-column-one-third govuk-!-padding-bottom-2 filter-column">
                 <aside class="filter-panel">
                     @h2("viewAllDraftMovements.filters.heading", "govuk-heading-m")
-
-                    <div class="govuk-button-group">
-                        @govukButton(
-                            ButtonViewModel(Text(messages("viewAllDraftMovements.filters.button")))
-                            .withId("filtersButton")
-                        )
-
-                        @link(
-                            link = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions(
-                                sortBy = currentFilters.sortBy,
-                                searchValue = currentFilters.searchValue
-                            )).url,
-                            messageKey = "viewAllDraftMovements.filters.clear.button",
-                            id = Some("clearFiltersButton"),
-                            classes = "govuk-link govuk-link--no-visited-state"
-                        )
-                    </div>
+                    @filterButtons(true)
 
                     @govukCheckboxes(
                         CheckboxesViewModel(
@@ -241,12 +225,33 @@
                             )
                         )
                     }
+
+                    @filterButtons(false)
                 </aside>
             </div>
 
             @draftMovementList(ern, movements, sortSelectItems, pagination, totalMovements)
         </div>
     }
+}
+
+@filterButtons(isTop: Boolean) = {
+    <div class="govuk-button-group">
+        @govukButton(
+            ButtonViewModel(Text(messages("viewAllDraftMovements.filters.button")))
+            .withId("filtersButton" + (if(isTop) "-top" else ""))
+        )
+
+        @link(
+            link = controllers.drafts.routes.ViewAllDraftMovementsController.onPageLoad(ern, GetDraftMovementsSearchOptions(
+                sortBy = currentFilters.sortBy,
+                searchValue = currentFilters.searchValue
+            )).url,
+            messageKey = "viewAllDraftMovements.filters.clear.button",
+            id = Some("clearFiltersButton" + (if(isTop) "-top" else "")),
+            classes = "govuk-link govuk-link--no-visited-state"
+        )
+    </div>
 }
 
 @{

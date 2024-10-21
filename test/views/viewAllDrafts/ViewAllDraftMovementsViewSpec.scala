@@ -68,6 +68,8 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
 
     private val filtersSection = "aside"
     val filtersHeading: String = s"$filtersSection h2"
+    val applyFiltersButtonTop: String = "#filtersButton-top"
+    val clearFiltersLinkTop: String = "#clearFiltersButton-top"
     val applyFiltersButton: String = "#filtersButton"
     val clearFiltersLink: String = "#clearFiltersButton"
     val filtersErrors: String = s"$filtersSection .govuk-form-group:nth-of-type(2) legend"
@@ -139,6 +141,8 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
         Selectors.numberOfResultsFound -> English.resultsFound(twoDraftMovements.size),
 
         Selectors.filtersHeading -> English.filtersHeading,
+        Selectors.applyFiltersButtonTop -> English.applyFiltersButton,
+        Selectors.clearFiltersLinkTop -> English.clearFiltersLink,
         Selectors.applyFiltersButton -> English.applyFiltersButton,
         Selectors.clearFiltersLink -> English.clearFiltersLink,
         Selectors.filtersErrors -> English.filtersErrors,
