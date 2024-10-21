@@ -28,19 +28,15 @@
 
 @(ern: String, movement: DraftMovement)(implicit messages: Messages)
 
-<h2 class="govuk-heading-m">
-    @link(
-        link = appConfig.emcsTfeCreateMovementTaskListUrl(ern, movement.draftId),
-        messageKey = movement.data.lrn,
-        classes = "govuk-link word-wrap-break-word"
-    )
-</h2>
-
-@list(Seq(
-    movement.data.movementScenario.map(ms => Html(messages("viewAllDraftMovements.destination", messages(s"destinationType.${ms.destinationType}")))),
-    movement.data.consigneeReference.map(ref => Html(messages("viewAllDraftMovements.consignee", ref))),
-    movement.data.dispatchDate.map(d => Html(messages("viewAllDraftMovements.dateOfDispatch", d.formatDateForUIOutput())))
-).flatten)
+@p(){
+    @if(movement.hasErrors) {
+        @govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.error"))).red())
+    }
+    @govukTag(TagViewModel(Text(messages("viewAllDraftMovements.status.draft"))).grey())
+}
+@p("govuk-body-s"){
+    @messages("viewAllDraftMovements.lastUpdated", movement.lastUpdated.formatDateForUIOutput())
+}
 
 @{
     //$COVERAGE-OFF$

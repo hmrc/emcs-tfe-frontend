@@ -40,12 +40,12 @@ import views.{BaseSelectors, ViewBehaviours}
 class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours with DraftMovementsFixtures {
 
   object Selectors extends BaseSelectors {
-    val headingLinkRow = "#main-content tr > td div:nth-child(1) > h2 > a"
-    val destinationTypeRow = "#main-content tr > td div:nth-child(1) > ul > li:nth-child(1)"
-    val consigneeRow = "#main-content tr > td div:nth-child(1) > ul > li:nth-child(2)"
-    val dateOfDispatchRow = "#main-content tr > td div:nth-child(1) > ul > li:nth-child(3)"
-    val statusDraftRow = "#main-content div.govuk-\\!-text-align-right > p.govuk-body > strong.govuk-tag.govuk-tag--grey"
-    val statusErrorRow = "#main-content div.govuk-\\!-text-align-right > p.govuk-body > strong.govuk-tag.govuk-tag--red"
+    val headingLinkRow = "#main-content tr > td:nth-of-type(1) h2 a"
+    val destinationTypeRow = "#main-content tr > td > ul > li:nth-child(1)"
+    val consigneeRow = "#main-content tr > td > ul > li:nth-child(2)"
+    val dateOfDispatchRow = "#main-content tr > td > ul > li:nth-child(3)"
+    val statusDraftRow = "#main-content .govuk-\\!-text-align-right > p.govuk-body > strong.govuk-tag.govuk-tag--grey"
+    val statusErrorRow = "#main-content .govuk-\\!-text-align-right > p.govuk-body > strong.govuk-tag.govuk-tag--red"
     val sortBySelectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
     val paginationLink = (i: Int) => s"#main-content nav > ul > li:nth-child($i) > a"
     val previousLink = ".govuk-pagination__prev a"
