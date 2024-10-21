@@ -74,8 +74,12 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
   min-width: unset;
 }
 
-.movement-heading {
+.word-wrap-break-word {
   word-wrap: break-word;
+}
+
+.table-fixed {
+    table-layout: fixed;
 }
 
 .js-visible {
