@@ -36,10 +36,6 @@
 
 @(form: Form[_], action: Call, selectOptions: Seq[SelectItem], indexOfDocument: Index)(implicit request: UserAnswersRequest[_], messages: Messages)
 
-@scripts = {
-    @autocompleteJavascript()
-}
-
 @errorMessage = @{
     form.errors("excise-product-code") match {
         case Nil => None
@@ -51,7 +47,7 @@
     pageTitle = title(form, messages("prevalidateTrader.exciseProductCode.title", indexOfDocument.displayIndex)),
     maybeShowActiveTrader = maybeShowActiveTrader(request.request),
     additionalCss = autocompleteCss(),
-    additionalScripts = scripts,
+    additionalScripts = autocompleteJavascript(),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), None))
 ) {
 
