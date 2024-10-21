@@ -14,10 +14,9 @@
  * limitations under the License.
  *@
 
+@import models.requests.UserAnswersRequest
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accessibleautocomplete.AccessibleAutocomplete
-@import views.html.helper.CSPNonce
-@import models.requests.UserAnswersRequest
 
 @this(
         layout: templates.Layout,
@@ -37,11 +36,6 @@
 
 @(form: Form[_], action: Call, selectOptions: Seq[SelectItem], indexOfDocument: Index)(implicit request: UserAnswersRequest[_], messages: Messages)
 
-@scripts = {
-@autocompleteJavascript()
-    <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("javascripts/autocomplete.min.js")'></script>
-}
-
 @errorMessage = @{
     form.errors("excise-product-code") match {
         case Nil => None
@@ -53,7 +47,7 @@
     pageTitle = title(form, messages("prevalidateTrader.exciseProductCode.title", indexOfDocument.displayIndex)),
     maybeShowActiveTrader = maybeShowActiveTrader(request.request),
     additionalCss = autocompleteCss(),
-    additionalScripts = scripts,
+    additionalScripts = autocompleteJavascript(),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), None))
 ) {
 
