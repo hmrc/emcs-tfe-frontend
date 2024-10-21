@@ -87,7 +87,10 @@
             InputViewModel(
                 field = form(searchValue),
                 label = LabelViewModel(Text(messages("viewAllDraftMovements.search.heading"))).hidden
-            ).withCssClass("govuk-input--width-30").withInputType("search")
+            )
+            .withCssClass("govuk-input--width-30")
+            .withInputType("search")
+            .withAttribute("aria-describedby", "search-hint")
         )
 
         </div>
@@ -144,16 +147,8 @@
             classes = "govuk-button"
         )
 
-        @govukFieldset(Fieldset(
-            legend = Some(Legend(
-                content = Text(messages("viewAllDraftMovements.search.heading")),
-                classes = "govuk-fieldset__legend--m",
-                isPageHeading = false
-            )),
-            classes = "govuk-!-margin-bottom-2",
-            html = searchFields,
-            describedBy = Some("search-hint")
-        ))
+        @h2("viewAllDraftMovements.search.heading", id = Some("search-heading"))
+        @searchFields
 
         @govukSkipLink(SkipLink(href = "#search-results", content = "site.skip.to.results", attributes = Map("id" -> "skip-to-results-link")))
 
