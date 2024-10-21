@@ -22,18 +22,25 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
 import utils.DateUtils
 import viewmodels.govuk.TagFluency
-import views.html.viewAllDrafts.DraftMovementsTableRowContent
+import views.html.viewAllDrafts.{DraftMovementsTableRowContent, DraftMovementsTableRowContentStatus}
 
 import javax.inject.Inject
 
-class ViewAllDraftMovementsTableHelper @Inject()(movementTableRowContent: DraftMovementsTableRowContent) extends DateUtils with TagFluency {
+class ViewAllDraftMovementsTableHelper @Inject()(movementTableRowContent: DraftMovementsTableRowContent,
+                                                 movementStatus: DraftMovementsTableRowContentStatus) extends DateUtils with TagFluency {
 
   private[viewmodels] def dataRows(ern: String, draftMovements: Seq[DraftMovement])
                                   (implicit messages: Messages): Seq[Seq[TableRow]] =
     draftMovements.map { draftMovement =>
       Seq(
         TableRow(
-          content = HtmlContent(movementTableRowContent(ern, draftMovement))
+          content = HtmlContent(movementTableRowContent(ern, draftMovement)),
+          colspan = Some(60)
+        ),
+        TableRow(
+          content = HtmlContent(movementStatus(ern, draftMovement)),
+          classes = "govuk-!-text-align-right",
+          colspan = Some(40)
         )
       )
     }
@@ -41,6 +48,7 @@ class ViewAllDraftMovementsTableHelper @Inject()(movementTableRowContent: DraftM
   def constructTable(ern: String, movements: Seq[DraftMovement])
                     (implicit messages: Messages): Table =
     Table(
-      rows = dataRows(ern, movements)(messages)
+      rows = dataRows(ern, movements)(messages),
+      classes = "table-fixed"
     )
 }

@@ -52,23 +52,30 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
                 caption = Some(tableCaption),
                 captionClasses = "govuk-visually-hidden",
                 firstCellIsHeader = false,
+                classes = "table-fixed",
                 rows = Seq(
                   Seq(
                     TableRow(
-                      content = HtmlContent(movementTableRowContent(testErn, movement1, direction))
+                      content = HtmlContent(movementTableRowContent(testErn, movement1, direction)),
+                      colspan = Some(70),
+                      classes = "word-wrap-break-word"
                     ),
                     TableRow(
                       content = HtmlContent(new GovukTag().apply(movement1.statusTag())),
-                      classes = "govuk-!-text-align-right"
+                      classes = "govuk-!-text-align-right",
+                      colspan = Some(30)
                     )
                   ),
                   Seq(
                     TableRow(
-                      content = HtmlContent(movementTableRowContent(testErn, movement2, direction))
+                      content = HtmlContent(movementTableRowContent(testErn, movement2, direction)),
+                      colspan = Some(70),
+                      classes = "word-wrap-break-word"
                     ),
                     TableRow(
                       content = HtmlContent(new GovukTag().apply(movement2.statusTag())),
-                      classes = "govuk-!-text-align-right"
+                      classes = "govuk-!-text-align-right",
+                      colspan = Some(30)
                     )
                   )
                 )

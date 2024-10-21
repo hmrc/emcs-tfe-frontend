@@ -36,11 +36,14 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
     movements.map { movement =>
       Seq(
         TableRow(
-          content = HtmlContent(movementTableRowContent(ern, movement, directionFilterOption))
+          content = HtmlContent(movementTableRowContent(ern, movement, directionFilterOption)),
+          colspan = Some(70),
+          classes = "word-wrap-break-word"
         ),
         TableRow(
           content = HtmlContent(new GovukTag().apply(movement.statusTag())),
-          classes = "govuk-!-text-align-right"
+          classes = "govuk-!-text-align-right",
+          colspan = Some(30)
         )
       )
     }
@@ -50,7 +53,8 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
     Table(
       caption = Some(messages("viewAllMovements.table.caption")),
       captionClasses = "govuk-visually-hidden",
-      rows = dataRows(ern, movements, directionFilterOption)(messages)
+      rows = dataRows(ern, movements, directionFilterOption)(messages),
+      classes = "table-fixed"
     )
 
   def generatePageTitle(totalMovements: Int, currentFilters: MovementListSearchOptions)
