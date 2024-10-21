@@ -51,8 +51,8 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
     val previousLink = ".govuk-pagination__prev a"
     val nextLink = ".govuk-pagination__next a"
 
-    val searchHeading = "#main-content .govuk-fieldset__legend--m"
-    val searchText = "#main-content .govuk-fieldset > p"
+    val searchHeading = "#search-heading"
+    val searchText = "#search-hint"
     val hiddenSearchBoxLabel = "#main-content .hmrc-search-group .govuk-form-group > label"
     val hiddenSearchSelectLabel = "#main-content .hmrc-search-group-flex .govuk-form-group > label"
 
