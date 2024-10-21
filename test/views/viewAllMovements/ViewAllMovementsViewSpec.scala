@@ -125,7 +125,8 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
                  direction: MovementFilterDirectionOption = All,
                  movementListResponse: GetMovementListResponse = getMovementListResponse,
                  searchOptions: MovementListSearchOptions = MovementListSearchOptions(),
-                 form: Form[MovementListSearchOptions] = formProvider()
+                 form: Form[MovementListSearchOptions] = formProvider(),
+                 isInitialView: Boolean = false
                 )(implicit messages: Messages): Document = Jsoup.parse(view(
     form = form,
     action = routes.ViewAllMovementsController.onPageLoad("ern", MovementListSearchOptions()),
@@ -139,7 +140,8 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
     pagination = pagination,
     directionFilterOption = direction,
     totalMovements = movementListResponse.count,
-    currentFilters = searchOptions
+    currentFilters = searchOptions,
+    isInitialView = isInitialView
   ).toString())
 
 
@@ -412,5 +414,22 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
         }
       }
     }
+
+    "being viewed for the first time" should {
+      "should show the title with no count" in {
+        implicit val doc: Document = asDocument(None, searchOptions = MovementListSearchOptions(searchValue = Some("beans")), isInitialView = true)
+
+        doc.select(Selectors.title).text() mustBe English.title
+      }
+    }
+
+    "not being viewed for the first time" should {
+      "should show the title with a count" in {
+        implicit val doc: Document = asDocument(None, searchOptions = MovementListSearchOptions(searchValue = Some("beans")))
+
+        doc.select(Selectors.title).text() mustBe English.titleWithCount(getMovementListResponse.count)
+      }
+    }
+
   }
 }

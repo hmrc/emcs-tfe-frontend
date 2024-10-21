@@ -60,19 +60,22 @@
         pagination: Option[Pagination],
         directionFilterOption: MovementFilterDirectionOption,
         totalMovements: Int,
-        currentFilters: MovementListSearchOptions
+        currentFilters: MovementListSearchOptions,
+        isInitialView: Boolean
 )(implicit request: DataRequest[_], messages: Messages)
 
 @heading(asPageTitle: Boolean = false) = @{
-    val resultCount = if(asPageTitle) {
-        helper.generatePageTitle(totalMovements, currentFilters)
+    if (isInitialView) {
+        messages("viewAllMovements.heading")
     } else {
-        hidden(helper.generatePageTitle(totalMovements, currentFilters))
+        val countPrefix = helper.generatePageTitle(totalMovements, currentFilters)
+        if (asPageTitle) {
+            s"$countPrefix ${messages("viewAllMovements.heading")}"
+        } else {
+            s"${hidden(countPrefix)} ${messages("viewAllMovements.heading")}"
+        }
     }
-
-    s"$resultCount ${messages("viewAllMovements.heading")}"
 }
-
 
 @searchFields = {
 
