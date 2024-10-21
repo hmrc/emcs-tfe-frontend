@@ -21,24 +21,27 @@ import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
 import fixtures.messages.ViewAllMovementsMessages.English.tableCaption
 import models.MovementFilterDirectionOption._
+import models.response.emcsTfe.GetMovementListItem
+import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{Pagination, PaginationItem, PaginationLink}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
 import utils.DateUtils
 import views.html.viewAllMovements.MovementTableRowContent
 
 class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures with DateUtils {
 
-  lazy val movementTableRowContent = app.injector.instanceOf[MovementTableRowContent]
+  lazy val movementTableRowContent: MovementTableRowContent = app.injector.instanceOf[MovementTableRowContent]
   lazy val helper: ViewAllMovementsTableHelper = new ViewAllMovementsTableHelper(movementTableRowContent)
-  lazy val movements = getMovementListResponse.movements
+  lazy val movements: Seq[GetMovementListItem] = getMovementListResponse.movements
 
   "ViewAllMovementsTableHelper" should {
 
     s"rendering for '${English.lang.code}' language code" when {
 
-      implicit val messages = messagesApi.preferred(Seq(English.lang))
+      implicit val messages: Messages = messagesApi.preferred(Seq(English.lang))
 
       Seq(All, GoodsIn, GoodsOut).foreach { direction =>
 
@@ -88,7 +91,7 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
     }
 
     ".generatePageTitle" when {
-      implicit val msgs = messages(FakeRequest())
+      implicit val msgs: Messages = messages(FakeRequest())
 
       "totalMovements is 0" must {
         "return the correct message" when {
@@ -97,7 +100,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 0,
               searchValue = None,
               sortByDisplayName = "sortField",
-              hasFilterApplied = false
+              hasFilterApplied = false,
+              pagination = None
             ) mustBe "No results -"
           }
           "filtered" in {
@@ -105,7 +109,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 0,
               searchValue = None,
               sortByDisplayName = "sortField",
-              hasFilterApplied = true
+              hasFilterApplied = true,
+              pagination = None
             ) mustBe "No filtered results -"
           }
           "searchTerm is defined" in {
@@ -113,7 +118,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 0,
               searchValue = Some("beans"),
               sortByDisplayName = "sortField",
-              hasFilterApplied = false
+              hasFilterApplied = false,
+              pagination = None
             ) mustBe "No results for beans -"
           }
           "filtered and searchTerm is defined" in {
@@ -121,7 +127,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 0,
               searchValue = Some("beans"),
               sortByDisplayName = "sortField",
-              hasFilterApplied = true
+              hasFilterApplied = true,
+              pagination = None
             ) mustBe "No filtered results for beans -"
           }
         }
@@ -134,7 +141,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 1,
               searchValue = None,
               sortByDisplayName = "sortField",
-              hasFilterApplied = false
+              hasFilterApplied = false,
+              pagination = None
             ) mustBe "1 result -"
           }
           "filtered" in {
@@ -142,7 +150,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 1,
               searchValue = None,
               sortByDisplayName = "sortField",
-              hasFilterApplied = true
+              hasFilterApplied = true,
+              pagination = None
             ) mustBe "1 filtered result -"
           }
           "searchTerm is defined" in {
@@ -150,7 +159,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 1,
               searchValue = Some("beans"),
               sortByDisplayName = "sortField",
-              hasFilterApplied = false
+              hasFilterApplied = false,
+              pagination = None
             ) mustBe "1 result for beans -"
           }
           "filtered and searchTerm is defined" in {
@@ -158,7 +168,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 1,
               searchValue = Some("beans"),
               sortByDisplayName = "sortField",
-              hasFilterApplied = true
+              hasFilterApplied = true,
+              pagination = None
             ) mustBe "1 filtered result for beans -"
           }
         }
@@ -171,7 +182,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 2,
               searchValue = None,
               sortByDisplayName = "sortField",
-              hasFilterApplied = false
+              hasFilterApplied = false,
+              pagination = None
             ) mustBe "2 results sorted by sortField -"
           }
           "filtered" in {
@@ -179,7 +191,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 2,
               searchValue = None,
               sortByDisplayName = "sortField",
-              hasFilterApplied = true
+              hasFilterApplied = true,
+              pagination = None
             ) mustBe "2 filtered results sorted by sortField -"
           }
           "searchTerm is defined" in {
@@ -187,7 +200,8 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 2,
               searchValue = Some("beans"),
               sortByDisplayName = "sortField",
-              hasFilterApplied = false
+              hasFilterApplied = false,
+              pagination = None
             ) mustBe "2 results for beans sorted by sortField -"
           }
           "filtered and searchTerm is defined" in {
@@ -195,8 +209,61 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
               totalMovements = 2,
               searchValue = Some("beans"),
               sortByDisplayName = "sortField",
-              hasFilterApplied = true
+              hasFilterApplied = true,
+              pagination = None
             ) mustBe "2 filtered results for beans sorted by sortField -"
+          }
+        }
+      }
+
+      "totalMovements is 3 pages of results and on 2nd page" must {
+
+        val threePagePagination = (Some(Pagination(
+          items = Some(Seq(
+            PaginationItem(s"link-1", Some("1")),
+            PaginationItem(s"link-2", Some("2"), current = Some(true)),
+            PaginationItem(s"link-3", Some("3"))
+          )),
+          previous = Some(PaginationLink("previous-link")),
+          next = Some(PaginationLink("next-link"))
+        )))
+
+        "return the correct message" when {
+          "neither filtered nor searchTerm are defined" in {
+            helper.generatePageTitle(
+              totalMovements = 30,
+              searchValue = None,
+              sortByDisplayName = "sortField",
+              hasFilterApplied = false,
+              pagination = threePagePagination
+            ) mustBe "30 results (page 2 of 3) sorted by sortField -"
+          }
+          "filtered" in {
+            helper.generatePageTitle(
+              totalMovements = 30,
+              searchValue = None,
+              sortByDisplayName = "sortField",
+              hasFilterApplied = true,
+              pagination = threePagePagination
+            ) mustBe "30 filtered results (page 2 of 3) sorted by sortField -"
+          }
+          "searchTerm is defined" in {
+            helper.generatePageTitle(
+              totalMovements = 30,
+              searchValue = Some("beans"),
+              sortByDisplayName = "sortField",
+              hasFilterApplied = false,
+              pagination = threePagePagination
+            ) mustBe "30 results (page 2 of 3) for beans sorted by sortField -"
+          }
+          "filtered and searchTerm is defined" in {
+            helper.generatePageTitle(
+              totalMovements = 30,
+              searchValue = Some("beans"),
+              sortByDisplayName = "sortField",
+              hasFilterApplied = true,
+              pagination = threePagePagination
+            ) mustBe "30 filtered results (page 2 of 3) for beans sorted by sortField -"
           }
         }
       }

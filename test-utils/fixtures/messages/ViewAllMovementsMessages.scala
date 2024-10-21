@@ -27,6 +27,9 @@ object ViewAllMovementsMessages extends BaseEnglish {
     val titleWithOneResult: String = titleHelper(headingWithOneResult)
     def headingWithCount(count: Int): String = s"$count results for beans sorted by Dispatched (newest) - Movements"
     def titleWithCount(count: Int): String = titleHelper(headingWithCount(count))
+    def headingWithCountAndPage(count: Int, currentPage: Int, totalPages: Int): String = s"$count results (page $currentPage of $totalPages) for beans sorted by Dispatched (newest) - Movements"
+    def titleWithCountAndPage(count: Int, currentPage: Int, totalPages: Int): String = titleHelper(headingWithCountAndPage(count, currentPage, totalPages))
+
 
     val tableCaption = "Movements"
 

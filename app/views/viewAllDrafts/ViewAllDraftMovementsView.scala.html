@@ -14,8 +14,10 @@
  * limitations under the License.
  *@
 
+@import config.AppConfig
+@import config.Constants.TFE_DELETED_DRAFT_LRN
 @import forms.ViewAllDraftMovementsFormProvider._
-@import models.draftMovements.DestinationTypeSearchOption
+@import models.draftMovements.{DestinationTypeSearchOption, GetDraftMovementsSearchOptions}
 @import models.requests.DataRequest
 @import models.response.emcsTfe.draftMovement.DraftMovement
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
@@ -26,9 +28,6 @@
 @import views.html._
 @import views.html.components._
 @import views.html.viewAllDrafts.DraftMovementsList
-@import models.draftMovements.GetDraftMovementsSearchOptions
-@import config.AppConfig
-@import config.Constants.TFE_DELETED_DRAFT_LRN
 
 @this(
         layout: templates.Layout,
@@ -66,9 +65,9 @@
 
 @heading(asPageTitle: Boolean = false) = @{
     val resultOutcome = if(asPageTitle) {
-        helper.generatePageTitle(totalMovements, currentFilters)
+        helper.generatePageTitle(totalMovements, currentFilters, pagination)
     } else {
-        hidden(helper.generatePageTitle(totalMovements, currentFilters))
+        hidden(helper.generatePageTitle(totalMovements, currentFilters, pagination))
     }
 
     s"$resultOutcome ${messages("viewAllDraftMovements.heading")}"
