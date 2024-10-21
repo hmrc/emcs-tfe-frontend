@@ -158,24 +158,10 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-third govuk-!-padding-bottom-2 filter-column no-print">
                 <aside class="filter-panel">
-                    @h2("viewAllMovements.filters.heading", "govuk-heading-m")
-                    <div class="govuk-button-group">
-                        @govukButton(
-                            ButtonViewModel(Text(messages("viewAllMovements.filters.button")))
-                            .withId("filtersButton")
-                        )
 
-                        @link(
-                            link = controllers.routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions(
-                                sortBy = currentFilters.sortBy,
-                                searchValue = currentFilters.searchValue,
-                                searchKey = currentFilters.searchKey
-                            )).url,
-                            messageKey = "viewAllMovements.filters.clear.button",
-                            id = Some("clearFiltersButton"),
-                            classes = "govuk-link govuk-link--no-visited-state"
-                        )
-                    </div>
+                    @h2("viewAllMovements.filters.heading", "govuk-heading-m")
+                    @filterButtons(true)
+
                     @* Direction *@
                     @govukCheckboxes(
                         CheckboxesViewModel(
@@ -292,12 +278,34 @@
                             )
                         )
                     }
+
+                    @filterButtons(false)
                 </aside>
             </div>
 
             @movementList(ern, movementListResponse, sortSelectItems, pagination, directionFilterOption)
         </div>
     }
+}
+
+@filterButtons(isTop: Boolean) = {
+    <div class="govuk-button-group">
+        @govukButton(
+            ButtonViewModel(Text(messages("viewAllMovements.filters.button")))
+            .withId("filtersButton" + (if(isTop) "-top" else ""))
+        )
+
+        @link(
+            link = controllers.routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions(
+                sortBy = currentFilters.sortBy,
+                searchValue = currentFilters.searchValue,
+                searchKey = currentFilters.searchKey
+            )).url,
+            messageKey = "viewAllMovements.filters.clear.button",
+            id = Some("clearFiltersButton" + (if(isTop) "-top" else "")),
+            classes = "govuk-link govuk-link--no-visited-state"
+        )
+    </div>
 }
 
 @{
