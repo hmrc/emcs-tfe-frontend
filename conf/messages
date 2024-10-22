@@ -16,6 +16,8 @@ site.templates.found.singular = 1 template found
 site.templates.notFound = No templates found
 site.skip.to.results = Skip to results
 
+subNavigationAriaLabel = Electronic Administrative Document navigation
+
 errorPage.title = Sorry, we’re experiencing technical difficulties
 errorPage.heading = Sorry, we’re experiencing technical difficulties
 errorPage.message = Please try again in a few minutes.

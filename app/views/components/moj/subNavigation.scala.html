@@ -18,9 +18,9 @@
 
 @this()
 
-@(subNavigationTabs: Seq[SubNavigationTab], currentSubNavigationTab: SubNavigationTab)
+@(subNavigationTabs: Seq[SubNavigationTab], currentSubNavigationTab: SubNavigationTab)(implicit messages: Messages)
 
-<nav class="moj-sub-navigation" aria-label="e-AD navigation">
+<nav class="moj-sub-navigation" aria-label="@{messages("subNavigationAriaLabel")}">
 
     <ul class="moj-sub-navigation__list">
 
