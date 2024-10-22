@@ -78,8 +78,8 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
   word-wrap: break-word;
 }
 
-.table-fixed {
-    table-layout: fixed;
+.width-60pc {
+    width: 60%;
 }
 
 .js-visible {
@@ -101,4 +101,11 @@ $hmrc-assets-path: "/emcs/account/assets/lib/hmrc-frontend/hmrc/assets/";
 
 .margin-bottom-2px {
   margin-bottom: 2px !important;
+}
+
+/* Align summary list values to the left on mobile, when they are right aligned on tablet/desktop */
+.govuk-summary-list__value.govuk-\!-text-align-right {
+  @include govuk-media-query($until: tablet) {
+    text-align: left !important;
+  }
 }

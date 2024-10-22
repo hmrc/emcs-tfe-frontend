@@ -22,12 +22,12 @@ import fixtures.messages.ViewAllMovementsMessages.English
 import models.MovementFilterDirectionOption._
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
-import views.html.viewAllMovements.MovementTableRowContent
+import views.html.viewAllMovements.MovementSummaryListKeyContent
 import views.{BaseSelectors, ViewBehaviours}
 
-class MovementTableRowContentViewSpec extends ViewSpecBase with ViewBehaviours with MovementListFixtures {
+class MovementSummaryListKeyContentViewSpec extends ViewSpecBase with ViewBehaviours with MovementListFixtures {
 
-  lazy val view: MovementTableRowContent = app.injector.instanceOf[MovementTableRowContent]
+  lazy val view: MovementSummaryListKeyContent = app.injector.instanceOf[MovementSummaryListKeyContent]
 
   object Selectors extends BaseSelectors {
     val h2 = "h2 a"
@@ -35,7 +35,7 @@ class MovementTableRowContentViewSpec extends ViewSpecBase with ViewBehaviours w
     val listElement: Int => String = index => s"ul li:nth-of-type($index)"
   }
 
-  "MovementTableRowContent" when {
+  "MovementSummaryListKeyContent" when {
 
     implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))
 

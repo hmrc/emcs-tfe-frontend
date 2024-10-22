@@ -42,13 +42,13 @@ import views.{BaseSelectors, ViewBehaviours}
 class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with MovementListFixtures {
 
   object Selectors extends BaseSelectors {
-    val headingLinkRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > h2 > a"
+    val headingLinkRow = (i: Int) => s"#main-content .govuk-summary-list__row:nth-of-type($i) > dt > h2 > a"
 
-    val sortBySelectOption = (i: Int) => s"#sortBy > option:nth-child($i)"
-    val otherTraderIdRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > ul > li:nth-child(1)"
-    val dateOfDispatchRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(1) > ul > li:nth-child(2)"
-    val statusTagRow = (i: Int) => s"#main-content tr:nth-child($i) > td:nth-child(2) > strong"
-    val paginationLink = (i: Int) => s"#main-content nav > ul > li:nth-child($i) > a"
+    val sortBySelectOption = (i: Int) => s"#sortBy > option:nth-of-type($i)"
+    val otherTraderIdRow = (i: Int) => s"#main-content .govuk-summary-list__row:nth-of-type($i) > dt > ul > li:nth-of-type(1)"
+    val dateOfDispatchRow = (i: Int) => s"#main-content .govuk-summary-list__row:nth-of-type($i) > dt > ul > li:nth-of-type(2)"
+    val statusTagRow = (i: Int) => s"#main-content .govuk-summary-list__row:nth-of-type($i) > dd > strong"
+    val paginationLink = (i: Int) => s"#main-content nav > ul > li:nth-of-type($i) > a"
     val previousLink = ".govuk-pagination__prev a"
     val nextLink = ".govuk-pagination__next a"
 

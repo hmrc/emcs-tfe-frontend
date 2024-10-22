@@ -28,7 +28,7 @@ import views.html.viewAllDrafts.DraftMovementsList
 class DraftMovementsListSpec extends ViewSpecBase with ViewBehaviours with DraftMovementsFixtures {
 
   val sortBySelector = ".sortBy-wrapper"
-  val tableSelector = ".govuk-table"
+  val summaryListSelector = ".govuk-summary-list"
   val paginationSelector = ".govuk-pagination"
 
   lazy val twoDraftMovements = Seq(draftMovementModelMax, draftMovementModelMin)
@@ -54,7 +54,7 @@ class DraftMovementsListSpec extends ViewSpecBase with ViewBehaviours with Draft
       ))
 
       doc.selectFirst(s"$sortBySelector select").childrenSize() mustBe MovementSortingSelectOption.values.size
-      doc.selectFirst(tableSelector) must not be null
+      doc.selectFirst(summaryListSelector) must not be null
       doc.selectFirst(paginationSelector) must not be null
     }
     "render the correct content when movements list is empty" in {
@@ -75,7 +75,7 @@ class DraftMovementsListSpec extends ViewSpecBase with ViewBehaviours with Draft
       ))
 
       doc.selectFirst(s"$sortBySelector select").childrenSize() mustBe MovementSortingSelectOption.values.size
-      doc.select(tableSelector).isEmpty mustBe true
+      doc.select(summaryListSelector).isEmpty mustBe true
       doc.select(paginationSelector).isEmpty mustBe true
     }
   }

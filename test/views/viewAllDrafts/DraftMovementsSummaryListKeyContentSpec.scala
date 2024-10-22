@@ -21,20 +21,20 @@ import fixtures.DraftMovementsFixtures
 import fixtures.messages.ViewAllDraftMovementsMessages.English
 import org.jsoup.nodes.Document
 import play.api.i18n.{Messages, MessagesApi}
-import views.html.viewAllDrafts.DraftMovementsTableRowContent
+import views.html.viewAllDrafts.DraftMovementsSummaryListKeyContent
 import views.{BaseSelectors, ViewBehaviours}
 
 
-class DraftMovementsTableRowContentSpec extends ViewSpecBase with ViewBehaviours with DraftMovementsFixtures {
+class DraftMovementsSummaryListKeyContentSpec extends ViewSpecBase with ViewBehaviours with DraftMovementsFixtures {
 
-  lazy val view: DraftMovementsTableRowContent = app.injector.instanceOf[DraftMovementsTableRowContent]
+  lazy val view: DraftMovementsSummaryListKeyContent = app.injector.instanceOf[DraftMovementsSummaryListKeyContent]
 
   object Selectors extends BaseSelectors {
     val h2 = "h2 a"
     val listElement: Int => String = index => s"ul li:nth-of-type($index)"
   }
 
-  "DraftMovementsTableRowContent" when {
+  "DraftMovementsSummaryListKeyContent" when {
 
     implicit val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(Seq(English.lang))
 

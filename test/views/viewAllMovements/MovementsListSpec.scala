@@ -30,7 +30,7 @@ import views.html.viewAllMovements.MovementsList
 class MovementsListSpec extends ViewSpecBase with ViewBehaviours with MovementListFixtures {
 
   val sortBySelector = ".sortBy-wrapper"
-  val tableSelector = ".govuk-table"
+  val summaryListSelector = ".govuk-summary-list"
   val paginationSelector = ".govuk-pagination"
 
   val view = app.injector.instanceOf[MovementsList]
@@ -54,7 +54,7 @@ class MovementsListSpec extends ViewSpecBase with ViewBehaviours with MovementLi
       ))
 
       doc.selectFirst(s"$sortBySelector select").childrenSize() mustBe MovementSortingSelectOption.values.size
-      doc.selectFirst(tableSelector) must not be null
+      doc.selectFirst(summaryListSelector) must not be null
       doc.selectFirst(paginationSelector) must not be null
     }
     "render the correct content when movements list is empty" in {
@@ -75,7 +75,7 @@ class MovementsListSpec extends ViewSpecBase with ViewBehaviours with MovementLi
       ))
 
       doc.selectFirst(s"$sortBySelector select").childrenSize() mustBe MovementSortingSelectOption.values.size
-      doc.selectFirst(tableSelector) mustBe null
+      doc.selectFirst(summaryListSelector) mustBe null
       doc.selectFirst(paginationSelector) mustBe null
     }
   }
