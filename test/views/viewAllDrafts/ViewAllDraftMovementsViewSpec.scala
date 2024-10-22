@@ -319,5 +319,25 @@ class ViewAllDraftMovementsViewSpec extends ViewSpecBase with ViewBehaviours wit
         Selectors.h1 -> English.headingWithCount(2)
       ))
     }
+
+    s"being rendered with the result count should show the correct heading for 3 pages of movements" when {
+
+      val threePagePagination = (Some(Pagination(
+        items = Some(Seq(
+          PaginationItem(s"link-1", Some("1")),
+          PaginationItem(s"link-2", Some("2"), current = Some(true)),
+          PaginationItem(s"link-3", Some("3"))
+        )),
+        previous = Some(PaginationLink("previous-link")),
+        next = Some(PaginationLink("next-link"))
+      )))
+
+      implicit val doc: Document = asDocument(threePagePagination, movements = Seq.fill(30)(draftMovementModelMax), searchOptions = GetDraftMovementsSearchOptions(searchValue = Some("beans")))
+
+      behave like pageWithExpectedElementsAndMessages(Seq(
+        Selectors.title -> English.titleWithCountAndPage(30, 2, 3),
+        Selectors.h1 -> English.headingWithCountAndPage(30, 2, 3)
+      ))
+    }
   }
 }

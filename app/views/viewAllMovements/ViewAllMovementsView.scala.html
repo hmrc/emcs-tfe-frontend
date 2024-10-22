@@ -68,7 +68,7 @@
     if (isInitialView) {
         messages("viewAllMovements.heading")
     } else {
-        val countPrefix = helper.generatePageTitle(totalMovements, currentFilters)
+        val countPrefix = helper.generatePageTitle(totalMovements, currentFilters, pagination)
         if (asPageTitle) {
             s"$countPrefix ${messages("viewAllMovements.heading")}"
         } else {

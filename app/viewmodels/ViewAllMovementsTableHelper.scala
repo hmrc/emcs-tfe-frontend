@@ -22,6 +22,7 @@ import models.{MovementFilterDirectionOption, MovementListSearchOptions}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
 import utils.DateUtils
 import viewmodels.govuk.TagFluency
@@ -57,22 +58,24 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
       classes = "table-fixed"
     )
 
-  def generatePageTitle(totalMovements: Int, currentFilters: MovementListSearchOptions)
+  def generatePageTitle(totalMovements: Int, currentFilters: MovementListSearchOptions, pagination: Option[Pagination])
                        (implicit messages: Messages): String =
     generatePageTitle(
       totalMovements = totalMovements,
       searchValue = currentFilters.searchValue,
       sortByDisplayName = currentFilters.sortBy.displayName,
       hasFilterApplied = currentFilters.hasFilterApplied,
+      pagination = pagination
     )
 
-  def generatePageTitle(totalMovements: Int, currentFilters: GetDraftMovementsSearchOptions)
+  def generatePageTitle(totalMovements: Int, currentFilters: GetDraftMovementsSearchOptions, pagination: Option[Pagination])
                        (implicit messages: Messages): String =
     generatePageTitle(
       totalMovements = totalMovements,
       searchValue = currentFilters.searchValue,
       sortByDisplayName = currentFilters.sortBy.displayName,
       hasFilterApplied = currentFilters.hasFilterApplied,
+      pagination = pagination
     )
 
   private[viewmodels] def generatePageTitle(
@@ -80,6 +83,7 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
                                              searchValue: Option[String],
                                              sortByDisplayName: String,
                                              hasFilterApplied: Boolean,
+                                             pagination: Option[Pagination]
                                            )(implicit messages: Messages): String = {
     val filteredMessage: String = if (hasFilterApplied) messages("viewAllMovements.filtered") else ""
     val sortByMessage: String = messages(sortByDisplayName)
@@ -92,7 +96,18 @@ class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTab
     totalMovements match {
       case 0 => messages(s"viewAllMovements.noResultsFound", "", filteredMessage, searchTermMessage)
       case 1 => messages(s"viewAllMovements.resultFound", "", filteredMessage, searchTermMessage, sortByMessage)
-      case _ => messages(s"viewAllMovements.resultsFound", totalMovements, filteredMessage, searchTermMessage, sortByMessage)
+      case _ => {
+        val pageTermMessage = pagination.flatMap {
+          case Pagination(Some(items), _, _, _, _, _) if items.size > 1 =>
+            items.find(_.current.contains(true)).flatMap(_.number).map { currentPageNumber =>
+              s" ${messages("viewAllMovements.pageNumberTerm", currentPageNumber.toInt, items.size)}"
+            }
+          case _ => None
+        }.getOrElse("")
+
+        messages(s"viewAllMovements.resultsFound", totalMovements, filteredMessage, pageTermMessage, searchTermMessage, sortByMessage)
+      }
     }
   }
+
 }

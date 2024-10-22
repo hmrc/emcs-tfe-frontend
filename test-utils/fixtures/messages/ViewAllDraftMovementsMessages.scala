@@ -34,6 +34,8 @@ object ViewAllDraftMovementsMessages {
     val titleWithOneResult: String = titleHelper(headingWithOneResult)
     def headingWithCount(count: Int): String = s"$count results for beans sorted by Last updated (newest) - Drafts"
     def titleWithCount(count: Int): String = titleHelper(headingWithCount(count))
+    def headingWithCountAndPage(count: Int, currentPage: Int, totalPages: Int): String = s"$count results (page $currentPage of $totalPages) for beans sorted by Last updated (newest) - Drafts"
+    def titleWithCountAndPage(count: Int, currentPage: Int, totalPages: Int): String = titleHelper(headingWithCountAndPage(count, currentPage, totalPages))
 
     def dateOfDispatch(string: String): String = s"Date of dispatch: $string"
     val sortByLabel = "Sort by"

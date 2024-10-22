@@ -389,6 +389,28 @@ class ViewAllMovementsViewSpec extends ViewSpecBase with ViewBehaviours with Mov
       ))
     }
 
+    s"being rendered with the result count should show the correct heading for 3 pages of movements" when {
+
+      val threePagePagination = (Some(Pagination(
+        items = Some(Seq(
+          PaginationItem(s"link-1", Some("1")),
+          PaginationItem(s"link-2", Some("2"), current = Some(true)),
+          PaginationItem(s"link-3", Some("3"))
+        )),
+        previous = Some(PaginationLink("previous-link")),
+        next = Some(PaginationLink("next-link"))
+      )))
+
+      val response: GetMovementListResponse = GetMovementListResponse(Seq.fill(30)(movement1), 30)
+
+      implicit val doc: Document = asDocument(threePagePagination, movementListResponse = response, searchOptions = MovementListSearchOptions(searchValue = Some("beans")))
+
+      behave like pageWithExpectedElementsAndMessages(Seq(
+        Selectors.title -> English.titleWithCountAndPage(30, 2, 3),
+        Selectors.h1 -> English.headingWithCountAndPage(30, 2, 3)
+      ))
+    }
+
     "being rendered with errors" when {
       "searchKey is in error" should {
         implicit val doc: Document = asDocument(None, form = formProvider().withError("searchKey", messages(ViewAllMovementsFormProvider.searchKeyRequiredMessage)))
