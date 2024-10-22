@@ -14,24 +14,20 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
 @import models.response.emcsTfe.GetMovementListResponse
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.SelectItem
-@import viewmodels.ViewAllMovementsTableHelper
+@import viewmodels.ViewAllMovementsSummaryListHelper
 @import views.html.components._
 
 @this(
-        table: table,
         h1: h1,
         h2: h2,
         searchResults: searchResults,
         sortBy: sortBy,
-        appConfig: AppConfig,
-        govukButton: GovukButton,
         govukPagination: GovukPagination,
-        govukSelect: GovukSelect,
-        helper: ViewAllMovementsTableHelper
+        helper: ViewAllMovementsSummaryListHelper,
+        govukSummaryList: GovukSummaryList
 )
 
 @(ern: String, movementListResponse: GetMovementListResponse, selectItems: Seq[SelectItem], pagination: Option[Pagination], directionFilterOption: MovementFilterDirectionOption)(implicit messages: Messages)
@@ -41,7 +37,10 @@
     @searchResults(movementListResponse.count)
 
     @sortBy(results = movementListResponse.movements, selectItems = selectItems) {
-        @table(helper.constructTable(ern, movementListResponse.movements, directionFilterOption))
+
+        @govukSummaryList(SummaryList(
+           helper.constructSummaryListRows(ern, movementListResponse.movements, directionFilterOption)
+        ))
 
         @pagination.map { paginationLinks =>
             @govukPagination(paginationLinks)

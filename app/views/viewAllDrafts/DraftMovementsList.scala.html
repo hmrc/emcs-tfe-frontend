@@ -22,16 +22,13 @@
 @import views.html.components._
 
 @this(
-        table: table,
         h1: h1,
         p: p,
         searchResults: searchResults,
         sortBy: sortBy,
-        appConfig: AppConfig,
-        govukButton: GovukButton,
         govukPagination: GovukPagination,
-        govukSelect: GovukSelect,
-        helper: ViewAllDraftMovementsTableHelper
+        helper: ViewAllDraftMovementsTableHelper,
+        govukSummaryList: GovukSummaryList
 )
 
 @(ern: String, movements: Seq[DraftMovement], selectItems: Seq[SelectItem], pagination: Option[Pagination], totalMovements: Int)(implicit messages: Messages)
@@ -41,7 +38,10 @@
     @searchResults(totalMovements)
 
     @sortBy(results = movements, selectItems = selectItems) {
-        @table(helper.constructTable(ern, movements))
+
+        @govukSummaryList(SummaryList(
+            helper.constructSummaryListRows(ern, movements))
+        )
 
         @pagination.map { paginationLinks =>
             @govukPagination(paginationLinks)

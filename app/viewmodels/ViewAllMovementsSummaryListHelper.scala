@@ -23,40 +23,28 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.Pagination
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow, Value}
 import utils.DateUtils
 import viewmodels.govuk.TagFluency
-import views.html.viewAllMovements.MovementTableRowContent
+import views.html.viewAllMovements.MovementSummaryListKeyContent
 
 import javax.inject.Inject
 
-class ViewAllMovementsTableHelper @Inject()(movementTableRowContent: MovementTableRowContent) extends DateUtils with TagFluency {
+class ViewAllMovementsSummaryListHelper @Inject()(keyContent: MovementSummaryListKeyContent) extends DateUtils with TagFluency {
 
-  private[viewmodels] def dataRows(ern: String, movements: Seq[GetMovementListItem], directionFilterOption: MovementFilterDirectionOption)
-                                  (implicit messages: Messages): Seq[Seq[TableRow]] =
+  def constructSummaryListRows(ern: String, movements: Seq[GetMovementListItem], directionFilterOption: MovementFilterDirectionOption)
+                    (implicit messages: Messages): Seq[SummaryListRow] =
     movements.map { movement =>
-      Seq(
-        TableRow(
-          content = HtmlContent(movementTableRowContent(ern, movement, directionFilterOption)),
-          colspan = Some(70),
-          classes = "word-wrap-break-word"
+      SummaryListRow(
+        Key(
+          HtmlContent(keyContent(ern, movement, directionFilterOption)),
+          classes = "govuk-!-width-two-thirds"
         ),
-        TableRow(
-          content = HtmlContent(new GovukTag().apply(movement.statusTag())),
-          classes = "govuk-!-text-align-right",
-          colspan = Some(30)
+        Value(
+          HtmlContent(new GovukTag().apply(movement.statusTag()))
         )
       )
     }
-
-  def constructTable(ern: String, movements: Seq[GetMovementListItem], directionFilterOption: MovementFilterDirectionOption)
-                    (implicit messages: Messages): Table =
-    Table(
-      caption = Some(messages("viewAllMovements.table.caption")),
-      captionClasses = "govuk-visually-hidden",
-      rows = dataRows(ern, movements, directionFilterOption)(messages),
-      classes = "table-fixed"
-    )
 
   def generatePageTitle(totalMovements: Int, currentFilters: MovementListSearchOptions, pagination: Option[Pagination])
                        (implicit messages: Messages): String =

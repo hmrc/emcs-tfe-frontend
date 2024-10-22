@@ -19,7 +19,6 @@ package viewmodels
 import base.SpecBase
 import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
-import fixtures.messages.ViewAllMovementsMessages.English.tableCaption
 import models.MovementFilterDirectionOption._
 import models.response.emcsTfe.GetMovementListItem
 import play.api.i18n.Messages
@@ -27,15 +26,15 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{Pagination, PaginationItem, PaginationLink}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow, Value}
 import utils.DateUtils
-import views.html.viewAllMovements.MovementTableRowContent
+import views.html.viewAllMovements.MovementSummaryListKeyContent
 
-class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures with DateUtils {
+class ViewAllMovementsSummaryListHelperSpec extends SpecBase with MovementListFixtures with DateUtils {
 
-  lazy val movementTableRowContent: MovementTableRowContent = app.injector.instanceOf[MovementTableRowContent]
-  lazy val helper: ViewAllMovementsTableHelper = new ViewAllMovementsTableHelper(movementTableRowContent)
-  lazy val movements: Seq[GetMovementListItem] = getMovementListResponse.movements
+  lazy val keyContent = app.injector.instanceOf[MovementSummaryListKeyContent]
+  lazy val helper: ViewAllMovementsSummaryListHelper = new ViewAllMovementsSummaryListHelper(keyContent)
+  lazy val movements = getMovementListResponse.movements
 
   "ViewAllMovementsTableHelper" should {
 
@@ -51,38 +50,23 @@ class ViewAllMovementsTableHelperSpec extends SpecBase with MovementListFixtures
 
             "construct the expected data rows" in {
 
-              helper.constructTable(testErn, movements, direction) mustBe Table(
-                caption = Some(tableCaption),
-                captionClasses = "govuk-visually-hidden",
-                firstCellIsHeader = false,
-                classes = "table-fixed",
-                rows = Seq(
-                  Seq(
-                    TableRow(
-                      content = HtmlContent(movementTableRowContent(testErn, movement1, direction)),
-                      colspan = Some(70),
-                      classes = "word-wrap-break-word"
+              helper.constructSummaryListRows(testErn, movements, direction) mustBe
+                Seq(
+                  SummaryListRow(
+                    key = Key(
+                      HtmlContent(keyContent(testErn, movement1, direction)),
+                      classes = "govuk-!-width-two-thirds"
                     ),
-                    TableRow(
-                      content = HtmlContent(new GovukTag().apply(movement1.statusTag())),
-                      classes = "govuk-!-text-align-right",
-                      colspan = Some(30)
-                    )
+                    value = Value(HtmlContent(new GovukTag().apply(movement1.statusTag())))
                   ),
-                  Seq(
-                    TableRow(
-                      content = HtmlContent(movementTableRowContent(testErn, movement2, direction)),
-                      colspan = Some(70),
-                      classes = "word-wrap-break-word"
+                  SummaryListRow(
+                    key = Key(
+                      HtmlContent(keyContent(testErn, movement2, direction)),
+                      classes = "govuk-!-width-two-thirds"
                     ),
-                    TableRow(
-                      content = HtmlContent(new GovukTag().apply(movement2.statusTag())),
-                      classes = "govuk-!-text-align-right",
-                      colspan = Some(30)
-                    )
+                    value = Value(HtmlContent(new GovukTag().apply(movement2.statusTag())))
                   )
                 )
-              )
             }
           }
         }

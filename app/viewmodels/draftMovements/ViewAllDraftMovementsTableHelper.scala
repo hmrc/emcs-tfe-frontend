@@ -19,36 +19,28 @@ package viewmodels.draftMovements
 import models.response.emcsTfe.draftMovement.DraftMovement
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{Table, TableRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow, Value}
 import utils.DateUtils
 import viewmodels.govuk.TagFluency
-import views.html.viewAllDrafts.{DraftMovementsTableRowContent, DraftMovementsTableRowContentStatus}
+import views.html.viewAllDrafts.{DraftMovementsSummaryListKeyContent, DraftMovementsSummaryListValueContent}
 
 import javax.inject.Inject
 
-class ViewAllDraftMovementsTableHelper @Inject()(movementTableRowContent: DraftMovementsTableRowContent,
-                                                 movementStatus: DraftMovementsTableRowContentStatus) extends DateUtils with TagFluency {
+class ViewAllDraftMovementsTableHelper @Inject()(keyContent: DraftMovementsSummaryListKeyContent,
+                                                 valueContent: DraftMovementsSummaryListValueContent) extends DateUtils with TagFluency {
 
-  private[viewmodels] def dataRows(ern: String, draftMovements: Seq[DraftMovement])
-                                  (implicit messages: Messages): Seq[Seq[TableRow]] =
+  def constructSummaryListRows(ern: String, draftMovements: Seq[DraftMovement])
+                              (implicit messages: Messages): Seq[SummaryListRow] =
     draftMovements.map { draftMovement =>
-      Seq(
-        TableRow(
-          content = HtmlContent(movementTableRowContent(ern, draftMovement)),
-          colspan = Some(60)
+      SummaryListRow(
+        Key(
+          HtmlContent(keyContent(ern, draftMovement)),
+          classes = "width-60pc"
         ),
-        TableRow(
-          content = HtmlContent(movementStatus(ern, draftMovement)),
-          classes = "govuk-!-text-align-right",
-          colspan = Some(40)
+        Value(
+          HtmlContent(valueContent(ern, draftMovement))
         )
       )
     }
 
-  def constructTable(ern: String, movements: Seq[DraftMovement])
-                    (implicit messages: Messages): Table =
-    Table(
-      rows = dataRows(ern, movements)(messages),
-      classes = "table-fixed"
-    )
 }

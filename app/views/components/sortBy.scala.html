@@ -17,7 +17,7 @@
 @import config.AppConfig
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
-@import viewmodels.ViewAllMovementsTableHelper
+@import viewmodels.ViewAllMovementsSummaryListHelper
 @import views.html.components._
 
 @this(
@@ -29,7 +29,7 @@
         govukButton: GovukButton,
         govukPagination: GovukPagination,
         govukSelect: GovukSelect,
-        helper: ViewAllMovementsTableHelper
+        helper: ViewAllMovementsSummaryListHelper
 )
 
 @(results: Seq[_], selectItems: Seq[SelectItem])(content: Html)(implicit messages: Messages)
