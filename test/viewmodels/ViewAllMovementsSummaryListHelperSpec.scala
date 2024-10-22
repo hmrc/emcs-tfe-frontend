@@ -57,14 +57,20 @@ class ViewAllMovementsSummaryListHelperSpec extends SpecBase with MovementListFi
                       HtmlContent(keyContent(testErn, movement1, direction)),
                       classes = "govuk-!-width-two-thirds"
                     ),
-                    value = Value(HtmlContent(new GovukTag().apply(movement1.statusTag())))
+                    value = Value(
+                      HtmlContent(new GovukTag().apply(movement1.statusTag())),
+                      classes = "govuk-!-text-align-right"
+                    )
                   ),
                   SummaryListRow(
                     key = Key(
                       HtmlContent(keyContent(testErn, movement2, direction)),
                       classes = "govuk-!-width-two-thirds"
                     ),
-                    value = Value(HtmlContent(new GovukTag().apply(movement2.statusTag())))
+                    value = Value(
+                      HtmlContent(new GovukTag().apply(movement2.statusTag())),
+                      classes = "govuk-!-text-align-right"
+                    )
                   )
                 )
             }

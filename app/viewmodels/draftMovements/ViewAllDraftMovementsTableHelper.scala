@@ -38,7 +38,8 @@ class ViewAllDraftMovementsTableHelper @Inject()(keyContent: DraftMovementsSumma
           classes = "width-60pc"
         ),
         Value(
-          HtmlContent(valueContent(ern, draftMovement))
+          HtmlContent(valueContent(ern, draftMovement)),
+          classes = "govuk-!-text-align-right"
         )
       )
     }

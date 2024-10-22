@@ -41,7 +41,8 @@ class ViewAllMovementsSummaryListHelper @Inject()(keyContent: MovementSummaryLis
           classes = "govuk-!-width-two-thirds"
         ),
         Value(
-          HtmlContent(new GovukTag().apply(movement.statusTag()))
+          HtmlContent(new GovukTag().apply(movement.statusTag())),
+          classes = "govuk-!-text-align-right"
         )
       )
     }
