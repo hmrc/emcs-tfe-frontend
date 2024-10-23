@@ -1,5 +1,5 @@
-import sbt._
 import play.sbt.routes.RoutesKeys
+import sbt.*
 import uk.gov.hmrc.DefaultBuildSettings.addTestReportOption
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
@@ -53,6 +53,10 @@ lazy val microservice = Project(appName, file("."))
       "javascripts/application.js" ->
         group(Seq(
           "javascripts/app.js"
+        )),
+      "javascripts/autocomplete.js" ->
+        group(Seq(
+          "javascripts/accessible-autocomplete-polyfill.js"
         ))
     ),
     // prevent removal of unused code which generates warning errors due to use of third-party libs
