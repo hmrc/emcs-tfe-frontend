@@ -17,6 +17,7 @@
 @import models.requests.UserAnswersRequest
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accessibleautocomplete.AccessibleAutocomplete
+@import views.html.helper.CSPNonce
 
 @this(
         layout: templates.Layout,
@@ -43,11 +44,16 @@
     }
 }
 
+@scripts = {
+    @autocompleteJavascript()
+    <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("javascripts/autocomplete.min.js")'></script>
+}
+
 @layout(
     pageTitle = title(form, messages("prevalidateTrader.exciseProductCode.title", indexOfDocument.displayIndex)),
     maybeShowActiveTrader = maybeShowActiveTrader(request.request),
     additionalCss = autocompleteCss(),
-    additionalScripts = autocompleteJavascript(),
+    additionalScripts = scripts,
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), None))
 ) {
 
