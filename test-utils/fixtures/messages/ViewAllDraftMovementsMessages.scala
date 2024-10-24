@@ -48,7 +48,7 @@ object ViewAllDraftMovementsMessages {
     val next: String = "Next"
 
     val draftDeletedNotificationBannerTitle: String = "Success"
-    def draftDeletedNotificationBannerContent(lrn: String): String = s"Draft movement deleted successfully: $lrn"
+    def draftDeletedNotificationBannerContent(lrn: String): String = s"Draft movement deleted: $lrn"
 
     val searchHeading = "Search for a draft"
     val searchText = "You can search by Local Reference Number (LRN), consignee name, Excise Reference Number (ERN) or tax warehouse ERN."
