@@ -24,14 +24,15 @@ import viewmodels.TraderInfo
 
 object ViewUtils extends DateUtils {
 
-  def title(form: Form[_], title: String, section: Option[String] = None)(implicit messages: Messages): String =
+  def title(form: Form[_], title: String, section: Option[String] = None, tab: Option[String] = None)(implicit messages: Messages): String =
     titleNoForm(
       title   = s"${errorPrefix(form)} ${messages(title)}",
-      section = section
+      section = section,
+      tab = tab
     )
 
-  def titleNoForm(title: String, section: Option[String] = None)(implicit messages: Messages): String =
-    s"${messages(title)} - ${section.fold("")(messages(_) + " - ")}${messages("service.name")} - ${messages("site.govuk")}"
+  def titleNoForm(title: String, section: Option[String] = None, tab: Option[String] = None)(implicit messages: Messages): String =
+    s"${tab.fold("")(messages(_) + " - ")}${messages(title)} - ${section.fold("")(messages(_) + " - ")}${messages("service.name")} - ${messages("site.govuk")}"
 
   def errorPrefix(form: Form[_])(implicit messages: Messages): String = {
     if (form.hasErrors || form.hasGlobalErrors) messages("error.browser.title.prefix") else ""

@@ -49,7 +49,7 @@
 )(implicit request: DataRequest[_], messages: Messages)
 
 @layout(
-    titleNoForm(arc, Some(currentSubNavigationTab.name)),
+    titleNoForm(arc, tab = Some(currentSubNavigationTab.name)),
     maybeShowActiveTrader = maybeShowActiveTrader(request),
     maybeShowNavigationBanner = Some(NavigationBannerInfo(ern, request.messageStatistics.map(_.countOfNewMessages), Some(Movements))),
     fullWidthContent = true
