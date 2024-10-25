@@ -95,8 +95,8 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
           disable(AccountHomeBanner)
           doc.getElementsByTag("h2").get(0).text mustBe "This section is Account home"
           doc.getElementsByTag("h1").text mustBe testTraderName
-          doc.getElementsByTag("p").get(1).text mustBe roleTypeDescription
-          doc.getElementsByTag("p").get(2).text mustBe s"Excise registration number (ERN): $ern"
+          doc.getElementsByTag("p").get(0).text mustBe roleTypeDescription
+          doc.getElementsByTag("p").get(1).text mustBe s"Excise registration number (ERN): $ern"
 
           doc.getElementsByTag("h2").get(1).text mustBe "Your messages"
 
@@ -133,8 +133,8 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
           }
 
           if (roleType.canCreateNewMovement) {
-            doc.getElementsByTag("p").get(3).text mustBe "Create a new movement"
-            doc.getElementsByTag("p").get(3).getElementsByTag("a").get(0).attr("href") mustBe appConfig.emcsTfeCreateMovementUrl(ern)
+            doc.getElementsByTag("p").get(2).text mustBe "Create a new movement"
+            doc.getElementsByTag("p").get(2).getElementsByTag("a").get(0).attr("href") mustBe appConfig.emcsTfeCreateMovementUrl(ern)
           } else {
             doc.getElementsByTag("p").text mustNot contain("Create a new movement")
           }
@@ -168,8 +168,8 @@ class AccountHomeViewSpec extends SpecBase with FeatureSwitching {
         ).toString())
 
         doc.getElementsByTag("h1").text mustBe testErn
-        doc.getElementsByTag("p").get(1).text mustBe "Excise warehousekeeper located in Great Britain"
-        doc.getElementsByTag("p").get(2).text mustNot be(s"Excise registration number (ERN): $testErn")
+        doc.getElementsByTag("p").get(0).text mustBe "Excise warehousekeeper located in Great Britain"
+        doc.getElementsByTag("p").get(1).text mustNot be(s"Excise registration number (ERN): $testErn")
       }
     }
 
