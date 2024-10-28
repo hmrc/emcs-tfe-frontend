@@ -23,10 +23,8 @@ import models.MovementListSearchOptions
 import models.draftMovements.GetDraftMovementsSearchOptions
 import models.messages.MessagesSearchOptions
 import play.api.Configuration
-import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import java.net.URLEncoder
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.Duration
 
@@ -60,12 +58,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def emcsTfeUndischargedMovementsUrl(ern: String): String =
     routes.ViewAllMovementsController.onPageLoad(ern, MovementListSearchOptions(undischargedMovements = Some(Undischarged))).url
 
-  private lazy val contactHost = configuration.get[String]("contact-frontend.host")
-
   def getFeatureSwitchValue(feature: String): Boolean = configuration.get[Boolean](feature)
-
-  def betaBannerFeedbackUrl(implicit request: RequestHeader): String =
-    s"$contactHost/contact/beta-feedback?service=$deskproName&backUrl=${URLEncoder.encode(host + request.uri, "UTF-8")}"
 
   private lazy val feedbackFrontendHost: String = configuration.get[String]("feedback-frontend.host")
 
