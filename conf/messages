@@ -1307,7 +1307,7 @@ viewAllDraftMovements.consignee = Consignee: {0}
 viewAllDraftMovements.destination = Destination: {0}
 
 viewAllDraftMovements.draft.deletedNotification.title = Success
-viewAllDraftMovements.draft.deletedNotification.content = Draft movement deleted successfully: {0}
+viewAllDraftMovements.draft.deletedNotification.content = Draft movement deleted: {0}
 
 signedOut.title = For your security, we signed you out
 signedOut.heading = For your security, we signed you out
