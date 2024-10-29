@@ -19,7 +19,7 @@ package fixtures.messages
 object ViewMovementMessages {
 
   sealed trait ViewMessages extends BaseEnglish { _: i18n =>
-    def title(arc: String, section: String): String = titleHelper(s"$arc - $section")
+    def title(arc: String, tab: String): String = titleHelper(s"$arc", tab = Some(tab))
     val arcSubheading: String = "Administrative reference code"
     val overviewTabHeading = "Overview"
     val movementTabHeading = "Movement"
