@@ -44,8 +44,8 @@ object ViewAllDraftMovementsMessages {
     val sortLrnDescending = "LRN (Z-A)"
     val sortNewest = "Last updated (newest)"
     val sortOldest = "Last updated (oldest)"
-    val previous: String = "Previous"
-    val next: String = "Next"
+    val previous: String = "Previous page"
+    val next: String = "Next page"
 
     val draftDeletedNotificationBannerTitle: String = "Success"
     def draftDeletedNotificationBannerContent(lrn: String): String = s"Draft movement deleted: $lrn"

@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
 @import viewmodels.ViewAllMovementsSummaryListHelper
 @import views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.FormGroup
 
 @this(
         table: table,
@@ -47,7 +48,7 @@
                 classes = "govuk-!-display-inline govuk-!-padding-right-2"
             ),
             classes = "govuk-!-display-inline",
-            formGroupClasses = "govuk-!-margin-bottom-0"
+            formGroup = FormGroup(Some("govuk-!-margin-bottom-0"))
         ))
 
         @govukButton(

@@ -40,8 +40,8 @@ object ViewAllMovementsMessages extends BaseEnglish {
     val sortArcDescending = "ARC (Z-A)"
     val sortNewest = "Dispatched (newest)"
     val sortOldest = "Dispatched (oldest)"
-    val previous: String = "Previous"
-    val next: String = "Next"
+    val previous: String = "Previous page"
+    val next: String = "Next page"
 
     val searchHeading = "Search for a movement"
     val searchText = "You can search by Administrative Reference Code (ARC), Local Reference Number (LRN), trader Excise Reference Number (ERN) or transporter name."

@@ -216,11 +216,7 @@ class MovementEventHelper @Inject()(
                 content = Text(messages(s"movementHistoryEvent.${event.eventType}.item.link")),
                 href = controllers.routes.ItemDetailsController.onPageLoad(request.ern, movement.arc, manualClosureItem.bodyRecordUniqueReference).url,
                 id = s"viewItem-${manualClosureItem.bodyRecordUniqueReference}"
-              ).withVisuallyHiddenText(messages(
-                s"movementHistoryEvent.${event.eventType}.item.link.hidden",
-                manualClosureItem.bodyRecordUniqueReference,
-                information.cnCodeDescription
-              ))),
+              )),
               cardTitleHeadingLevel = Some(3),
               summaryListRows = exciseProductCode ++ bodyUniqueReference ++ shortageOrExcess ++ shortageOrExcessQuantity ++ refusedQuantity ++ moreInformation
             )
@@ -649,11 +645,7 @@ class MovementEventHelper @Inject()(
                   content = Text(messages(s"movementHistoryEvent.${event.eventType}.rorItems.link")),
                   href = controllers.routes.ItemDetailsController.onPageLoad(request.ern, movement.arc, rorItem.eadBodyUniqueReference).url,
                   id = s"viewItem-${rorItem.eadBodyUniqueReference}"
-                ).withVisuallyHiddenText(messages(
-                  s"movementHistoryEvent.${event.eventType}.rorItems.link.hidden",
-                  rorItem.eadBodyUniqueReference,
-                  information.cnCodeDescription
-                ))),
+                ).withVisuallyHiddenText(s"(${information.cnCodeDescription})")),
                 cardTitleHeadingLevel = Some(3),
                 summaryListRows = Seq(
                   Seq(whatWasWrongRow),

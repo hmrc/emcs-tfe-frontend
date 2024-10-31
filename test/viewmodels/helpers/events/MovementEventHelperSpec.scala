@@ -728,7 +728,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
 
           // test action link
           val actionLink = doc.select(Selectors.link(index + 1))
-          actionLink.text() mustBe s"Item details for item ${index + 1}"
+          actionLink.text() mustBe s"Item details (Item ${index + 1})"
           actionLink.attr("href") mustBe controllers.routes.ItemDetailsController.onPageLoad(testErn, testArc, item.manualClosureItem.bodyRecordUniqueReference).url
 
           // test what was wrong row
@@ -865,7 +865,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
 
                 // test action link
                 val actionLink = doc.select(Selectors.link(index + 1))
-                actionLink.text() mustBe s"Item details for item ${index + 1} (${item.information.cnCodeDescription})"
+                actionLink.text() mustBe s"Item details (${item.information.cnCodeDescription}) (Item ${index + 1})"
                 actionLink.attr("href") mustBe controllers.routes.ItemDetailsController.onPageLoad(testErn, testArc, item.rorItem.eadBodyUniqueReference).url
 
                 // test what was wrong row

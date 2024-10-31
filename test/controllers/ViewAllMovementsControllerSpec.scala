@@ -74,6 +74,9 @@ class ViewAllMovementsControllerSpec extends SpecBase
   val countryListConnectorResult: Seq[MemberState] = Seq(memberStateAT, memberStateBE)
   val countryListForView: Seq[SelectOptionModel] = MovementListSearchOptions.CHOOSE_COUNTRY +: countryListConnectorResult
 
+  private val withSearchPrefix: Seq[(String, String)] => Seq[(String, String)] =
+    _.map { case (k, v) => s"search.$k" -> v }
+
   trait Test {
 
     lazy val controller: ViewAllMovementsController = new ViewAllMovementsController(
@@ -489,6 +492,10 @@ class ViewAllMovementsControllerSpec extends SpecBase
           "form errors contain searchValue" in new Test {
 
             val searchOptions = MovementListSearchOptions(index = 1, searchValue = Some("beans"))
+            val searchParams = withSearchPrefix(Seq(
+              ViewAllMovementsFormProvider.sortBy -> Newest.code,
+              ViewAllMovementsFormProvider.searchValue -> "beans"
+            ))
 
             MockEmcsTfeConnector
               .getMovementList(testErn, Some(searchOptions))
@@ -507,18 +514,23 @@ class ViewAllMovementsControllerSpec extends SpecBase
             MockPaginationHelper.calculatePageCount(30, 10)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(ViewAllMovementsFormProvider.sortBy -> Newest.code, ViewAllMovementsFormProvider.searchValue -> "beans")
+              fakeRequest.withFormUrlEncodedBody(searchParams:_*)
             )
 
             status(result) shouldBe Status.BAD_REQUEST
             Html(contentAsString(result)) shouldBe viewWithErrors(
               searchOptions,
-              form = formProvider().fill(searchOptions).withError(FormError(ViewAllMovementsFormProvider.searchKey, ViewAllMovementsFormProvider.searchKeyRequiredMessage))
+              form = formProvider().bind(searchParams.toMap)
             )
           }
           "form errors contain searchKey" in new Test {
 
             val searchOptions = MovementListSearchOptions(index = 1, searchValue = Some("aaaaaaaaaaaaaaaaaaaaaa"), searchKey = Some(MovementSearchSelectOption.ARC))
+            val searchParams = withSearchPrefix(Seq(
+              ViewAllMovementsFormProvider.sortBy -> Newest.code,
+              ViewAllMovementsFormProvider.searchKey -> MovementSearchSelectOption.ARC.code,
+              ViewAllMovementsFormProvider.searchValue -> ("a" * (ViewAllMovementsFormProvider.ARC_MAX_LENGTH + 1))
+            ))
 
             MockEmcsTfeConnector
               .getMovementList(testErn, Some(searchOptions))
@@ -537,17 +549,13 @@ class ViewAllMovementsControllerSpec extends SpecBase
             MockPaginationHelper.calculatePageCount(30, 10)
 
             val result: Future[Result] = controller.onSubmit(testErn, searchOptions)(
-              fakeRequest.withFormUrlEncodedBody(
-                ViewAllMovementsFormProvider.sortBy -> Newest.code,
-                ViewAllMovementsFormProvider.searchKey -> MovementSearchSelectOption.ARC.code,
-                ViewAllMovementsFormProvider.searchValue -> ("a" * (ViewAllMovementsFormProvider.ARC_MAX_LENGTH + 1))
-              )
+              fakeRequest.withFormUrlEncodedBody(searchParams:_*)
             )
 
             status(result) shouldBe Status.BAD_REQUEST
             Html(contentAsString(result)) shouldBe viewWithErrors(
               searchOptions,
-              form = formProvider().fill(searchOptions).withError(FormError(ViewAllMovementsFormProvider.searchValue, ViewAllMovementsFormProvider.arcMaxLengthMessage))
+              form = formProvider().bind(searchParams.toMap)
             )
           }
           "form errors contain anything else" in new Test {
