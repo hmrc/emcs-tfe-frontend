@@ -73,7 +73,7 @@
 
         <div class="govuk-button-group">
             @govukButton(
-                ButtonViewModel(messages("site.confirm"))
+                ButtonViewModel(Text(messages("site.confirm")))
             )
 
             <a class="govuk-link" id="return-to-messages" href="@returnToMessagesUrl">@messages("deleteMessage.returnToMessages")</a>

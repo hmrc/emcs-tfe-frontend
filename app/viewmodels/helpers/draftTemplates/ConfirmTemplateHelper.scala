@@ -109,7 +109,7 @@ class ConfirmTemplateHelper @Inject()(
     template.guarantorArranger.flatMap {
       case guarantorArranger if guarantorArranger != Owner =>
         Some(summaryListRowBuilder("confirmTemplate.movement.summary.guarantor", guarantorArranger.messageKey))
-      case guarantorArranger if guarantorArranger == Owner =>
+      case guarantorArranger =>
         template.guarantorBusinessName.map { guarantorBusinessName =>
           summaryListRowBuilder("confirmTemplate.movement.summary.guarantor", Html(s"${messages(guarantorArranger.messageKey)}<br>$guarantorBusinessName"))
         }
@@ -130,7 +130,7 @@ class ConfirmTemplateHelper @Inject()(
         template.transportArrangerBusinessName.map { transportArrangerBusinessName =>
           summaryListRowBuilder("confirmTemplate.movement.summary.transportArranger", Html(s"${messages(transporterArranger.messageKey)}<br>$transportArrangerBusinessName"))
         }
-      case None => None
+      case _ => None
     }
 
 

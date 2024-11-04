@@ -31,7 +31,7 @@
     @h1() { @messages("signedOut.heading") }
 
     @p() {
-        @govukButton(ButtonViewModel(messages("site.signIn")).asLink(appConfig.emcsTfeHomeUrl))
+        @govukButton(ButtonViewModel(Text(messages("site.signIn"))).asLink(appConfig.emcsTfeHomeUrl))
     }
 }
 

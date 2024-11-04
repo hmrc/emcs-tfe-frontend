@@ -54,8 +54,8 @@
             <div class="govuk-grid-column-two-thirds">
                 @notificationBanner(
                 NotificationBanner(
-                title = messages("viewAllTemplates.renamedNotification.title"),
-                content = messages("viewAllTemplates.renamedNotification.content", oldName, newName),
+                title = Text(messages("viewAllTemplates.renamedNotification.title")),
+                content = Text(messages("viewAllTemplates.renamedNotification.content", oldName, newName)),
                 classes = "govuk-notification-banner--success"
                 )
                 )
@@ -69,8 +69,8 @@
                 <div class="govuk-grid-column-two-thirds">
                     @notificationBanner(
                         NotificationBanner(
-                            title = messages("viewAllTemplates.deletedNotification.title"),
-                            content = messages("viewAllTemplates.deletedNotification.content", templateName),
+                            title = Text(messages("viewAllTemplates.deletedNotification.title")),
+                            content = Text(messages("viewAllTemplates.deletedNotification.content", templateName)),
                             classes = "govuk-notification-banner--success"
                         )
                     )

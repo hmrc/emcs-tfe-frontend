@@ -126,8 +126,8 @@
                 <div class="govuk-grid-column-two-thirds">
                     @notificationBanner(
                         NotificationBanner(
-                            title = messages("viewAllDraftMovements.draft.deletedNotification.title"),
-                            content = messages("viewAllDraftMovements.draft.deletedNotification.content", lrn),
+                            title = Text(messages("viewAllDraftMovements.draft.deletedNotification.title")),
+                            content = Text(messages("viewAllDraftMovements.draft.deletedNotification.content", lrn)),
                             classes = "govuk-notification-banner--success"
                         )
                     )
@@ -149,7 +149,7 @@
         @h2("viewAllDraftMovements.search.heading", id = Some("search-heading"))
         @searchFields
 
-        @govukSkipLink(SkipLink(href = "#search-results", content = "site.skip.to.results", attributes = Map("id" -> "skip-to-results-link")))
+        @govukSkipLink(SkipLink(href = "#search-results", content = Text(messages("site.skip.to.results")), attributes = Map("id" -> "skip-to-results-link")))
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-third govuk-!-padding-bottom-2 filter-column">

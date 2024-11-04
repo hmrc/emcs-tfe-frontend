@@ -56,8 +56,8 @@
                 @{
                     notificationBanner(
                         NotificationBanner(
-                            title = messages("deleteMessage.successMessageTitle"),
-                            content = messages("deleteMessage.successMessagePart") + ": " + messages(maybeDeletedMessageDescriptionKey.get),
+                            title = Text(messages("deleteMessage.successMessageTitle")),
+                            content = Text(messages("deleteMessage.successMessagePart") + ": " + messages(maybeDeletedMessageDescriptionKey.get)),
                             classes = "govuk-notification-banner--success"
                         )
                     )
