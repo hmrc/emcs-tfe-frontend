@@ -163,7 +163,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe successView(searchOptions, threePageMovementListResponse.count)
+        Html(contentAsString(result)) shouldBe successView(searchOptions, threePageMovementListResponse.count, formProvider().fill(searchOptions))
       }
 
       "show the correct view and pagination with an index of 2" in new Test {
@@ -183,7 +183,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe successView(searchOptions, threePageMovementListResponse.count)
+        Html(contentAsString(result)) shouldBe successView(searchOptions, threePageMovementListResponse.count, formProvider().fill(searchOptions))
       }
 
       "show the correct view and pagination with an index of 3" in new Test {
@@ -203,7 +203,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe successView(searchOptions, threePageMovementListResponse.count)
+        Html(contentAsString(result)) shouldBe successView(searchOptions, threePageMovementListResponse.count, formProvider().fill(searchOptions))
       }
 
       "redirect to the index 1 when current index is above the maximum" in new Test {
@@ -241,7 +241,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 31)
+        Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 31, formProvider().fill(searchOptions))
       }
 
       "show the correct view and pagination when movement count is 1 below a multiple of the pageCount" in new Test {
@@ -261,7 +261,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
         val result: Future[Result] = controller.onPageLoad(testErn, searchOptions)(fakeRequest)
 
         status(result) shouldBe Status.OK
-        Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 39)
+        Html(contentAsString(result)) shouldBe successView(searchOptions, numberOfMovements = 39, formProvider().fill(searchOptions))
       }
 
       "show the correct view with the correct form values present based on the search options" in new Test {

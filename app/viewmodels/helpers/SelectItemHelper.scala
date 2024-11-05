@@ -29,6 +29,7 @@ object SelectItemHelper {
                           (implicit messages: Messages): Seq[SelectItem] =
     Seq(
       defaultTextMessageKey.map(default => SelectItem(
+        value = Some(""),
         text = messages(default),
         selected = existingAnswer.isEmpty,
         disabled = true

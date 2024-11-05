@@ -34,7 +34,7 @@ class SelectItemHelperSpec extends SpecBase
         defaultTextMessageKey = Some("default"),
         existingAnswer = None)
       result mustBe Seq(
-        SelectItem(selected = true, disabled = true, text = "default"),
+        SelectItem(value = Some(""), selected = true, disabled = true, text = "default"),
         SelectItem(value = Some("AT"), text = "Austria (AT)", selected = false),
         SelectItem(value = Some("BE"), text = "Belgium (BE)", selected = false)
       )
@@ -57,7 +57,7 @@ class SelectItemHelperSpec extends SpecBase
         defaultTextMessageKey = Some("default"),
         existingAnswer = Some("BE"))
       result mustBe Seq(
-        SelectItem(selected = false, disabled = true, text = "default"),
+        SelectItem(value = Some(""), selected = false, disabled = true, text = "default"),
         SelectItem(value = Some("AT"), text = "Austria (AT)", selected = false),
         SelectItem(value = Some("BE"), text = "Belgium (BE)", selected = true)
       )

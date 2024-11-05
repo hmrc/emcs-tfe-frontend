@@ -41,7 +41,7 @@ object ViewAllMessagesMessages {
 
     val noMessages = "You have no messages."
 
-    val next: String = "Next"
+    val next: String = "Next page"
   }
 
   object English extends ViewMessages with EN

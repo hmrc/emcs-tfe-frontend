@@ -113,7 +113,7 @@ class MovementSearchSelectOptionSpec extends SpecBase {
           MovementSearchSelectOption.constructSelectItems(form) mustBe Seq(
             SelectItem(
               text = English.searchSelectChooseSearch,
-              value = None,
+              value = Some(""),
               selected = true,
               disabled = true
             ),
@@ -149,7 +149,7 @@ class MovementSearchSelectOptionSpec extends SpecBase {
           MovementSearchSelectOption.constructSelectItems(form) mustBe Seq(
             SelectItem(
               text = English.searchSelectChooseSearch,
-              value = None,
+              value = Some(""),
               selected = true,
               disabled = true
             ),
@@ -187,7 +187,7 @@ class MovementSearchSelectOptionSpec extends SpecBase {
           MovementSearchSelectOption.constructSelectItems(form) mustBe Seq(
             SelectItem(
               text = English.searchSelectChooseSearch,
-              value = None,
+              value = Some(""),
               selected = true,
               disabled = true
             ),
@@ -226,7 +226,7 @@ class MovementSearchSelectOptionSpec extends SpecBase {
           MovementSearchSelectOption.constructSelectItems(form) mustBe Seq(
             SelectItem(
               text = English.searchSelectChooseSearch,
-              value = None,
+              value = Some(""),
               selected = false,
               disabled = true
             ),
