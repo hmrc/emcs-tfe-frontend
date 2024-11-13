@@ -263,9 +263,9 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
       "return an error" when {
         "the date is invalid" in {
 
-          val data = formAnswersMap(day = "1000", month = "1000", year = "1000")
+          val data = formAnswersMap(day = "1000", month = "1000", year = "a")
 
-          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.invalid"))
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.notARealDate"))
 
           val actualResult = form.bind(data)
 
@@ -275,7 +275,7 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
         "the date except the day field is not supplied" in {
           val data = formAnswersMap(day = "")
 
-          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required", List("day")))
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required.one", List("day")))
 
           val actualResult = form.bind(data)
 
@@ -285,7 +285,7 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
         "the date except the month field is not supplied" in {
           val data = formAnswersMap(month = "")
 
-          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required", List("month")))
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required.one", List("month")))
 
           val actualResult = form.bind(data)
 
@@ -295,7 +295,7 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
         "the date except the year field is not supplied" in {
           val data = formAnswersMap(year = "")
 
-          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required", List("year")))
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.required.one", List("year")))
 
           val actualResult = form.bind(data)
 

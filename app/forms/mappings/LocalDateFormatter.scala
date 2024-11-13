@@ -19,48 +19,34 @@ package forms.mappings
 import play.api.data.FormError
 import play.api.data.format.Formatter
 
-import java.time.LocalDate
+import java.time.{LocalDate, Month}
 import scala.util.{Failure, Success, Try}
 
 private[mappings] class LocalDateFormatter(
-                                            invalidKey: String,
                                             allRequiredKey: String,
+                                            oneRequiredKey: String,
                                             twoRequiredKey: String,
-                                            requiredKey: String,
+                                            oneInvalidKey: String,
+                                            twoInvalidKey: String,
+                                            notARealDateKey: String,
                                             args: Seq[String] = Seq.empty
                                           ) extends Formatter[LocalDate] with Formatters {
 
-  private val fieldKeys: List[String] = List("day", "month", "year")
+  private val dayText = "day"
+  private val monthText = "month"
+  private val yearText = "year"
+
+  private val fieldKeys: List[String] = List(dayText, monthText, yearText)
 
   private def toDate(key: String, day: Int, month: Int, year: Int): Either[Seq[FormError], LocalDate] =
     Try(LocalDate.of(year, month, day)) match {
       case Success(date) =>
         Right(date)
       case Failure(_) =>
-        Left(Seq(FormError(key, invalidKey, args)))
+        Left(Seq(FormError(key, notARealDateKey, args)))
     }
 
-  private def formatDate(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
-
-    val int = intFormatter(
-      requiredKey = invalidKey,
-      wholeNumberKey = invalidKey,
-      nonNumericKey = invalidKey,
-      args
-    )
-
-    val trimmedData = data.map { case (k, v) => k -> v.trim }
-
-    for {
-      day   <- int.bind(s"$key.day", trimmedData)
-      month <- int.bind(s"$key.month", trimmedData)
-      year  <- int.bind(s"$key.year", trimmedData)
-      date  <- toDate(key, day, month, year)
-    } yield date
-  }
-
-  override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
-
+  private def handlePartialInputs(key: String, data: Map[String, String]): Seq[FormError] = {
     val fields = fieldKeys.map {
       field =>
         field -> data.get(s"$key.$field").filter(_.nonEmpty)
@@ -72,16 +58,56 @@ private[mappings] class LocalDateFormatter(
       .toList
 
     fields.count(_._2.isDefined) match {
-      case 3 =>
-        formatDate(key, data).left.map {
-          _.map(_.copy(key = key, args = args))
+      case 3 => Nil
+      case 2 => Seq(FormError(key, oneRequiredKey, missingFields ++ args))
+      case 1 => Seq(FormError(key, twoRequiredKey, missingFields ++ args))
+      case _ => Seq(FormError(key, allRequiredKey, args))
+    }
+  }
+
+  private def handleRangeInputs(key: String, data: Map[String, String]): Seq[FormError] = {
+    def isValidInt(value: Option[String], range: Range): Boolean =
+      value.flatMap(v => Try(v.trim.toInt).toOption).exists(range.contains)
+
+    def isValidMonthName(value: Option[String]): Boolean =
+      value.exists(v => Month.values().exists(m => isMatchingMonth(m, v)))
+
+    val dayValid = isValidInt(data.get(s"$key.day"), 1 to 31)
+    val monthValid = isValidInt(data.get(s"$key.month"), 1 to 12) || isValidMonthName(data.get(s"$key.month"))
+    val yearValid = isValidInt(data.get(s"$key.year"), 1 to Int.MaxValue)
+
+    (dayValid, monthValid, yearValid) match {
+      case (true, true, true) => Nil
+      case (false, true, true) => Seq(FormError(key, oneInvalidKey, Seq(dayText) ++ args))
+      case (true, false, true) => Seq(FormError(key, oneInvalidKey, Seq(monthText) ++ args))
+      case (true, true, false) => Seq(FormError(key, oneInvalidKey, Seq(yearText) ++ args))
+      case (true, false, false) => Seq(FormError(key, twoInvalidKey, Seq(monthText, yearText) ++ args))
+      case (false, true, false) => Seq(FormError(key, twoInvalidKey, Seq(dayText, yearText) ++ args))
+      case (false, false, true) => Seq(FormError(key, twoInvalidKey, Seq(dayText, monthText) ++ args))
+      case (false, false, false) => Seq(FormError(key, notARealDateKey, args))
+    }
+  }
+
+  private def monthNumberFromMonthName(monthName: String): Int =
+    Month.values().find(isMatchingMonth(_, monthName)).map(_.getValue).getOrElse(0)
+
+  private def isMatchingMonth(month: Month, monthName: String): Boolean =
+    monthName.equalsIgnoreCase(month.toString) || monthName.equalsIgnoreCase(month.toString.take(3))
+
+  override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
+    handlePartialInputs(key, data) match {
+      case Nil =>
+        handleRangeInputs(key, data) match {
+          case Nil => {
+            val day = data(s"$key.day").trim.toInt
+            val month = Try(data(s"$key.month").trim.toInt).getOrElse(monthNumberFromMonthName(data(s"$key.month").trim))
+            val year = data(s"$key.year").trim.toInt
+
+            toDate(key, day, month, year)
+          }
+          case rangeErrors => Left(rangeErrors)
         }
-      case 2 =>
-        Left(List(FormError(key, requiredKey, missingFields ++ args)))
-      case 1 =>
-        Left(List(FormError(key, twoRequiredKey, missingFields ++ args)))
-      case _ =>
-        Left(List(FormError(key, allRequiredKey, args)))
+      case partialInputErrors => Left(partialInputErrors)
     }
   }
 
