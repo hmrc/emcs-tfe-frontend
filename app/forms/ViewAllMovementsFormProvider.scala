@@ -39,24 +39,36 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
         ViewAllMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllMovementsFormProvider.countryOfOrigin -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllMovementsFormProvider.dateOfDispatchFrom -> optionalLocalDate(
-          invalidKey = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid",
+          notARealDateKey = "viewAllMovements.filters.dateOfDispatchFrom.error.notARealDate",
           twoRequiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required.two",
-          requiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required"
+          oneRequiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required.one",
+          oneInvalidKey = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid.one",
+          twoInvalidKey = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid.two",
+          allRequiredKey = ""
         ),
         ViewAllMovementsFormProvider.dateOfDispatchTo -> optionalLocalDate(
-          invalidKey = "viewAllMovements.filters.dateOfDispatchTo.error.invalid",
+          notARealDateKey = "viewAllMovements.filters.dateOfDispatchTo.error.notARealDate",
           twoRequiredKey = "viewAllMovements.filters.dateOfDispatchTo.error.required.two",
-          requiredKey = "viewAllMovements.filters.dateOfDispatchTo.error.required"
+          oneRequiredKey = "viewAllMovements.filters.dateOfDispatchTo.error.required.one",
+          oneInvalidKey = "viewAllMovements.filters.dateOfDispatchTo.error.invalid.one",
+          twoInvalidKey = "viewAllMovements.filters.dateOfDispatchTo.error.invalid.two",
+          allRequiredKey = ""
         ),
         ViewAllMovementsFormProvider.dateOfReceiptFrom -> optionalLocalDate(
-          invalidKey = "viewAllMovements.filters.dateOfReceiptFrom.error.invalid",
+          notARealDateKey = "viewAllMovements.filters.dateOfReceiptFrom.error.notARealDate",
           twoRequiredKey = "viewAllMovements.filters.dateOfReceiptFrom.error.required.two",
-          requiredKey = "viewAllMovements.filters.dateOfReceiptFrom.error.required"
+          oneRequiredKey = "viewAllMovements.filters.dateOfReceiptFrom.error.required.one",
+          oneInvalidKey = "viewAllMovements.filters.dateOfReceiptFrom.error.invalid.one",
+          twoInvalidKey = "viewAllMovements.filters.dateOfReceiptFrom.error.invalid.two",
+          allRequiredKey = ""
         ),
         ViewAllMovementsFormProvider.dateOfReceiptTo -> optionalLocalDate(
-          invalidKey = "viewAllMovements.filters.dateOfReceiptTo.error.invalid",
+          notARealDateKey = "viewAllMovements.filters.dateOfReceiptTo.error.notARealDate",
           twoRequiredKey = "viewAllMovements.filters.dateOfReceiptTo.error.required.two",
-          requiredKey = "viewAllMovements.filters.dateOfReceiptTo.error.required"
+          oneRequiredKey = "viewAllMovements.filters.dateOfReceiptTo.error.required.one",
+          oneInvalidKey = "viewAllMovements.filters.dateOfReceiptTo.error.invalid.one",
+          twoInvalidKey = "viewAllMovements.filters.dateOfReceiptTo.error.invalid.two",
+          allRequiredKey = ""
         )
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply).verifying(ViewAllMovementsFormProvider.validateSearchValue())
     )

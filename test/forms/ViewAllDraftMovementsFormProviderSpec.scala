@@ -259,7 +259,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val expectedResult = List(FormError(
         key = dateOfDispatchFrom,
-        messages = List("viewAllDraftMovements.filters.dateOfDispatchFrom.error.invalid"),
+        messages = List("viewAllDraftMovements.filters.dateOfDispatchFrom.error.notARealDate"),
         args = List()
       ))
 
@@ -277,7 +277,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val expectedResult = List(FormError(
         key = dateOfDispatchFrom,
-        messages = List("viewAllDraftMovements.filters.dateOfDispatchFrom.error.required"),
+        messages = List("viewAllDraftMovements.filters.dateOfDispatchFrom.error.required.one"),
         args = List("day")
       ))
 
@@ -294,7 +294,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val expectedResult = List(FormError(
         key = dateOfDispatchFrom,
-        messages = List("viewAllDraftMovements.filters.dateOfDispatchFrom.error.required"),
+        messages = List("viewAllDraftMovements.filters.dateOfDispatchFrom.error.required.one"),
         args = List("month")
       ))
 
@@ -311,7 +311,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val expectedResult = List(FormError(
         key = dateOfDispatchFrom,
-        messages = List("viewAllDraftMovements.filters.dateOfDispatchFrom.error.required"),
+        messages = List("viewAllDraftMovements.filters.dateOfDispatchFrom.error.required.one"),
         args = List("year")
       ))
 
@@ -395,7 +395,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val expectedResult = List(FormError(
         key = dateOfDispatchTo,
-        messages = List("viewAllDraftMovements.filters.dateOfDispatchTo.error.invalid"),
+        messages = List("viewAllDraftMovements.filters.dateOfDispatchTo.error.notARealDate"),
         args = List()
       ))
 
@@ -413,7 +413,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val expectedResult = List(FormError(
         key = dateOfDispatchTo,
-        messages = List("viewAllDraftMovements.filters.dateOfDispatchTo.error.required"),
+        messages = List("viewAllDraftMovements.filters.dateOfDispatchTo.error.required.one"),
         args = List("day")
       ))
 
@@ -430,7 +430,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val expectedResult = List(FormError(
         key = dateOfDispatchTo,
-        messages = List("viewAllDraftMovements.filters.dateOfDispatchTo.error.required"),
+        messages = List("viewAllDraftMovements.filters.dateOfDispatchTo.error.required.one"),
         args = List("month")
       ))
 
@@ -447,7 +447,7 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       val expectedResult = List(FormError(
         key = dateOfDispatchTo,
-        messages = List("viewAllDraftMovements.filters.dateOfDispatchTo.error.required"),
+        messages = List("viewAllDraftMovements.filters.dateOfDispatchTo.error.required.one"),
         args = List("year")
       ))
 

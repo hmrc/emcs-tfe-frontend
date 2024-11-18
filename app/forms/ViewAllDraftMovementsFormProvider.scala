@@ -35,14 +35,20 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
         ViewAllDraftMovementsFormProvider.destinationTypes -> set(enumerable[DestinationTypeSearchOption]()),
         ViewAllDraftMovementsFormProvider.exciseProductCode -> optional(text()).transform[Option[String]](_.map(removeAnyNonAlphanumerics), identity),
         ViewAllDraftMovementsFormProvider.dateOfDispatchFrom -> optionalLocalDate(
-          invalidKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.invalid",
+          notARealDateKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.notARealDate",
           twoRequiredKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.required.two",
-          requiredKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.required"
+          oneRequiredKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.required.one",
+          oneInvalidKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.invalid.one",
+          twoInvalidKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.invalid.two",
+          allRequiredKey = ""
         ),
         ViewAllDraftMovementsFormProvider.dateOfDispatchTo -> optionalLocalDate(
-          invalidKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.invalid",
+          notARealDateKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.notARealDate",
           twoRequiredKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.required.two",
-          requiredKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.required"
+          oneRequiredKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.required.one",
+          oneInvalidKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.invalid.one",
+          twoInvalidKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.invalid.two",
+          allRequiredKey = ""
         )
       )(GetDraftMovementsSearchOptions.apply)(GetDraftMovementsSearchOptions.unapply)
   )
