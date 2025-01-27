@@ -26,12 +26,14 @@ import java.time.LocalDate
 class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
   with Mappings {
 
-  val form = Form(
+  val form: Form[LocalDate] = Form(
     "value" -> localDate(
-      requiredKey = "error.required",
       allRequiredKey = "error.required.all",
+      oneRequiredKey = "error.required.one",
       twoRequiredKey = "error.required.two",
-      invalidKey = "error.invalid"
+      oneInvalidKey = "error.invalid.one",
+      notARealDateKey = "error.notARealDate",
+      twoInvalidKey = "error.invalid.two"
     )
   )
 
@@ -86,7 +88,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
 
     val result = form.bind(data)
 
-    result.errors must contain only FormError("value", "error.required", List("day"))
+    result.errors must contain only FormError("value", "error.required.one", List("day"))
   }
 
   "must fail to bind a date with an invalid day" in {
@@ -99,7 +101,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
     val result = form.bind(data)
 
     result.errors must contain(
-      FormError("value", "error.invalid", List.empty)
+      FormError("value", "error.invalid.one", List("day"))
     )
   }
 
@@ -116,7 +118,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
 
     val result = form.bind(data)
 
-    result.errors must contain only FormError("value", "error.required", List("month"))
+    result.errors must contain only FormError("value", "error.required.one", List("month"))
   }
 
   "must fail to bind a date with an invalid month" in {
@@ -129,7 +131,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
     val result = form.bind(data)
 
     result.errors must contain(
-      FormError("value", "error.invalid", List.empty)
+      FormError("value", "error.invalid.one", List("month"))
     )
   }
 
@@ -146,7 +148,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
 
     val result = form.bind(data)
 
-    result.errors must contain only FormError("value", "error.required", List("year"))
+    result.errors must contain only FormError("value", "error.required.one", List("year"))
   }
 
   "must fail to bind a date with an invalid year" in {
@@ -159,7 +161,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
     val result = form.bind(data)
 
     result.errors must contain(
-      FormError("value", "error.invalid", List.empty)
+      FormError("value", "error.invalid.one", List("year"))
     )
   }
 
@@ -232,7 +234,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
 
     val result = form.bind(data)
 
-    result.errors must contain only FormError("value", "error.invalid", List.empty)
+    result.errors must contain only FormError("value", "error.invalid.two", List("day", "month"))
   }
 
   "must fail to bind an invalid day and year" in {
@@ -244,7 +246,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
 
     val result = form.bind(data)
 
-    result.errors must contain only FormError("value", "error.invalid", List.empty)
+    result.errors must contain only FormError("value", "error.invalid.two", List("day", "year"))
   }
 
   "must fail to bind an invalid month and year" in {
@@ -256,7 +258,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
 
     val result = form.bind(data)
 
-    result.errors must contain only FormError("value", "error.invalid", List.empty)
+    result.errors must contain only FormError("value", "error.invalid.two", List("month", "year"))
   }
 
   "must fail to bind an invalid day, month and year" in {
@@ -268,7 +270,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
 
     val result = form.bind(data)
 
-    result.errors must contain only FormError("value", "error.invalid", List.empty)
+    result.errors must contain only FormError("value", "error.notARealDate", List.empty)
   }
 
   "must fail to bind an invalid date" in {
@@ -281,7 +283,7 @@ class DateMappingsSpec extends AnyFreeSpec with Matchers with OptionValues
     val result = form.bind(data)
 
     result.errors must contain(
-      FormError("value", "error.invalid", List.empty)
+      FormError("value", "error.notARealDate", List.empty)
     )
   }
 
