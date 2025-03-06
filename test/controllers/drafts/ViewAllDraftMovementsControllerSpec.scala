@@ -107,7 +107,7 @@ class ViewAllDraftMovementsControllerSpec extends SpecBase
 
   private def successView(searchOptions: GetDraftMovementsSearchOptions,
                           numberOfMovements: Int,
-                          form: Form[GetDraftMovementsSearchOptions] = formProvider(),
+                          form: Form[GetDraftMovementsSearchOptions],
                          )(implicit request: DataRequest[_]): Html =
     buildView(
       searchOptions = searchOptions,

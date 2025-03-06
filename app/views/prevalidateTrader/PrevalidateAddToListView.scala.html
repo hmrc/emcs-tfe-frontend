@@ -42,7 +42,7 @@
     maybeShowNavigationBanner = Some(NavigationBannerInfo(request.ern, request.messageStatistics.map(_.countOfNewMessages), None))
 ) {
 
-    @formHelper(action = onSubmitCall, 'autoComplete -> "off") {
+    @formHelper(action = onSubmitCall, Symbol("autoComplete") -> "off") {
 
       @formOpt.map { form =>
         @if(form.errors.nonEmpty) {

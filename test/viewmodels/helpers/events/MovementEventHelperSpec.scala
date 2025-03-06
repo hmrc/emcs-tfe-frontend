@@ -85,7 +85,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GBWK123"))
         )
 
-        helper.getOriginTypeForMovementInformationCard mustBe "Tax warehouse in Great Britain"
+        helper.getOriginTypeForMovementInformationCard() mustBe "Tax warehouse in Great Britain"
       }
       "TaxWarehouse and consignor is XIWK and dispatchPlace is GB" in {
         implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
@@ -94,7 +94,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           placeOfDispatchTrader = Some(TraderModel(traderExciseNumber = Some("GB00123"), None, None, None, None))
         )
 
-        helper.getOriginTypeForMovementInformationCard mustBe "Tax warehouse in Great Britain"
+        helper.getOriginTypeForMovementInformationCard() mustBe "Tax warehouse in Great Britain"
       }
     }
     "return inXI text" when {
@@ -105,7 +105,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           placeOfDispatchTrader = Some(TraderModel(traderExciseNumber = Some("XI00123"), None, None, None, None))
         )
 
-        helper.getOriginTypeForMovementInformationCard mustBe "Tax warehouse in Northern Ireland"
+        helper.getOriginTypeForMovementInformationCard() mustBe "Tax warehouse in Northern Ireland"
       }
     }
     "return inEU text" when {
@@ -115,7 +115,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("IEWK123"))
         )
 
-        helper.getOriginTypeForMovementInformationCard mustBe "Tax warehouse in European Union"
+        helper.getOriginTypeForMovementInformationCard() mustBe "Tax warehouse in European Union"
       }
     }
     "return generic OriginType text" when {
@@ -127,7 +127,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             placeOfDispatchTrader = Some(TraderModel(traderExciseNumber = Some("XI00123"), None, None, None, None))
           )
 
-          helper.getOriginTypeForMovementInformationCard mustBe "Tax warehouse"
+          helper.getOriginTypeForMovementInformationCard() mustBe "Tax warehouse"
         }
       }
       "not TaxWarehouse" in {
@@ -137,7 +137,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             consignorTrader = getMovementResponseModel.consignorTrader.copy(traderExciseNumber = Some("GBWK123"))
           )
 
-          helper.getOriginTypeForMovementInformationCard mustBe messages(s"movementCreatedView.section.movement.originType.$originType")
+          helper.getOriginTypeForMovementInformationCard() mustBe messages(s"movementCreatedView.section.movement.originType.$originType")
         }
       }
     }
@@ -151,7 +151,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           consigneeTrader = Some(TraderModel(traderExciseNumber = Some("GBRC123"), None, None, None, None))
         )
 
-        helper.getDestinationTypeForMovementInformationCard mustBe "Tax warehouse in Great Britain"
+        helper.getDestinationTypeForMovementInformationCard() mustBe "Tax warehouse in Great Britain"
       }
     }
     "return inUK text" when {
@@ -161,7 +161,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           consigneeTrader = Some(TraderModel(traderExciseNumber = Some("XIRC123"), None, None, None, None))
         )
 
-        helper.getDestinationTypeForMovementInformationCard mustBe "Tax warehouse in United Kingdom"
+        helper.getDestinationTypeForMovementInformationCard() mustBe "Tax warehouse in United Kingdom"
       }
     }
     "return inEU text" when {
@@ -171,7 +171,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
           consigneeTrader = Some(TraderModel(traderExciseNumber = Some("IERC123"), None, None, None, None))
         )
 
-        helper.getDestinationTypeForMovementInformationCard mustBe "Tax warehouse in European Union"
+        helper.getDestinationTypeForMovementInformationCard() mustBe "Tax warehouse in European Union"
       }
     }
     "return generic DestinationType text" when {
@@ -182,7 +182,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
             consigneeTrader = Some(TraderModel(traderExciseNumber = Some("GBRC123"), None, None, None, None))
           )
 
-          helper.getDestinationTypeForMovementInformationCard mustBe messages(s"movementCreatedView.section.movement.destinationType.$destinationType")
+          helper.getDestinationTypeForMovementInformationCard() mustBe messages(s"movementCreatedView.section.movement.destinationType.$destinationType")
         }
       }
     }

@@ -20,7 +20,6 @@ import base.SpecBase
 import fixtures.MovementListFixtures
 import fixtures.messages.ViewAllMovementsMessages.English
 import models.MovementFilterDirectionOption._
-import models.response.emcsTfe.GetMovementListItem
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag

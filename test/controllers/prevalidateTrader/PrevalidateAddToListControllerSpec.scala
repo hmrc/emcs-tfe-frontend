@@ -23,7 +23,7 @@ import forms.prevalidate.PrevalidateAddToListFormProvider
 import mocks.config.MockAppConfig
 import mocks.services.MockPrevalidateUserAnswersService
 import models.requests.UserAnswersRequest
-import models.{NormalMode, UserAnswers}
+import models.{Index, NormalMode, UserAnswers}
 import navigation.FakeNavigators.FakePrevalidateNavigator
 import pages.prevalidateTrader.{PrevalidateAddToListPage, PrevalidateAddedProductCodesPage, PrevalidateEPCPage}
 import play.api.data.Form
@@ -53,7 +53,7 @@ class PrevalidateAddToListControllerSpec extends SpecBase
   val userAnswersWithMaxPrevalidate: UserAnswers =
     (0 until PrevalidateAddedProductCodesPage.MAX).foldLeft(emptyUserAnswers) {
       case (userAnswers, idx) =>
-        userAnswers.set(PrevalidateEPCPage(idx), wineExciseProductCode)
+        userAnswers.set(PrevalidateEPCPage(Index(idx)), wineExciseProductCode)
     }
 
   class Setup(val userAnswers: UserAnswers = emptyUserAnswers, preValidateEnabled: Boolean = true) {
