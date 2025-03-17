@@ -18,7 +18,6 @@ lazy val microservice = Project(appName, file("."))
     majorVersion := 1,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     scalacOptions ++= Seq(
-      "-feature",
       "-rootdir",
       baseDirectory.value.getCanonicalPath,
       "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s"
@@ -31,6 +30,8 @@ lazy val microservice = Project(appName, file("."))
     )
   )
   .settings(
+    scalacOptions += "-deprecation",
+    scalacOptions += "-feature",
     scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
     scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s"
   )
