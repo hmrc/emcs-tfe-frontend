@@ -72,7 +72,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
           implicit val request = dataRequest(FakeRequest("GET", "/"), ern = "GBWK000000000")
           implicit val _template = template.copy(data = Json.obj("info" -> Json.obj("destinationType" -> MovementScenario.UkTaxWarehouse.GB.toString)))
 
-          val result = helper.movementType
+          val result = helper.movementType()
           result mustBe summaryListRowBuilder("Movement type", "Great Britain tax warehouse to tax warehouse in Great Britain")
         }
       }
@@ -84,7 +84,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
               "consignee" -> Json.obj("consigneeAddress" -> Json.obj("businessName" -> "consignee business name"))
            ))
 
-          val result = helper.consignee
+          val result = helper.consignee()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.consigneeBusinessName", "consignee business name"))
         }
 
@@ -94,7 +94,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "consignee" -> Json.obj("consigneeAddress" -> Json.obj("businessName" -> "consignee business name"))
           ))
 
-          val result = helper.consignee
+          val result = helper.consignee()
           result mustBe None
         }
 
@@ -103,7 +103,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "info" -> Json.obj("destinationType" -> MovementScenario.DirectDelivery.toString)
           ))
 
-          val result = helper.consignee
+          val result = helper.consignee()
           result mustBe None
         }
       }
@@ -115,7 +115,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "consignee" -> Json.obj("exciseRegistrationNumber" -> "GBWK000000000000")
           ))
 
-          val result = helper.consigneeERN
+          val result = helper.consigneeERN()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.consigneeERN", "GBWK000000000000"))
         }
 
@@ -125,7 +125,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "consignee" -> Json.obj("exciseRegistrationNumber" -> "GBWK000000000000")
           ))
 
-          val result = helper.consigneeERN
+          val result = helper.consigneeERN()
           result mustBe None
         }
 
@@ -135,7 +135,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "consignee" -> Json.obj("exciseRegistrationNumber" -> "GBWK000000000000")
           ))
 
-          val result = helper.consigneeERN
+          val result = helper.consigneeERN()
           result mustBe None
         }
 
@@ -144,7 +144,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "info" -> Json.obj("destinationType" -> MovementScenario.DirectDelivery.toString)
           ))
 
-          val result = helper.consigneeERN
+          val result = helper.consigneeERN()
           result mustBe None
         }
       }
@@ -156,7 +156,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "exportInformation" -> Json.obj("exportCustomsOffice" -> "GB000000")
           ))
 
-          val result = helper.exportOffice
+          val result = helper.exportOffice()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.exportOffice", "GB000000"))
         }
 
@@ -166,7 +166,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "exportInformation" -> Json.obj("exportCustomsOffice" -> "GB000000")
           ))
 
-          val result = helper.exportOffice
+          val result = helper.exportOffice()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.exportOffice", "GB000000"))
         }
 
@@ -176,7 +176,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "exportInformation" -> Json.obj("exportCustomsOffice" -> "GB000000")
           ))
 
-          val result = helper.exportOffice
+          val result = helper.exportOffice()
           result mustBe None
         }
 
@@ -185,7 +185,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "info" -> Json.obj("destinationType" -> MovementScenario.ExportWithCustomsDeclarationLodgedInTheUk.toString)
           ))
 
-          val result = helper.exportOffice
+          val result = helper.exportOffice()
           result mustBe None
         }
       }
@@ -195,7 +195,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
           implicit val request = dataRequest(FakeRequest("GET", "/"), ern = "GBRC000000000")
           implicit val _template = template.copy(data = Json.obj("importInformation" -> Json.obj("importCustomsOfficeCode" -> "GB000000")))
 
-          val result = helper.importOffice
+          val result = helper.importOffice()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.importOffice", "GB000000"))
         }
 
@@ -203,7 +203,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
           implicit val request = dataRequest(FakeRequest("GET", "/"), ern = "XIRC000000000")
           implicit val _template = template.copy(data = Json.obj("importInformation" -> Json.obj("importCustomsOfficeCode" -> "XI000000")))
 
-          val result = helper.importOffice
+          val result = helper.importOffice()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.importOffice", "XI000000"))
         }
 
@@ -211,7 +211,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
           implicit val request = dataRequest(FakeRequest("GET", "/"), ern = "GBWK000000000")
           implicit val _template = template.copy(data = Json.obj("importCustomsOfficeCode" -> "GB000000"))
 
-          val result = helper.importOffice
+          val result = helper.importOffice()
           result mustBe None
         }
 
@@ -219,7 +219,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
           implicit val request = dataRequest(FakeRequest("GET", "/"), ern = "GBRC000000000")
           implicit val _template = template.copy(data = Json.obj())
 
-          val result = helper.importOffice
+          val result = helper.importOffice()
           result mustBe None
         }
       }
@@ -231,7 +231,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "consignee" -> Json.obj("exemptOrganisation" -> Json.obj("memberState" -> "GB00000"))
           ))
 
-          val result = helper.exemptedOrganisationOffice
+          val result = helper.exemptedOrganisationOffice()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.exemptedOrganisationOffice", "GB00000"))
         }
 
@@ -241,7 +241,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "consignee" -> Json.obj("exemptOrganisation" -> Json.obj("memberState" -> "GB00000"))
           ))
 
-          val result = helper.exemptedOrganisationOffice
+          val result = helper.exemptedOrganisationOffice()
           result mustBe None
         }
 
@@ -251,7 +251,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "consignee" -> Json.obj("exemptOrganisation" -> Json.obj())
           ))
 
-          val result = helper.exemptedOrganisationOffice
+          val result = helper.exemptedOrganisationOffice()
           result mustBe None
         }
       }
@@ -260,7 +260,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
         "return a summary list row when the guarantor arranger is not Owner" in {
           implicit val _template = template.copy(data = Json.obj("guarantor" -> Json.obj("guarantorArranger" -> Consignor.toString)))
 
-          val result = helper.guarantor
+          val result = helper.guarantor()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.guarantor", "Consignor"))
         }
 
@@ -272,7 +272,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             )
           ))
 
-          val result = helper.guarantor
+          val result = helper.guarantor()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.guarantor", Html("Owner of goods<br>guarantor business name")))
         }
 
@@ -281,14 +281,14 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "guarantorArranger" -> "Owner"
           ))
 
-          val result = helper.guarantor
+          val result = helper.guarantor()
           result mustBe None
         }
 
         "return None when there is no guarantor arranger" in {
           implicit val _template = template.copy(data = Json.obj())
 
-          val result = helper.guarantor
+          val result = helper.guarantor()
           result mustBe None
         }
       }
@@ -297,14 +297,14 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
         "return a summary list row when a journey type is present" in {
           implicit val _template = template.copy(data = Json.obj("journeyType" -> Json.obj("howMovementTransported" -> RoadTransport.toString)))
 
-          val result = helper.journeyType
+          val result = helper.journeyType()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.journeyType", "Road transport"))
         }
 
         "return None when there is no journey type" in {
           implicit val _template = template.copy(data = Json.obj())
 
-          val result = helper.journeyType
+          val result = helper.journeyType()
           result mustBe None
         }
       }
@@ -315,7 +315,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "transportArranger" -> Json.obj("transportArranger" -> TransportArrangement.Consignor.toString)
           ))
 
-          val result = helper.transportArranger
+          val result = helper.transportArranger()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.transportArranger", "Consignor"))
         }
 
@@ -324,7 +324,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "transportArranger" -> Json.obj("transportArranger" -> TransportArrangement.Consignee.toString)
           ))
 
-          val result = helper.transportArranger
+          val result = helper.transportArranger()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.transportArranger", "Consignee"))
         }
 
@@ -336,7 +336,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             )
           ))
 
-          val result = helper.transportArranger
+          val result = helper.transportArranger()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.transportArranger", Html("Other<br>Transport Business")))
         }
 
@@ -348,7 +348,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             )
           ))
 
-          val result = helper.transportArranger
+          val result = helper.transportArranger()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.transportArranger", Html("Owner of goods<br>Transport Business owner")))
         }
 
@@ -357,7 +357,7 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "transportArranger" -> TransportArrangement.Other.toString
           ))
 
-          val result = helper.transportArranger
+          val result = helper.transportArranger()
           result mustBe None
         }
 
@@ -366,14 +366,14 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "transportArranger" -> TransportArrangement.OwnerOfGoods.toString
           ))
 
-          val result = helper.transportArranger
+          val result = helper.transportArranger()
           result mustBe None
         }
 
         "return None when there is no transport arranger" in {
           implicit val _template = template.copy(data = Json.obj())
 
-          val result = helper.transportArranger
+          val result = helper.transportArranger()
           result mustBe None
         }
       }
@@ -384,14 +384,14 @@ class ConfirmTemplateHelperSpec extends SpecBase with DraftTemplatesFixtures {
             "firstTransporter" -> Json.obj("firstTransporterAddress" -> Json.obj("businessName" -> "First Transporter Business"))
           ))
 
-          val result = helper.firstTransporter
+          val result = helper.firstTransporter()
           result mustBe Some(summaryListRowBuilder("confirmTemplate.movement.summary.firstTransporter", "First Transporter Business"))
         }
 
         "return None when there is no first transporter business name" in {
           implicit val _template = template.copy(data = Json.obj())
 
-          val result = helper.firstTransporter
+          val result = helper.firstTransporter()
           result mustBe None
         }
       }

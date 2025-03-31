@@ -29,11 +29,11 @@ class ItemPackagingCardHelper @Inject()() {
     implicit val _packaging = packaging
 
     Seq(
-      typeRow,
-      quantityRow,
-      identityOfCommercialSealRow,
-      sealInformationRow,
-      shippingMarksRow
+      typeRow(),
+      quantityRow(),
+      identityOfCommercialSealRow(),
+      sealInformationRow(),
+      shippingMarksRow()
     ).flatten
   }
 

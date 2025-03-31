@@ -49,16 +49,16 @@ class ConfirmTemplateHelper @Inject()(
       headingMessageKey = None,
       cardTitleMessageKey = None,
       summaryListRows = Seq(
-        Some(movementType),
-        consignee,
-        consigneeERN,
-        exportOffice,
-        importOffice,
-        exemptedOrganisationOffice,
-        guarantor,
-        journeyType,
-        transportArranger,
-        firstTransporter,
+        Some(movementType()),
+        consignee(),
+        consigneeERN(),
+        exportOffice(),
+        importOffice(),
+        exemptedOrganisationOffice(),
+        guarantor(),
+        journeyType(),
+        transportArranger(),
+        firstTransporter(),
         items(itemsWithCnCodeInfo)
       ).flatten
     )
