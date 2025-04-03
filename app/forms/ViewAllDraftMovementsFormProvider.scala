@@ -39,7 +39,6 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
           twoRequiredKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.required.two",
           oneRequiredKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.required.one",
           oneInvalidKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.invalid.one",
-          twoInvalidKey = "viewAllDraftMovements.filters.dateOfDispatchFrom.error.invalid.two",
           allRequiredKey = ""
         ),
         ViewAllDraftMovementsFormProvider.dateOfDispatchTo -> optionalLocalDate(
@@ -47,7 +46,6 @@ class ViewAllDraftMovementsFormProvider @Inject() extends Mappings {
           twoRequiredKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.required.two",
           oneRequiredKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.required.one",
           oneInvalidKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.invalid.one",
-          twoInvalidKey = "viewAllDraftMovements.filters.dateOfDispatchTo.error.invalid.two",
           allRequiredKey = ""
         )
       )(GetDraftMovementsSearchOptions.apply)(GetDraftMovementsSearchOptions.unapply)

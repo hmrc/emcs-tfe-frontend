@@ -30,7 +30,6 @@ class LocalDateFormatterSpec extends AnyFreeSpec with Matchers with OptionValues
   val oneRequiredKey = "error.oneRequired"
   val twoRequiredKey = "error.twoRequired"
   val oneInvalidKey = "error.oneInvalid"
-  val twoInvalidKey = "error.twoInvalid"
   val notARealDateKey = "error.notARealDate"
   val args = Seq.empty[String]
 
@@ -39,7 +38,6 @@ class LocalDateFormatterSpec extends AnyFreeSpec with Matchers with OptionValues
     oneRequiredKey = oneRequiredKey,
     twoRequiredKey = twoRequiredKey,
     oneInvalidKey = oneInvalidKey,
-    twoInvalidKey = twoInvalidKey,
     notARealDateKey = notARealDateKey,
     args = args
   )
@@ -112,6 +110,16 @@ class LocalDateFormatterSpec extends AnyFreeSpec with Matchers with OptionValues
         "date.day" -> "31",
         "date.month" -> "2",
         "date.year" -> "2023"
+      )
+      val result = formatter.bind("date", data)
+      result shouldBe Left(Seq(FormError("date", notARealDateKey, args)))
+    }
+
+    "return an error for two invalid field" in {
+      val data = Map(
+        "date.day" -> "32",
+        "date.month" -> "13",
+        "date.year" -> "2025"
       )
       val result = formatter.bind("date", data)
       result shouldBe Left(Seq(FormError("date", notARealDateKey, args)))
