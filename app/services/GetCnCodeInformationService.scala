@@ -17,6 +17,7 @@
 package services
 
 import connectors.referenceData.GetCnCodeInformationConnector
+import models.common.UnitOfMeasure
 import models.draftTemplates.TemplateItem
 import models.requests.{CnCodeInformationItem, CnCodeInformationRequest}
 import models.response.CnCodeInformationException
@@ -33,15 +34,25 @@ class GetCnCodeInformationService @Inject()(connector: GetCnCodeInformationConne
 
   def getCnCodeInformation(items: Seq[MovementItem])(implicit hc: HeaderCarrier): Future[Seq[(MovementItem, CnCodeInformation)]] = {
 
-    def matchMovementItemsWithReferenceDataValues(response: CnCodeInformationResponse,
-                                                          items: Seq[MovementItem]): Seq[(MovementItem, CnCodeInformation)] = {
-      items.collect {
-        case item if response.data.contains(item.cnCode) =>
-          item -> response.data(item.cnCode)
-        case item =>
-          throw CnCodeInformationException(s"Failed to match item with CN Code information: $item")
-      }
+    def cnCodeInformationFromMovementItem(item: MovementItem): CnCodeInformation = {
+      // A movement item can have a CN code which is no longer, or not yet, in the reference data.
+      // We still need to be able to show the user their data, so when this happens we try to use values from the movement item instead,
+      // or else fall back to default values
+      CnCodeInformation(
+        cnCode = item.cnCode,
+        cnCodeDescription = s"Unknown CN Code: ${item.cnCode} - Verify in UK Integrated Online Tariff",
+        exciseProductCode = item.productCode,
+        exciseProductCodeDescription =
+          item.productCodeDescription.getOrElse(s"Unknown Product Code: ${item.productCode} - Verify in UK Integrated Online Tariff"),
+        unitOfMeasure = item.unitOfMeasure.getOrElse(UnitOfMeasure.UnknownUnit),
+      )
     }
+
+    def matchMovementItemsWithReferenceDataValues(response: CnCodeInformationResponse,
+                                                  items: Seq[MovementItem]): Seq[(MovementItem, CnCodeInformation)] =
+      items.map(item =>
+        item -> response.data.getOrElse(item.cnCode, cnCodeInformationFromMovementItem(item))
+      )
 
     connector.getCnCodeInformation(CnCodeInformationRequest(CnCodeInformationItem(items))).map {
       case Right(response) =>

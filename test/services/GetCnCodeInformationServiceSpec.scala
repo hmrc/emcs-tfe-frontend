@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import fixtures.ItemFixtures
 import mocks.connectors.MockGetCnCodeInformationConnector
-import models.common.UnitOfMeasure.Kilograms
+import models.common.UnitOfMeasure.{Kilograms, UnknownUnit}
 import models.requests.{CnCodeInformationItem, CnCodeInformationRequest}
 import models.response.referenceData.{CnCodeInformation, CnCodeInformationResponse}
 import models.response.{CnCodeInformationException, UnexpectedDownstreamResponseError}
@@ -44,28 +44,78 @@ class GetCnCodeInformationServiceSpec extends SpecBase with ItemFixtures with Mo
       "Connector returns success from downstream" in {
         MockGetCnCodeInformationConnector.getCnCodeInformation(request).returns(Future.successful(Right(CnCodeInformationResponse(data = Map(
           "24029000" -> CnCodeInformation(
-            cnCode = "T400",
+            cnCode = "24029000",
             cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
-            exciseProductCode = "24029000",
+            exciseProductCode = "T400",
             exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
             unitOfMeasure = Kilograms
           )
         )))))
 
         testService.getCnCodeInformation(items)(hc).futureValue mustBe Seq((items.head, CnCodeInformation(
-          cnCode = "T400",
+          cnCode = "24029000",
           cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
-          exciseProductCode = "24029000",
+          exciseProductCode = "T400",
           exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
           unitOfMeasure = Kilograms
         )))
+      }
+
+      "not all items match something from the Connector, so default values provided" in {
+
+        val items = Seq(
+          item1.copy(productCode = "T400", cnCode = "24029000"),
+          item1.copy(productCode = "T401", cnCode = "24029001"),
+          item1.copy(productCode = "T402", cnCode = "24029002"),
+        )
+        val request = CnCodeInformationRequest(CnCodeInformationItem(items))
+
+        MockGetCnCodeInformationConnector.getCnCodeInformation(request).returns(Future.successful(Right(CnCodeInformationResponse(data = Map(
+          "24029000" -> CnCodeInformation(
+            cnCode = "24029000",
+            cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+            exciseProductCode = "T400",
+            exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+            unitOfMeasure = Kilograms,
+          ),
+          "24029001" -> CnCodeInformation(
+            cnCode = "24029001",
+            cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+            exciseProductCode = "T401",
+            exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+            unitOfMeasure = Kilograms,
+          )
+        )))))
+
+        testService.getCnCodeInformation(items)(hc).futureValue mustBe Seq(
+          (items.head, CnCodeInformation(
+            cnCode = "24029000",
+            cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+            exciseProductCode = "T400",
+            exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+            unitOfMeasure = Kilograms,
+          )),
+          (items(1), CnCodeInformation(
+            cnCode = "24029001",
+            cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
+            exciseProductCode = "T401",
+            exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
+            unitOfMeasure = Kilograms,
+          )),
+          (items(2), CnCodeInformation(
+            cnCode = "24029002",
+            cnCodeDescription = "Unknown CN Code: 24029002 - Verify in UK Integrated Online Tariff",
+            exciseProductCode = "T402",
+            exciseProductCodeDescription = "Unknown Product Code: T402 - Verify in UK Integrated Online Tariff",
+            unitOfMeasure = UnknownUnit,
+          )),
+        )
       }
     }
 
     "return Failure response" when {
 
       "Connector returns failure from downstream" in {
-
         MockGetCnCodeInformationConnector.getCnCodeInformation(request).returns(Future.successful(Left(UnexpectedDownstreamResponseError)))
 
         val result = intercept[CnCodeInformationException](await(testService.getCnCodeInformation(items)(hc)))
@@ -73,36 +123,6 @@ class GetCnCodeInformationServiceSpec extends SpecBase with ItemFixtures with Mo
         result.getMessage must include(s"Failed to retrieve CN Code information")
       }
 
-      "not all items match something from the Connector" in {
-
-        val items = Seq(
-          item1.copy(productCode = "T400", cnCode = "24029000"),
-          item1.copy(productCode = "T401", cnCode = "24029001"),
-          item1.copy(productCode = "T402", cnCode = "24029002")
-        )
-        val request = CnCodeInformationRequest(CnCodeInformationItem(items))
-
-        MockGetCnCodeInformationConnector.getCnCodeInformation(request).returns(Future.successful(Right(CnCodeInformationResponse(data = Map(
-          "24029000" -> CnCodeInformation(
-            cnCode = "T400",
-            cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
-            exciseProductCode = "24029000",
-            exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
-            unitOfMeasure = Kilograms
-          ),
-          "24029001" -> CnCodeInformation(
-            cnCode = "T401",
-            cnCodeDescription = "Cigars, cheroots, cigarillos and cigarettes not containing tobacco",
-            exciseProductCode = "24029001",
-            exciseProductCodeDescription = "Fine-cut tobacco for the rolling of cigarettes",
-            unitOfMeasure = Kilograms
-          )
-        )))))
-
-        val result = intercept[CnCodeInformationException](await(testService.getCnCodeInformation(items)(hc)))
-
-        result.getMessage must include(s"Failed to match item with CN Code information")
-      }
     }
   }
 }

@@ -43,6 +43,8 @@ unitOfMeasure.litres20.short = litres
 unitOfMeasure.litres20.long = litres (temperature of 20°C)
 unitOfMeasure.thousands.short = x1000
 unitOfMeasure.thousands.long = x1000 items
+unitOfMeasure.unknownUnit.short = (unit unknown)
+unitOfMeasure.unknownUnit.long = (unit unknown)
 
 date.day = Day
 date.month = Month
