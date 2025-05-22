@@ -38,11 +38,14 @@ object UnitOfMeasure {
 
   case object Thousands extends WithName("thousands") with UnitOfMeasure
 
+  case object UnknownUnit extends WithName("unknownUnit") with UnitOfMeasure // we use this when a CN code has been deleted from reference-data
+
   val values: Seq[UnitOfMeasure] = Seq(
     Kilograms,
     Litres15,
     Litres20,
-    Thousands
+    Thousands,
+    UnknownUnit,
   )
 
   def apply(code: Int): UnitOfMeasure = code match {
