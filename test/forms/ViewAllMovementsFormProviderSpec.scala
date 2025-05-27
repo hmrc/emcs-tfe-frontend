@@ -331,6 +331,17 @@ class ViewAllMovementsFormProviderSpec extends SpecBase {
 
           actualResult.errors mustBe expectedResult
         }
+        "the month and year is invalid" in {
+
+          val data = formAnswersMap(day = "31", month = "1000", year = "a")
+
+          val expectedResult = Seq(FormError(dateKey, s"viewAllMovements.filters.$dateKey.error.notARealDate"))
+
+          val actualResult = form.bind(data)
+
+          actualResult.errors mustBe expectedResult
+        }
+
       }
     }
   }

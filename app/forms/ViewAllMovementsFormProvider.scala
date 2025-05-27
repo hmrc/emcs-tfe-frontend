@@ -43,7 +43,6 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
           twoRequiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required.two",
           oneRequiredKey = "viewAllMovements.filters.dateOfDispatchFrom.error.required.one",
           oneInvalidKey = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid.one",
-          twoInvalidKey = "viewAllMovements.filters.dateOfDispatchFrom.error.invalid.two",
           allRequiredKey = ""
         ),
         ViewAllMovementsFormProvider.dateOfDispatchTo -> optionalLocalDate(
@@ -51,7 +50,6 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
           twoRequiredKey = "viewAllMovements.filters.dateOfDispatchTo.error.required.two",
           oneRequiredKey = "viewAllMovements.filters.dateOfDispatchTo.error.required.one",
           oneInvalidKey = "viewAllMovements.filters.dateOfDispatchTo.error.invalid.one",
-          twoInvalidKey = "viewAllMovements.filters.dateOfDispatchTo.error.invalid.two",
           allRequiredKey = ""
         ),
         ViewAllMovementsFormProvider.dateOfReceiptFrom -> optionalLocalDate(
@@ -59,7 +57,6 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
           twoRequiredKey = "viewAllMovements.filters.dateOfReceiptFrom.error.required.two",
           oneRequiredKey = "viewAllMovements.filters.dateOfReceiptFrom.error.required.one",
           oneInvalidKey = "viewAllMovements.filters.dateOfReceiptFrom.error.invalid.one",
-          twoInvalidKey = "viewAllMovements.filters.dateOfReceiptFrom.error.invalid.two",
           allRequiredKey = ""
         ),
         ViewAllMovementsFormProvider.dateOfReceiptTo -> optionalLocalDate(
@@ -67,7 +64,6 @@ class ViewAllMovementsFormProvider @Inject() extends Mappings {
           twoRequiredKey = "viewAllMovements.filters.dateOfReceiptTo.error.required.two",
           oneRequiredKey = "viewAllMovements.filters.dateOfReceiptTo.error.required.one",
           oneInvalidKey = "viewAllMovements.filters.dateOfReceiptTo.error.invalid.one",
-          twoInvalidKey = "viewAllMovements.filters.dateOfReceiptTo.error.invalid.two",
           allRequiredKey = ""
         )
       )(MovementListSearchOptions.apply)(MovementListSearchOptions.unapply).verifying(ViewAllMovementsFormProvider.validateSearchValue())
