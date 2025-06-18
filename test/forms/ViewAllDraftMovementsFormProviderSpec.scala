@@ -371,6 +371,24 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
 
       actualResult mustBe expectedResult
     }
+
+    "give an error when the month and year is invalid" in {
+
+      val expectedResult = List(FormError(
+        key = dateOfDispatchFrom,
+        messages = List("viewAllDraftMovements.filters.dateOfDispatchFrom.error.notARealDate"),
+        args = List()
+      ))
+
+      val actualResult = form.bind(Map(
+        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
+        dateOfDispatchFromDay -> "29",
+        dateOfDispatchFromMonth -> "0",
+        dateOfDispatchFromYear -> "0"
+      )).errors
+
+      actualResult mustBe expectedResult
+    }
   }
 
   ".dateOfDispatchTo" should {
@@ -503,6 +521,24 @@ class ViewAllDraftMovementsFormProviderSpec extends SpecBase {
       val actualResult = form.bind(Map(
         sortByKey -> DraftMovementSortingSelectOption.Newest.code,
         dateOfDispatchToYear -> "2020"
+      )).errors
+
+      actualResult mustBe expectedResult
+    }
+
+    "give an error when the month and year is invalid" in {
+
+      val expectedResult = List(FormError(
+        key = dateOfDispatchTo,
+        messages = List("viewAllDraftMovements.filters.dateOfDispatchTo.error.notARealDate"),
+        args = List()
+      ))
+
+      val actualResult = form.bind(Map(
+        sortByKey -> DraftMovementSortingSelectOption.Newest.code,
+        dateOfDispatchToDay -> "29",
+        dateOfDispatchToMonth -> "0",
+        dateOfDispatchToYear -> "0"
       )).errors
 
       actualResult mustBe expectedResult
