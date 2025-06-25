@@ -1,5 +1,6 @@
 import play.sbt.routes.RoutesKeys
 import sbt.*
+import uk.gov.hmrc.DefaultBuildSettings
 import uk.gov.hmrc.DefaultBuildSettings.addTestReportOption
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
@@ -7,15 +8,15 @@ val appName = "emcs-tfe-frontend"
 
 val silencerVersion = "1.7.12"
 
-lazy val ItTest = config("it") extend Test
+//lazy val ItTest = config("it") extend Test
 
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / majorVersion := 1
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
-    majorVersion := 1,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     scalacOptions ++= Seq(
       "-rootdir",
@@ -35,18 +36,18 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
     scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s"
   )
-  .settings(inConfig(Test)(testSettings): _*)
-  .configs(ItTest)
-  .settings(inConfig(ItTest)(itSettings): _*)
-  .settings(
-    ItTest / fork := true,
-    ItTest / unmanagedSourceDirectories := Seq((ItTest / baseDirectory).value / "it"),
-    ItTest / unmanagedClasspath += baseDirectory.value / "resources",
-    Runtime / unmanagedClasspath += baseDirectory.value / "resources",
-    ItTest / javaOptions += "-Dlogger.resource=logback-test.xml",
-    ItTest / parallelExecution := false,
-    addTestReportOption(ItTest, "int-test-reports")
-  )
+  .settings(inConfig(Test)(testSettings) *)
+//  .configs(ItTest)
+//  .settings(inConfig(ItTest)(itSettings) *)
+//  .settings(
+//    ItTest / fork := true,
+//    ItTest / unmanagedSourceDirectories := Seq((ItTest / baseDirectory).value / "it"),
+//    ItTest / unmanagedClasspath += baseDirectory.value / "resources",
+//    Runtime / unmanagedClasspath += baseDirectory.value / "resources",
+//    ItTest / javaOptions += "-Dlogger.resource=logback-test.xml",
+//    ItTest / parallelExecution := false,
+//    addTestReportOption(ItTest, "int-test-reports")
+//  )
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(
     // concatenate js
@@ -85,24 +86,30 @@ lazy val microservice = Project(appName, file("."))
     "uk.gov.hmrc.hmrcfrontend.views.viewmodels.timeoutdialog.TimeoutDialog",
     "viewmodels.govuk.all._"
   ))
-  .settings(CodeCoverageSettings.settings: _*)
+  .settings(CodeCoverageSettings.settings *)
 
 
 
-lazy val testSettings: Seq[Def.Setting[_]] = Seq(
+lazy val testSettings: Seq[Def.Setting[?]] = Seq(
   fork := true,
   unmanagedSourceDirectories += baseDirectory.value / "test-utils",
   Test / javaOptions += "-Dlogger.resource=logback-test.xml"
 )
 
-lazy val itSettings = Defaults.itSettings ++ Seq(
-  unmanagedSourceDirectories := Seq(
-    baseDirectory.value / "it",
-    baseDirectory.value / "test-utils"
-  ),
-  unmanagedResourceDirectories := Seq(
-    baseDirectory.value / "it" / "resources"
-  ),
-  parallelExecution := false,
-  fork := true
-)
+//lazy val itSettings = Defaults.itSettings ++ Seq(
+//  unmanagedSourceDirectories := Seq(
+//    baseDirectory.value / "it",
+//    baseDirectory.value / "test-utils"
+//  ),
+//  unmanagedResourceDirectories := Seq(
+//    baseDirectory.value / "it" / "resources"
+//  ),
+//  parallelExecution := false,
+//  fork := true
+//)
+
+lazy val it = project
+  .enablePlugins(PlayScala)
+  .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
+  .settings(DefaultBuildSettings.itSettings())
+  .settings(libraryDependencies ++= AppDependencies.it)

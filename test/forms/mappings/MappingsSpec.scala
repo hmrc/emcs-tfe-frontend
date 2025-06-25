@@ -227,13 +227,13 @@ class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mapp
     }
 
     s"must bind an integer larger than ${Int.MaxValue}" in {
-      val result = testForm.bind(Map("value" -> s"${Int.MaxValue + 1}"))
-      result.get mustEqual Int.MaxValue + 1
+      val result = testForm.bind(Map("value" -> s"${BigInt(Int.MaxValue) + 1}"))
+      result.get mustEqual BigInt(Int.MaxValue) + 1
     }
 
     s"must bind an integer smaller than ${Int.MinValue}" in {
-      val result = testForm.bind(Map("value" -> s"${Int.MinValue - 1}"))
-      result.get mustEqual Int.MinValue - 1
+      val result = testForm.bind(Map("value" -> s"${BigInt(Int.MinValue) - 1}"))
+      result.get mustEqual BigInt(Int.MinValue) - 1
     }
 
     "must not bind an empty value" in {
