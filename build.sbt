@@ -17,8 +17,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     scalacOptions ++= Seq(
-      "-rootdir",
-      baseDirectory.value.getCanonicalPath,
       "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s"
     ),
     Assets / pipelineStages := Seq(gzip),
@@ -35,7 +33,6 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s"
   )
   .settings(inConfig(Test)(testSettings) *)
-  .settings(resolvers += Resolver.jcenterRepo)
   .settings(
     // concatenate js
     Concat.groups := Seq(
