@@ -150,7 +150,7 @@ object MovementEventMessages extends DateUtils {
     val ie839MovementRejectedByCustomsBodyRecordUniqueReference = "Body record unique reference"
     val ie839MovementRejectedByCustomsDiagnosisCode = "Diagnosis Code"
     val ie839MovementRejectedByCustomsDiagnosisCode1 = "1 - Unknown ARC"
-    val ie839MovementRejectedByCustomsDiagnosisCode2 = "2 - Body Record Unique Reference does not exist in the e-AD"
+    val ie839MovementRejectedByCustomsDiagnosisCode2 = "2 - Body Record Unique Reference does not exist in the e-AD OR No corresponding GOODS ITEM in the export declaration"
     val ie839MovementRejectedByCustomsDiagnosisCode3 = "3 - No corresponding goods item in the export declaration"
     val ie839MovementRejectedByCustomsDiagnosisCode4 = "4 - Weight/mass do not match"
     val ie839MovementRejectedByCustomsDiagnosisCode5 = "5 - The destination type code of the e-AD is not export"
