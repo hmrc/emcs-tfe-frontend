@@ -369,6 +369,16 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       ))
     )
 
+  lazy val notificationOfAcceptedExportNoConsigneeTrader: NotificationOfAcceptedExportModel =
+    NotificationOfAcceptedExportModel(
+      customsOfficeNumber = "GB000383",
+      dateOfAcceptance = LocalDate.of(2024, 2, 5),
+      referenceNumberOfSenderCustomsOffice = "GB000101",
+      identificationOfSenderCustomsOfficer = "John Doe",
+      documentReferenceNumber = "645564546",
+      consigneeTrader = None
+    )
+
   val notificationOfCustomsRejectionModel: NotificationOfCustomsRejectionModel = NotificationOfCustomsRejectionModel(
     customsOfficeReferenceNumber = Some("AT002000"),
     rejectionDateAndTime = LocalDateTime.of(2024, 1, 15, 19, 14, 20),
