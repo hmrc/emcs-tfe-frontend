@@ -852,7 +852,7 @@ class MovementEventHelper @Inject()(
     HtmlFormat.fill(
       Seq(
         acceptedExportSummary,
-        consigneeInformationCard(Some(notificationOfAcceptedExport.consigneeTrader))
+        consigneeInformationCard(notificationOfAcceptedExport.consigneeTrader)
       )
     )
   }
