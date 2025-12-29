@@ -45,7 +45,7 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
     dateOfDispatch = "",
     timeOfDispatch = Some("00:00:00"),
     upstreamArc = None,
-    importSadNumber = None
+    importCustomDeclarationNumber = None
   )
 
   val reportOfReceiptResponse = ReportOfReceiptModel(

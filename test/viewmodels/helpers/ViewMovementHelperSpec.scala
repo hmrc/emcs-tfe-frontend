@@ -115,7 +115,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
           getMovementResponseModel.copy(
             memberStateCode = Some("GB"),
             dispatchImportOfficeReferenceNumber = Some("imp123"),
-            eadEsad = getMovementResponseModel.eadEsad.copy(importSadNumber = Some(Seq("sad123"))),
+            eadEsad = getMovementResponseModel.eadEsad.copy(importCustomDeclarationNumber = Some(Seq("sad123"))),
           )
         ))
         val doc = Jsoup.parse(result.toString())
