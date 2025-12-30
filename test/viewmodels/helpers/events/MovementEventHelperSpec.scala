@@ -618,7 +618,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
     "output the correct rows when all data is present" in {
       implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(
         eadEsad = eadEsadModel.copy(
-          importSadNumber = Some(Seq("123", "456"))
+          importCustomDeclarationNumber = Some(Seq("123", "456"))
         )
       )
 
@@ -639,7 +639,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
     }
 
     "output nothing when there are no single administrative documents" in {
-      implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(eadEsad = eadEsadModel.copy(importSadNumber = None))
+      implicit val _movement: GetMovementResponse = getMovementResponseModel.copy(eadEsad = eadEsadModel.copy(importCustomDeclarationNumber = None))
 
       val result = helper.sadInformationCard()
       val doc = Jsoup.parse(result.toString())
