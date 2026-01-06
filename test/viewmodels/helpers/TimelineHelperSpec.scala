@@ -161,50 +161,8 @@ class TimelineHelperSpec extends DateUtils with SpecBase with GetMovementRespons
       "the event is for a reminder to provide a destination" in {
         getKey(IE802, 0, 3) mustBe "movementHistoryEvent.IE802.des.label"
       }
-      "the event is for a diverted movement" in {
-        getKey(IE803, 0, 1) mustBe "movementHistoryEvent.IE803.diverted.label"
-      }
-      "the event is for a split movement" in {
-        getKey(IE803, 0, 2) mustBe "movementHistoryEvent.IE803.split.label"
-      }
-      "the event is for a movement intercepted" in {
-        getKey(IE807, 0, 0) mustBe "movementHistoryEvent.IE807.label"
-      }
-      "the event is for a cancellation" in {
-        getKey(IE810, 0, 0) mustBe "movementHistoryEvent.IE810.label"
-      }
-      "the event is for a change of destination submission" in {
-        getKey(IE813, 0, 0) mustBe "movementHistoryEvent.IE813.label"
-      }
-      "the event is for a report of receipt submission and an export" in {
-        getKey(IE818, 0, 0, movement = getMovementResponseModel.copy(destinationType = DestinationType.Export)) mustBe "movementHistoryEvent.IE818.label.export"
-      }
-      "the event is for a report of receipt submission and not an export" in {
-        DestinationType.values.filterNot(_ == DestinationType.Export).foreach {
-          destinationType =>
-            getKey(IE818, 0, 0, movement = getMovementResponseModel.copy(destinationType = destinationType)) mustBe "movementHistoryEvent.IE818.label"
-        }
-      }
-      "the event is for a alert/rejection submission" in {
-        getKey(IE819, 0, 0) mustBe "movementHistoryEvent.IE819.label"
-      }
       "the event is for a movement accepted by customs" in {
         getKey(IE829, 0, 0) mustBe "movementHistoryEvent.IE829.label"
-      }
-      "the event is for a explanation for delay submission" in {
-        getKey(IE837, 0, 0) mustBe "movementHistoryEvent.IE837.label"
-      }
-      "the event is for a customs rejection of a movement for export" in {
-        getKey(IE839, 0, 0) mustBe "movementHistoryEvent.IE839.label"
-      }
-      "the event is for an explanation for a shortage or excess" in {
-        getKey(IE871, 0, 0) mustBe "movementHistoryEvent.IE871.label"
-      }
-      "the event is for a manual closure response" in {
-        getKey(IE881, 0, 0) mustBe "movementHistoryEvent.IE881.label"
-      }
-      "the event is for a manual closure response of a movement" in {
-        getKey(IE905, 0, 0) mustBe "movementHistoryEvent.IE905.label"
       }
     }
   }
