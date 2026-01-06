@@ -120,6 +120,51 @@ class TimelineHelperSpec extends DateUtils with SpecBase with GetMovementRespons
         getKey(IE905, 0, 0) mustBe "movementHistoryEvent.IE905.label"
       }
     }
+
+    "return the correct message key without consigneeTrader in acceptedExport" when {
+
+      lazy val movementResponseNoConsigneeTraderInAcceptedExport = getMovementResponseModel.copy(
+        notificationOfAcceptedExport = Some(notificationOfAcceptedExportNoConsigneeTrader))
+
+      def getKey(
+                  eventType: EventTypes,
+                  sequenceNumber: Int,
+                  messageRole: Int,
+                  firstEventTypeInTimeline: Boolean = false,
+                  movement: GetMovementResponse = movementResponseNoConsigneeTraderInAcceptedExport
+                ):String = {
+        helper.getEventTitleKey(
+          MovementHistoryEvent(
+            eventType = eventType,
+            eventDate = LocalDateTime.now(),
+            sequenceNumber = sequenceNumber,
+            messageRole = messageRole,
+            None,
+            isFirstEventTypeInHistory = firstEventTypeInTimeline
+          ),
+          movement
+        )
+      }
+
+      "the event is for a movement created" in {
+        getKey(IE801, 1, 0, firstEventTypeInTimeline = true) mustBe "movementHistoryEvent.IE801.first.label"
+      }
+      "the event is for an update to the movement" in {
+        getKey(IE801, 2, 0) mustBe "movementHistoryEvent.IE801.further.label"
+      }
+      "the event is for a reminder to provide a change of destination" in {
+        getKey(IE802, 0, 1) mustBe "movementHistoryEvent.IE802.cod.label"
+      }
+      "the event is for a reminder to provide a report of receipt" in {
+        getKey(IE802, 0, 2) mustBe "movementHistoryEvent.IE802.ror.label"
+      }
+      "the event is for a reminder to provide a destination" in {
+        getKey(IE802, 0, 3) mustBe "movementHistoryEvent.IE802.des.label"
+      }
+      "the event is for a movement accepted by customs" in {
+        getKey(IE829, 0, 0) mustBe "movementHistoryEvent.IE829.label"
+      }
+    }
   }
 
   ".getHistoryEventUrl" must {

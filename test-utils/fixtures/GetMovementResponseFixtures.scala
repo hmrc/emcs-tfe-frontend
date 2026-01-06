@@ -353,19 +353,30 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       referenceNumberOfSenderCustomsOffice = "GB000101",
       identificationOfSenderCustomsOfficer = "John Doe",
       documentReferenceNumber = "645564546",
-      consigneeTrader = TraderModel(
-        traderExciseNumber = Some("BE345345345"),
-        traderName = Some("PEAR Supermarket"),
-        address = Some(
-          AddressModel(
-            streetNumber = None,
-            street = Some("Angels Business Park"),
-            postcode = Some("BD1 3NN"),
-            city = Some("Bradford")
-          )),
-        vatNumber = None,
-        eoriNumber = Some("GB00000578901")
-      )
+      consigneeTrader = Some(
+        TraderModel(
+          traderExciseNumber = Some("BE345345345"),
+          traderName = Some("PEAR Supermarket"),
+          address = Some(
+            AddressModel(
+              streetNumber = None,
+              street = Some("Angels Business Park"),
+              postcode = Some("BD1 3NN"),
+              city = Some("Bradford")
+            )),
+          vatNumber = None,
+          eoriNumber = Some("GB00000578901")
+      ))
+    )
+
+  lazy val notificationOfAcceptedExportNoConsigneeTrader: NotificationOfAcceptedExportModel =
+    NotificationOfAcceptedExportModel(
+      customsOfficeNumber = "GB000383",
+      dateOfAcceptance = LocalDate.of(2024, 2, 5),
+      referenceNumberOfSenderCustomsOffice = "GB000101",
+      identificationOfSenderCustomsOfficer = "John Doe",
+      documentReferenceNumber = "645564546",
+      consigneeTrader = None
     )
 
   val notificationOfCustomsRejectionModel: NotificationOfCustomsRejectionModel = NotificationOfCustomsRejectionModel(
