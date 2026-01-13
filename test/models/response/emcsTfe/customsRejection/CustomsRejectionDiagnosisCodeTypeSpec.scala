@@ -30,6 +30,7 @@ class CustomsRejectionDiagnosisCodeTypeSpec extends SpecBase {
       CustomsRejectionDiagnosisCodeType.WeightMismatch.toString mustBe "4"
       CustomsRejectionDiagnosisCodeType.DestinationTypeIsNotExport.toString mustBe "5"
       CustomsRejectionDiagnosisCodeType.CommodityCodesDoNotMatch.toString mustBe "6"
+      CustomsRejectionDiagnosisCodeType.WeightAndCommodityCodesDoNotMatch.toString mustBe "7"
     }
   }
 }
