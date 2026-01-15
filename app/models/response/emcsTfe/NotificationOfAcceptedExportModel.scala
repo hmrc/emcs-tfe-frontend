@@ -27,7 +27,8 @@ case class NotificationOfAcceptedExportModel(
                                               referenceNumberOfSenderCustomsOffice: String,
                                               identificationOfSenderCustomsOfficer: String,
                                               documentReferenceNumber: String,
-                                              consigneeTrader: Option[TraderModel]
+                                              consigneeTrader: Option[TraderModel],
+                                              exportDeclarationAcceptanceOrGoodsReleasedForExport: Option[String]
                                             )
 
 object NotificationOfAcceptedExportModel {

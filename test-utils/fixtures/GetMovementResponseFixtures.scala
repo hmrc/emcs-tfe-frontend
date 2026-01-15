@@ -366,7 +366,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
             )),
           vatNumber = None,
           eoriNumber = Some("GB00000578901")
-      ))
+      )),
+      exportDeclarationAcceptanceOrGoodsReleasedForExport = Some("1")
     )
 
   lazy val notificationOfAcceptedExportNoConsigneeTrader: NotificationOfAcceptedExportModel =
@@ -376,7 +377,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
       referenceNumberOfSenderCustomsOffice = "GB000101",
       identificationOfSenderCustomsOfficer = "John Doe",
       documentReferenceNumber = "645564546",
-      consigneeTrader = None
+      consigneeTrader = None,
+      exportDeclarationAcceptanceOrGoodsReleasedForExport = Some("1")
     )
 
   val notificationOfCustomsRejectionModel: NotificationOfCustomsRejectionModel = NotificationOfCustomsRejectionModel(
@@ -575,7 +577,8 @@ trait GetMovementResponseFixtures extends ItemFixtures with GetMovementHistoryEv
           "city" -> "Bradford"
         ),
         "eoriNumber" -> "GB00000578901"
-      )
+      ),
+      "exportDeclarationAcceptanceOrGoodsReleasedForExport" -> "1"
     ),
     "cancelMovement" -> Json.obj(
       "reason" -> "0",
