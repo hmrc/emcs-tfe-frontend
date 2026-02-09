@@ -121,9 +121,9 @@
 }
 
 @bannerHtml = {
-    @p("govuk-notification-banner__heading") {@messages("accountHome.banner.p1")}
-    @p("govuk-notification-banner__heading") {@messages("accountHome.banner.p2")}
-    @p() {@messages("accountHome.banner.p3")}
+    @p("govuk-notification-banner__heading") {@appConfig.getEncodedString("accountHome.banner.p1")}
+    @p("govuk-notification-banner__heading") {@appConfig.getEncodedString("accountHome.banner.p2")}
+    @p() {@appConfig.getEncodedString("accountHome.banner.p3")}
 }
 
 @{
