@@ -25,6 +25,7 @@ import models.messages.MessagesSearchOptions
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.util.Base64
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.Duration
 
@@ -132,4 +133,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, configuration: Configu
   def templatesLinkVisible: Boolean = isEnabled(TemplatesLink)
 
   def maxTemplates: Int = configuration.get[String]("constants.maxTemplates").toInt
+
+  def getEncodedString(key: String): String = new String(Base64.getDecoder.decode(configuration.get[String](key)))
 }
