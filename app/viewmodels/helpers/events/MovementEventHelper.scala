@@ -460,7 +460,7 @@ class MovementEventHelper @Inject()(
   }
 
   def sadInformationCard(isSummaryCard: Boolean = true, isLargeHeading: Boolean = false)(implicit movement: GetMovementResponse, messages: Messages): Html = {
-    movement.eadEsad.importCustomDeclarationNumber.map { sadNumbers =>
+    movement.eadEsad.importCustomsDeclarationNumber.map { sadNumbers =>
 
       val sadCards = sadNumbers.zipWithIndex.map {
         case (sad, index) =>

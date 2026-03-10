@@ -30,7 +30,7 @@ case class EadEsadModel(
                          dateOfDispatch: String,
                          timeOfDispatch: Option[String],
                          upstreamArc: Option[String],
-                         importCustomDeclarationNumber: Option[Seq[String]]
+                         importCustomsDeclarationNumber: Option[Seq[String]]
                        ) extends DateUtils {
 
   def formattedInvoiceDate: Option[String] =

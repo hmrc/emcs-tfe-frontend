@@ -245,12 +245,12 @@ class HistoryEventViewSpec extends ViewSpecBase
               ie801Event,
               getMovementResponseModel.copy(
                 eadEsad = eadEsadModel.copy(
-                  importCustomDeclarationNumber = Some(Seq("123", "456"))
+                  importCustomsDeclarationNumber = Some(Seq("123", "456"))
                 )
               )
             )
 
-            doc.select(headingId).text() mustBe "Single Administrative Document(s) (SAD)"
+            doc.select(headingId).text() mustBe "Customs Declaration(s)"
             doc.select(s"$summaryId-1").isEmpty mustBe false
             doc.select(s"$summaryId-2").isEmpty mustBe false
           }
@@ -263,7 +263,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               ie801Event,
               getMovementResponseModel.copy(
                 eadEsad = eadEsadModel.copy(
-                  importCustomDeclarationNumber = Some(Seq("123", "456"))
+                  importCustomsDeclarationNumber = Some(Seq("123", "456"))
                 )
               )
             )
