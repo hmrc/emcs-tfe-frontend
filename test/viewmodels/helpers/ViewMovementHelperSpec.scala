@@ -126,7 +126,7 @@ class ViewMovementHelperSpec extends SpecBase with GetMovementResponseFixtures w
         doc.select(Selectors.h2(5)).text() mustBe "Exempted organisation"
         doc.select(Selectors.h2(6)).text() mustBe "Export"
         doc.select(Selectors.h2(7)).text() mustBe "Import"
-        doc.select(Selectors.h2(8)).text() mustBe "Single Administrative Document(s) (SAD)"
+        doc.select(Selectors.h2(8)).text() mustBe "Customs Declaration(s)"
         doc.select(Selectors.h2(9)).text() mustBe "Document details"
         doc.select(Selectors.h2(10)).text() mustBe "Items"
       }

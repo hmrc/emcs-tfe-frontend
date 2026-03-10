@@ -629,7 +629,7 @@ class MovementEventHelperSpec extends SpecBase with GetMovementResponseFixtures 
 
       val firstSadDoc = summaryCards.get(0)
       val firstSadDocSummaryListRows = firstSadDoc.getElementsByClass("govuk-summary-list__row")
-      firstSadDocSummaryListRows.get(0).getElementsByTag("dt").text() mustBe "SAD number"
+      firstSadDocSummaryListRows.get(0).getElementsByTag("dt").text() mustBe "Customs Declaration number"
       firstSadDocSummaryListRows.get(0).getElementsByTag("dd").text() mustBe "123"
 
       val lastSadDoc = summaryCards.get(1)

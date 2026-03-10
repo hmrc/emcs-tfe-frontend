@@ -250,7 +250,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               )
             )
 
-            doc.select(headingId).text() mustBe "Single Administrative Document(s) (SAD)"
+            doc.select(headingId).text() mustBe "Customs Declaration(s)"
             doc.select(s"$summaryId-1").isEmpty mustBe false
             doc.select(s"$summaryId-2").isEmpty mustBe false
           }
