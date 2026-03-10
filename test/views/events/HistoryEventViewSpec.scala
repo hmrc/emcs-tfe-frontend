@@ -245,7 +245,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               ie801Event,
               getMovementResponseModel.copy(
                 eadEsad = eadEsadModel.copy(
-                  importCustomDeclarationNumber = Some(Seq("123", "456"))
+                  importCustomsDeclarationNumber = Some(Seq("123", "456"))
                 )
               )
             )
@@ -263,7 +263,7 @@ class HistoryEventViewSpec extends ViewSpecBase
               ie801Event,
               getMovementResponseModel.copy(
                 eadEsad = eadEsadModel.copy(
-                  importCustomDeclarationNumber = Some(Seq("123", "456"))
+                  importCustomsDeclarationNumber = Some(Seq("123", "456"))
                 )
               )
             )
