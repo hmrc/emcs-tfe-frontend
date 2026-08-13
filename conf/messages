@@ -1146,6 +1146,9 @@ messages.IE704.error.4531 = The ‘Alert or Rejection of E-AD Reason Code’ is 
 messages.IE704.error.4601 = The type of transport must be sea transport or fixed transport installation if the latest version of the movement has no guarantee
 messages.IE704.error.4602 = All movements between the UK and EU require a guarantee except the movement of energy products
 messages.IE704.error.9005 = A GB trader can only raise movements to GB warehouse destinations and exports with a GB export office. NI traders cannot raise exports with a GB export office.
+messages.IE704.error.9028 = This message cannot be processed as vaping product destination type can only be a Tax warehouse or an Export.
+messages.IE704.error.9029 = Vaping products from Northern Ireland to an EU Tax warehouse, or from the EU to a Northern Ireland Tax warehouse cannot be mixed with other products.
+messages.IE704.error.9030 =	For EU-NI vaping movements, the Consignor ID must be the same as the NI Consignee ID.
 
 messages.IE704.IE810.fixError.cancel.prefix = If you still want to
 messages.IE704.IE810.fixError.cancel.link = cancel this movement
