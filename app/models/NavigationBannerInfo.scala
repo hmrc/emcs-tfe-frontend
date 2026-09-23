@@ -16,4 +16,10 @@
 
 package models
 
+import play.api.libs.json.{Format, Json}
+
 case class NavigationBannerInfo(ern :String, countOfNewMessages: Option[Int], currentSection: Option[PageSection])
+
+object NavigationBannerInfo {
+  implicit val format: Format[NavigationBannerInfo] = Json.format[NavigationBannerInfo]
+}
