@@ -17,7 +17,11 @@
 @import config.AppConfig
 @import viewmodels.TraderInfo
 @import viewmodels.govuk.all._
-@import views.html.components.{activeTrader, navigation_bar}
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.servicenavigation.{ServiceNavigation, ServiceNavigationItem}
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.header.v2.{HeaderParams, HeaderUrls}
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En}
+@import viewmodels.helpers.ServiceNavigationHelper
+@import views.html.components.activeTrader
 @import views.html.helper.CSPNonce
 @import views.html.templates.FullWidthMainContentTemplate
 
@@ -26,17 +30,16 @@
         govukLayout: GovukLayout,
         govukBackLink: GovukBackLink,
         hmrcHead: HmrcHead,
-        hmrcStandardHeader: HmrcStandardHeader,
+        hmrcHeader: HmrcHeader,
         hmrcStandardFooter: HmrcStandardFooter,
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-        hmrcLanguageSelect: HmrcLanguageSelect,
         hmrcTimeoutDialog: HmrcTimeoutDialog,
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
         hmrcScripts: HmrcScripts,
         defaultMainContent: TwoThirdsMainContent,
         fullWidthMainContent: FullWidthMainContentTemplate,
         activeTrader: activeTrader,
-        navigationBar: navigation_bar
+        serviceNavigationHelper: ServiceNavigationHelper
 )
 
 @(
@@ -120,7 +123,6 @@
 
 @beforeContent = {
     @{ activeTrader(maybeShowActiveTrader) }
-    @maybeShowNavigationBanner.map(info => navigationBar(info))
     @beforeContentBlock.getOrElse(())
     @if(showBackLink) {
         @govukBackLink(BackLinkViewModel(href = "#").withCssClass("js-visible").withCssClass("govuk-!-margin-top-6"))
@@ -139,11 +141,20 @@
 @govukLayout(
     pageTitle = Some(pageTitle),
     headBlock = Some(head),
-    headerBlock = Some(hmrcStandardHeader(
-        serviceUrl = Some(appConfig.emcsTfeHomeUrl),
-        signOutUrl = if(showSignOut) Some(controllers.auth.routes.AuthController.signOut().url) else None,
-        phaseBanner = None
-    )),
+    headerBlock = Some(hmrcHeader(HeaderParams(
+        headerUrls = HeaderUrls(
+            homepageUrl = messages("header.govuk.url"),
+            signOutHref = if(showSignOut) Some(controllers.auth.routes.AuthController.signOut().url) else None,
+            assetsPath = uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at("govuk/images").url
+        ),
+        serviceNavigation = Some(ServiceNavigation(
+            serviceName = Some(messages("service.name")),
+            serviceUrl = Some(appConfig.emcsTfeHomeUrl),
+            navigation = maybeShowNavigationBanner.fold(Seq.empty[ServiceNavigationItem])(info => serviceNavigationHelper.navigationItems(info)),
+            navigationLabel = Some("Account")
+        )),
+        language = if(messages.lang.code == "cy") Cy else En
+    ))),
     beforeContentBlock = Some(beforeContent),
     footerBlock = Some(hmrcStandardFooter()),
     scriptsBlock = Some(hmrcScripts(

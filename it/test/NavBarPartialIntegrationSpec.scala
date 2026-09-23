@@ -15,18 +15,17 @@
  */
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import models.NavigationBannerInfo
 import models.messages.MessageStatisticsCache
 import play.api.http.Status
 import play.api.i18n.{Lang, Messages}
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSRequest, WSResponse}
-import play.twirl.api.Html
 import repositories.MessageStatisticsRepositoryImpl
 import stubs.{AuthStub, DownstreamStub}
 import support.IntegrationBaseSpec
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.servicenavigation.ServiceNavigationItem
 import uk.gov.hmrc.mongo.test.PlayMongoRepositorySupport
-import views.html.components.navigation_bar
 
 class NavBarPartialIntegrationSpec extends IntegrationBaseSpec
   with PlayMongoRepositorySupport[MessageStatisticsCache] {
@@ -40,7 +39,6 @@ class NavBarPartialIntegrationSpec extends IntegrationBaseSpec
 
   private trait Test {
 
-    val navBar: navigation_bar = app.injector.instanceOf[navigation_bar]
     implicit val msgs: Messages = messages(Seq(Lang("en")))
 
     def setupStubs(): StubMapping
@@ -49,11 +47,11 @@ class NavBarPartialIntegrationSpec extends IntegrationBaseSpec
 
     def request(): WSRequest = {
       setupStubs()
-      buildAPIRequest(s"/emcs/partials/navigation/trader/$testErn")
+      buildAPIRequest(s"/emcs/partials/navigation-items/trader/$testErn")
     }
   }
 
-  s"Calling /emcs/partials/navigation/trader/$testErn" when {
+  s"Calling /emcs/partials/navigation-items/trader/$testErn" when {
 
     "request is Authorised" should {
 
@@ -75,7 +73,11 @@ class NavBarPartialIntegrationSpec extends IntegrationBaseSpec
           val response: WSResponse = await(request().get())
 
           response.status mustBe Status.OK
-          Html(response.body) mustBe navBar(NavigationBannerInfo(testErn, Some(1), None))
+
+          val items: Seq[ServiceNavigationItem] = Json.parse(response.body).as[Seq[ServiceNavigationItem]]
+          val messagesItem: Option[ServiceNavigationItem] = getMessagesItem(items)
+
+          messagesItem.fold("")(item => item.content.asHtml.toString) must include regex """Messages\s*<span[^>]*>\s*1\s*</span>""".r
         }
       }
 
@@ -91,7 +93,12 @@ class NavBarPartialIntegrationSpec extends IntegrationBaseSpec
           val response: WSResponse = await(request().get())
 
           response.status mustBe Status.OK
-          Html(response.body) mustBe navBar(NavigationBannerInfo(testErn, None, None))
+
+
+          val items: Seq[ServiceNavigationItem] = Json.parse(response.body).as[Seq[ServiceNavigationItem]]
+          val messagesItem: Option[ServiceNavigationItem] = getMessagesItem(items)
+
+          messagesItem.fold("")(item => item.content.asHtml.toString) mustBe "Messages"
         }
       }
     }
@@ -110,4 +117,13 @@ class NavBarPartialIntegrationSpec extends IntegrationBaseSpec
       }
     }
   }
+
+  private def getMessagesItem(items: Seq[ServiceNavigationItem]): Option[ServiceNavigationItem] = items.find {
+      case ServiceNavigationItem(HtmlContent(content), _, _, _, _, _) =>
+        content.toString().contains("Messages")
+      case _ =>
+        false
+  }
+
 }
+

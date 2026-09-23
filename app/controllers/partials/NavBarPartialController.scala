@@ -18,35 +18,36 @@ package controllers.partials
 
 import config.EnrolmentKeys.withActiveEmcsEnrolment
 import models.NavigationBannerInfo
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GetMessageStatisticsService
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utils.Logging
-import views.html.components.navigation_bar
+import viewmodels.helpers.ServiceNavigationHelper
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class NavBarPartialController @Inject()(mcc: MessagesControllerComponents,
-                                        navBarPartial: navigation_bar,
                                         messageStatisticsService: GetMessageStatisticsService,
+                                        serviceNavigationHelper: ServiceNavigationHelper,
                                         override val authConnector: AuthConnector,
                                        )(implicit val executionContext: ExecutionContext)
   extends FrontendController(mcc) with AuthorisedFunctions with Logging {
 
-  def navBar(ern: String): Action[AnyContent] = Action.async { implicit request =>
-    
+  def navBarItems(ern: String): Action[AnyContent] = Action.async { implicit request =>
+
     implicit val hc = HeaderCarrierConverter.fromRequest(request)
 
     authorised(withActiveEmcsEnrolment(ern)) {
       messageStatisticsService.getMessageStatistics(ern).map { messageStatistics =>
-        Ok(navBarPartial(NavigationBannerInfo(ern, messageStatistics.map(_.countOfNewMessages), None)))
+        Ok(Json.toJson(serviceNavigationHelper.navigationItems(NavigationBannerInfo(ern, messageStatistics.map(_.countOfNewMessages), None))))
       }
     }.recover { _ =>
-        logger.warn("[navBar] Authorisation error occurred, returning NoContent for NavBar")
+        logger.warn("[navBar-items] Authorisation error occurred, returning NoContent for NavBar")
         NoContent
     }
   }
