@@ -49,8 +49,8 @@ class PrintMovementViewSpec extends ViewSpecBase with ViewBehaviours with GetMov
       "display the correct content" in {
         doc.select(BaseSelectors.title).text() mustBe messagesForLanguage.printTitle(testArc)
         doc.select(BaseSelectors.h1).text() mustBe messagesForLanguage.printHeading(testArc)
-        doc.select("button:nth-of-type(1)").text() mustBe messagesForLanguage.printButton
-        doc.select("button:nth-of-type(2)").text() mustBe messagesForLanguage.printButton
+        doc.select("#main-content button:nth-of-type(1)").text() mustBe messagesForLanguage.printButton
+        doc.select("#main-content button:nth-of-type(2)").text() mustBe messagesForLanguage.printButton
       }
     }
 

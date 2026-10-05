@@ -35,4 +35,7 @@ object PageSection extends Enumerable.Implicits {
   val values: Seq[PageSection] = Seq(
     Home, Messages, Drafts, Movements, Templates
   )
+
+  implicit val enumerable: Enumerable[PageSection] =
+    Enumerable(values.map(value => value.toString -> value): _*)
 }

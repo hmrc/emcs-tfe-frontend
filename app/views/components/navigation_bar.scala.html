@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,86 +14,22 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
-@import models.common.RoleType
 @import models.NavigationBannerInfo
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.servicenavigation.ServiceNavigation
+@import viewmodels.helpers.ServiceNavigationHelper
 
 @this(
-        appConfig: AppConfig
+        govukServiceNavigation: GovukServiceNavigation,
+        serviceNavigationHelper: ServiceNavigationHelper
 )
 
 @(navInfo: NavigationBannerInfo)(implicit messages: Messages)
 
-@roleType = @{RoleType.fromExciseRegistrationNumber(navInfo.ern)}
-
-<nav id="secondary-nav" class="hmrc-account-menu" aria-label="Account" data-module="hmrc-account-menu">
-
-    <a id="navigation-home-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Home)) { hmrc-account-menu__link--active}"
-        @if(navInfo.currentSection.contains(PageSection.Home)) { aria-current="page" }
-        href="@appConfig.host@appConfig.emcsTfeHomeUrl">
-        @messages("navigation.home")
-    </a>
-
-    <a href="#" class="hmrc-account-menu__link hmrc-account-menu__link--menu js-hidden" tabindex="-1" aria-hidden="true" aria-expanded="false">
-        @messages("navigation.menu")
-    </a>
-
-    <ul class="hmrc-account-menu__main js-hidden">
-
-        <li>
-            <a id="navigation-messages-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Messages)) { hmrc-account-menu__link--active}"
-                @if(navInfo.currentSection.contains(PageSection.Messages)) { aria-current="page" }
-            href="@appConfig.host@appConfig.emcsTfeMessagesUrl(navInfo.ern)">
-                @messages("navigation.messages")
-                @navInfo.countOfNewMessages.map { count =>
-                    @if(count > 99 ) {
-                        <span class="hmrc-notification-badge govuk-!-margin-left-1">99+</span>
-                    } else {
-                        @if(count > 0) {
-                            <span class="hmrc-notification-badge govuk-!-margin-left-1">@count</span>
-                        }
-                    }
-                }
-            </a>
-        </li>
-
-        @if(roleType.canCreateNewMovement) {
-            <li>
-                <a id="navigation-drafts-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Drafts)) { hmrc-account-menu__link--active}"
-                    @if(navInfo.currentSection.contains(PageSection.Drafts)) {
-                        aria-current="page"
-                    }
-                href="@appConfig.host@appConfig.emcsTfeDraftMovementsUrl(navInfo.ern)">
-                @messages("navigation.drafts")
-                </a>
-            </li>
-        }
-
-        <li>
-            <a id="navigation-movements-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Movements)) { hmrc-account-menu__link--active}"
-                @if(navInfo.currentSection.contains(PageSection.Movements)) { aria-current="page" }
-            href="@appConfig.host@appConfig.emcsTfeListMovementsUrl(navInfo.ern)">
-            @messages("navigation.movements")
-            </a>
-        </li>
-
-        @if(appConfig.templatesLinkVisible && roleType.canCreateNewMovement) {
-            <li>
-                <a id="navigation-templates-link" class="hmrc-account-menu__link@if(navInfo.currentSection.contains(PageSection.Templates)) { hmrc-account-menu__link--active}"
-                    @if(navInfo.currentSection.contains(PageSection.Templates)) { aria-current="page" }
-                href="@appConfig.host@appConfig.emcsTfeViewAllTemplatesUrl(navInfo.ern)">
-                @messages("navigation.templates")
-                </a>
-            </li>
-        }
-
-        <li>
-            <a href="@appConfig.businessTaxAccountUrl" class="hmrc-account-menu__link" id="navigation-bta-link">
-                @messages("navigation.bta")
-            </a>
-        </li>
-    </ul>
-</nav>
+@govukServiceNavigation(ServiceNavigation(
+    navigation = serviceNavigationHelper.navigationItems(navInfo),
+    navigationLabel = Some("Account"),
+    attributes = Map("id" -> "secondary-nav")
+))
 
 @{
     //$COVERAGE-OFF$
