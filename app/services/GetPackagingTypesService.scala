@@ -40,7 +40,7 @@ class GetPackagingTypesService @Inject()(connector: GetItemPackagingTypesConnect
     items.map { item =>
       item.copy(packaging = item.packaging.collect {
         case packaging =>
-          response.find(_.packagingType == packaging.typeOfPackage) match {
+          response.find(_.packagingType.toUpperCase == packaging.typeOfPackage.toUpperCase) match {
             case Some(value) =>
               packaging.copy(typeOfPackage = value.description)
             case None =>
